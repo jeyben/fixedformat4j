@@ -1,9 +1,8 @@
   Features
 ------------------------------------------
-  - annotate properties (could be version 1.1)
   - rethink how to create instances of Records
   - rethink if it is nessessary to extend AbstractRecord, what about just implementing Record?
-
+  - move all javaassist generated code to export implementation. Will make it possible to implement logic in setters and getters
 
   Site
 ------------------------------------------
@@ -13,7 +12,7 @@
 
   Test Coverage
 ------------------------------------------
-  - Some corners are cut. Find them and trace them down
+  - Some corners are cut. Find them and chase them down
 
 
 
