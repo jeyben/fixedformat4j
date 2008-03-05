@@ -1,0 +1,40 @@
+  ------
+  A Java API for working with fixed formatted textfiles
+  ------
+  Jacob von Eyben
+  ------
+
+Fixedformat4j
+
+
+
+  Today many applications integrate with legacy mainframe systems build upon fixed formatted text files as the protocol for interchanging data.
+
+  Fixedformat4j is an easy to use Java framework for working with these kind of fixed formatted text files. By annotating
+  your code you can setup the offsets and format for your data when reading/writing to and from fixed format files.
+
+  Fixedformat4j handles many datatypes like, String, Integer, Float, Date, Boolean, Character etc. out-of-the-box,
+  and it is straight forward to plugin your own formatter.
+
+* Getting started
+
+  To start using Fixedformat4j you only have to create your Record class and use the RecordFactory to get an instance
+  of your record.
+
++--
+public abstract class MyRecord implements Record {
+
+  @FixedFormatField(offset = 1, length = 10)
+  public abstract String getStringData();
+
+  @FixedFormatField(offset = 1, length = 10)
+  public abstract void setStringData(String stringValue);
+}
++--
+
++--
+...
+MyFieldRecord record = (MyFieldRecord) RecordFactory.createInstance(MyFieldRecord.class);
+...
++--
+
