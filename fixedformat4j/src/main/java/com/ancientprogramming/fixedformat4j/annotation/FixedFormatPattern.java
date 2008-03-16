@@ -39,5 +39,5 @@ public @interface FixedFormatPattern {
    * Currency: ???
    * @return the pattern
    */
-  String pattern();
+  String value();
 }

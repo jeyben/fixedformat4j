@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 
 /**
@@ -39,31 +40,43 @@ public class RecordFactory {
     //not instanciatable
   }
 
-  public static synchronized Record createInstance(Class<? extends Record> clazz, StringBuffer recordContent) throws Exception {
+  public static synchronized Record createInstance(Class<? extends Record> clazz, String recordContent) throws RecordFactoryException {
+    return createInstance(clazz, new StringBuffer(recordContent));
+  }
+
+  public static synchronized Record createInstance(Class<? extends Record> clazz, StringBuffer recordContent) throws RecordFactoryException {
     Class<? extends Record> recordClass;
     String classname = clazz.getName() + RecordProxyCreator.CONCREATE_CLASS_PREFIX;
     try {
       recordClass = (Class<? extends Record>) RecordFactory.class.getClassLoader().loadClass(classname);
     } catch (ClassNotFoundException e) {
-      recordClass = new RecordProxyCreator().createProxy(clazz);
-      recordClass = (Class<? extends Record>) RecordFactory.class.getClassLoader().loadClass(classname);
+      try {
+        recordClass = new RecordProxyCreator().createProxy(clazz);
+        recordClass = (Class<? extends Record>) RecordFactory.class.getClassLoader().loadClass(classname);
+      } catch (Exception e1) {
+        throw new RecordFactoryException(String.format("Could not create proxy for class[%s]", clazz), e1);
+      }
     }
     return createRecord(recordClass, recordContent);
   }
 
-  public static synchronized Record createInstance(Class<? extends Record> clazz) throws Exception {
-    return createInstance(clazz, null);
+  public static synchronized Record createInstance(Class<? extends Record> clazz) {
+    return createInstance(clazz, (StringBuffer) null);
 
   }
 
 
 
-  static Record createRecord(Class<? extends Record> c, StringBuffer recordContent) throws Exception {
+  static Record createRecord(Class<? extends Record> c, StringBuffer recordContent) {
     if (recordContent == null) {
       recordContent = new StringBuffer("");
     }
-    Constructor<? extends Record> constructor = c.getConstructor(StringBuffer.class);
-    return constructor.newInstance(recordContent);
+    Constructor<? extends Record> constructor = null;
+    try {
+      constructor = c.getConstructor(StringBuffer.class);
+      return constructor.newInstance(recordContent);
+    } catch (Exception e) {
+      throw new RecordFactoryException(String.format("Could not invoke constructor for class[%s]", c.getName()), e);
+    }
   }
-
 }
