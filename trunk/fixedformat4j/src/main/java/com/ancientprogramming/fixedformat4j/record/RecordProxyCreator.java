@@ -52,6 +52,10 @@ public class RecordProxyCreator {
     //set constructor
     CtConstructor constructor = new CtConstructor(new CtClass[]{cp.get("java.lang.StringBuffer")}, concreteClass);
     constructor.setBody("{this.record = $1;}");
+
+    if (LOG.isInfoEnabled()) {
+      LOG.info("creating constructor: " + constructor);
+    }
     concreteClass.addConstructor(constructor);
 
     CtField[] fields = abstractClass.getDeclaredFields();
@@ -151,7 +155,10 @@ public class RecordProxyCreator {
       LOG.debug("src: " + src);
     }
     newMethod.setBody(src);
-    System.out.println("newMethod: " + newMethod);
+    if (LOG.isInfoEnabled()) {
+      LOG.info("new method: " + newMethod);
+    }
+
     return newMethod;
   }
 
@@ -170,6 +177,10 @@ public class RecordProxyCreator {
       LOG.debug("src: " + src);
     }
     newMethod.setBody(src);
+
+    if (LOG.isInfoEnabled()) {
+      LOG.info("new method: " + newMethod);
+    }
     return newMethod;
   }
 
@@ -210,7 +221,7 @@ public class RecordProxyCreator {
     String booleanDataSrc = "null";
     if (anno != null) {
       booleanDataSrc = "new com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData(" +
-          "\"" + anno.pattern() + "\")";
+          "\"" + anno.value() + "\")";
     }
     return booleanDataSrc;
   }

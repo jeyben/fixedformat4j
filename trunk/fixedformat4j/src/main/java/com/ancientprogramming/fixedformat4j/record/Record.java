@@ -24,4 +24,6 @@ package com.ancientprogramming.fixedformat4j.record;
 public interface Record {
 
   String export();
+
+  
 }

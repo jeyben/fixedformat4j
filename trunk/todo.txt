@@ -1,8 +1,9 @@
   Features
 ------------------------------------------
-  - rethink how to create instances of Records
-  - rethink if it is nessessary to extend AbstractRecord, what about just implementing Record?
-  - move all javaassist generated code to export implementation. Will make it possible to implement logic in setters and getters
+  - cannot create instances of inner class records
+  - Direction => Align
+  - Use FixedFormatRecord annotation to append padding chars in the end of the line.
+  - see if it is possible to hook into property accessors using javassist. This could eleminate the use of
 
   Site
 ------------------------------------------

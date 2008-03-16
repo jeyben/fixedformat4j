@@ -6,15 +6,23 @@
 
 Fixedformat4j
 
-
-
-  Today many applications integrate with legacy mainframe systems build upon fixed formatted text files as the protocol for interchanging data.
+  Many applications come across these fixed formatted files when using EDI to interchange data. Even though EDI also
+  supports a XML format the wast majority still uses flat text files - according to wikipedia.
 
   Fixedformat4j is an easy to use Java framework for working with these kind of fixed formatted text files. By annotating
   your code you can setup the offsets and format for your data when reading/writing to and from fixed format files.
 
-  Fixedformat4j handles many datatypes like, String, Integer, Float, Date, Boolean, Character etc. out-of-the-box,
-  and it is straight forward to plugin your own formatter.
+  Fixedformat4j handles the following build in datatypes:
+  * String
+  * Character
+  * Long
+  * Integer
+  * Double
+  * Float
+  * Date
+  * Boolean
+
+  At the same time it is straight forward to write and plugin your own formatters for custom datatypes.
 
 * Getting started
 
@@ -37,4 +45,6 @@ public abstract class MyRecord implements Record {
 MyFieldRecord record = (MyFieldRecord) RecordFactory.createInstance(MyFieldRecord.class);
 ...
 +--
+
+Read the 5 minutes tuttorial on how to read and write fixed formatted files.
 

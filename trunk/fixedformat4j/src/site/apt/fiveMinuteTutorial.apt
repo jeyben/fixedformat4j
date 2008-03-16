@@ -1,0 +1,17 @@
+  ------
+  A Java API for working with fixed formatted textfiles
+  ------
+  Jacob von Eyben
+  ------
+
+5 minute tutorial
+
+  This tutorial will demonstrate how easy it is to read and write in fixed format using fixedformat4j.
+
+* Reading and writing using build in datatypes.
+  using basic data types
+
++--
+TYPE      00000123.45T2008-10-20Some text
+TYPE1     2008-10-21
++--

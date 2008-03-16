@@ -25,4 +25,8 @@ public class RecordFactoryException extends RuntimeException {
   public RecordFactoryException(String s) {
     super(s);
   }
+
+  public RecordFactoryException(String s, Throwable throwable) {
+    super(s, throwable);    //To change body of overridden methods use File | Settings | File Templates.
+  }
 }

@@ -28,14 +28,14 @@ import java.lang.annotation.ElementType;
  */
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.FIELD})
+@Target({ElementType.TYPE})
 public @interface FixedFormatRecord {
 
   /**
    * The fixed length of the record. It means that the record will always be that long padded with {#paddingChar()}'s
    * @return the length of the record. -1 means no fixed length.
    */
-  int fixedLength() default -1;
+  int length() default -1;
 
   /**
    * The char to pad with.

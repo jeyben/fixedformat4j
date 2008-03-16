@@ -40,11 +40,11 @@ public abstract class MyRecord implements Record {
   public abstract void setIntegerData(Integer intValue);
 
   @FixedFormatField(offset = 16, length = 8)
-  @FixedFormatPattern(pattern = "yyyyMMdd")
+  @FixedFormatPattern("yyyyMMdd")
   public abstract void setDateData(Date dateValue);
 
   @FixedFormatField(offset = 16, length = 8)
-  @FixedFormatPattern(pattern = "yyyyMMdd")
+  @FixedFormatPattern("yyyyMMdd")
   public abstract Date getDateData();
 
   @FixedFormatField(offset = 24, length = 1)

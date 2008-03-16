@@ -2,11 +2,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <name>Fixed Format for Java</name>
+  <name>Fixed Format for Java Samples</name>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
 
   <version>1.0-SNAPSHOT</version>
-  <artifactId>fixedformat4j</artifactId>
+  <artifactId>fixedformat4j-samples</artifactId>
   <packaging>jar</packaging>
 
   <inceptionYear>2008</inceptionYear>
@@ -15,8 +15,7 @@
     <url>http://www.ancientprogramming.com</url>
   </organization>
   <description>
-    <![CDATA[The fixedformat4j library provides an an easy way to work with fixed formatted plain text files
-    as you know them from mainframe system etc]]>
+    <![CDATA[A bunch of samples demonstrating the abilities of the fixedformat4j api]]>
   </description>
   <url>http://fixedformat4j.ancientprogramming.com</url>
 
@@ -33,8 +32,8 @@
   </licenses>
 
   <scm>
-    <connection>scm:svn:http://fixedformat4j.googlecode.com/svn/trunk/fixedformat4j</connection>
-    <url>http://code.google.com/p/fixedformat4j/source/browse/trunk/fixedformat4j</url>
+    <connection>scm:svn:http://fixedformat4j.googlecode.com/svn/trunk/samples</connection>
+    <url>http://code.google.com/p/fixedformat4j/source/browse/trunk/samples</url>
   </scm>
 
   <developers>
@@ -61,35 +60,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.1.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>javassist</artifactId>
-      <version>3.6.ga</version>
-    </dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.4</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.14</version>
-      <scope>test</scope>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fixedformat4j</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
@@ -110,7 +83,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
-          <tagBase>https://fixedformat4j.googlecode.com/svn/tags/fixedformat4j</tagBase>
+          <tagBase>https://fixedformat4j.googlecode.com/svn/tags/samples</tagBase>
         </configuration>
       </plugin>
       <plugin>
