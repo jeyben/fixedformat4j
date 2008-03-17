@@ -29,20 +29,42 @@ Fixedformat4j
   To start using Fixedformat4j you only have to create your Record class and use the RecordFactory to get an instance
   of your record.
 
+  A sample Record can be seen here:
+
 +--
 public abstract class MyRecord implements Record {
 
   @FixedFormatField(offset = 1, length = 10)
+  private String stringData;
+
+  @FixedFormatField(offset = 11, length = 8)
+  @FixedFormatPattern("yyyyMMdd")
+  private Date date;
+
   public abstract String getStringData();
 
-  @FixedFormatField(offset = 1, length = 10)
   public abstract void setStringData(String stringValue);
+
+  public abstract Date getDate();
+
+  public abstract void setDate(Date date);
 }
 +--
 
+  The annotations could be placed on the setter and getters as well and the setters and getters
+  (as well as the class) doesn't have to be abstract.
+
+  After the record is created using the RecordFactory you can read and modify the underlying text through the getters and setters:
+
 +--
 ...
-MyFieldRecord record = (MyFieldRecord) RecordFactory.createInstance(MyFieldRecord.class);
+  MyFieldRecord record = RecordFactory.createInstance(MyFieldRecord.class);
+  record.setStringData("some text"); // this will write the text in the offset 1
+  record.setDate(new Date()); // this will write the current date in format yyyyMMdd into offset 11
+
+  // this will read the current date set in the above line, but the time part will be stripped as the data
+  // isn't stored in the string format yyyyMMdd
+  record.getDate();
 ...
 +--
 
