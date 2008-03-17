@@ -35,7 +35,7 @@ public class RecordProxyCreator {
 
   public static final String CONCREATE_CLASS_PREFIX = "_Concrete";
   
-  Class<? extends Record> createProxy(Class<? extends Record> templateClass) throws Exception {
+  <T extends Record> Class<T> createProxy(Class<T> templateClass) throws Exception {
     ClassPool cp = ClassPool.getDefault();
     //Insert the class into the classpool
     cp.insertClassPath(new ClassClassPath(templateClass));

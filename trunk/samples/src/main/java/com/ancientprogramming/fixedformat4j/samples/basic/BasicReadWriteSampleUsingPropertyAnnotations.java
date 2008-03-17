@@ -40,7 +40,7 @@ public class BasicReadWriteSampleUsingPropertyAnnotations {
   public static final String FIXED_RECORD = "A200803150000140050A longer desciption T";
 
   public static void main(String[] args) {
-    FixedRecordReadWriter record = (FixedRecordReadWriter) RecordFactory.createInstance(FixedRecordReadWriter.class, FIXED_RECORD);
+    FixedRecordReadWriter record = RecordFactory.createInstance(FixedRecordReadWriter.class, FIXED_RECORD);
 
     System.out.println("export = " + record.export());
     System.out.println("toString = " + record.toString());
