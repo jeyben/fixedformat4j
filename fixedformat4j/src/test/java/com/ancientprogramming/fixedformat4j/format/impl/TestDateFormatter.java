@@ -15,7 +15,7 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
-import com.ancientprogramming.fixedformat4j.annotation.Direction;
+import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
@@ -34,12 +34,12 @@ public class TestDateFormatter extends TestCase {
   public FixedFormatter formatter = new DateFormatter();
 
   public void testParse() {
-    Assert.assertEquals(getDate(1979, 10, 13), formatter.parse("13101979", new FixedFormatData(8, Direction.RIGHT, ' ', new FixedFormatPatternData("ddMMyyyy"), null, null)));
+    Assert.assertEquals(getDate(1979, 10, 13), formatter.parse("13101979", new FixedFormatData(8, Align.LEFT, ' ', new FixedFormatPatternData("ddMMyyyy"), null, null)));
   }
 
   public void testFormat() {
     String expected = "10032008";
-    Assert.assertEquals(expected, formatter.format(getDate(2008, 3, 10), new FixedFormatData(8, Direction.RIGHT, ' ', new FixedFormatPatternData("ddMMyyyy"), null, null)));
+    Assert.assertEquals(expected, formatter.format(getDate(2008, 3, 10), new FixedFormatData(8, Align.LEFT, ' ', new FixedFormatPatternData("ddMMyyyy"), null, null)));
   }
 
   public Date getDate(int year, int month, int day) {

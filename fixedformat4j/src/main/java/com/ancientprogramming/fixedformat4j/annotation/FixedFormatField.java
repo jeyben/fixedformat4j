@@ -47,9 +47,9 @@ public @interface FixedFormatField {
   int length();
 
   /**
-   * @return The direction of the padding. Defaults to {@link Direction#RIGHT}.
+   * @return The direction of the padding. Defaults to {@link Align#RIGHT}.
    */
-  Direction paddingDirection() default Direction.RIGHT;
+  Align align() default Align.LEFT;
 
   /**
    * The character to pad with if the length is longer than the formatted data

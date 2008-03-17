@@ -46,5 +46,10 @@ MyFieldRecord record = (MyFieldRecord) RecordFactory.createInstance(MyFieldRecor
 ...
 +--
 
-Read the 5 minutes tuttorial on how to read and write fixed formatted files.
+* Tutorials
 
+  * {{{fiveMinutesTutorial.html}5 minutes tutorial}} on how to read and write fixed formatted files using fixedformat4j.
+
+  * Creating custom formatter to handle custom datatypes (TBD)
+
+  * 

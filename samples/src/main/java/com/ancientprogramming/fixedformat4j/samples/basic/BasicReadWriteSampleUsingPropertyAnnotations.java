@@ -17,6 +17,8 @@ package com.ancientprogramming.fixedformat4j.samples.basic;
 
 import com.ancientprogramming.fixedformat4j.record.RecordFactory;
 
+import java.util.Date;
+
 /**
  * This sample demonstrates the basics of the fixedformat4j api
  *
@@ -31,19 +33,25 @@ public class BasicReadWriteSampleUsingPropertyAnnotations {
    * A           = could be a record type
    * 20080316    = the date 2008-03-16
    * 0000140050  = the amount 1400.50
-   * A longer... = A longer description
+   * A longer... = A text description
    * T           = boolean true value
    * </pre>
    */
-  public static final String FIXED_RECORD = "A200803160000140050A longer desciption T";
+  public static final String FIXED_RECORD = "A200803150000140050A longer desciption T";
 
   public static void main(String[] args) {
     FixedRecordReadWriter record = (FixedRecordReadWriter) RecordFactory.createInstance(FixedRecordReadWriter.class, FIXED_RECORD);
 
-    String toString = record.toString();
-    String export = record.export();
+    System.out.println("export = " + record.export());
+    System.out.println("toString = " + record.toString());
 
-    System.out.println("export = " + export);
-    System.out.println("toString = " + toString);
+    record.setAmount(100.45);
+    record.setRecordType('B');
+    record.setOk(false);
+    record.setDescription("Shorter text");
+    record.setDate(new Date());
+
+    System.out.println("export = " + record.export());
+    System.out.println("toString = " + record.toString());
   }
 }

@@ -27,16 +27,16 @@ import java.util.Date;
  */
 public abstract class MyRecord implements Record {
 
-  @FixedFormatField(offset = 1, length = 10, paddingDirection = Direction.LEFT, paddingChar = ' ')
+  @FixedFormatField(offset = 1, length = 10, align = Align.RIGHT, paddingChar = ' ')
   public abstract String getStringData();
 
-  @FixedFormatField(offset = 1, length = 10, paddingDirection = Direction.LEFT, paddingChar = ' ')
+  @FixedFormatField(offset = 1, length = 10, align = Align.RIGHT, paddingChar = ' ')
   public abstract void setStringData(String stringValue);
 
-  @FixedFormatField(offset = 11, length = 5, paddingDirection = Direction.LEFT, paddingChar = '0')
+  @FixedFormatField(offset = 11, length = 5, align = Align.RIGHT, paddingChar = '0')
   public abstract Integer getIntegerData();
 
-  @FixedFormatField(offset = 11, length = 5, paddingDirection = Direction.LEFT, paddingChar = '0')
+  @FixedFormatField(offset = 11, length = 5, align = Align.RIGHT, paddingChar = '0')
   public abstract void setIntegerData(Integer intValue);
 
   @FixedFormatField(offset = 16, length = 8)
@@ -62,25 +62,25 @@ public abstract class MyRecord implements Record {
   public abstract Boolean getBooleanData();
 
 
-  @FixedFormatField(offset = 26, length = 4, paddingDirection = Direction.LEFT, paddingChar = '0')
+  @FixedFormatField(offset = 26, length = 4, align = Align.RIGHT, paddingChar = '0')
   public abstract Long getLongData();
 
-  @FixedFormatField(offset = 26, length = 4, paddingDirection = Direction.LEFT, paddingChar = '0')
+  @FixedFormatField(offset = 26, length = 4, align = Align.RIGHT, paddingChar = '0')
   public abstract void setLongData(Long longValue);
 
-  @FixedFormatField(offset = 30, length = 10, paddingDirection = Direction.LEFT, paddingChar = '0')
+  @FixedFormatField(offset = 30, length = 10, align = Align.RIGHT, paddingChar = '0')
   @FixedFormatDecimal
   public abstract Double getDoubleData();
 
-  @FixedFormatField(offset = 30, length = 10, paddingDirection = Direction.LEFT, paddingChar = '0')
+  @FixedFormatField(offset = 30, length = 10, align = Align.RIGHT, paddingChar = '0')
   @FixedFormatDecimal
   public abstract void setDoubleData(Double longValue);
 
-  @FixedFormatField(offset = 40, length = 10, paddingDirection = Direction.LEFT, paddingChar = '0')
+  @FixedFormatField(offset = 40, length = 10, align = Align.RIGHT, paddingChar = '0')
   @FixedFormatDecimal
   public abstract Float getFloatData();
 
-  @FixedFormatField(offset = 40, length = 10, paddingDirection = Direction.LEFT, paddingChar = '0')
+  @FixedFormatField(offset = 40, length = 10, align = Align.RIGHT, paddingChar = '0')
   @FixedFormatDecimal
   public abstract void setFloatData(Float longValue);
 

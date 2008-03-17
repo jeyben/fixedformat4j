@@ -15,7 +15,7 @@
  */
 package com.ancientprogramming.fixedformat4j.format;
 
-import com.ancientprogramming.fixedformat4j.annotation.Direction;
+import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
@@ -29,15 +29,15 @@ import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 public class FixedFormatData {
 
   private int length;
-  private Direction paddingDirection;
+  private Align alignment;
   private char paddingChar;
   private FixedFormatPatternData fixedFormatPatternData;
   private FixedFormatBooleanData fixedFormatBooleanData;
   private FixedFormatDecimalData fixedFormatDecimalData;
 
-  public FixedFormatData(int length, Direction paddingDirection, char paddingChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatDecimalData fixedFormatDecimalData) {
+  public FixedFormatData(int length, Align alignment, char paddingChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatDecimalData fixedFormatDecimalData) {
     this.length = length;
-    this.paddingDirection = paddingDirection;
+    this.alignment = alignment;
     this.paddingChar = paddingChar;
     this.fixedFormatPatternData = fixedFormatPatternData;
     this.fixedFormatBooleanData = fixedFormatBooleanData;
@@ -48,8 +48,8 @@ public class FixedFormatData {
     return length;
   }
 
-  public Direction getPaddingDirection() {
-    return paddingDirection;
+  public Align getPaddingDirection() {
+    return alignment;
   }
 
   public char getPaddingChar() {
@@ -72,7 +72,7 @@ public class FixedFormatData {
   public String toString() {
     return "FixedFormatData{" +
         "length=" + length +
-        ", paddingDirection=" + paddingDirection +
+        ", alignment=" + alignment +
         ", paddingChar=" + paddingChar +
         ", fixedFormatPatternData=" + fixedFormatPatternData +
         ", fixedFormatBooleanData=" + fixedFormatBooleanData +

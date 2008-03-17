@@ -15,7 +15,7 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
-import com.ancientprogramming.fixedformat4j.annotation.Direction;
+import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import junit.framework.Assert;
@@ -30,7 +30,7 @@ public class TestIntegerFormatter extends TestCase {
   private FixedFormatter formatter = new IntegerFormatter();
 
   public void testParse() {
-    FixedFormatData data = new FixedFormatData(10, Direction.RIGHT, ' ', null, null, null);
+    FixedFormatData data = new FixedFormatData(10, Align.LEFT, ' ', null, null, null);
     String input = "100       ";
     Object parseResult = formatter.parse(input, data);
     Assert.assertEquals(Integer.class, parseResult.getClass());
@@ -38,7 +38,7 @@ public class TestIntegerFormatter extends TestCase {
   }
 
   public void testFormat() {
-    FixedFormatData data = new FixedFormatData(10, Direction.RIGHT, ' ', null, null, null);
+    FixedFormatData data = new FixedFormatData(10, Align.LEFT, ' ', null, null, null);
     Integer input = 100;
     String expected = "100       ";
 
