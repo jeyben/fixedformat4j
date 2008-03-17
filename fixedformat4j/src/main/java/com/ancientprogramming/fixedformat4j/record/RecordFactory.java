@@ -40,19 +40,19 @@ public class RecordFactory {
     //not instanciatable
   }
 
-  public static synchronized Record createInstance(Class<? extends Record> clazz, String recordContent) throws RecordFactoryException {
+  public static synchronized <T extends Record> T createInstance(Class<T> clazz, String recordContent) throws RecordFactoryException {
     return createInstance(clazz, new StringBuffer(recordContent));
   }
 
-  public static synchronized Record createInstance(Class<? extends Record> clazz, StringBuffer recordContent) throws RecordFactoryException {
-    Class<? extends Record> recordClass;
+  public static synchronized <T extends Record> T  createInstance(Class<T> clazz, StringBuffer recordContent) throws RecordFactoryException {
+    Class<T> recordClass;
     String classname = clazz.getName() + RecordProxyCreator.CONCREATE_CLASS_PREFIX;
     try {
-      recordClass = (Class<? extends Record>) RecordFactory.class.getClassLoader().loadClass(classname);
+      recordClass = (Class<T>) RecordFactory.class.getClassLoader().loadClass(classname);
     } catch (ClassNotFoundException e) {
       try {
-        recordClass = new RecordProxyCreator().createProxy(clazz);
-        recordClass = (Class<? extends Record>) RecordFactory.class.getClassLoader().loadClass(classname);
+        new RecordProxyCreator().createProxy(clazz);
+        recordClass = (Class<T>) RecordFactory.class.getClassLoader().loadClass(classname);
       } catch (Exception e1) {
         throw new RecordFactoryException(String.format("Could not create proxy for class[%s]", clazz), e1);
       }
@@ -60,18 +60,18 @@ public class RecordFactory {
     return createRecord(recordClass, recordContent);
   }
 
-  public static synchronized Record createInstance(Class<? extends Record> clazz) {
+  public static synchronized <T extends Record >T createInstance(Class<T> clazz) {
     return createInstance(clazz, (StringBuffer) null);
 
   }
 
 
 
-  static Record createRecord(Class<? extends Record> c, StringBuffer recordContent) {
+  static <T> T createRecord(Class<T> c, StringBuffer recordContent) {
     if (recordContent == null) {
       recordContent = new StringBuffer("");
     }
-    Constructor<? extends Record> constructor = null;
+    Constructor<T> constructor;
     try {
       constructor = c.getConstructor(StringBuffer.class);
       return constructor.newInstance(recordContent);

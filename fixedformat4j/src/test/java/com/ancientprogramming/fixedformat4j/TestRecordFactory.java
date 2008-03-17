@@ -35,8 +35,7 @@ import org.apache.commons.lang.time.DateUtils;
 public class TestRecordFactory extends TestCase {
 
   public void testRecordFactory() throws Exception{
-    MyRecord record = (MyRecord) RecordFactory.createInstance(MyRecord.class);
-    record = (MyRecord) RecordFactory.createInstance(MyRecord.class);
+    MyRecord record = RecordFactory.createInstance(MyRecord.class);
 
     //test that null is returned in case we are out of bound
     Assert.assertNull(record.getStringData());
@@ -85,7 +84,7 @@ public class TestRecordFactory extends TestCase {
   }
 
   public void testFieldRecord() throws Exception {
-    MyFieldRecord record = (MyFieldRecord) RecordFactory.createInstance(MyFieldRecord.class);
+    MyFieldRecord record = RecordFactory.createInstance(MyFieldRecord.class);
     record.setIntegerData(123);
     record.setStringData("something");
     Assert.assertEquals("0000000123something ", record.export());
