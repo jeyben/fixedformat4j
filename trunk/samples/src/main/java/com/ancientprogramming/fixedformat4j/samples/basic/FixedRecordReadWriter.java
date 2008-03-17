@@ -33,7 +33,7 @@ public abstract class FixedRecordReadWriter implements Record {
   @FixedFormatPattern("yyyyMMdd")
   private Date date;
 
-  @FixedFormatField(offset = 10, length = 10, paddingChar = '0', align = Align.LEFT)
+  @FixedFormatField(offset = 10, length = 10, paddingChar = '0', align = Align.RIGHT)
   @FixedFormatDecimal(useDecimalDelimiter = false)
   private Double amount;
 

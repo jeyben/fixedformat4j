@@ -15,7 +15,7 @@
 +--
 A200803150000140050A longer desciption T
 +--
-  A description of the fields is like this:
+  A description of the fields:
 
   * A           = Character describing the record type
 
@@ -42,7 +42,7 @@ public abstract class FixedRecordReadWriter implements Record {
   @FixedFormatPattern("yyyyMMdd")
   private Date date;
 
-  @FixedFormatField(offset = 10, length = 10, paddingChar = '0', alignment = Direction.LEFT)
+  @FixedFormatField(offset = 10, length = 10, paddingChar = '0', align = Align.RIGHT)
   @FixedFormatDecimal(useDecimalDelimiter = false)
   private Double amount;
 
@@ -136,8 +136,6 @@ public class BasicReadWriteSampleUsingPropertyAnnotations {
 +--
 export = A200803150000140050A longer desciption T
 toString = FixedRecordReadWriter{recordType=A, date=Sat Mar 15 00:00:00 CET 2008, amount=1400.5, description='A longer desciption', ok=true}
-export = B200803160000010045Shorter text        F
-toString = FixedRecordReadWriter{recordType=B, date=Sun Mar 16 00:00:00 CET 2008, amount=100.45, description='Shorter text', ok=false}
+export = B200803170000010045Shorter text        F
+toString = FixedRecordReadWriter{recordType=B, date=Mon Mar 17 00:00:00 CET 2008, amount=100.45, description='Shorter text', ok=false}
 +--
-
-If you 
