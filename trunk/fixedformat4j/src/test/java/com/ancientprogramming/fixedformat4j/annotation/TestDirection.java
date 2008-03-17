@@ -26,36 +26,36 @@ import junit.framework.TestCase;
 public class TestDirection extends TestCase {
 
   public void testLeftPadding() {
-    assertEquals(" ", Direction.LEFT.apply(null, 1, ' '));
-    assertEquals(" ", Direction.LEFT.apply(" ", 1, ' '));
-    assertEquals("r", Direction.LEFT.apply("foobar", 1, ' '));
-    assertEquals("bar", Direction.LEFT.apply("foobar", 3, ' '));
-    assertEquals("foobar", Direction.LEFT.apply("foobar", 6, ' '));
-    assertEquals(" foobar", Direction.LEFT.apply("foobar", 7, ' '));
-    assertEquals("__foobar", Direction.LEFT.apply("foobar", 8, '_'));
+    assertEquals(" ", Align.RIGHT.apply(null, 1, ' '));
+    assertEquals(" ", Align.RIGHT.apply(" ", 1, ' '));
+    assertEquals("r", Align.RIGHT.apply("foobar", 1, ' '));
+    assertEquals("bar", Align.RIGHT.apply("foobar", 3, ' '));
+    assertEquals("foobar", Align.RIGHT.apply("foobar", 6, ' '));
+    assertEquals(" foobar", Align.RIGHT.apply("foobar", 7, ' '));
+    assertEquals("__foobar", Align.RIGHT.apply("foobar", 8, '_'));
   }
 
   public void testLeftRemove() {
-    assertEquals("", Direction.LEFT.remove(null, ' '));
-    assertEquals("", Direction.LEFT.remove(" ", ' '));
-    assertEquals("foobar  ", Direction.LEFT.remove("foobar  ", ' '));     
-    assertEquals("foobar", Direction.LEFT.remove("  foobar", ' '));
+    assertEquals("", Align.RIGHT.remove(null, ' '));
+    assertEquals("", Align.RIGHT.remove(" ", ' '));
+    assertEquals("foobar  ", Align.RIGHT.remove("foobar  ", ' '));
+    assertEquals("foobar", Align.RIGHT.remove("  foobar", ' '));
   }
 
   public void testRightPadding() {
-    assertEquals(" ", Direction.RIGHT.apply(null, 1, ' '));
-    assertEquals(" ", Direction.RIGHT.apply(" ", 1, ' '));
-    assertEquals("f", Direction.RIGHT.apply("foobar", 1, ' '));
-    assertEquals("foo", Direction.RIGHT.apply("foobar", 3, ' '));
-    assertEquals("foobar", Direction.RIGHT.apply("foobar", 6, ' '));
-    assertEquals("foobar ", Direction.RIGHT.apply("foobar", 7, ' '));
-    assertEquals("foobar__", Direction.RIGHT.apply("foobar", 8, '_'));
+    assertEquals(" ", Align.LEFT.apply(null, 1, ' '));
+    assertEquals(" ", Align.LEFT.apply(" ", 1, ' '));
+    assertEquals("f", Align.LEFT.apply("foobar", 1, ' '));
+    assertEquals("foo", Align.LEFT.apply("foobar", 3, ' '));
+    assertEquals("foobar", Align.LEFT.apply("foobar", 6, ' '));
+    assertEquals("foobar ", Align.LEFT.apply("foobar", 7, ' '));
+    assertEquals("foobar__", Align.LEFT.apply("foobar", 8, '_'));
   }
 
   public void testRightRemove() {
-    assertEquals("", Direction.RIGHT.remove(null, ' '));
-    assertEquals("", Direction.RIGHT.remove(" ", ' '));
-    assertEquals("foobar", Direction.RIGHT.remove("foobar  ", ' '));
-    assertEquals("  foobar", Direction.RIGHT.remove("  foobar", ' '));
+    assertEquals("", Align.LEFT.remove(null, ' '));
+    assertEquals("", Align.LEFT.remove(" ", ' '));
+    assertEquals("foobar", Align.LEFT.remove("foobar  ", ' '));
+    assertEquals("  foobar", Align.LEFT.remove("  foobar", ' '));
   }
 }

@@ -15,7 +15,7 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
-import com.ancientprogramming.fixedformat4j.annotation.Direction;
+import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import junit.framework.TestCase;
@@ -29,12 +29,12 @@ public class TestCharacterFormatter extends TestCase {
   FixedFormatter formatter = new CharacterFormatter();
 
   public void testParse() {
-    assertEquals('J', formatter.parse("J", new FixedFormatData(1, Direction.RIGHT, ' ', null, null, null)));
-    assertEquals('J', formatter.parse("JN", new FixedFormatData(2, Direction.RIGHT, ' ', null, null, null)));
-    assertEquals(null, formatter.parse("", new FixedFormatData(0, Direction.RIGHT, ' ', null, null, null)));
+    assertEquals('J', formatter.parse("J", new FixedFormatData(1, Align.LEFT, ' ', null, null, null)));
+    assertEquals('J', formatter.parse("JN", new FixedFormatData(2, Align.LEFT, ' ', null, null, null)));
+    assertEquals(null, formatter.parse("", new FixedFormatData(0, Align.LEFT, ' ', null, null, null)));
   }
 
   public void testFormat() {
-    assertEquals("J", formatter.format('J', new FixedFormatData(1, Direction.RIGHT, ' ', null, null, null)));
+    assertEquals("J", formatter.format('J', new FixedFormatData(1, Align.LEFT, ' ', null, null, null)));
   }
 }

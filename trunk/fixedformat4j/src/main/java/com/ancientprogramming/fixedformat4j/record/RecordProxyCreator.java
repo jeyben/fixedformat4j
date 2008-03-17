@@ -199,14 +199,14 @@ public class RecordProxyCreator {
 
   private String getFixedFormatDataSrc(FixedFormatField fixedFormatFieldAnno, FixedFormatPattern patternAnno, FixedFormatBoolean booleanAnno, FixedFormatDecimal decimalAnno) throws NotFoundException {
     int length = fixedFormatFieldAnno.length();
-    Direction direction = fixedFormatFieldAnno.paddingDirection();
+    Align align = fixedFormatFieldAnno.align();
     String paddingChar = "'" + fixedFormatFieldAnno.paddingChar() + "'";
     String patternDataSrc = getPatternDataSrc(patternAnno);
     String booleanDataSrc = getBooleanDataSrc(booleanAnno);
     String decimalDataSrc = getDecimalDataSrc(decimalAnno);
     String fixedFormatDataSrc = "new com.ancientprogramming.fixedformat4j.format.FixedFormatData(" +
         length + ", " +
-        direction.getClass().getName() + "." + direction.name() + ", " +
+        align.getClass().getName() + "." + align.name() + ", " +
         paddingChar + ", " +
         patternDataSrc + ", " +
         booleanDataSrc + ", " +

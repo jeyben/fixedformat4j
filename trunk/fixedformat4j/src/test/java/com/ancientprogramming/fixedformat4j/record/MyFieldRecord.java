@@ -16,7 +16,7 @@
 package com.ancientprogramming.fixedformat4j.record;
 
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatField;
-import com.ancientprogramming.fixedformat4j.annotation.Direction;
+import com.ancientprogramming.fixedformat4j.annotation.Align;
 
 /**
  * todo: comment needed
@@ -26,7 +26,7 @@ import com.ancientprogramming.fixedformat4j.annotation.Direction;
  */
 public abstract class MyFieldRecord implements Record {
 
-  @FixedFormatField(offset = 1, length = 10, paddingChar = '0', paddingDirection = Direction.LEFT)
+  @FixedFormatField(offset = 1, length = 10, paddingChar = '0', align = Align.RIGHT)
   private Integer integerData;
 
 

@@ -15,7 +15,7 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
-import com.ancientprogramming.fixedformat4j.annotation.Direction;
+import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
@@ -33,17 +33,17 @@ public class TestBooleanFormatter extends TestCase {
   FixedFormatter formatter = new BooleanFormatter();
 
   public void testParse() {
-    assertEquals(true, formatter.parse("T", new FixedFormatData(1, Direction.RIGHT, ' ', null, new FixedFormatBooleanData("T", "F"), null)));
-    assertEquals(false, formatter.parse("F ", new FixedFormatData(2, Direction.RIGHT, ' ', null, new FixedFormatBooleanData("T", "F"), null)));
+    assertEquals(true, formatter.parse("T", new FixedFormatData(1, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null)));
+    assertEquals(false, formatter.parse("F ", new FixedFormatData(2, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null)));
     try {
-      formatter.parse("", new FixedFormatData(0, Direction.RIGHT, ' ', null, new FixedFormatBooleanData("T", "F"), null));
+      formatter.parse("", new FixedFormatData(0, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null));
     } catch (FixedFormatException e) {
       //expected as string is empty
     }
   }
 
   public void testFormat() {
-    assertEquals("T", formatter.format(true, new FixedFormatData(1, Direction.RIGHT, ' ', null, new FixedFormatBooleanData("T", "F"), null)));
-    assertEquals("F", formatter.format(false, new FixedFormatData(1, Direction.RIGHT, ' ', null, new FixedFormatBooleanData("T", "F"), null)));
+    assertEquals("T", formatter.format(true, new FixedFormatData(1, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null)));
+    assertEquals("F", formatter.format(false, new FixedFormatData(1, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null)));
   }
 }
