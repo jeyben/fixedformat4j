@@ -7,12 +7,17 @@
     <!--<href>http://fixedformat4j.ancientprogramming.com/</href>-->
   </bannerLeft>
 
+
   <body>
+    <links>
+      <item name="Ancientprogramming Blog" href="http://www.ancientprogramming.com"/>
+    </links>
+
     <menu name="Overview">
       <item name="Home" href="/index.html"/>
       <item name="5 minutes tutorial" href="/fiveMinutesTutorial.html"/>
     </menu>
-    
+
     <menu ref="reports"/>
   </body>
 </project>
