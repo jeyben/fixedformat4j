@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * todo: comment needed
+ * todo: delete when logic is copied to manager
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0

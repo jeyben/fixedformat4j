@@ -33,17 +33,6 @@ public class FixedFormatProcessor {
 
   private static final Log LOG = LogFactory.getLog(FixedFormatProcessor.class);
 
-  public static void setData(StringBuffer record, FixedFormatData fixedFormatData, FixedFormatMetadata metadata, Object value) {
-    FixedFormatter formatter = getFixedFormatterInstance(metadata.getFormatter(), metadata);
-    assertIsPatternRequired(fixedFormatData, metadata, formatter);
-    assertIsBooleanRequired(fixedFormatData, metadata, formatter);
-    assertIsDecimalRequired(fixedFormatData, metadata, formatter);
-    String formattedData = formatter.format(value, fixedFormatData);
-    insertData(record, formattedData, fixedFormatData, metadata);
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("record after insert[" + record.toString() + "]");
-    }
-  }
 
   public static Object getData(StringBuffer record, FixedFormatData fixedFormatData, FixedFormatMetadata metadata) {
     FixedFormatter formatter = getFixedFormatterInstance(metadata.getFormatter(), metadata);
