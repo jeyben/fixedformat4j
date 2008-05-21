@@ -16,7 +16,7 @@
 package com.ancientprogramming.fixedformat4j.record;
 
 /**
- * Exception thrown in cases something bad happens in the {@link RecordFactory}
+ * Exception thrown in cases something bad happens in the {@link com.ancientprogramming.fixedformat4j.record.FixedFormatManager}
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0

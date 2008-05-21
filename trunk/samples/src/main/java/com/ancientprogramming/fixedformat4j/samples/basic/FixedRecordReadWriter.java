@@ -23,34 +23,31 @@ import java.util.Date;
  * Using property annotations we only have to define our annotations once for both reading and writing
  */
 @Record(length = 41)
-public abstract class FixedRecordReadWriter implements com.ancientprogramming.fixedformat4j.record.Record {
+public abstract class FixedRecordReadWriter {
 
-  @FixedFormatField(offset = 1, length = 1)
   private Character recordType;
 
-  @FixedFormatField(offset = 2, length = 8)
-  @FixedFormatPattern("yyyyMMdd")
   private Date date;
 
-  @FixedFormatField(offset = 10, length = 10, paddingChar = '0', align = Align.RIGHT)
-  @FixedFormatDecimal(useDecimalDelimiter = false)
   private Double amount;
 
-  @FixedFormatField(offset = 20, length = 20)
   private String description;
 
-  @FixedFormatField(offset = 40, length = 1)
-  @FixedFormatBoolean
   private Boolean ok;
 
+
+  @FixedFormatField(offset = 1, length = 1)
   public Character getRecordType() {
     return recordType;
   }
+
 
   public void setRecordType(Character recordType) {
     this.recordType = recordType;
   }
 
+  @FixedFormatField(offset = 2, length = 8)
+  @FixedFormatPattern("yyyyMMdd")
   public Date getDate() {
     return date;
   }
@@ -59,6 +56,8 @@ public abstract class FixedRecordReadWriter implements com.ancientprogramming.fi
     this.date = date;
   }
 
+  @FixedFormatField(offset = 10, length = 10, paddingChar = '0', align = Align.RIGHT)
+  @FixedFormatDecimal(useDecimalDelimiter = false)
   public Double getAmount() {
     return amount;
   }
@@ -67,6 +66,7 @@ public abstract class FixedRecordReadWriter implements com.ancientprogramming.fi
     this.amount = amount;
   }
 
+  @FixedFormatField(offset = 20, length = 20)
   public String getDescription() {
     return description;
   }
@@ -75,6 +75,8 @@ public abstract class FixedRecordReadWriter implements com.ancientprogramming.fi
     this.description = description;
   }
 
+  @FixedFormatField(offset = 40, length = 1)
+  @FixedFormatBoolean
   public Boolean getOk() {
     return ok;
   }
