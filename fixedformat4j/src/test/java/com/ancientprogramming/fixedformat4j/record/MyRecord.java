@@ -25,64 +25,99 @@ import java.util.Date;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public abstract class MyRecord implements Record {
+@com.ancientprogramming.fixedformat4j.annotation.Record
+public class MyRecord {
+
+  private String stringData;
+  private Integer integerData;
+  private Date dateData;
+  private Character charData;
+  private Boolean booleanData;
+  private Long longData;
+  private Double doubleData;
+  private Float floatData;
+
 
   @FixedFormatField(offset = 1, length = 10, align = Align.RIGHT, paddingChar = ' ')
-  public abstract String getStringData();
+  public String getStringData() {
+    return stringData;
+  }
 
-  @FixedFormatField(offset = 1, length = 10, align = Align.RIGHT, paddingChar = ' ')
-  public abstract void setStringData(String stringValue);
+  public void setStringData(String stringData) {
+    this.stringData = stringData;
+  }
+
+
+
 
   @FixedFormatField(offset = 11, length = 5, align = Align.RIGHT, paddingChar = '0')
-  public abstract Integer getIntegerData();
+  public Integer getIntegerData() {
+    return integerData;
+  }
 
-  @FixedFormatField(offset = 11, length = 5, align = Align.RIGHT, paddingChar = '0')
-  public abstract void setIntegerData(Integer intValue);
+  public void setIntegerData(Integer integerData) {
+    this.integerData = integerData;
+  }
+
+
 
   @FixedFormatField(offset = 16, length = 8)
   @FixedFormatPattern("yyyyMMdd")
-  public abstract void setDateData(Date dateValue);
+  public Date getDateData() {
+    return dateData;
+  }
 
-  @FixedFormatField(offset = 16, length = 8)
-  @FixedFormatPattern("yyyyMMdd")
-  public abstract Date getDateData();
+  public void setDateData(Date dateData) {
+    this.dateData = dateData;
+  }
 
   @FixedFormatField(offset = 24, length = 1)
-  public abstract void setCharacterData(Character characterValue);
+  public Character getCharData() {
+    return charData;
+  }
 
-  @FixedFormatField(offset = 24, length = 1)
-  public abstract Character getCharacterData();
+  public void setCharData(Character charData) {
+    this.charData = charData;
+  }
 
   @FixedFormatField(offset = 25, length = 1)
   @FixedFormatBoolean
-  public abstract void setBooleanData(Boolean BooleanValue);
+  public Boolean getBooleanData() {
+    return booleanData;
+  }
 
-  @FixedFormatField(offset = 25, length = 1)
-  @FixedFormatBoolean
-  public abstract Boolean getBooleanData();
-
-
-  @FixedFormatField(offset = 26, length = 4, align = Align.RIGHT, paddingChar = '0')
-  public abstract Long getLongData();
+  public void setBooleanData(Boolean booleanData) {
+    this.booleanData = booleanData;
+  }
 
   @FixedFormatField(offset = 26, length = 4, align = Align.RIGHT, paddingChar = '0')
-  public abstract void setLongData(Long longValue);
+  public Long getLongData() {
+    return longData;
+  }
+
+  public void setLongData(Long longData) {
+    this.longData = longData;
+  }
 
   @FixedFormatField(offset = 30, length = 10, align = Align.RIGHT, paddingChar = '0')
   @FixedFormatDecimal
-  public abstract Double getDoubleData();
+  public Double getDoubleData() {
+    return doubleData;
+  }
 
-  @FixedFormatField(offset = 30, length = 10, align = Align.RIGHT, paddingChar = '0')
-  @FixedFormatDecimal
-  public abstract void setDoubleData(Double longValue);
-
-  @FixedFormatField(offset = 40, length = 10, align = Align.RIGHT, paddingChar = '0')
-  @FixedFormatDecimal
-  public abstract Float getFloatData();
+  public void setDoubleData(Double doubleData) {
+    this.doubleData = doubleData;
+  }
 
   @FixedFormatField(offset = 40, length = 10, align = Align.RIGHT, paddingChar = '0')
-  @FixedFormatDecimal
-  public abstract void setFloatData(Float longValue);
+  @FixedFormatDecimal  
+  public Float getFloatData() {
+    return floatData;
+  }
+
+  public void setFloatData(Float floatData) {
+    this.floatData = floatData;
+  }
 
 
 }

@@ -16,15 +16,14 @@
 package com.ancientprogramming.fixedformat4j.samples.basic;
 
 import com.ancientprogramming.fixedformat4j.annotation.*;
-import com.ancientprogramming.fixedformat4j.record.Record;
 
 import java.util.Date;
 
 /**
  * Using property annotations we only have to define our annotations once for both reading and writing
  */
-@FixedFormatRecord(length = 41)
-public abstract class FixedRecordReadWriter implements Record {
+@Record(length = 41)
+public abstract class FixedRecordReadWriter implements com.ancientprogramming.fixedformat4j.record.Record {
 
   @FixedFormatField(offset = 1, length = 1)
   private Character recordType;
