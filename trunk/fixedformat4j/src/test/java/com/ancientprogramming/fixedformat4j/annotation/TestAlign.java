@@ -23,7 +23,7 @@ import junit.framework.TestCase;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public class TestDirection extends TestCase {
+public class TestAlign extends TestCase {
 
   public void testLeftPadding() {
     assertEquals(" ", Align.RIGHT.apply(null, 1, ' '));

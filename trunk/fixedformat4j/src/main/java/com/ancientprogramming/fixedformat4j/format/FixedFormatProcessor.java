@@ -72,7 +72,7 @@ public class FixedFormatProcessor {
     record.replace(offset, offset + length, formattedData);
   }
 
-  static String fetchData(StringBuffer record, FixedFormatData fixedFormatData, FixedFormatMetadata metadata) {
+  public static String fetchData(StringBuffer record, FixedFormatData fixedFormatData, FixedFormatMetadata metadata) {
     String result;
     int offset = metadata.getOffset() - 1;
     int length = fixedFormatData.getLength();
@@ -86,7 +86,7 @@ public class FixedFormatProcessor {
     return result;
   }
 
-  static FixedFormatter getFixedFormatterInstance(Class<? extends FixedFormatter> formatterClass, FixedFormatMetadata metadata) {
+  public static FixedFormatter getFixedFormatterInstance(Class<? extends FixedFormatter> formatterClass, FixedFormatMetadata metadata) {
     FixedFormatter formatter = getFixedFormatterInstance(formatterClass, metadata.getClass(), metadata);
     if (formatter == null) {
       formatter = getFixedFormatterInstance(formatterClass, null, null);
@@ -97,7 +97,7 @@ public class FixedFormatProcessor {
     return formatter;
   }
 
-  static FixedFormatter getFixedFormatterInstance(Class<? extends FixedFormatter> formatterClass, Class paramType, FixedFormatMetadata paramValue) {
+  public static FixedFormatter getFixedFormatterInstance(Class<? extends FixedFormatter> formatterClass, Class paramType, FixedFormatMetadata paramValue) {
     FixedFormatter result;
     if (paramType != null && paramValue != null) {
       try {
