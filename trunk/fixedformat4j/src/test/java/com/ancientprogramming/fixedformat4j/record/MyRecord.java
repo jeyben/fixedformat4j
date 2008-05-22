@@ -25,7 +25,7 @@ import java.util.Date;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-@com.ancientprogramming.fixedformat4j.annotation.Record
+@Record
 public class MyRecord {
 
   private String stringData;
@@ -38,7 +38,7 @@ public class MyRecord {
   private Float floatData;
 
 
-  @FixedFormatField(offset = 1, length = 10, align = Align.RIGHT, paddingChar = ' ')
+  @Field(offset = 1, length = 10, align = Align.RIGHT, paddingChar = ' ')
   public String getStringData() {
     return stringData;
   }
@@ -50,7 +50,7 @@ public class MyRecord {
 
 
 
-  @FixedFormatField(offset = 11, length = 5, align = Align.RIGHT, paddingChar = '0')
+  @Field(offset = 11, length = 5, align = Align.RIGHT, paddingChar = '0')
   public Integer getIntegerData() {
     return integerData;
   }
@@ -61,7 +61,7 @@ public class MyRecord {
 
 
 
-  @FixedFormatField(offset = 16, length = 8)
+  @Field(offset = 16, length = 8)
   @FixedFormatPattern("yyyyMMdd")
   public Date getDateData() {
     return dateData;
@@ -71,7 +71,7 @@ public class MyRecord {
     this.dateData = dateData;
   }
 
-  @FixedFormatField(offset = 24, length = 1)
+  @Field(offset = 24, length = 1)
   public Character getCharData() {
     return charData;
   }
@@ -80,7 +80,7 @@ public class MyRecord {
     this.charData = charData;
   }
 
-  @FixedFormatField(offset = 25, length = 1)
+  @Field(offset = 25, length = 1)
   @FixedFormatBoolean
   public Boolean getBooleanData() {
     return booleanData;
@@ -90,7 +90,7 @@ public class MyRecord {
     this.booleanData = booleanData;
   }
 
-  @FixedFormatField(offset = 26, length = 4, align = Align.RIGHT, paddingChar = '0')
+  @Field(offset = 26, length = 4, align = Align.RIGHT, paddingChar = '0')
   public Long getLongData() {
     return longData;
   }
@@ -99,7 +99,7 @@ public class MyRecord {
     this.longData = longData;
   }
 
-  @FixedFormatField(offset = 30, length = 10, align = Align.RIGHT, paddingChar = '0')
+  @Field(offset = 30, length = 10, align = Align.RIGHT, paddingChar = '0')
   @FixedFormatDecimal
   public Double getDoubleData() {
     return doubleData;
@@ -109,7 +109,7 @@ public class MyRecord {
     this.doubleData = doubleData;
   }
 
-  @FixedFormatField(offset = 40, length = 10, align = Align.RIGHT, paddingChar = '0')
+  @Field(offset = 40, length = 10, align = Align.RIGHT, paddingChar = '0')
   @FixedFormatDecimal  
   public Float getFloatData() {
     return floatData;

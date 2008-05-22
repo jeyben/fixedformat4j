@@ -24,7 +24,7 @@ import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal;
 
 /**
- * Processor responsible for processing {@link com.ancientprogramming.fixedformat4j.annotation.FixedFormatField} annotations
+ * Processor responsible for processing {@link com.ancientprogramming.fixedformat4j.annotation.Field} annotations
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0

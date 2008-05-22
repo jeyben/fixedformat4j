@@ -36,7 +36,7 @@ public abstract class FixedRecordReadWriter {
   private Boolean ok;
 
 
-  @FixedFormatField(offset = 1, length = 1)
+  @Field(offset = 1, length = 1)
   public Character getRecordType() {
     return recordType;
   }
@@ -46,7 +46,7 @@ public abstract class FixedRecordReadWriter {
     this.recordType = recordType;
   }
 
-  @FixedFormatField(offset = 2, length = 8)
+  @Field(offset = 2, length = 8)
   @FixedFormatPattern("yyyyMMdd")
   public Date getDate() {
     return date;
@@ -56,7 +56,7 @@ public abstract class FixedRecordReadWriter {
     this.date = date;
   }
 
-  @FixedFormatField(offset = 10, length = 10, paddingChar = '0', align = Align.RIGHT)
+  @Field(offset = 10, length = 10, paddingChar = '0', align = Align.RIGHT)
   @FixedFormatDecimal(useDecimalDelimiter = false)
   public Double getAmount() {
     return amount;
@@ -66,7 +66,7 @@ public abstract class FixedRecordReadWriter {
     this.amount = amount;
   }
 
-  @FixedFormatField(offset = 20, length = 20)
+  @Field(offset = 20, length = 20)
   public String getDescription() {
     return description;
   }
@@ -75,7 +75,7 @@ public abstract class FixedRecordReadWriter {
     this.description = description;
   }
 
-  @FixedFormatField(offset = 40, length = 1)
+  @Field(offset = 40, length = 1)
   @FixedFormatBoolean
   public Boolean getOk() {
     return ok;
