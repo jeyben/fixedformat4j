@@ -63,30 +63,30 @@ public class RecordProxyCreator {
       Object[] annotations = field.getAvailableAnnotations();
       if (!ArrayUtils.isEmpty(annotations)) {
         for (Object annotation : annotations) {
-          if (annotation instanceof FixedFormatField) {
+          if (annotation instanceof Field) {
             //try to lookup FixedFormatPattern annotation if such exists
              FixedFormatPattern patternAnno = findPatternAnnotation(annotations);
              FixedFormatBoolean booleanAnno = findBooleanAnnotation(annotations);
              FixedFormatDecimal decimalAnno = findDecimalAnnotation(annotations);
 
-            concreteClass.addMethod(createSetterMethod(concreteClass, "set", field, field.getType(), (FixedFormatField) annotation, patternAnno, booleanAnno, decimalAnno));
-            concreteClass.addMethod(createGetterMethod(concreteClass, "get", field, field.getType(), (FixedFormatField) annotation, patternAnno, booleanAnno, decimalAnno));
+            concreteClass.addMethod(createSetterMethod(concreteClass, "set", field, field.getType(), (Field) annotation, patternAnno, booleanAnno, decimalAnno));
+            concreteClass.addMethod(createGetterMethod(concreteClass, "get", field, field.getType(), (Field) annotation, patternAnno, booleanAnno, decimalAnno));
           }
         }
       }
     }
 
-    //implement abstract FixedFormatField methods
+    //implement abstract Field methods
     CtMethod[] methods = abstractClass.getDeclaredMethods();
     for (CtMethod method : methods) {
       Object[] annotations = method.getAvailableAnnotations();
       if (!ArrayUtils.isEmpty(annotations)) {
         for (Object annotation : annotations) {
           CtMethod newMethod;
-          if (annotation instanceof FixedFormatField) {
+          if (annotation instanceof Field) {
             if (!Modifier.isAbstract(method.getModifiers())) {
               if (LOG.isDebugEnabled()) {
-                LOG.warn("Method[" + abstractClass.getName() + "." + method.getName() + "] is non abstract and marked as[" + FixedFormatField.class.getSimpleName() + "]. The body current body will be deleted!");
+                LOG.warn("Method[" + abstractClass.getName() + "." + method.getName() + "] is non abstract and marked as[" + Field.class.getSimpleName() + "]. The body current body will be deleted!");
               }
             }
             //try to lookup FixedFormatPattern annotation if such exists
@@ -96,11 +96,11 @@ public class RecordProxyCreator {
 
             //ok to implement method
             if (isSetter(method)) {
-              newMethod = createSetterMethod(concreteClass, null, method, method.getParameterTypes()[0], (FixedFormatField) annotation, patternAnno, booleanAnno, decimalAnno);
+              newMethod = createSetterMethod(concreteClass, null, method, method.getParameterTypes()[0], (Field) annotation, patternAnno, booleanAnno, decimalAnno);
             } else if (isGetter(method)) {
-              newMethod = createGetterMethod(concreteClass, null, method, method.getReturnType(), (FixedFormatField) annotation, patternAnno, booleanAnno, decimalAnno);
+              newMethod = createGetterMethod(concreteClass, null, method, method.getReturnType(), (Field) annotation, patternAnno, booleanAnno, decimalAnno);
             } else {
-              throw new RecordFactoryException("Method[" + abstractClass.getName() + "." + method.getName() + "] marked as [" + FixedFormatField.class.getSimpleName() + "] is not a setter or getter method");
+              throw new RecordFactoryException("Method[" + abstractClass.getName() + "." + method.getName() + "] marked as [" + Field.class.getSimpleName() + "] is not a setter or getter method");
             }
             concreteClass.addMethod(newMethod);
           }
@@ -140,7 +140,7 @@ public class RecordProxyCreator {
     return result;
   }
 
-  private CtMethod createSetterMethod(CtClass concreteClass, String memberPrefix, CtMember member, CtClass parameterType, FixedFormatField annotation, FixedFormatPattern patternAnnotation, FixedFormatBoolean booleanAnnotation, FixedFormatDecimal decimalAnnotation) throws NotFoundException, CannotCompileException {
+  private CtMethod createSetterMethod(CtClass concreteClass, String memberPrefix, CtMember member, CtClass parameterType, Field annotation, FixedFormatPattern patternAnnotation, FixedFormatBoolean booleanAnnotation, FixedFormatDecimal decimalAnnotation) throws NotFoundException, CannotCompileException {
     String name = memberPrefix != null ? memberPrefix + StringUtils.capitalize(member.getName()) : member.getName();
     CtMethod newMethod = new CtMethod(CtClass.voidType, name, new CtClass[]{parameterType}, concreteClass);
     String fixedFormatDataSrc = getFixedFormatDataSrc(annotation, patternAnnotation, booleanAnnotation, decimalAnnotation);
@@ -163,7 +163,7 @@ public class RecordProxyCreator {
   }
 
 
-  private CtMethod createGetterMethod(CtClass concreteClass, String memberPrefix, CtMember member, CtClass returnType, FixedFormatField annotation, FixedFormatPattern patternAnnotation, FixedFormatBoolean booleanAnnotation, FixedFormatDecimal decimalAnnotation) throws NotFoundException, CannotCompileException {
+  private CtMethod createGetterMethod(CtClass concreteClass, String memberPrefix, CtMember member, CtClass returnType, Field annotation, FixedFormatPattern patternAnnotation, FixedFormatBoolean booleanAnnotation, FixedFormatDecimal decimalAnnotation) throws NotFoundException, CannotCompileException {
     String name = memberPrefix != null ? memberPrefix + StringUtils.capitalize(member.getName()) : member.getName();
     CtMethod newMethod = new CtMethod(returnType, name, new CtClass[]{}, concreteClass);
     String fixedFormatDataSrc = getFixedFormatDataSrc(annotation, patternAnnotation, booleanAnnotation, decimalAnnotation);
@@ -184,9 +184,9 @@ public class RecordProxyCreator {
     return newMethod;
   }
 
-  private String getFixedFormatMetadataSrc(String dataType, FixedFormatField fixedFormatFieldAnno) throws NotFoundException {
-    int offset = fixedFormatFieldAnno.offset();
-    Class<? extends FixedFormatter> formatterClass = fixedFormatFieldAnno.formatter();
+  private String getFixedFormatMetadataSrc(String dataType, Field fieldAnno) throws NotFoundException {
+    int offset = fieldAnno.offset();
+    Class<? extends FixedFormatter> formatterClass = fieldAnno.formatter();
     String fixedFormatDataSrc = "new com.ancientprogramming.fixedformat4j.format.FixedFormatMetadata(" +
         offset + ", " +
         dataType + ".class , " +
@@ -197,10 +197,10 @@ public class RecordProxyCreator {
     return fixedFormatDataSrc;
   }
 
-  private String getFixedFormatDataSrc(FixedFormatField fixedFormatFieldAnno, FixedFormatPattern patternAnno, FixedFormatBoolean booleanAnno, FixedFormatDecimal decimalAnno) throws NotFoundException {
-    int length = fixedFormatFieldAnno.length();
-    Align align = fixedFormatFieldAnno.align();
-    String paddingChar = "'" + fixedFormatFieldAnno.paddingChar() + "'";
+  private String getFixedFormatDataSrc(Field fieldAnno, FixedFormatPattern patternAnno, FixedFormatBoolean booleanAnno, FixedFormatDecimal decimalAnno) throws NotFoundException {
+    int length = fieldAnno.length();
+    Align align = fieldAnno.align();
+    String paddingChar = "'" + fieldAnno.paddingChar() + "'";
     String patternDataSrc = getPatternDataSrc(patternAnno);
     String booleanDataSrc = getBooleanDataSrc(booleanAnno);
     String decimalDataSrc = getDecimalDataSrc(decimalAnno);

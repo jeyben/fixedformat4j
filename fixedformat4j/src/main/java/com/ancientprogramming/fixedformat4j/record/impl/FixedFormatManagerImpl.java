@@ -69,7 +69,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     for (Method method : allMethods) {
       String methodName = stripMethodPrefix(method.getName());
       if (!foundData.containsKey(methodName)) {
-        boolean isFixedFormatAnnotated = method.getAnnotation(FixedFormatField.class) != null;
+        boolean isFixedFormatAnnotated = method.getAnnotation(Field.class) != null;
         if (isFixedFormatAnnotated) {
           Class datatype = null;
           if (isSetter(method)) {
@@ -120,7 +120,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   private FixedFormatMetadata getMetadata(Method method, Class datatype) {
     FixedFormatMetadata metadata = null;
-    FixedFormatField fieldAnno = method.getAnnotation(FixedFormatField.class);
+    Field fieldAnno = method.getAnnotation(Field.class);
     if (fieldAnno != null) {
       metadata = new FixedFormatMetadata(fieldAnno.offset(), datatype, fieldAnno.formatter());
     }
@@ -129,7 +129,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   private FixedFormatData getFormatData(Method method) {
-    FixedFormatField fieldAnno = method.getAnnotation(FixedFormatField.class);
+    Field fieldAnno = method.getAnnotation(Field.class);
     FixedFormatPatternData patternData = getFixedFormatPatternData(method.getAnnotation(FixedFormatPattern.class));
     FixedFormatBooleanData booleanData = getFixedFormatBooleanData(method.getAnnotation(FixedFormatBoolean.class));
     FixedFormatDecimalData decimalData = getFixedFormatDecimalData(method.getAnnotation(FixedFormatDecimal.class));

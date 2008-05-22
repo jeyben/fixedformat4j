@@ -40,7 +40,7 @@ public class TestFixedFormatAnnotationUtil extends TestCase {
 @Record(length = 10)
 class RecordAnnotatedClass {
 
-  @FixedFormatField(offset = 10, length = 10)
+  @Field(offset = 10, length = 10)
   public String someMethod() {
     return "";
   }
