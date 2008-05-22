@@ -37,8 +37,13 @@ public class TestFixedFormatManagerImpl extends TestCase {
 
   FixedFormatManager manager = null;
 
-  public void testLoadRecord() {
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
     manager = new FixedFormatManagerImpl();
+  }
+
+  public void testLoadRecord() {
     MyRecord loadedRecord = manager.load(MyRecord.class, MY_RECORD_DATA);
     Assert.assertNotNull(loadedRecord);
     Assert.assertEquals(STR, loadedRecord.getStringData());
@@ -51,10 +56,26 @@ public class TestFixedFormatManagerImpl extends TestCase {
     Calendar someDay = Calendar.getInstance();
     someDay.set(2008, 9, 13, 0, 0, 0);
     someDay.set(Calendar.MILLISECOND, 0);
-    manager = new FixedFormatManagerImpl();
     MultibleFieldsRecord loadedRecord = manager.load(MultibleFieldsRecord.class, dataToLoad);
     Assert.assertNotNull(loadedRecord);
     Assert.assertEquals("some      ", loadedRecord.getStringData());
     Assert.assertEquals(someDay.getTime(), loadedRecord.getDateData());
+  }
+
+  public void testWriteRecordObject() {
+    Calendar someDay = Calendar.getInstance();
+    someDay.set(2008, 4, 14, 0, 0, 0);
+    someDay.set(Calendar.MILLISECOND, 0);
+
+    MyRecord myRecord = new MyRecord();
+    myRecord.setBooleanData(true);
+    myRecord.setCharData('C');
+    myRecord.setDateData(someDay.getTime());
+    myRecord.setDoubleData(10.35);
+    myRecord.setFloatData(20.56F);
+    myRecord.setLongData(11L);
+    myRecord.setIntegerData(123);
+    myRecord.setStringData("some text ");
+    Assert.assertEquals("wrong record exported", MY_RECORD_DATA, manager.export(myRecord));
   }
 }
