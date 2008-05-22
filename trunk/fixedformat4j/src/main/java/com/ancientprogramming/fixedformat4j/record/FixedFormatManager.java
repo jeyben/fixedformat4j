@@ -32,7 +32,7 @@ public interface FixedFormatManager {
    */
   <T> T load(Class<T> fixedFormatRecord, String data);
 
-  <T> String write(T fixedFormatRecord);
+  <T> String export(T fixedFormatRecord);
 
 
 }
