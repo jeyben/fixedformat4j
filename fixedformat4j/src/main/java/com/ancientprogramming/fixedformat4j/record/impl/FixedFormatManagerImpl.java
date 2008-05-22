@@ -85,7 +85,6 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
         Object loadedData = readDataAccordingFieldAnnotation(data, method, fieldsAnnotation.value()[0]);
         foundData.put(methodName, loadedData);
       }
-
     }
 
     Set<String> keys = foundData.keySet();
@@ -134,11 +133,17 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       String data = foundData.get(offset);
       appendData(result, record.paddingChar(), offset, data);
     }
+
+    if (record.length() != -1) { //pad with paddingchar
+      while (result.length() < record.length()) {
+        result.append(record.paddingChar());
+      }
+    }
     return result.toString();
   }
 
   private void appendData(StringBuffer result, Character paddingChar, Integer offset, String data) {
-    int zeroBasedOffset = offset-1;
+    int zeroBasedOffset = offset - 1;
     while (result.length() < zeroBasedOffset) {
       result.append(paddingChar);
     }
