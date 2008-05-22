@@ -15,13 +15,10 @@
  */
 package com.ancientprogramming.fixedformat4j.record;
 
-import java.io.OutputStream;
-
 /**
- * Interface used to interact with fixed format data.
+ * Interface used to interact with fixed format annotations.
  *
  * A <code>FixedFormatManager</code> is associated with one type of fixed format data.
- *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
@@ -35,7 +32,7 @@ public interface FixedFormatManager {
    */
   <T> T load(Class<T> fixedFormatRecord, String data);
 
-  <T> void write(T fixedFormatRecord, OutputStream stream);
+  <T> String write(T fixedFormatRecord);
 
 
 }

@@ -15,7 +15,12 @@
  */
 package com.ancientprogramming.fixedformat4j.record;
 
-import com.ancientprogramming.fixedformat4j.annotation.*;
+import com.ancientprogramming.fixedformat4j.annotation.Align;
+import com.ancientprogramming.fixedformat4j.annotation.Field;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
+import com.ancientprogramming.fixedformat4j.annotation.Record;
 
 import java.util.Date;
 
@@ -47,9 +52,6 @@ public class MyRecord {
     this.stringData = stringData;
   }
 
-
-
-
   @Field(offset = 11, length = 5, align = Align.RIGHT, paddingChar = '0')
   public Integer getIntegerData() {
     return integerData;
@@ -58,8 +60,6 @@ public class MyRecord {
   public void setIntegerData(Integer integerData) {
     this.integerData = integerData;
   }
-
-
 
   @Field(offset = 16, length = 8)
   @FixedFormatPattern("yyyyMMdd")
@@ -110,7 +110,7 @@ public class MyRecord {
   }
 
   @Field(offset = 40, length = 10, align = Align.RIGHT, paddingChar = '0')
-  @FixedFormatDecimal  
+  @FixedFormatDecimal
   public Float getFloatData() {
     return floatData;
   }
@@ -118,6 +118,4 @@ public class MyRecord {
   public void setFloatData(Float floatData) {
     this.floatData = floatData;
   }
-
-
 }

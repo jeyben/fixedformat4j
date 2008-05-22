@@ -15,10 +15,13 @@
  */
 package com.ancientprogramming.fixedformat4j.record.impl;
 
-import junit.framework.TestCase;
-import junit.framework.Assert;
-import com.ancientprogramming.fixedformat4j.record.MyRecord;
 import com.ancientprogramming.fixedformat4j.record.FixedFormatManager;
+import com.ancientprogramming.fixedformat4j.record.MultibleFieldsRecord;
+import com.ancientprogramming.fixedformat4j.record.MyRecord;
+import junit.framework.Assert;
+import junit.framework.TestCase;
+
+import java.util.Calendar;
 
 /**
  * todo: comment needed
@@ -40,5 +43,18 @@ public class TestFixedFormatManagerImpl extends TestCase {
     Assert.assertNotNull(loadedRecord);
     Assert.assertEquals(STR, loadedRecord.getStringData());
     Assert.assertTrue(loadedRecord.getBooleanData());
+  }
+
+  public void testLoadMultibleFieldsRecord() {
+    //when reading data having multible field annotations the first field will decide what data to return
+    String dataToLoad = "some      2008101320081014";
+    Calendar someDay = Calendar.getInstance();
+    someDay.set(2008, 9, 13, 0, 0, 0);
+    someDay.set(Calendar.MILLISECOND, 0);
+    manager = new FixedFormatManagerImpl();
+    MultibleFieldsRecord loadedRecord = manager.load(MultibleFieldsRecord.class, dataToLoad);
+    Assert.assertNotNull(loadedRecord);
+    Assert.assertEquals("some      ", loadedRecord.getStringData());
+    Assert.assertEquals(someDay.getTime(), loadedRecord.getDateData());
   }
 }
