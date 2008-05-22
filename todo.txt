@@ -1,9 +1,15 @@
   Features
 ------------------------------------------
   - cannot create instances of inner class records
-  - Direction => Align
-  - Use FixedFormatRecord annotation to append padding chars in the end of the line.
-  - see if it is possible to hook into property accessors using javassist. This could eleminate the use of
+  - Use Record annotation to append padding chars in the end of the line.
+  - Support the ability to write the same data into multible fields in a string.
+    like an annotation containing multibel annotations:
+      @Retention(RetentionPolicy.RUNTIME)
+      @Target({ElementType.METHOD})
+      public @interface Fields {
+        public abstract Field[] value();
+      }
+
 
   Site
 ------------------------------------------
@@ -14,7 +20,5 @@
   Test Coverage
 ------------------------------------------
   - Some corners are cut. Find them and chase them down
-
-
 
 
