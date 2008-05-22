@@ -15,7 +15,13 @@
  */
 package com.ancientprogramming.fixedformat4j.record.impl;
 
-import com.ancientprogramming.fixedformat4j.annotation.*;
+import com.ancientprogramming.fixedformat4j.annotation.Field;
+import com.ancientprogramming.fixedformat4j.annotation.Fields;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatAnnotationUtil;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
+import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatMetadata;
@@ -28,10 +34,9 @@ import com.ancientprogramming.fixedformat4j.record.FixedFormatManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.OutputStream;
-import java.lang.reflect.Method;
-import java.lang.reflect.Constructor;
 import static java.lang.String.format;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -63,31 +68,23 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     } catch (Exception e) {
       throw new FixedFormatException(format("unable to create instance of %s", fixedFormatRecordClass.getName()), e);
     }
-    //look for setter annotations and read data from the 'data' string
 
+    //look for setter annotations and read data from the 'data' string
     Method[] allMethods = fixedFormatRecordClass.getMethods();
     for (Method method : allMethods) {
       String methodName = stripMethodPrefix(method.getName());
       if (!foundData.containsKey(methodName)) {
-        boolean isFixedFormatAnnotated = method.getAnnotation(Field.class) != null;
-        if (isFixedFormatAnnotated) {
-          Class datatype = null;
-          if (isSetter(method)) {
-            datatype = method.getParameterTypes()[0];
-          } else if (isGetter(method)) {
-            datatype = method.getReturnType();
+        Field fieldAnnotation = method.getAnnotation(Field.class);
+        Fields fieldsAnnotation = method.getAnnotation(Fields.class);
+        if (fieldAnnotation != null) {
+          Object loadedData = readDataAccordingToTheFieldAnnotation(data, method, fieldAnnotation);
+          foundData.put(methodName, loadedData);
+        } else if (fieldsAnnotation != null) {
+          //assert that the fields annotation contains minimum one field anno
+          if (fieldsAnnotation.value() == null || fieldsAnnotation.value().length == 0) {
+            throw new FixedFormatException(format("%s annotation must contain minimum one %s annotation", Fields.class.getName(), Field.class.getName()));
           }
-          FixedFormatMetadata metadata = getMetadata(method, datatype);
-          FixedFormatter formatter = getFixedFormatterInstance(metadata.getFormatter(), metadata);
-          FixedFormatData formatdata = getFormatData(method);
-
-          assertIsPatternRequired(formatdata, metadata, formatter);
-          assertIsBooleanRequired(formatdata, metadata, formatter);
-          assertIsDecimalRequired(formatdata, metadata, formatter);
-          Object loadedData = formatter.parse(fetchData(new StringBuffer(data), formatdata, metadata), formatdata);
-          if (LOG.isDebugEnabled()) {
-            LOG.debug("the loaded data[" + loadedData + "]");
-          }
+          Object loadedData = readDataAccordingToTheFieldAnnotation(data, method, fieldsAnnotation.value()[0]);
           foundData.put(methodName, loadedData);
         }
       }
@@ -109,18 +106,42 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
         throw new FixedFormatException(format("could not invoke method %s.%s(%s)", fixedFormatRecordClass.getName(), setterMethodName, datatype), e);
       }
     }
-
     return instance;
   }
+
+  private <T> Object readDataAccordingToTheFieldAnnotation(String data, Method method, Field fieldAnno) {
+    Class datatype = null;
+    if (isSetter(method)) {
+      datatype = method.getParameterTypes()[0];
+    } else if (isGetter(method)) {
+      datatype = method.getReturnType();
+    }
+    FixedFormatMetadata metadata = getMetadata(datatype, fieldAnno);
+    FixedFormatter formatter = getFixedFormatterInstance(metadata.getFormatter(), metadata);
+    FixedFormatData formatdata = getFormatData(method, fieldAnno);
+
+    assertIsPatternRequired(formatdata, metadata, formatter);
+    assertIsBooleanRequired(formatdata, metadata, formatter);
+    assertIsDecimalRequired(formatdata, metadata, formatter);
+    Object loadedData = formatter.parse(fetchData(new StringBuffer(data), formatdata, metadata), formatdata);
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("the loaded data[" + loadedData + "]");
+    }
+    return loadedData;
+  }
+
+  public <T> String write(T fixedFormatRecord) {
+    return "";
+  }
+
 
   private String stripMethodPrefix(String name) {
     return name.substring(3);
   }
 
 
-  private FixedFormatMetadata getMetadata(Method method, Class datatype) {
+  private FixedFormatMetadata getMetadata(Class datatype, Field fieldAnno) {
     FixedFormatMetadata metadata = null;
-    Field fieldAnno = method.getAnnotation(Field.class);
     if (fieldAnno != null) {
       metadata = new FixedFormatMetadata(fieldAnno.offset(), datatype, fieldAnno.formatter());
     }
@@ -128,8 +149,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   }
 
-  private FixedFormatData getFormatData(Method method) {
-    Field fieldAnno = method.getAnnotation(Field.class);
+  private FixedFormatData getFormatData(Method method, Field fieldAnno) {
     FixedFormatPatternData patternData = getFixedFormatPatternData(method.getAnnotation(FixedFormatPattern.class));
     FixedFormatBooleanData booleanData = getFixedFormatBooleanData(method.getAnnotation(FixedFormatBoolean.class));
     FixedFormatDecimalData decimalData = getFixedFormatDecimalData(method.getAnnotation(FixedFormatDecimal.class));
@@ -167,8 +187,4 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   private boolean isGetter(Method method) {
     return method.getName().startsWith("get");
   }
-
-  public <T> void write(T fixedFormatRecord, OutputStream stream) {
-  }
-
 }

@@ -24,7 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * This annotation descibes how a setter/getter pairs should be formatted by the formatannotationprocessor.
+ * This annotation descibes how a setter/getter pairs should be formatted by the fixedFormatManager.
  *
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
