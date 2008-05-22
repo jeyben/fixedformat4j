@@ -31,6 +31,7 @@ import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 import com.ancientprogramming.fixedformat4j.record.FixedFormatManager;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,8 +40,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  * reads and writes data to and from fixedformat
@@ -106,8 +105,8 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return instance;
   }
 
-  public <T> String export(T fixedFormatRecord) {
-    StringBuffer result = new StringBuffer();
+  public <T> String export(String existingData, T fixedFormatRecord) {
+    StringBuffer result = new StringBuffer(existingData);
     Record record = getRecordAnnotation(fixedFormatRecord.getClass());
 
     Class<T> fixedFormatRecordClass = (Class<T>) fixedFormatRecord.getClass();
@@ -128,7 +127,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       }
     }
 
-    SortedSet<Integer> sortedoffsets = new TreeSet<Integer>(foundData.keySet());
+    Set<Integer> sortedoffsets = foundData.keySet();
     for (Integer offset : sortedoffsets) {
       String data = foundData.get(offset);
       appendData(result, record.paddingChar(), offset, data);
@@ -142,12 +141,20 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return result.toString();
   }
 
+  public <T> String export(T fixedFormatRecord) {
+    return export("", fixedFormatRecord);
+  }
+
   private void appendData(StringBuffer result, Character paddingChar, Integer offset, String data) {
     int zeroBasedOffset = offset - 1;
     while (result.length() < zeroBasedOffset) {
       result.append(paddingChar);
     }
-    result.append(data);
+    int length = data.length();
+    if (result.length() < zeroBasedOffset + length) {
+      result.append(StringUtils.leftPad("", (zeroBasedOffset + length) - result.length(), paddingChar));
+    }
+    result.replace(zeroBasedOffset, zeroBasedOffset + length, data);
   }
 
 

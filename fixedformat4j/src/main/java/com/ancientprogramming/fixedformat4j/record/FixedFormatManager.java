@@ -34,5 +34,7 @@ public interface FixedFormatManager {
 
   <T> String export(T fixedFormatRecord);
 
+  <T> String export(String existingData, T fixedFormatRecord);
+
 
 }
