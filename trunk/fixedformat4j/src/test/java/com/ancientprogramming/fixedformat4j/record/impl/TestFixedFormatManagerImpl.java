@@ -34,6 +34,8 @@ public class TestFixedFormatManagerImpl extends TestCase {
   private static String STR = "some text ";
 
   public static final String MY_RECORD_DATA = "some text 0012320080514CT001100000010350000002056";
+  public static final String MULTIBLE_RECORD_DATA = "some      2008101320081013                       1000";
+  public static final String MULTIBLE_RECORD_DATA_X_PADDED = "some      2008101320081013xxxxxxxxxxxxxxxxxxxxxxx1000";
 
   FixedFormatManager manager = null;
 
@@ -52,17 +54,16 @@ public class TestFixedFormatManagerImpl extends TestCase {
 
   public void testLoadMultibleFieldsRecord() {
     //when reading data having multible field annotations the first field will decide what data to return
-    String dataToLoad = "some      2008101320081014";
     Calendar someDay = Calendar.getInstance();
     someDay.set(2008, 9, 13, 0, 0, 0);
     someDay.set(Calendar.MILLISECOND, 0);
-    MultibleFieldsRecord loadedRecord = manager.load(MultibleFieldsRecord.class, dataToLoad);
+    MultibleFieldsRecord loadedRecord = manager.load(MultibleFieldsRecord.class, MULTIBLE_RECORD_DATA);
     Assert.assertNotNull(loadedRecord);
     Assert.assertEquals("some      ", loadedRecord.getStringData());
     Assert.assertEquals(someDay.getTime(), loadedRecord.getDateData());
   }
 
-  public void testWriteRecordObject() {
+  public void testExportRecordObject() {
     Calendar someDay = Calendar.getInstance();
     someDay.set(2008, 4, 14, 0, 0, 0);
     someDay.set(Calendar.MILLISECOND, 0);
@@ -77,5 +78,31 @@ public class TestFixedFormatManagerImpl extends TestCase {
     myRecord.setIntegerData(123);
     myRecord.setStringData("some text ");
     Assert.assertEquals("wrong record exported", MY_RECORD_DATA, manager.export(myRecord));
+  }
+
+  public void testExportMultibleFieldRecordObject() {
+    Calendar someDay = Calendar.getInstance();
+    someDay.set(2008, 9, 13, 0, 0, 0);
+    someDay.set(Calendar.MILLISECOND, 0);
+
+    MultibleFieldsRecord multibleFieldsRecord = new MultibleFieldsRecord();
+    multibleFieldsRecord.setDateData(someDay.getTime());
+    multibleFieldsRecord.setStringData("some      ");
+    multibleFieldsRecord.setIntegerdata(1000);
+    manager.export(multibleFieldsRecord);
+    Assert.assertEquals("wrong record exported", MULTIBLE_RECORD_DATA, manager.export(multibleFieldsRecord));
+  }
+
+  public void testExportIntoExistingString() {
+    Calendar someDay = Calendar.getInstance();
+    someDay.set(2008, 9, 13, 0, 0, 0);
+    someDay.set(Calendar.MILLISECOND, 0);
+
+    MultibleFieldsRecord multibleFieldsRecord = new MultibleFieldsRecord();
+    multibleFieldsRecord.setDateData(someDay.getTime());
+    multibleFieldsRecord.setStringData("some      ");
+    multibleFieldsRecord.setIntegerdata(1000);
+    String exportedString = manager.export("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", multibleFieldsRecord);
+    Assert.assertEquals("wrong record exported", MULTIBLE_RECORD_DATA_X_PADDED, exportedString);
   }
 }

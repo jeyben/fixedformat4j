@@ -13,6 +13,7 @@ public class MultibleFieldsRecord {
 
   private String stringData;
   private Date dateData;
+  private Integer integerdata;
 
   @Field(offset = 1, length = 10, align = Align.RIGHT, paddingChar = ' ')
   public String getStringData() {
@@ -31,5 +32,14 @@ public class MultibleFieldsRecord {
 
   public void setDateData(Date dateData) {
     this.dateData = dateData;
+  }
+
+  @Field(offset = 50, length = 4)
+  public Integer getIntegerdata() {
+    return integerdata;
+  }
+
+  public void setIntegerdata(Integer integerdata) {
+    this.integerdata = integerdata;
   }
 }
