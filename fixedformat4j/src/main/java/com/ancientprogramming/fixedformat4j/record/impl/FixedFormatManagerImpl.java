@@ -63,8 +63,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     } catch (Exception e) {
       throw new FixedFormatException(format("unable to create instance of %s", fixedFormatRecordClass.getName()), e);
     }
-    //look for property annotations or setter annotations and read data from the 'data' string
-    //todo: implement property annotation lookup as well
+    //look for setter annotations and read data from the 'data' string
 
     Method[] allMethods = fixedFormatRecordClass.getMethods();
     for (Method method : allMethods) {
