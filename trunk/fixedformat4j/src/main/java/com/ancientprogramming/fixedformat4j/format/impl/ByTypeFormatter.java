@@ -24,6 +24,10 @@ import com.ancientprogramming.fixedformat4j.format.FixedFormatProcessor;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.math.BigDecimal;
+import java.io.Serializable;
 
 /**
  * Formatter capable of formatting a bunch of known java standard library classes. So far:
@@ -37,7 +41,7 @@ import java.util.Map;
 public class ByTypeFormatter implements FixedFormatter {
   private FixedFormatMetadata metadata;
 
-  private static final Map<Class, Class<? extends FixedFormatter>> KNOWN_FORMATTERS = new HashMap<Class, Class<? extends FixedFormatter>>();
+  private static final Map<Class<? extends Serializable>, Class<? extends FixedFormatter>> KNOWN_FORMATTERS = new HashMap<Class<? extends Serializable>, Class<? extends FixedFormatter>>();
 
   static {
     KNOWN_FORMATTERS.put(String.class, StringFormatter.class);
@@ -48,10 +52,15 @@ public class ByTypeFormatter implements FixedFormatter {
     KNOWN_FORMATTERS.put(Boolean.class, BooleanFormatter.class);
     KNOWN_FORMATTERS.put(Double.class, DoubleFormatter.class);
     KNOWN_FORMATTERS.put(Float.class, FloatFormatter.class);
+    KNOWN_FORMATTERS.put(BigDecimal.class,  BigDecimalFormatter.class);
   }
 
   public ByTypeFormatter(FixedFormatMetadata metadata) {
     this.metadata = metadata;
+  }
+
+  public static Set<Class> getSupportedDatatypes() {
+      return (Set<Class>)new HashSet<Class>(KNOWN_FORMATTERS.keySet()).clone();
   }
 
   public Object parse(String value, FixedFormatData data) {
@@ -88,7 +97,7 @@ public class ByTypeFormatter implements FixedFormatter {
     return false;
   }
 
-  public FixedFormatter actualFormatter(final Class dataType) {
+  public FixedFormatter actualFormatter(final Class<? extends Object> dataType) {
     Class<? extends FixedFormatter> formatterClass = KNOWN_FORMATTERS.get(dataType);
 
     if (formatterClass != null) {
