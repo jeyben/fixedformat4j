@@ -59,9 +59,6 @@ public class ByTypeFormatter implements FixedFormatter {
     this.metadata = metadata;
   }
 
-  public static Set<Class> getSupportedDatatypes() {
-      return (Set<Class>)new HashSet<Class>(KNOWN_FORMATTERS.keySet()).clone();
-  }
 
   public Object parse(String value, FixedFormatData data) {
     FixedFormatter formatter = actualFormatter(metadata.getDataType());

@@ -23,6 +23,7 @@ import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 
 import java.util.Date;
+import java.math.BigDecimal;
 
 /**
  * A record used in testcases
@@ -41,6 +42,7 @@ public class MyRecord {
   private Long longData;
   private Double doubleData;
   private Float floatData;
+  private BigDecimal bigDecimalData;
 
 
   @Field(offset = 1, length = 10, align = Align.RIGHT, paddingChar = ' ')
@@ -117,5 +119,16 @@ public class MyRecord {
 
   public void setFloatData(Float floatData) {
     this.floatData = floatData;
+  }
+
+
+  @Field(offset = 50, length = 10, align = Align.RIGHT, paddingChar = '0')
+  @FixedFormatDecimal(decimals = 4, decimalDelimiter = ' ', useDecimalDelimiter = true)
+  public BigDecimal getBigDecimalData() {
+    return bigDecimalData;
+  }
+
+  public void setBigDecimalData(BigDecimal bigDecimalData) {
+    this.bigDecimalData = bigDecimalData;
   }
 }

@@ -22,6 +22,7 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
+import java.math.BigDecimal;
 
 /**
  * todo: comment needed
@@ -33,7 +34,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
 
   private static String STR = "some text ";
 
-  public static final String MY_RECORD_DATA = "some text 0012320080514CT001100000010350000002056";
+  public static final String MY_RECORD_DATA = "some text 0012320080514CT00110000001035000000205600012 0120";
   public static final String MULTIBLE_RECORD_DATA = "some      2008101320081013                       1000";
   public static final String MULTIBLE_RECORD_DATA_X_PADDED = "some      2008101320081013xxxxxxxxxxxxxxxxxxxxxxx1000";
 
@@ -77,6 +78,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
     myRecord.setLongData(11L);
     myRecord.setIntegerData(123);
     myRecord.setStringData("some text ");
+    myRecord.setBigDecimalData(new BigDecimal(12.012));
     Assert.assertEquals("wrong record exported", MY_RECORD_DATA, manager.export(myRecord));
   }
 

@@ -15,13 +15,7 @@
  */
 package com.ancientprogramming.fixedformat4j.record.impl;
 
-import com.ancientprogramming.fixedformat4j.annotation.Field;
-import com.ancientprogramming.fixedformat4j.annotation.Fields;
-import com.ancientprogramming.fixedformat4j.annotation.FixedFormatAnnotationUtil;
-import com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean;
-import com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal;
-import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
-import com.ancientprogramming.fixedformat4j.annotation.Record;
+import com.ancientprogramming.fixedformat4j.annotation.*;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatMetadata;
@@ -89,18 +83,23 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     Set<String> keys = foundData.keySet();
     for (String key : keys) {
       String setterMethodName = "set" + key;
-      Class datatype = foundData.get(key).getClass();
-      Method method;
-      try {
-        method = fixedFormatRecordClass.getMethod(setterMethodName, datatype);
-      } catch (NoSuchMethodException e) {
-        throw new FixedFormatException(format("setter method named %s.%s(%s) does not exist", fixedFormatRecordClass.getName(), setterMethodName, datatype));
+
+      Object foundDataObj = foundData.get(key);
+      if (foundDataObj != null) {
+        Class datatype = foundData.get(key).getClass();
+        Method method;
+        try {
+          method = fixedFormatRecordClass.getMethod(setterMethodName, datatype);
+        } catch (NoSuchMethodException e) {
+          throw new FixedFormatException(format("setter method named %s.%s(%s) does not exist", fixedFormatRecordClass.getName(), setterMethodName, datatype));
+        }
+        try {
+          method.invoke(instance, foundData.get(key));
+        } catch (Exception e) {
+          throw new FixedFormatException(format("could not invoke method %s.%s(%s)", fixedFormatRecordClass.getName(), setterMethodName, datatype), e);
+        }
       }
-      try {
-        method.invoke(instance, foundData.get(key));
-      } catch (Exception e) {
-        throw new FixedFormatException(format("could not invoke method %s.%s(%s)", fixedFormatRecordClass.getName(), setterMethodName, datatype), e);
-      }
+
     }
     return instance;
   }
