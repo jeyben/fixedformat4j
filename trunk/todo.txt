@@ -2,7 +2,7 @@
 ------------------------------------------
   - cannot create instances of inner class records
   - Use Record annotation to append padding chars in the end of the line.
-  - Support the ability to write the same data into multible fields in a string.
+  - Support the ability to write the same instructions into multible fields in a string.
     like an annotation containing multibel annotations:
       @Retention(RetentionPolicy.RUNTIME)
       @Target({ElementType.METHOD})

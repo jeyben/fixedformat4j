@@ -18,7 +18,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
+import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
 /**
  * Formatter for {@link Character} datatypes
@@ -30,20 +30,20 @@ public class CharacterFormatter extends AbstractFixedFormatter {
 
   private static final Log LOG = LogFactory.getLog(CharacterFormatter.class);
 
-  public Object asObject(String string, FixedFormatData data) {
+  public Object asObject(String string, FormatInstructions instructions) {
     Character result;
     if (string == null || string.length() < 1) {
       result = null;
     } else {
       result = string.charAt(0);
       if (string.length() > 1) {
-        LOG.warn("found more than one character[" + string + "] after reading data from record. Will return first character[" + result + "]");
+        LOG.warn("found more than one character[" + string + "] after reading instructions from record. Will return first character[" + result + "]");
       }
     }
     return result;
   }
 
-  public String asString(Object obj, FixedFormatData data) {
+  public String asString(Object obj, FormatInstructions instructions) {
     return Character.toString((Character) obj);
   }
 

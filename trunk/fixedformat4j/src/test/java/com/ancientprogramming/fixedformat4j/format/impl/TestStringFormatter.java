@@ -16,7 +16,7 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.Align;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
+import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -30,18 +30,18 @@ public class TestStringFormatter extends TestCase {
   private FixedFormatter formatter = new StringFormatter();
 
   public void testParse() {
-    FixedFormatData data = new FixedFormatData(10, Align.LEFT, ' ', null, null, null);
+    FormatInstructions instructions = new FormatInstructions(10, Align.LEFT, ' ', null, null, null);
     String input = "string";
-    Object parseResult = formatter.parse(input, data);
+    Object parseResult = formatter.parse(input, instructions);
     Assert.assertEquals(String.class, parseResult.getClass());
   }
 
   public void testFormat() {
-    FixedFormatData data = new FixedFormatData(10, Align.LEFT, ' ', null, null, null);
+    FormatInstructions instructions = new FormatInstructions(10, Align.LEFT, ' ', null, null, null);
     String input = "string";
     String expected = "string    ";
 
-    String formatResult = formatter.format(input, data);
+    String formatResult = formatter.format(input, instructions);
     Assert.assertEquals("expected[" + expected + "] - actual[" + formatResult + "]", expected, formatResult);
   }
 }

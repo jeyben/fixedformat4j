@@ -17,15 +17,13 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatMetadata;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatProcessor;
+import com.ancientprogramming.fixedformat4j.format.FormatContext;
+import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
+import com.ancientprogramming.fixedformat4j.format.FixedFormatUtil;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
 import java.math.BigDecimal;
 import java.io.Serializable;
 
@@ -39,7 +37,7 @@ import java.io.Serializable;
  * @since 1.0.0
  */
 public class ByTypeFormatter implements FixedFormatter {
-  private FixedFormatMetadata metadata;
+  private FormatContext context;
 
   private static final Map<Class<? extends Serializable>, Class<? extends FixedFormatter>> KNOWN_FORMATTERS = new HashMap<Class<? extends Serializable>, Class<? extends FixedFormatter>>();
 
@@ -55,25 +53,25 @@ public class ByTypeFormatter implements FixedFormatter {
     KNOWN_FORMATTERS.put(BigDecimal.class,  BigDecimalFormatter.class);
   }
 
-  public ByTypeFormatter(FixedFormatMetadata metadata) {
-    this.metadata = metadata;
+  public ByTypeFormatter(FormatContext context) {
+    this.context = context;
   }
 
 
-  public Object parse(String value, FixedFormatData data) {
-    FixedFormatter formatter = actualFormatter(metadata.getDataType());
-    FixedFormatProcessor.assertIsPatternRequired(data, metadata, formatter);
-    FixedFormatProcessor.assertIsBooleanRequired(data, metadata, formatter);
-    FixedFormatProcessor.assertIsDecimalRequired(data, metadata, formatter);
-    return formatter.parse(value, data);
+  public Object parse(String value, FormatInstructions instructions) {
+    FixedFormatter formatter = actualFormatter(context.getDataType());
+    FixedFormatUtil.assertIsPatternRequired(instructions, context, formatter);
+    FixedFormatUtil.assertIsBooleanRequired(instructions, context, formatter);
+    FixedFormatUtil.assertIsDecimalRequired(instructions, context, formatter);
+    return formatter.parse(value, instructions);
   }
 
-  public String format(Object value, FixedFormatData data) {
-    FixedFormatter formatter = actualFormatter(metadata.getDataType());
-    FixedFormatProcessor.assertIsPatternRequired(data, metadata, formatter);
-    FixedFormatProcessor.assertIsBooleanRequired(data, metadata, formatter);
-    FixedFormatProcessor.assertIsDecimalRequired(data, metadata, formatter);
-    return formatter.format(value, data);
+  public String format(Object value, FormatInstructions instructions) {
+    FixedFormatter formatter = actualFormatter(context.getDataType());
+    FixedFormatUtil.assertIsPatternRequired(instructions, context, formatter);
+    FixedFormatUtil.assertIsBooleanRequired(instructions, context, formatter);
+    FixedFormatUtil.assertIsDecimalRequired(instructions, context, formatter);
+    return formatter.format(value, instructions);
   }
 
   /**

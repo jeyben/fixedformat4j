@@ -28,16 +28,16 @@ public interface FixedFormatManager {
 
   /**
    * Create an instance of the fixedFormatClass and load the data string into the object according to the annotations.
-   * @param fixedFormatClass the class to instanciate
+   * @param clazz the class to instanciate
    * @param data the data to load
    * @return an object loaded with the fixedformat data
    * @throws FixedFormatException in case the fixedFormatRecord class cannot be loaded
    */
-  <T> T load(Class<T> fixedFormatClass, String data) throws FixedFormatException;
+  <T> T load(Class<T> clazz, String data) throws FixedFormatException;
 
-  <T> String export(T fixedFormatInstance) throws FixedFormatException;
+  <T> String export(T instance) throws FixedFormatException;
 
-  <T> String export(String existingData, T fixedFormatRecord) throws FixedFormatException;
+  <T> String export(String data, T instance) throws FixedFormatException;
 
 
 }

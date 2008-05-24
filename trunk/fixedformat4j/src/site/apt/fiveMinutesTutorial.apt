@@ -29,7 +29,7 @@ A200803150000140050A longer desciption T
 
    []
 
-  Then you create a POJO representing the data and instrument the properties with annotations
+  Then you create a POJO representing the instructions and instrument the properties with annotations
   describing the fields:
 
 +--
