@@ -18,8 +18,6 @@ package com.ancientprogramming.fixedformat4j.annotation;
 import junit.framework.TestCase;
 
 /**
- * todo: comment needed
- *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */

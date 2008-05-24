@@ -20,7 +20,7 @@ import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
 /**
- * todo: comment needed
+ * Formatter for {@link Boolean} data
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0

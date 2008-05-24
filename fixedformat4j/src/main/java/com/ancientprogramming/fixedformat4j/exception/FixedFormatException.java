@@ -16,7 +16,7 @@
 package com.ancientprogramming.fixedformat4j.exception;
 
 /**
- * todo: comment needed
+ * Thrown when errors occur while loading or exporting data.
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0

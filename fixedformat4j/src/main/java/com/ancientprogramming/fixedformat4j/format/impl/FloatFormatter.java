@@ -18,7 +18,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
 /**
- * todo: comment needed
+ * Formatter for {@link Float} data
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0

@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * reads and writes data to and from fixedformat
+ * Load and export data to and from fixedformat
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0

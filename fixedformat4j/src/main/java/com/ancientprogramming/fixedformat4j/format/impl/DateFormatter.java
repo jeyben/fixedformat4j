@@ -25,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 /**
- * Formatter for {@link java.util.Date}
+ * Formatter for {@link java.util.Date} data
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0

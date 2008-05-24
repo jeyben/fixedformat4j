@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
 /**
- * todo: comment needed
+ * Define representations for {@link Boolean#TRUE} and {@link Boolean#FALSE}
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0

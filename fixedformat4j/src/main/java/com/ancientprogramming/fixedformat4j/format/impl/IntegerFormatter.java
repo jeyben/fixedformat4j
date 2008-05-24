@@ -19,7 +19,7 @@ import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
 /**
- * Formatter for Integer data
+ * Formatter for {@link Integer} data
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0

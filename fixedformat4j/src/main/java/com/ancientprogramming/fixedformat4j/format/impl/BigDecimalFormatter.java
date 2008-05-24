@@ -20,7 +20,10 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import java.math.BigDecimal;
 
 /**
- * @author Jacob von Eyben - Nordija A/S
+ * Formatter for {@link BigDecimal} data
+ *
+ * @author Jacob von Eyben www.ancientprogramming.com
+ * @since 1.0.0
  */
 public class BigDecimalFormatter extends AbstractDecimalFormatter {
 

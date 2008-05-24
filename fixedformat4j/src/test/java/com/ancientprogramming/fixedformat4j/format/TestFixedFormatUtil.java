@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.annotation;
+package com.ancientprogramming.fixedformat4j.format;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.annotation.ElementType;
+import com.ancientprogramming.fixedformat4j.format.impl.ByTypeFormatter;
+import com.ancientprogramming.fixedformat4j.format.impl.StringFormatter;
+import junit.framework.TestCase;
 
 /**
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
+public class TestFixedFormatUtil extends TestCase {
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.FIELD})
-public @interface FixedFormatDecimal {
-
-  int decimals() default 2;
-
-  boolean useDecimalDelimiter() default false;
-
-  char decimalDelimiter() default '.';
+  public void testGetInstance() {
+    FixedFormatUtil.getFixedFormatterInstance(StringFormatter.class, new FormatContext(1, java.lang.String.class, StringFormatter.class));
+    FixedFormatUtil.getFixedFormatterInstance(ByTypeFormatter.class, new FormatContext(1, java.lang.String.class, ByTypeFormatter.class));
+  }
 }
