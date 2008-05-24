@@ -15,13 +15,7 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
-import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-
-import java.text.NumberFormat;
-import java.text.DecimalFormat;
+import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
 /**
  * As for now the formatter chops of decimals in case there is to many
@@ -31,8 +25,8 @@ import java.text.DecimalFormat;
  */
 public class DoubleFormatter extends AbstractDecimalFormatter {
 
-  public Object asObject(String string, FixedFormatData data) {
-    String toConvert = getStringToConvert(string, data);
+  public Object asObject(String string, FormatInstructions instructions) {
+    String toConvert = getStringToConvert(string, instructions);
     return Double.parseDouble("".equals(toConvert) ? "0" : toConvert);
   }
 }

@@ -22,16 +22,16 @@ package com.ancientprogramming.fixedformat4j.format;
  * @since 1.0.0
  */
 public abstract class AbstractFixedFormatter implements FixedFormatter {
-  public Object parse(String value, FixedFormatData data) {
+  public Object parse(String value, FormatInstructions instructions) {
     Object result = null;
     if (value != null) {
-    result = asObject(data.getPaddingDirection().remove(value, data.getPaddingChar()), data);
+    result = asObject(instructions.getPaddingDirection().remove(value, instructions.getPaddingChar()), instructions);
     }
     return result;
   }
 
-  public String format(Object value, FixedFormatData data) {
-    return data.getPaddingDirection().apply(asString(value, data), data.getLength(), data.getPaddingChar());
+  public String format(Object value, FormatInstructions instructions) {
+    return instructions.getPaddingDirection().apply(asString(value, instructions), instructions.getLength(), instructions.getPaddingChar());
   }
 
   public boolean requiresPattern() {
@@ -46,7 +46,7 @@ public abstract class AbstractFixedFormatter implements FixedFormatter {
     return false;
   }
 
-  public abstract Object asObject(String string, FixedFormatData data);
+  public abstract Object asObject(String string, FormatInstructions instructions);
 
-  public abstract String asString(Object obj, FixedFormatData data);
+  public abstract String asString(Object obj, FormatInstructions instructions);
 }

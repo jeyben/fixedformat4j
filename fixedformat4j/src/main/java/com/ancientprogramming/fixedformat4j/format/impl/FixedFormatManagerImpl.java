@@ -17,9 +17,9 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.*;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatMetadata;
-import static com.ancientprogramming.fixedformat4j.format.FixedFormatProcessor.*;
+import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
+import com.ancientprogramming.fixedformat4j.format.FormatContext;
+import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.*;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
@@ -166,38 +166,39 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   private Object readDataAccordingFieldAnnotation(String data, Method method, Field fieldAnno) {
-    Class datatype;
-    if (isGetter(method)) {
-      datatype = method.getReturnType();
-    } else {
-      throw new FixedFormatException(format("%s annotations must be placed on getter methods", fieldAnno.getClass().getName()));
-    }
-    FixedFormatMetadata metadata = getMetadata(datatype, fieldAnno);
-    FixedFormatter formatter = getFixedFormatterInstance(metadata.getFormatter(), metadata);
-    FixedFormatData formatdata = getFormatData(method, fieldAnno);
+    Class datatype = getDatatype(method, fieldAnno);
 
-    assertIsPatternRequired(formatdata, metadata, formatter);
-    assertIsBooleanRequired(formatdata, metadata, formatter);
-    assertIsDecimalRequired(formatdata, metadata, formatter);
-    Object loadedData = formatter.parse(fetchData(data, formatdata, metadata), formatdata);
+    FormatContext context = getFormatContext(datatype, fieldAnno);
+    FixedFormatter formatter = getFixedFormatterInstance(context.getFormatter(), context);
+    FormatInstructions formatdata = getFormatInstructions(method, fieldAnno);
+
+    assertIsPatternRequired(formatdata, context, formatter);
+    assertIsBooleanRequired(formatdata, context, formatter);
+    assertIsDecimalRequired(formatdata, context, formatter);
+    Object loadedData = formatter.parse(fetchData(data, formatdata, context), formatdata);
     if (LOG.isDebugEnabled()) {
       LOG.debug("the loaded data[" + loadedData + "]");
     }
     return loadedData;
   }
 
-  private <T> String exportDataAccordingFieldAnnotation(T fixedFormatRecord, Method method, Field fieldAnno) {
-    String result;
+  private Class getDatatype(Method method, Field fieldAnno) {
     Class datatype;
     if (isGetter(method)) {
       datatype = method.getReturnType();
     } else {
       throw new FixedFormatException(format("%s annotations must be placed on getter methods", fieldAnno.getClass().getName()));
     }
+    return datatype;
+  }
 
-    FixedFormatMetadata metadata = getMetadata(datatype, fieldAnno);
-    FixedFormatter formatter = getFixedFormatterInstance(metadata.getFormatter(), metadata);
-    FixedFormatData formatdata = getFormatData(method, fieldAnno);
+  private <T> String exportDataAccordingFieldAnnotation(T fixedFormatRecord, Method method, Field fieldAnno) {
+    String result;
+    Class datatype = getDatatype(method, fieldAnno);
+
+    FormatContext context = getFormatContext(datatype, fieldAnno);
+    FixedFormatter formatter = getFixedFormatterInstance(context.getFormatter(), context);
+    FormatInstructions formatdata = getFormatInstructions(method, fieldAnno);
     Object valueObject;
     try {
       valueObject = method.invoke(fixedFormatRecord);
@@ -217,20 +218,20 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
 
-  private FixedFormatMetadata getMetadata(Class datatype, Field fieldAnno) {
-    FixedFormatMetadata metadata = null;
+  private FormatContext getFormatContext(Class datatype, Field fieldAnno) {
+    FormatContext context = null;
     if (fieldAnno != null) {
-      metadata = new FixedFormatMetadata(fieldAnno.offset(), datatype, fieldAnno.formatter());
+      context = new FormatContext(fieldAnno.offset(), datatype, fieldAnno.formatter());
     }
-    return metadata;
+    return context;
 
   }
 
-  private FixedFormatData getFormatData(Method method, Field fieldAnno) {
+  private FormatInstructions getFormatInstructions(Method method, Field fieldAnno) {
     FixedFormatPatternData patternData = getFixedFormatPatternData(method.getAnnotation(FixedFormatPattern.class));
     FixedFormatBooleanData booleanData = getFixedFormatBooleanData(method.getAnnotation(FixedFormatBoolean.class));
     FixedFormatDecimalData decimalData = getFixedFormatDecimalData(method.getAnnotation(FixedFormatDecimal.class));
-    return new FixedFormatData(fieldAnno.length(), fieldAnno.align(), fieldAnno.paddingChar(), patternData, booleanData, decimalData);
+    return new FormatInstructions(fieldAnno.length(), fieldAnno.align(), fieldAnno.paddingChar(), patternData, booleanData, decimalData);
   }
 
   private FixedFormatPatternData getFixedFormatPatternData(FixedFormatPattern annotation) {

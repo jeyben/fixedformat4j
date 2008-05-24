@@ -6,11 +6,11 @@
 
 Fixedformat4j
 
-  Many applications come across these fixed formatted files when using EDI to interchange data. Even though EDI also
+  Many applications come across these fixed formatted files when using EDI to interchange instructions. Even though EDI also
   supports a XML format the wast majority still uses flat text files - according to wikipedia.
 
   Fixedformat4j is an easy to use Java framework for working with these kind of fixed formatted text files. By annotating
-  your code you can setup the offsets and format for your data when reading/writing to and from fixed format files.
+  your code you can setup the offsets and format for your instructions when reading/writing to and from fixed format files.
 
   Fixedformat4j handles the following build in datatypes:
   * String
@@ -62,7 +62,7 @@ public abstract class MyRecord implements Record {
   record.setStringData("some text"); // this will write the text in the offset 1
   record.setDate(new Date()); // this will write the current date in format yyyyMMdd into offset 11
 
-  // this will read the current date set in the above line, but the time part will be stripped as the data
+  // this will read the current date set in the above line, but the time part will be stripped as the instructions
   // isn't stored in the string format yyyyMMdd
   record.getDate();
 ...

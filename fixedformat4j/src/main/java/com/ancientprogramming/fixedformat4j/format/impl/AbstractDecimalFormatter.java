@@ -16,7 +16,7 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
+import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
 import java.text.DecimalFormat;
 
@@ -49,14 +49,14 @@ public abstract class AbstractDecimalFormatter extends AbstractFixedFormatter {
 
   }
 
-  public String asString(Object obj, FixedFormatData data) {
+  public String asString(Object obj, FormatInstructions instructions) {
 
     String rawString = obj != null ? FORMATTER.format(obj) : ZERO_STRING;
     if (LOG.isDebugEnabled()) {
       LOG.debug("rawString: " + rawString + " - G[" + GROUPING_SEPARATOR + "] D[" + DECIMAL_SEPARATOR + "]");
     }
     rawString = rawString.replaceAll("\\" + GROUPING_SEPARATOR, "");
-    boolean useDecimalDelimiter = data.getFixedFormatDecimalData().isUseDecimalDelimiter();
+    boolean useDecimalDelimiter = instructions.getFixedFormatDecimalData().isUseDecimalDelimiter();
 
     String beforeDelimiter = rawString.substring(0, rawString.indexOf(DECIMAL_SEPARATOR));
     String afterDelimiter = rawString.substring(rawString.indexOf(DECIMAL_SEPARATOR)+1, rawString.length());
@@ -64,12 +64,12 @@ public abstract class AbstractDecimalFormatter extends AbstractFixedFormatter {
       LOG.debug("beforeDelimiter[" + beforeDelimiter + "], afterDelimiter[" + afterDelimiter + "]");
     }
 
-    int decimals = data.getFixedFormatDecimalData().getDecimals();
+    int decimals = instructions.getFixedFormatDecimalData().getDecimals();
     //trim decimals
     afterDelimiter = StringUtils.substring(afterDelimiter, 0, decimals);
     afterDelimiter = StringUtils.rightPad(afterDelimiter, decimals, '0');
 
-    String delimiter = useDecimalDelimiter ? "" + data.getFixedFormatDecimalData().getDecimalDelimiter() : "";
+    String delimiter = useDecimalDelimiter ? "" + instructions.getFixedFormatDecimalData().getDecimalDelimiter() : "";
     String result = beforeDelimiter + delimiter + afterDelimiter;
     if (LOG.isDebugEnabled()) {
       LOG.debug("result[" + result + "]");
@@ -77,14 +77,14 @@ public abstract class AbstractDecimalFormatter extends AbstractFixedFormatter {
     return result;
   }
  
-  protected String getStringToConvert(String string, FixedFormatData data) {
+  protected String getStringToConvert(String string, FormatInstructions instructions) {
     String toConvert;
-    boolean useDecimalDelimiter = data.getFixedFormatDecimalData().isUseDecimalDelimiter();
+    boolean useDecimalDelimiter = instructions.getFixedFormatDecimalData().isUseDecimalDelimiter();
     if(useDecimalDelimiter) {
-      char delimiter = data.getFixedFormatDecimalData().getDecimalDelimiter();
+      char delimiter = instructions.getFixedFormatDecimalData().getDecimalDelimiter();
       toConvert = string.replace(delimiter, '.'); //convert to normal delimiter
     } else {
-      int decimals = data.getFixedFormatDecimalData().getDecimals();
+      int decimals = instructions.getFixedFormatDecimalData().getDecimals();
       if (decimals > 0) {
         String beforeDelimiter = string.substring(0, string.length()-decimals);
         String afterDelimiter = string.substring(string.length()-decimals, string.length());

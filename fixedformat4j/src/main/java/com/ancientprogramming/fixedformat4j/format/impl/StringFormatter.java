@@ -16,7 +16,7 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
+import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
 /**
  * Formatter for string data
@@ -26,11 +26,11 @@ import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
  */
 public class StringFormatter extends AbstractFixedFormatter {
 
-  public Object asObject(String obj, FixedFormatData data) {
+  public Object asObject(String obj, FormatInstructions instructions) {
     return obj;
   }
 
-  public String asString(Object obj, FixedFormatData data) {
+  public String asString(Object obj, FormatInstructions instructions) {
     return String.valueOf(obj);
   }
 }

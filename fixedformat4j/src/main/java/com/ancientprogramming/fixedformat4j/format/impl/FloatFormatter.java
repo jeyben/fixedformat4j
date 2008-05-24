@@ -15,7 +15,7 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
-import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
+import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
 /**
  * todo: comment needed
@@ -25,8 +25,8 @@ import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
  */
 public class FloatFormatter extends AbstractDecimalFormatter {
   
-  public Object asObject(String string, FixedFormatData data) {
-      String toConvert = getStringToConvert(string, data);
+  public Object asObject(String string, FormatInstructions instructions) {
+      String toConvert = getStringToConvert(string, instructions);
       return Float.parseFloat("".equals(toConvert) ? "0" : toConvert);
     }
 

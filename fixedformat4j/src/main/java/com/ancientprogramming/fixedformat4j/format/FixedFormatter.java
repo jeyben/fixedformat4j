@@ -25,9 +25,9 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
  */
 public interface FixedFormatter {
 
-  Object parse(String value, FixedFormatData data) throws FixedFormatException;
+  Object parse(String value, FormatInstructions instructions) throws FixedFormatException;
 
-  String format(Object value, FixedFormatData data) throws FixedFormatException;
+  String format(Object value, FormatInstructions instructions) throws FixedFormatException;
 
   boolean requiresPattern();
   

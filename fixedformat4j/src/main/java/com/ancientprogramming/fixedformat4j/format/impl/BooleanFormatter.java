@@ -17,7 +17,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
+import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
 /**
  * todo: comment needed
@@ -27,21 +27,21 @@ import com.ancientprogramming.fixedformat4j.format.FixedFormatData;
  */
 public class BooleanFormatter extends AbstractFixedFormatter {
 
-  public Object asObject(String string, FixedFormatData data) throws FixedFormatException {
+  public Object asObject(String string, FormatInstructions instructions) throws FixedFormatException {
 
     Boolean result;
-    if (data.getFixedFormatBooleanData().getTrueValue().equals(string)) {
+    if (instructions.getFixedFormatBooleanData().getTrueValue().equals(string)) {
       result = true;
-    } else if (data.getFixedFormatBooleanData().getFalseValue().equals(string)) {
+    } else if (instructions.getFixedFormatBooleanData().getFalseValue().equals(string)) {
       result = false;
     } else {
-      throw new FixedFormatException("Could not convert string[" + string + "] to boolean value according to booleanData[" + data.getFixedFormatBooleanData() + "]");
+      throw new FixedFormatException("Could not convert string[" + string + "] to boolean value according to booleanData[" + instructions.getFixedFormatBooleanData() + "]");
     }
     return result;
   }
 
-  public String asString(Object obj, FixedFormatData data) {
-    return ((Boolean) obj) ? data.getFixedFormatBooleanData().getTrueValue() : data.getFixedFormatBooleanData().getFalseValue();
+  public String asString(Object obj, FormatInstructions instructions) {
+    return ((Boolean) obj) ? instructions.getFixedFormatBooleanData().getTrueValue() : instructions.getFixedFormatBooleanData().getFalseValue();
   }
 
   public boolean requiresBoolean() {
