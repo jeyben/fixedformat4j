@@ -35,7 +35,7 @@ public @interface FixedFormatPattern {
   /**
    * The pattern used in formatting and parsing a fixed format field.
    * Date: yyyyMMdd
-   * Ohter: ####-######.##
+   * Other: ####-######.##
    * Currency: ???
    * @return the pattern
    */

@@ -18,7 +18,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
 /**
- * As for now the formatter chops of decimals in case there is to many
+ * Formatter for {@link Double} data
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0

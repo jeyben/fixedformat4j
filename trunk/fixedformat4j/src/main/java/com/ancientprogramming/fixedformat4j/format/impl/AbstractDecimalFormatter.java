@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
 /**
- * todo: comment needed
+ * Base class for formatting decimal data
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0

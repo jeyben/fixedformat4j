@@ -27,8 +27,6 @@ import java.util.Calendar;
 import java.math.BigDecimal;
 
 /**
- * todo: comment needed
- *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */

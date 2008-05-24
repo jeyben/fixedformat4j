@@ -29,7 +29,6 @@ import java.lang.annotation.RetentionPolicy;
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
-
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 public @interface Field {

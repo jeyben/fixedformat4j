@@ -21,7 +21,7 @@ import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
 /**
- * Formatter for {@link Character} datatypes
+ * Formatter for {@link Character} data
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0

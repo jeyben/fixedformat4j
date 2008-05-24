@@ -19,7 +19,7 @@ import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
 /**
- * Formatter for string data
+ * Formatter for {@link String} data
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0

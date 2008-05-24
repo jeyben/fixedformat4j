@@ -30,7 +30,7 @@ import java.io.Serializable;
 /**
  * Formatter capable of formatting a bunch of known java standard library classes. So far:
  * {@link String}, {@link Integer}, {@link Long}, {@link Date},
- * {@link Character}, {@link Boolean}, {@link Double} and {@link Float}
+ * {@link Character}, {@link Boolean}, {@link Double}, {@link Float} and {@link BigDecimal}
  *
  *
  * @author Jacob von Eyben www.ancientprogramming.com
