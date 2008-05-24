@@ -33,34 +33,6 @@ public class FixedFormatProcessor {
 
   private static final Log LOG = LogFactory.getLog(FixedFormatProcessor.class);
 
-
-  public static Object getData(StringBuffer record, FixedFormatData fixedFormatData, FixedFormatMetadata metadata) {
-    FixedFormatter formatter = getFixedFormatterInstance(metadata.getFormatter(), metadata);
-    assertIsPatternRequired(fixedFormatData, metadata, formatter);
-    assertIsBooleanRequired(fixedFormatData, metadata, formatter);
-    assertIsDecimalRequired(fixedFormatData, metadata, formatter);
-    Object result = formatter.parse(fetchData(record, fixedFormatData, metadata), fixedFormatData);
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("the fetched data[" + ((result != null) ? result.toString() : result) + "]");
-    }
-    return result;
-  }
-
-  static void insertData(StringBuffer record, String formattedData, FixedFormatData fixedFormatData, FixedFormatMetadata metadata) {
-    int offset = metadata.getOffset() - 1;
-    int length = fixedFormatData.getLength();
-    int dataLength = formattedData.length();
-    if (dataLength > length) {
-      LOG.warn("data[" + formattedData + "] is to longer than the specified length[" + length + "]. Data will be chopped.");
-      formattedData = StringUtils.substring(formattedData, 0, length);
-    }
-
-    if (record.length() < offset + length) {
-      record.append(StringUtils.leftPad("", (offset + length) - record.length(), ' '));
-    }
-    record.replace(offset, offset + length, formattedData);
-  }
-
   public static String fetchData(StringBuffer record, FixedFormatData fixedFormatData, FixedFormatMetadata metadata) {
     String result;
     int offset = metadata.getOffset() - 1;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.record.impl;
+package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.*;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
@@ -24,7 +24,7 @@ import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
-import com.ancientprogramming.fixedformat4j.record.FixedFormatManager;
+import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

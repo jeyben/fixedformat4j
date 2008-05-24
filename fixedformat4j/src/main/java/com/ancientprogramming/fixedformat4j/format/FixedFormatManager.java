@@ -13,20 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.record;
+package com.ancientprogramming.fixedformat4j.format;
 
 /**
- * Exception thrown in cases something bad happens in the {@link com.ancientprogramming.fixedformat4j.record.FixedFormatManager}
+ * Interface used to interact with fixed format annotations.
  *
+ * A <code>FixedFormatManager</code> is associated with one type of fixed format data.
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public class RecordFactoryException extends RuntimeException {
-  public RecordFactoryException(String s) {
-    super(s);
-  }
+public interface FixedFormatManager {
 
-  public RecordFactoryException(String s, Throwable throwable) {
-    super(s, throwable);    //To change body of overridden methods use File | Settings | File Templates.
-  }
+  /**
+   * Create a fixed format record from string data
+   * @param fixedFormatRecord the class
+   * @param data the data to load
+   * @return an object loaded with the fixedformat data
+   */
+  <T> T load(Class<T> fixedFormatRecord, String data);
+
+  <T> String export(T fixedFormatRecord);
+
+  <T> String export(String existingData, T fixedFormatRecord);
+
+
 }

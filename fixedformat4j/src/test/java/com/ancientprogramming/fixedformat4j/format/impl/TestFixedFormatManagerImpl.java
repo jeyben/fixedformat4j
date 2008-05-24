@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.record.impl;
+package com.ancientprogramming.fixedformat4j.format.impl;
 
-import com.ancientprogramming.fixedformat4j.record.FixedFormatManager;
-import com.ancientprogramming.fixedformat4j.record.MultibleFieldsRecord;
-import com.ancientprogramming.fixedformat4j.record.MyRecord;
+import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
+import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
+import com.ancientprogramming.fixedformat4j.format.impl.MultibleFieldsRecord;
+import com.ancientprogramming.fixedformat4j.format.impl.MyRecord;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
