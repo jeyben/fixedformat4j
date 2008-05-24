@@ -1,0 +1,77 @@
+  ------
+  A Java API for working with fixed formatted textfiles
+  ------
+  Jacob von Eyben
+  ------
+
+Fixedformat4j
+
+  Many applications come across these fixed formatted files when using EDI to interchange instructions. Even though EDI also
+  supports a XML format the wast majority still uses flat text files - according to wikipedia.
+
+  Fixedformat4j is an easy to use Java framework for working with these kind of fixed formatted text files. By annotating
+  your code you can setup the offsets and format for your instructions when reading/writing to and from fixed format files.
+
+  Fixedformat4j handles the following build in datatypes:
+  * String
+  * Character
+  * Long
+  * Integer
+  * Double
+  * Float
+  * Date
+  * Boolean
+
+  At the same time it is straight forward to write and plugin your own formatters for custom datatypes.
+
+* Getting started
+
+  To start using Fixedformat4j you only have to create your Record class and use the RecordFactory to get an instance
+  of your record.
+
+  A sample Record can be seen here:
+
++--
+public abstract class MyRecord implements Record {
+
+  @FixedFormatField(offset = 1, length = 10)
+  private String stringData;
+
+  @FixedFormatField(offset = 11, length = 8)
+  @FixedFormatPattern("yyyyMMdd")
+  private Date date;
+
+  public abstract String getStringData();
+
+  public abstract void setStringData(String stringValue);
+
+  public abstract Date getDate();
+
+  public abstract void setDate(Date date);
+}
++--
+
+  The annotations could be placed on the setter and getters as well and the setters and getters
+  (as well as the class) doesn't have to be abstract.
+
+  After the record is created using the RecordFactory you can read and modify the underlying text through the getters and setters:
+
++--
+...
+  MyFieldRecord record = RecordFactory.createInstance(MyFieldRecord.class);
+  record.setStringData("some text"); // this will write the text in the offset 1
+  record.setDate(new Date()); // this will write the current date in format yyyyMMdd into offset 11
+
+  // this will read the current date set in the above line, but the time part will be stripped as the instructions
+  // isn't stored in the string format yyyyMMdd
+  record.getDate();
+...
++--
+
+* Tutorials
+
+  * {{{fiveMinutesTutorial.html}5 minutes tutorial}} on how to read and write fixed formatted files using fixedformat4j.
+
+  * Creating custom formatter to handle custom datatypes (TBD)
+
+  * 

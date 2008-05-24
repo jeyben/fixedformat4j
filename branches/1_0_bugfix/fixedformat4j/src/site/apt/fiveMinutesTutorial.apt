@@ -1,0 +1,141 @@
+  ------
+  5 minutes tutorial
+  ------
+  Jacob von Eyben
+  ------
+
+5 minutes tutorial
+
+  This tutorial will demonstrate how easy it is to read and write in fixed format using fixedformat4j.
+
+* Reading and writing using build in datatypes.
+
+  Lets assume you would like to read and write some text like this:
+
++--
+A200803150000140050A longer desciption T
++--
+  A description of the fields:
+
+  * A           = Character describing the record type
+
+  * 20080316    = A date_ 2008-03-16
+
+  * 0000140050  = Amount: 1400.50
+
+  * A longer... = A text description
+
+  * T           = boolean 'true' value
+
+   []
+
+  Then you create a POJO representing the instructions and instrument the properties with annotations
+  describing the fields:
+
++--
+public abstract class FixedRecordReadWriter implements Record {
+
+  @FixedFormatField(offset = 1, length = 1)
+  private Character recordType;
+
+  @FixedFormatField(offset = 2, length = 8)
+  @FixedFormatPattern("yyyyMMdd")
+  private Date date;
+
+  @FixedFormatField(offset = 10, length = 10, paddingChar = '0', align = Align.RIGHT)
+  @FixedFormatDecimal(useDecimalDelimiter = false)
+  private Double amount;
+
+  @FixedFormatField(offset = 20, length = 20)
+  private String description;
+
+  @FixedFormatField(offset = 40, length = 1)
+  @FixedFormatBoolean
+  private Boolean ok;
+
+  public Character getRecordType() {
+    return recordType;
+  }
+
+  public void setRecordType(Character recordType) {
+    this.recordType = recordType;
+  }
+
+  public Date getDate() {
+    return date;
+  }
+
+  public void setDate(Date date) {
+    this.date = date;
+  }
+
+  public Double getAmount() {
+    return amount;
+  }
+
+  public void setAmount(Double amount) {
+    this.amount = amount;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public Boolean getOk() {
+    return ok;
+  }
+
+  public void setOk(Boolean ok) {
+    this.ok = ok;
+  }
+
+
+  public String toString() {
+    return "FixedRecordReadWriter{" +
+        "recordType=" + getRecordType() +
+        ", date=" + getDate() +
+        ", amount=" + getAmount() +
+        ", description='" + getDescription() + '\'' +
+        ", ok=" + getOk() +
+        '}';
+  }
+}
++--
+
+  A simple main program illustrating the use:
+
++--
+public class BasicReadWriteSampleUsingPropertyAnnotations {
+
+  public static final String FIXED_RECORD = "A200803150000140050A longer desciption T";
+
+  public static void main(String[] args) {
+    FixedRecordReadWriter record = RecordFactory.createInstance(FixedRecordReadWriter.class, FIXED_RECORD);
+
+    System.out.println("export = " + record.export());
+    System.out.println("toString = " + record.toString());
+
+    record.setAmount(100.45);
+    record.setRecordType('B');
+    record.setOk(false);
+    record.setDescription("Shorter text");
+    record.setDate(new Date());
+
+    System.out.println("export = " + record.export());
+    System.out.println("toString = " + record.toString());
+  }
+}
++--
+
+  Running the program would output the following:
+
++--
+export = A200803150000140050A longer desciption T
+toString = FixedRecordReadWriter{recordType=A, date=Sat Mar 15 00:00:00 CET 2008, amount=1400.5, description='A longer desciption', ok=true}
+export = B200803170000010045Shorter text        F
+toString = FixedRecordReadWriter{recordType=B, date=Mon Mar 17 00:00:00 CET 2008, amount=100.45, description='Shorter text', ok=false}
++--
