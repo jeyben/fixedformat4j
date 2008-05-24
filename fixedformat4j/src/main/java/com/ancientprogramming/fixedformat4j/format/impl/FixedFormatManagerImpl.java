@@ -158,7 +158,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
 
   private <T> Record getRecordAnnotation(Class<T> fixedFormatRecordClass) {
-    Record recordAnno = FixedFormatAnnotationUtil.getAnnotation(fixedFormatRecordClass, Record.class);
+    Record recordAnno = fixedFormatRecordClass.getAnnotation(Record.class);
     if (recordAnno == null) {
       throw new FixedFormatException(format("%s has to be marked with the record annotation to be loaded", fixedFormatRecordClass.getName()));
     }

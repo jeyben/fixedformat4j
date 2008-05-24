@@ -15,28 +15,6 @@
  */
 package com.ancientprogramming.fixedformat4j.annotation;
 
-import junit.framework.TestCase;
-import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatAnnotationUtil.*;
-
-/**
- * @author Jacob von Eyben www.ancientprogramming.com
- * @since 1.0.0
- */
-public class TestFixedFormatAnnotationUtil extends TestCase {
-
-  public void testGetAnnotation() throws Exception {
-    Record anno = getAnnotation(RecordAnnotatedClass.class, Record.class);
-    assertNotNull(anno);
-    assertEquals(10, anno.length());
- 
-    anno = getAnnotation(NonRecordAnnotatedClass.class, Record.class);
-    assertNull(anno);
-
-    FixedFormatBoolean booleanAnno = getAnnotation(RecordAnnotatedClass.class, FixedFormatBoolean.class);
-    assertNull(booleanAnno);
-  }
-}
-
 @Record(length = 10)
 class RecordAnnotatedClass {
 
