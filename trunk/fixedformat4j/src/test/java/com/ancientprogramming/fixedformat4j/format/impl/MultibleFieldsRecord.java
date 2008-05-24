@@ -1,4 +1,4 @@
-package com.ancientprogramming.fixedformat4j.record;
+package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
