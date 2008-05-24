@@ -15,6 +15,8 @@
  */
 package com.ancientprogramming.fixedformat4j.format;
 
+import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
+
 /**
  * Interface used to interact with fixed format annotations.
  *
@@ -25,16 +27,17 @@ package com.ancientprogramming.fixedformat4j.format;
 public interface FixedFormatManager {
 
   /**
-   * Create a fixed format record from string data
-   * @param fixedFormatRecord the class
+   * Create an instance of the fixedFormatClass and load the data string into the object according to the annotations.
+   * @param fixedFormatClass the class to instanciate
    * @param data the data to load
    * @return an object loaded with the fixedformat data
+   * @throws FixedFormatException in case the fixedFormatRecord class cannot be loaded
    */
-  <T> T load(Class<T> fixedFormatRecord, String data);
+  <T> T load(Class<T> fixedFormatClass, String data) throws FixedFormatException;
 
-  <T> String export(T fixedFormatRecord);
+  <T> String export(T fixedFormatInstance) throws FixedFormatException;
 
-  <T> String export(String existingData, T fixedFormatRecord);
+  <T> String export(String existingData, T fixedFormatRecord) throws FixedFormatException;
 
 
 }

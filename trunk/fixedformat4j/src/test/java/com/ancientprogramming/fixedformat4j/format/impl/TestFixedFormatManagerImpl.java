@@ -19,6 +19,7 @@ import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
 import com.ancientprogramming.fixedformat4j.format.impl.MultibleFieldsRecord;
 import com.ancientprogramming.fixedformat4j.format.impl.MyRecord;
+import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
@@ -107,5 +108,13 @@ public class TestFixedFormatManagerImpl extends TestCase {
     multibleFieldsRecord.setIntegerdata(1000);
     String exportedString = manager.export("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", multibleFieldsRecord);
     Assert.assertEquals("wrong record exported", MULTIBLE_RECORD_DATA_X_PADDED, exportedString);
+  }
+
+  public void testLoadNonRecordAnnotatedClass() {
+    try {
+      manager.load(String.class, "some");
+    } catch (FixedFormatException e) {
+      //expected
+    }
   }
 }
