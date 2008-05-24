@@ -33,13 +33,12 @@ public class FixedFormatProcessor {
 
   private static final Log LOG = LogFactory.getLog(FixedFormatProcessor.class);
 
-  public static String fetchData(StringBuffer record, FixedFormatData fixedFormatData, FixedFormatMetadata metadata) {
+  public static String fetchData(String record, FixedFormatData fixedFormatData, FixedFormatMetadata metadata) {
     String result;
     int offset = metadata.getOffset() - 1;
     int length = fixedFormatData.getLength();
     if (record.length() >= offset + length) {
       result = record.substring(offset, offset + length);
-      record.append(StringUtils.leftPad("", (offset + length) - record.length(), ' '));
     } else {
       result = null;
       LOG.warn("Could not fetch data from record as the recordlength[" + record.length() + "] was shorter than the requested offset[" + offset + "] + length[" + length + "] of the request data. Returning null");
