@@ -32,6 +32,8 @@ import java.lang.annotation.ElementType;
 @Target({ElementType.METHOD, ElementType.FIELD})
 public @interface FixedFormatPattern {
 
+  public static final String DATE_PATTERN = "yyyyMMdd";
+
   /**
    * The pattern used in formatting and parsing a fixed format field.
    * Date: yyyyMMdd

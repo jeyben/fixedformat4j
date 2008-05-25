@@ -30,14 +30,14 @@ public class TestStringFormatter extends TestCase {
   private FixedFormatter formatter = new StringFormatter();
 
   public void testParse() {
-    FormatInstructions instructions = new FormatInstructions(10, Align.LEFT, ' ', null, null, null);
+    FormatInstructions instructions = new FormatInstructions(10, Align.LEFT, ' ', null, null, null, null);
     String input = "string";
     Object parseResult = formatter.parse(input, instructions);
     Assert.assertEquals(String.class, parseResult.getClass());
   }
 
   public void testFormat() {
-    FormatInstructions instructions = new FormatInstructions(10, Align.LEFT, ' ', null, null, null);
+    FormatInstructions instructions = new FormatInstructions(10, Align.LEFT, ' ', null, null, null, null);
     String input = "string";
     String expected = "string    ";
 

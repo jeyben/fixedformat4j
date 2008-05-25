@@ -15,7 +15,6 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
-import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
 import java.text.DecimalFormat;
@@ -30,7 +29,7 @@ import org.apache.commons.logging.Log;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public abstract class AbstractDecimalFormatter extends AbstractFixedFormatter {
+public abstract class AbstractDecimalFormatter extends AbstractNumberFormatter {
 
   private static final Log LOG = LogFactory.getLog(AbstractDecimalFormatter.class);
 
@@ -93,12 +92,6 @@ public abstract class AbstractDecimalFormatter extends AbstractFixedFormatter {
         toConvert = string;
       }
     }
-    return toConvert;
+    return stripSigningForPositiveAndZeroNumbers(toConvert);
   }
-
-  public boolean requiresDecimal() {
-    return true;
-  }
-
-
 }

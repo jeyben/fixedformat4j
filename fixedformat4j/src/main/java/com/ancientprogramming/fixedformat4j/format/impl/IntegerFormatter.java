@@ -17,6 +17,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Formatter for {@link Integer} data
@@ -24,10 +25,10 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public class IntegerFormatter extends AbstractFixedFormatter {
+public class IntegerFormatter extends AbstractNumberFormatter {
 
   public Object asObject(String string, FormatInstructions instructions) {
-    return Integer.parseInt(string);
+    return Integer.parseInt(stripSigningForPositiveAndZeroNumbers(string));
   }
 
   public String asString(Object obj, FormatInstructions instructions) {

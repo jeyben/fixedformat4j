@@ -16,6 +16,7 @@
 package com.ancientprogramming.fixedformat4j.format.data;
 
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
+import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern.*;
 
 /**
  * Data object containing the exact same data as {@link FixedFormatPattern}
@@ -26,6 +27,7 @@ import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
 public class FixedFormatPatternData {
 
   private String pattern;
+  public static final FixedFormatPatternData DEFAULT = new FixedFormatPatternData(DATE_PATTERN);
 
   public FixedFormatPatternData(String pattern) {
     this.pattern = pattern;

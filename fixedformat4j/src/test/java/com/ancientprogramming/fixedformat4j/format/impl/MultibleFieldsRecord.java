@@ -44,7 +44,6 @@ public class MultibleFieldsRecord {
   }
 
   @Fields({@Field(offset = 11, length = 8), @Field(offset = 19, length = 8)})
-  @FixedFormatPattern("yyyyMMdd")
   public Date getDateData() {
     return dateData;
   }
@@ -53,7 +52,7 @@ public class MultibleFieldsRecord {
     this.dateData = dateData;
   }
 
-  @Field(offset = 50, length = 4)
+  @Field(offset = 50, length = 4, align = Align.RIGHT, paddingChar = '0')
   public Integer getIntegerdata() {
     return integerdata;
   }

@@ -64,11 +64,10 @@ public class MyRecord {
   }
 
   @Field(offset = 16, length = 8)
-  @FixedFormatPattern("yyyyMMdd")
   public Date getDateData() {
     return dateData;
   }
-
+                                 
   public void setDateData(Date dateData) {
     this.dateData = dateData;
   }
@@ -83,7 +82,6 @@ public class MyRecord {
   }
 
   @Field(offset = 25, length = 1)
-  @FixedFormatBoolean
   public Boolean getBooleanData() {
     return booleanData;
   }
@@ -102,7 +100,6 @@ public class MyRecord {
   }
 
   @Field(offset = 30, length = 10, align = Align.RIGHT, paddingChar = '0')
-  @FixedFormatDecimal
   public Double getDoubleData() {
     return doubleData;
   }
@@ -112,7 +109,6 @@ public class MyRecord {
   }
 
   @Field(offset = 40, length = 10, align = Align.RIGHT, paddingChar = '0')
-  @FixedFormatDecimal
   public Float getFloatData() {
     return floatData;
   }

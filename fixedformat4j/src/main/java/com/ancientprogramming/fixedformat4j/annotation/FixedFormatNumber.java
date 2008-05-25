@@ -22,20 +22,12 @@ import java.lang.annotation.ElementType;
 
 /**
  * @author Jacob von Eyben www.ancientprogramming.com
- * @since 1.0.0
+ * @since 1.1.0
  */
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.FIELD})
-public @interface FixedFormatDecimal {
+public @interface FixedFormatNumber {
 
-  public static final int DECIMALS = 2;
-  public static final boolean USE_DECIMAL_DELIMITER = false;
-  public static final char DECIMAL_DELIMITER = '.';
-
-  int decimals() default DECIMALS;
-
-  boolean useDecimalDelimiter() default USE_DECIMAL_DELIMITER;
-
-  char decimalDelimiter() default DECIMAL_DELIMITER;
+  Sign sign() default Sign.PREPEND;
 }

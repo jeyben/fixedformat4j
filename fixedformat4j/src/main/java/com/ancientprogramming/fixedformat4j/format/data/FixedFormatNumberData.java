@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.annotation;
+package com.ancientprogramming.fixedformat4j.format.data;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.annotation.ElementType;
+import com.ancientprogramming.fixedformat4j.annotation.Sign;
 
 /**
+ * Data object containing the exact same data as {@link com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal} 
+ *
  * @author Jacob von Eyben www.ancientprogramming.com
- * @since 1.0.0
+ * @since 1.1.0
  */
+public class FixedFormatNumberData {
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.FIELD})
-public @interface FixedFormatDecimal {
+  private Sign signing;
+  public static final FixedFormatNumberData DEFAULT = new FixedFormatNumberData(Sign.PREPEND);
 
-  public static final int DECIMALS = 2;
-  public static final boolean USE_DECIMAL_DELIMITER = false;
-  public static final char DECIMAL_DELIMITER = '.';
+  public FixedFormatNumberData(Sign signing) {
+    this.signing = signing;
+  }
 
-  int decimals() default DECIMALS;
-
-  boolean useDecimalDelimiter() default USE_DECIMAL_DELIMITER;
-
-  char decimalDelimiter() default DECIMAL_DELIMITER;
+  public Sign getSigning() {
+    return signing;
+  }
 }

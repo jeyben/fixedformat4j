@@ -32,10 +32,6 @@ import java.text.ParseException;
  */
 public class DateFormatter extends AbstractFixedFormatter {
 
-  public boolean requiresPattern() {
-    return true;
-  }
-
   public Object asObject(String string, FormatInstructions instructions) throws FixedFormatException {
     try {
       return getFormatter(instructions.getFixedFormatPatternData().getPattern()).parse(string);
