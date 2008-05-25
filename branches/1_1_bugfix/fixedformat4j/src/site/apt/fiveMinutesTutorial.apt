@@ -1,0 +1,19 @@
+  ------
+  5 minutes tutorial
+  ------
+  Jacob von Eyben
+  ------
+
+5 minutes tutorial
+
+  This tutorial will demonstrate how easy it is to read and write in fixed format using fixedformat4j.
+
+* Reading and writing using build in datatypes.
+
+  Lets assume you would like to read and write some text like this:
+
++--
+A200803150000140050A longer desciption T
++--
+
+  (TBD)
