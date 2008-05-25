@@ -31,17 +31,17 @@ public class TestBooleanFormatter extends TestCase {
   FixedFormatter formatter = new BooleanFormatter();
 
   public void testParse() {
-    assertEquals(true, formatter.parse("T", new FormatInstructions(1, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null)));
-    assertEquals(false, formatter.parse("F ", new FormatInstructions(2, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null)));
+    assertEquals(true, formatter.parse("T", new FormatInstructions(1, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null, null)));
+    assertEquals(false, formatter.parse("F ", new FormatInstructions(2, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null, null)));
     try {
-      formatter.parse("", new FormatInstructions(0, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null));
+      formatter.parse("", new FormatInstructions(0, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null, null));
     } catch (FixedFormatException e) {
       //expected as string is empty
     }
   }
 
   public void testFormat() {
-    assertEquals("T", formatter.format(true, new FormatInstructions(1, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null)));
-    assertEquals("F", formatter.format(false, new FormatInstructions(1, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null)));
+    assertEquals("T", formatter.format(true, new FormatInstructions(1, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null, null)));
+    assertEquals("F", formatter.format(false, new FormatInstructions(1, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null, null)));
   }
 }

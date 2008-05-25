@@ -15,6 +15,8 @@
  */
 package com.ancientprogramming.fixedformat4j.format;
 
+import com.ancientprogramming.fixedformat4j.annotation.Sign;
+
 /**
  * Handles default formatting and parsing based on FixedFormatAnnotation values.
  *
@@ -25,25 +27,14 @@ public abstract class AbstractFixedFormatter implements FixedFormatter {
   public Object parse(String value, FormatInstructions instructions) {
     Object result = null;
     if (value != null) {
-    result = asObject(instructions.getPaddingDirection().remove(value, instructions.getPaddingChar()), instructions);
+      instructions.getFixedFormatNumberData();
+      result = asObject(instructions.getAlignment().remove(value, instructions.getPaddingChar()), instructions);
     }
     return result;
   }
 
   public String format(Object value, FormatInstructions instructions) {
-    return instructions.getPaddingDirection().apply(asString(value, instructions), instructions.getLength(), instructions.getPaddingChar());
-  }
-
-  public boolean requiresPattern() {
-    return false;
-  }
-
-  public boolean requiresBoolean() {
-    return false;
-  }
-
-  public boolean requiresDecimal() {
-    return false;
+    return instructions.getAlignment().apply(asString(value, instructions), instructions.getLength(), instructions.getPaddingChar());
   }
 
   public abstract Object asObject(String string, FormatInstructions instructions);

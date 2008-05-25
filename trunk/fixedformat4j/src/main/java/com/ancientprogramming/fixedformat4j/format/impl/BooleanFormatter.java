@@ -44,7 +44,4 @@ public class BooleanFormatter extends AbstractFixedFormatter {
     return ((Boolean) obj) ? instructions.getFixedFormatBooleanData().getTrueValue() : instructions.getFixedFormatBooleanData().getFalseValue();
   }
 
-  public boolean requiresBoolean() {
-    return true;
-  }
 }

@@ -31,7 +31,10 @@ import java.lang.annotation.ElementType;
 @Target({ElementType.METHOD, ElementType.FIELD})
 public @interface FixedFormatBoolean {
 
-  String trueValue() default "T";
+  public static final String TRUE_VALUE = "T";
+  public static final String FALSE_VALUE = "F";
 
-  String falseValue() default "F";
+  String trueValue() default TRUE_VALUE;
+
+  String falseValue() default FALSE_VALUE;
 }

@@ -16,6 +16,7 @@
 package com.ancientprogramming.fixedformat4j.format.data;
 
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean;
+import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean.*;
 
 /**
  * Data object containing the exact same data as {@link FixedFormatBoolean} 
@@ -24,6 +25,8 @@ import com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean;
  * @since 1.0.0
  */
 public class FixedFormatBooleanData {
+
+  public static final FixedFormatBooleanData DEFAULT = new FixedFormatBooleanData(TRUE_VALUE, FALSE_VALUE);
 
   private String trueValue;
 

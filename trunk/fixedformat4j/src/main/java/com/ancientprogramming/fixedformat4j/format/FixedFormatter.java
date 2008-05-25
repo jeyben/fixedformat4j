@@ -28,10 +28,4 @@ public interface FixedFormatter {
   Object parse(String value, FormatInstructions instructions) throws FixedFormatException;
 
   String format(Object value, FormatInstructions instructions) throws FixedFormatException;
-
-  boolean requiresPattern();
-  
-  boolean requiresBoolean();
-
-  boolean requiresDecimal();
 }

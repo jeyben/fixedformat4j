@@ -29,12 +29,12 @@ public class TestCharacterFormatter extends TestCase {
   FixedFormatter formatter = new CharacterFormatter();
 
   public void testParse() {
-    assertEquals('J', formatter.parse("J", new FormatInstructions(1, Align.LEFT, ' ', null, null, null)));
-    assertEquals('J', formatter.parse("JN", new FormatInstructions(2, Align.LEFT, ' ', null, null, null)));
-    assertEquals(null, formatter.parse("", new FormatInstructions(0, Align.LEFT, ' ', null, null, null)));
+    assertEquals('J', formatter.parse("J", new FormatInstructions(1, Align.LEFT, ' ', null, null, null,  null)));
+    assertEquals('J', formatter.parse("JN", new FormatInstructions(2, Align.LEFT, ' ', null, null, null, null)));
+    assertEquals(null, formatter.parse("", new FormatInstructions(0, Align.LEFT, ' ', null, null, null, null)));
   }
 
   public void testFormat() {
-    assertEquals("J", formatter.format('J', new FormatInstructions(1, Align.LEFT, ' ', null, null, null)));
+    assertEquals("J", formatter.format('J', new FormatInstructions(1, Align.LEFT, ' ', null, null, null, null)));
   }
 }

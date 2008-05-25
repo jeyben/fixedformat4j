@@ -19,6 +19,7 @@ import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
+import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
 
 /**
  * Contains instructions on how to export and load fixed formatted data.
@@ -33,14 +34,16 @@ public class FormatInstructions {
   private char paddingChar;
   private FixedFormatPatternData fixedFormatPatternData;
   private FixedFormatBooleanData fixedFormatBooleanData;
+  private FixedFormatNumberData fixedFormatNumberData;
   private FixedFormatDecimalData fixedFormatDecimalData;
 
-  public FormatInstructions(int length, Align alignment, char paddingChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatDecimalData fixedFormatDecimalData) {
+  public FormatInstructions(int length, Align alignment, char paddingChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData) {
     this.length = length;
     this.alignment = alignment;
     this.paddingChar = paddingChar;
     this.fixedFormatPatternData = fixedFormatPatternData;
     this.fixedFormatBooleanData = fixedFormatBooleanData;
+    this.fixedFormatNumberData = fixedFormatNumberData;
     this.fixedFormatDecimalData = fixedFormatDecimalData;
   }
 
@@ -48,7 +51,7 @@ public class FormatInstructions {
     return length;
   }
 
-  public Align getPaddingDirection() {
+  public Align getAlignment() {
     return alignment;
   }
 
@@ -68,6 +71,9 @@ public class FormatInstructions {
     return fixedFormatDecimalData;
   }
 
+  public FixedFormatNumberData getFixedFormatNumberData() {
+    return fixedFormatNumberData;
+  }
 
   public String toString() {
     return "FormatInstructions{" +
@@ -76,6 +82,7 @@ public class FormatInstructions {
         ", paddingChar=" + paddingChar +
         ", fixedFormatPatternData=" + fixedFormatPatternData +
         ", fixedFormatBooleanData=" + fixedFormatBooleanData +
+        ", fixedFormatNumberData=" + fixedFormatNumberData +
         ", fixedFormatDecimalData=" + fixedFormatDecimalData +
         '}';
   }

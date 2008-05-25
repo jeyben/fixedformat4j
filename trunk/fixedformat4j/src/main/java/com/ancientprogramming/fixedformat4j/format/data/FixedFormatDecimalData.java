@@ -16,6 +16,7 @@
 package com.ancientprogramming.fixedformat4j.format.data;
 
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal;
+import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal.*;
 
 /**
  * Data object containing the exact same data as {@link FixedFormatDecimal}
@@ -28,6 +29,7 @@ public class FixedFormatDecimalData {
   private int decimals;
   private boolean useDecimalDelimiter;
   private char decimalDelimiter;
+  public static final FixedFormatDecimalData DEFAULT = new FixedFormatDecimalData(DECIMALS, USE_DECIMAL_DELIMITER, DECIMAL_DELIMITER);
 
   public FixedFormatDecimalData(int decimals, boolean useDecimalDelimiter, char decimalDelimiter) {
     this.decimals = decimals;

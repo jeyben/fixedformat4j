@@ -84,22 +84,4 @@ public class FixedFormatUtil {
     }
     return result;
   }
-
-  public static void assertIsPatternRequired(FormatInstructions formatInstructions, FormatContext context, FixedFormatter formatter) {
-    if (formatter.requiresPattern() && formatInstructions.getFixedFormatPatternData() == null) {
-      throw new FixedFormatException(FixedFormatPattern.class.getName() + " annotation is required for datatype[" + context.getDataType().getName() + "].");
-    }
-  }
-
-  public static void assertIsBooleanRequired(FormatInstructions formatInstructions, FormatContext context, FixedFormatter formatter) {
-    if (formatter.requiresBoolean() && formatInstructions.getFixedFormatBooleanData() == null) {
-      throw new FixedFormatException(FixedFormatBoolean.class.getName() + " annotation is required for datatype[" + context.getDataType().getName() + "].");
-    }
-  }
-
-  public static void assertIsDecimalRequired(FormatInstructions formatInstructions, FormatContext context, FixedFormatter formatter) {
-    if (formatter.requiresDecimal() && formatInstructions.getFixedFormatDecimalData() == null) {
-      throw new FixedFormatException(FixedFormatDecimal.class.getName() + " annotation is required for datatype[" + context.getDataType().getName() + "].");
-    }
-  }
 }

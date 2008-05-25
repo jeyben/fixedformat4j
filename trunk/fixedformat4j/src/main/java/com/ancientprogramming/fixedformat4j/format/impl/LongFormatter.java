@@ -24,10 +24,10 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public class LongFormatter extends AbstractFixedFormatter {
+public class LongFormatter extends AbstractNumberFormatter {
 
   public Object asObject(String string, FormatInstructions instructions) {
-    return Long.parseLong(string);
+    return Long.parseLong(stripSigningForPositiveAndZeroNumbers(string));
   }
 
   public String asString(Object obj, FormatInstructions instructions) {

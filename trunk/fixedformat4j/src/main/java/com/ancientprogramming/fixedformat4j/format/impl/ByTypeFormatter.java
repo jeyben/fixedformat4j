@@ -60,36 +60,12 @@ public class ByTypeFormatter implements FixedFormatter {
 
   public Object parse(String value, FormatInstructions instructions) {
     FixedFormatter formatter = actualFormatter(context.getDataType());
-    FixedFormatUtil.assertIsPatternRequired(instructions, context, formatter);
-    FixedFormatUtil.assertIsBooleanRequired(instructions, context, formatter);
-    FixedFormatUtil.assertIsDecimalRequired(instructions, context, formatter);
     return formatter.parse(value, instructions);
   }
 
   public String format(Object value, FormatInstructions instructions) {
     FixedFormatter formatter = actualFormatter(context.getDataType());
-    FixedFormatUtil.assertIsPatternRequired(instructions, context, formatter);
-    FixedFormatUtil.assertIsBooleanRequired(instructions, context, formatter);
-    FixedFormatUtil.assertIsDecimalRequired(instructions, context, formatter);
     return formatter.format(value, instructions);
-  }
-
-  /**
-   * In general the by type formatter doesn't require a pattern annotation, but will ask the actual formatter
-   * if it requires a pattern or not.
-   *
-   * @return always <code>false</code>
-   */
-  public boolean requiresPattern() {
-    return false;
-  }
-
-  public boolean requiresBoolean() {
-    return false;
-  }
-
-  public boolean requiresDecimal() {
-    return false;
   }
 
   public FixedFormatter actualFormatter(final Class<? extends Object> dataType) {

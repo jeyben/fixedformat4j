@@ -18,6 +18,8 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
+import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
+import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
@@ -30,19 +32,18 @@ public class TestIntegerFormatter extends TestCase {
   private FixedFormatter formatter = new IntegerFormatter();
 
   public void testParse() {
-    FormatInstructions instructions = new FormatInstructions(10, Align.LEFT, ' ', null, null, null);
-    String input = "100       ";
-    Object parseResult = formatter.parse(input, instructions);
-    Assert.assertEquals(Integer.class, parseResult.getClass());
-    Assert.assertEquals(new Integer(100), (Integer) parseResult);
+    assertEquals(100, formatter.parse("+000000100", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
+    assertEquals(1234, formatter.parse("+000001234", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
+    assertEquals(0, formatter.parse("+000000000", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
+    assertEquals(0, formatter.parse("-000000000", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
+    assertEquals(-1234, formatter.parse("-000001234", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
   }
 
   public void testFormat() {
-    FormatInstructions instructions = new FormatInstructions(10, Align.LEFT, ' ', null, null, null);
-    Integer input = 100;
-    String expected = "100       ";
-
-    String formatResult = formatter.format(input, instructions);
-    Assert.assertEquals("expected[" + expected + "] - actual[" + formatResult + "]", expected, formatResult);
+    assertEquals("+000000100", formatter.format(100, new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals("+000000101", formatter.format(101, new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(1, false, '.'))));
+    assertEquals("+000001234", formatter.format(1234, new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals("-000001234", formatter.format(-1234, new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals("+000000000", formatter.format(0, new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, false, '.'))));
   }
 }

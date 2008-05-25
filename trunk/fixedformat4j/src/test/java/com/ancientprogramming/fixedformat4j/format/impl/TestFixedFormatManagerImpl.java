@@ -34,9 +34,9 @@ public class TestFixedFormatManagerImpl extends TestCase {
 
   private static String STR = "some text ";
 
-  public static final String MY_RECORD_DATA = "some text 0012320080514CT00110000001035000000205600012 0120";
-  public static final String MULTIBLE_RECORD_DATA = "some      2008101320081013                       1000";
-  public static final String MULTIBLE_RECORD_DATA_X_PADDED = "some      2008101320081013xxxxxxxxxxxxxxxxxxxxxxx1000";
+  public static final String MY_RECORD_DATA = "some text +012320080514CT+011+000001035+000002056-0012 0120";
+  public static final String MULTIBLE_RECORD_DATA = "some      2008101320081013                       +100";
+  public static final String MULTIBLE_RECORD_DATA_X_PADDED = "some      2008101320081013xxxxxxxxxxxxxxxxxxxxxxx+100";
 
   FixedFormatManager manager = null;
 
@@ -78,7 +78,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
     myRecord.setLongData(11L);
     myRecord.setIntegerData(123);
     myRecord.setStringData("some text ");
-    myRecord.setBigDecimalData(new BigDecimal(12.012));
+    myRecord.setBigDecimalData(new BigDecimal(-12.012));
     Assert.assertEquals("wrong record exported", MY_RECORD_DATA, manager.export(myRecord));
   }
 
@@ -90,7 +90,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
     MultibleFieldsRecord multibleFieldsRecord = new MultibleFieldsRecord();
     multibleFieldsRecord.setDateData(someDay.getTime());
     multibleFieldsRecord.setStringData("some      ");
-    multibleFieldsRecord.setIntegerdata(1000);
+    multibleFieldsRecord.setIntegerdata(100);
     manager.export(multibleFieldsRecord);
     Assert.assertEquals("wrong record exported", MULTIBLE_RECORD_DATA, manager.export(multibleFieldsRecord));
   }
@@ -103,7 +103,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
     MultibleFieldsRecord multibleFieldsRecord = new MultibleFieldsRecord();
     multibleFieldsRecord.setDateData(someDay.getTime());
     multibleFieldsRecord.setStringData("some      ");
-    multibleFieldsRecord.setIntegerdata(1000);
+    multibleFieldsRecord.setIntegerdata(100);
     String exportedString = manager.export("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", multibleFieldsRecord);
     Assert.assertEquals("wrong record exported", MULTIBLE_RECORD_DATA_X_PADDED, exportedString);
   }

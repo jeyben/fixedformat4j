@@ -24,6 +24,7 @@ import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
+import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -172,9 +173,6 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     FixedFormatter formatter = getFixedFormatterInstance(context.getFormatter(), context);
     FormatInstructions formatdata = getFormatInstructions(method, fieldAnno);
 
-    assertIsPatternRequired(formatdata, context, formatter);
-    assertIsBooleanRequired(formatdata, context, formatter);
-    assertIsDecimalRequired(formatdata, context, formatter);
     Object loadedData = formatter.parse(fetchData(data, formatdata, context), formatdata);
     if (LOG.isDebugEnabled()) {
       LOG.debug("the loaded data[" + loadedData + "]");
@@ -230,14 +228,17 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   private FormatInstructions getFormatInstructions(Method method, Field fieldAnno) {
     FixedFormatPatternData patternData = getFixedFormatPatternData(method.getAnnotation(FixedFormatPattern.class));
     FixedFormatBooleanData booleanData = getFixedFormatBooleanData(method.getAnnotation(FixedFormatBoolean.class));
+    FixedFormatNumberData numberData = getFixedFormatNumberData(method.getAnnotation(FixedFormatNumber.class));
     FixedFormatDecimalData decimalData = getFixedFormatDecimalData(method.getAnnotation(FixedFormatDecimal.class));
-    return new FormatInstructions(fieldAnno.length(), fieldAnno.align(), fieldAnno.paddingChar(), patternData, booleanData, decimalData);
+    return new FormatInstructions(fieldAnno.length(), fieldAnno.align(), fieldAnno.paddingChar(), patternData, booleanData, numberData, decimalData);
   }
 
   private FixedFormatPatternData getFixedFormatPatternData(FixedFormatPattern annotation) {
     FixedFormatPatternData result = null;
     if (annotation != null) {
       result = new FixedFormatPatternData(annotation.value());
+    } else {
+      result = FixedFormatPatternData.DEFAULT;
     }
     return result;
   }
@@ -246,6 +247,18 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     FixedFormatBooleanData result = null;
     if (annotation != null) {
       result = new FixedFormatBooleanData(annotation.trueValue(), annotation.falseValue());
+    } else {
+      result = FixedFormatBooleanData.DEFAULT;
+    }
+    return result;
+  }
+
+  private FixedFormatNumberData getFixedFormatNumberData(FixedFormatNumber annotation) {
+    FixedFormatNumberData result = null;
+    if (annotation != null) {
+      result = new FixedFormatNumberData(annotation.sign());
+    } else {
+      result = FixedFormatNumberData.DEFAULT;
     }
     return result;
   }
@@ -254,6 +267,8 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     FixedFormatDecimalData result = null;
     if (annotation != null) {
       result = new FixedFormatDecimalData(annotation.decimals(), annotation.useDecimalDelimiter(), annotation.decimalDelimiter());
+    } else {
+      result = FixedFormatDecimalData.DEFAULT;
     }
     return result;
   }
