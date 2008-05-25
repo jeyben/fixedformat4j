@@ -58,7 +58,6 @@ public class MyRecord {
   }
 
   @Field(offset = 16, length = 8)
-  @FixedFormatPattern("yyyyMMdd")
   public Date getDateData() {
     return dateData;
   }
@@ -68,7 +67,6 @@ public class MyRecord {
   }
 
   @Field(offset = 24, length = 10, align = Align.RIGHT, paddingChar = '0')
-  @FixedFormatDecimal
   public BigDecimal getBigDecimalData() {
     return bigDecimalData;
   }
@@ -84,7 +82,7 @@ public class MyRecord {
 +--
 ...
   //setup testdata
-  final String MY_RECORD_DATA = "some text 00123200805250000120120";
+  final String MY_RECORD_DATA = "some text +012320080525+000120120";
   Calendar someDay = Calendar.getInstance();
   someDay.set(2008, 4, 25, 0, 0, 0); //month is zerobased, hench 4 equals May
   someDay.set(Calendar.MILLISECOND, 0);
