@@ -28,10 +28,11 @@ import org.apache.commons.lang.StringUtils;
  */
 public abstract class AbstractNumberFormatter extends AbstractFixedFormatter {
   public Object parse(String value, FormatInstructions instructions) {
-    Object result = null;   
+    Object result = null;
     if (value != null) {
       Sign signing = instructions.getFixedFormatNumberData().getSigning();
-      result = asObject(signing.remove(value, instructions), instructions);
+      String rawString = signing.remove(value, instructions);
+      result = asObject(rawString, instructions);
     }
     return result;
   }

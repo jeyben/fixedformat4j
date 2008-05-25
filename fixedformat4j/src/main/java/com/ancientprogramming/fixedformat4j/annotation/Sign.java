@@ -44,10 +44,30 @@ public enum Sign {
       String result = instructions.getAlignment().remove(valueWithoutSign, instructions.getPaddingChar());
       return sign + result;
     }
+  },
+  APPEND {
+    public String apply(String value, FormatInstructions instructions) {
+      String sign = StringUtils.substring(value, value.length()-1);
+      if ("-".equals(sign)) {
+        value = StringUtils.substring(value, 0, value.length()-1);
+      } else {
+        sign = "+";
+      }
+      String result = instructions.getAlignment().apply(value, instructions.getLength(), instructions.getPaddingChar());
+      return sign + StringUtils.substring(result, 1);
+
+    }
+    public String remove(String value, FormatInstructions instructions) {
+      String sign = StringUtils.substring(value, value.length()-1);
+      String valueWithoutSign;
+      valueWithoutSign = StringUtils.substring(value, 0, value.length()-1);
+      String result = instructions.getAlignment().remove(valueWithoutSign, instructions.getPaddingChar());
+      return sign + result;
+  }
   };
 
 
-  public abstract String apply(String value, FormatInstructions instruction);
+  public abstract String apply(String value, FormatInstructions instructions);
 
-  public abstract String remove(String value, FormatInstructions instruction);
+  public abstract String remove(String value, FormatInstructions instructions);
 }

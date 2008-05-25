@@ -45,6 +45,8 @@ public class TestDoubleFormatter extends TestCase {
 
     //negative number
     assertEquals(-100.50, formatter.parse("-000010050", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals(0.0, formatter.parse("-000000000", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals(0.0, formatter.parse("+000000.00", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, true, '.'))));
   }
 
   public void testFormat() {
