@@ -84,13 +84,14 @@ public abstract class AbstractDecimalFormatter extends AbstractNumberFormatter {
       toConvert = string.replace(delimiter, '.'); //convert to normal delimiter
     } else {
       int decimals = instructions.getFixedFormatDecimalData().getDecimals();
-      if (decimals > 0) {
+      if (decimals > 0 && string.length() >= decimals) {
         String beforeDelimiter = string.substring(0, string.length()-decimals);
         String afterDelimiter = string.substring(string.length()-decimals, string.length());
         toConvert = beforeDelimiter + '.' + afterDelimiter;
       } else {
         toConvert = string;
       }
+
     }
     return stripSigningForPositiveAndZeroNumbers(toConvert);
   }

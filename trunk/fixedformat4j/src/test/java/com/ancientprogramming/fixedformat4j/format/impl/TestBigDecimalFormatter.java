@@ -20,6 +20,7 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
 import com.ancientprogramming.fixedformat4j.annotation.Align;
+import com.ancientprogramming.fixedformat4j.annotation.Sign;
 
 import java.math.BigDecimal;
 
@@ -45,6 +46,15 @@ public class TestBigDecimalFormatter extends TestCase {
     assertEquals(new BigDecimal("0"), formatter.parse("-000000000", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(0, true, '_'))));
 
     assertEquals(new BigDecimal("-100.50"), formatter.parse("-000010050", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, false, '.'))));
+
+    //test signing prepended
+    assertEquals(new BigDecimal("0"), formatter.parse("000000000+", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND), new FixedFormatDecimalData(2, true, '.'))));
+
+    assertEquals(new BigDecimal("0"), formatter.parse("000000000+", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND), new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals(new BigDecimal("0"), formatter.parse("000000000-", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND), new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals(new BigDecimal("100.50"), formatter.parse("000010050+", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND), new FixedFormatDecimalData(2, false, '.'))));
+
+    assertEquals(new BigDecimal("-100.50"), formatter.parse("000010050-", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND), new FixedFormatDecimalData(2, false, '.'))));
   }
 
   public void testFormat() {
@@ -62,5 +72,6 @@ public class TestBigDecimalFormatter extends TestCase {
     assertEquals("+456789.01", formatter.format(new BigDecimal(123456789.01), new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, true, '.'))));
 
     assertEquals("-000010050", formatter.format(new BigDecimal(-100.5), new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals("+000000.00", formatter.format(new BigDecimal(0), new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, true, '.'))));
   }
 }
