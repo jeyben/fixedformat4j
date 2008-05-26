@@ -18,11 +18,12 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
+import org.apache.commons.lang.StringUtils;
 
-import java.util.Date;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Formatter for {@link java.util.Date} data
@@ -33,16 +34,25 @@ import java.text.ParseException;
 public class DateFormatter extends AbstractFixedFormatter {
 
   public Object asObject(String string, FormatInstructions instructions) throws FixedFormatException {
-    try {
-      return getFormatter(instructions.getFixedFormatPatternData().getPattern()).parse(string);
-    } catch (ParseException e) {
-      throw new FixedFormatException("Could not parse value[" + string + "] by pattern[" + instructions.getFixedFormatPatternData().getPattern() + "] to " + Date.class.getName());
+    Object result = null;
+
+    if (!StringUtils.isEmpty(string)) {
+      try {
+        result = getFormatter(instructions.getFixedFormatPatternData().getPattern()).parse(string);
+      } catch (ParseException e) {
+        throw new FixedFormatException("Could not parse value[" + string + "] by pattern[" + instructions.getFixedFormatPatternData().getPattern() + "] to " + Date.class.getName());
+      }
     }
+    return result;
   }
 
   public String asString(Object obj, FormatInstructions instructions) {
-    Date date = (Date) obj;
-    return getFormatter(instructions.getFixedFormatPatternData().getPattern()).format(date);
+    String result = null;
+    if (obj != null) {
+      Date date = (Date) obj;
+      result =  getFormatter(instructions.getFixedFormatPatternData().getPattern()).format(date);
+    }
+    return result;
   }
 
   DateFormat getFormatter(String pattern) {
