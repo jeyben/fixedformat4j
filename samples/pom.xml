@@ -5,7 +5,7 @@
   <name>Fixed Format for Java Samples</name>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
 
-  <version>1.1-SNAPSHOT</version>
+  <version>1.2-SNAPSHOT</version>
   <artifactId>fixedformat4j-samples</artifactId>
   <packaging>jar</packaging>
 

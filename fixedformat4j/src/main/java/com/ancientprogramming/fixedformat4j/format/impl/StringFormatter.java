@@ -31,6 +31,6 @@ public class StringFormatter extends AbstractFixedFormatter {
   }
 
   public String asString(Object obj, FormatInstructions instructions) {
-    return String.valueOf(obj);
+    return (String) obj;
   }
 }

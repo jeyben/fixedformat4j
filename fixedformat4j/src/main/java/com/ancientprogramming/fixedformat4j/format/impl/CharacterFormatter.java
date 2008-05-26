@@ -15,10 +15,10 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Formatter for {@link Character} data
@@ -44,8 +44,10 @@ public class CharacterFormatter extends AbstractFixedFormatter {
   }
 
   public String asString(Object obj, FormatInstructions instructions) {
-    return Character.toString((Character) obj);
+    String result = "";
+    if (obj != null) {
+      result = Character.toString((Character) obj);
+    }
+    return result;
   }
-
-
 }
