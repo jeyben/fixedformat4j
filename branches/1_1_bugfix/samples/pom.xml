@@ -1,0 +1,105 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <name>Fixed Format for Java Samples</name>
+  <groupId>com.ancientprogramming.fixedformat4j</groupId>
+
+  <version>1.2-SNAPSHOT</version>
+  <artifactId>fixedformat4j-samples</artifactId>
+  <packaging>jar</packaging>
+
+  <inceptionYear>2008</inceptionYear>
+  <organization>
+    <name>ancientprogramming.com</name>
+    <url>http://www.ancientprogramming.com</url>
+  </organization>
+  <description>
+    <![CDATA[A bunch of samples demonstrating the abilities of the fixedformat4j api]]>
+  </description>
+  <url>http://fixedformat4j.ancientprogramming.com</url>
+
+  <prerequisites>
+    <maven>2.0.7</maven>
+  </prerequisites>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:svn:http://fixedformat4j.googlecode.com/svn/trunk/samples</connection>
+    <url>http://code.google.com/p/fixedformat4j/source/browse/trunk/samples</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <name>Jacob von Eyben</name>
+      <id>jeyben</id>
+      <email>jacobvoneyben@gmail.com</email>
+      <organization/>
+      <organizationUrl/>
+      <url>http://www.ancientprogramming.com</url>
+      <timezone>2</timezone>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <distributionManagement>
+    <site>
+      <id>ancientprogramming</id>
+      <url>scp://ancientprogramming.com/home/ancientp/www/fixedformat4j</url>
+    </site>
+  </distributionManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fixedformat4j</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+          <encoding>UTF-8</encoding>
+          <debug>true</debug>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://fixedformat4j.googlecode.com/svn/tags/samples</tagBase>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>bin</descriptorRef>
+            <descriptorRef>src</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+
+
+
+
