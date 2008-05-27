@@ -32,7 +32,11 @@ public class IntegerFormatter extends AbstractNumberFormatter {
   }
 
   public String asString(Object obj, FormatInstructions instructions) {
-    return Integer.toString((Integer) obj);
+    String result = null;
+    if (obj != null) {
+      result = Integer.toString((Integer) obj);
+    }
+    return result;
   }
 
 }

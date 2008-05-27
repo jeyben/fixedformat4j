@@ -18,6 +18,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Formatter for {@link Boolean} data
@@ -28,20 +29,25 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 public class BooleanFormatter extends AbstractFixedFormatter {
 
   public Object asObject(String string, FormatInstructions instructions) throws FixedFormatException {
-
-    Boolean result;
-    if (instructions.getFixedFormatBooleanData().getTrueValue().equals(string)) {
-      result = true;
-    } else if (instructions.getFixedFormatBooleanData().getFalseValue().equals(string)) {
-      result = false;
-    } else {
-      throw new FixedFormatException("Could not convert string[" + string + "] to boolean value according to booleanData[" + instructions.getFixedFormatBooleanData() + "]");
+    Boolean result = false;
+    if (!StringUtils.isEmpty(string)) {
+      if (instructions.getFixedFormatBooleanData().getTrueValue().equals(string)) {
+        result = true;
+      } else if (instructions.getFixedFormatBooleanData().getFalseValue().equals(string)) {
+        result = false;
+      } else {
+        throw new FixedFormatException("Could not convert string[" + string + "] to boolean value according to booleanData[" + instructions.getFixedFormatBooleanData() + "]");
+      }
     }
     return result;
   }
 
   public String asString(Object obj, FormatInstructions instructions) {
-    return ((Boolean) obj) ? instructions.getFixedFormatBooleanData().getTrueValue() : instructions.getFixedFormatBooleanData().getFalseValue();
+    String result = instructions.getFixedFormatBooleanData().getFalseValue();
+    if (obj != null) {
+      result = ((Boolean) obj) ? instructions.getFixedFormatBooleanData().getTrueValue() : instructions.getFixedFormatBooleanData().getFalseValue();
+    }
+    return result;
   }
 
 }

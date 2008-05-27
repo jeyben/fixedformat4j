@@ -45,5 +45,6 @@ public class TestIntegerFormatter extends TestCase {
     assertEquals("+000001234", formatter.format(1234, new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, false, '.'))));
     assertEquals("-000001234", formatter.format(-1234, new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, false, '.'))));
     assertEquals("+000000000", formatter.format(0, new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals("+000000000", formatter.format(null, new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, false, '.'))));
   }
 }
