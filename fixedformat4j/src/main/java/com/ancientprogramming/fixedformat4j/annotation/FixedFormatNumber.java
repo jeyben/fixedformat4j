@@ -29,5 +29,10 @@ import java.lang.annotation.ElementType;
 @Target({ElementType.METHOD, ElementType.FIELD})
 public @interface FixedFormatNumber {
 
-  Sign sign() default Sign.PREPEND;
+  //todo: this gives exception
+  //annotation com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber is missing <clinit>
+  //public static final Sign DEFAULT_SIGN = Sign.NOSIGN;
+
+
+  Sign sign() default Sign.NOSIGN;
 }

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 package com.ancientprogramming.fixedformat4j.format.data;
-
 import com.ancientprogramming.fixedformat4j.annotation.Sign;
 
 /**
- * Data object containing the exact same data as {@link com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal} 
+ * Data object containing the exact same data as {@link com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber}
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.1.0
@@ -26,7 +25,7 @@ import com.ancientprogramming.fixedformat4j.annotation.Sign;
 public class FixedFormatNumberData {
 
   private Sign signing;
-  public static final FixedFormatNumberData DEFAULT = new FixedFormatNumberData(Sign.PREPEND);
+  public static final FixedFormatNumberData DEFAULT = new FixedFormatNumberData(Sign.NOSIGN);
 
   public FixedFormatNumberData(Sign signing) {
     this.signing = signing;
