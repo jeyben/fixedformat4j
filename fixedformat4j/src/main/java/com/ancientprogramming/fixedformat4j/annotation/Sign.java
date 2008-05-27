@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Apply signing. Will always chop most significant digit incase the
  *
+ * todo: in case of positive numbers sign should be removed under remove procedure
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.1.0
  */
@@ -47,14 +48,14 @@ public enum Sign {
   },
   APPEND {
     public String apply(String value, FormatInstructions instructions) {
-      String sign = StringUtils.substring(value, value.length()-1);
+      String sign = StringUtils.substring(value, value.length()-1, value.length());
       if ("-".equals(sign)) {
         value = StringUtils.substring(value, 0, value.length()-1);
       } else {
         sign = "+";
       }
       String result = instructions.getAlignment().apply(value, instructions.getLength(), instructions.getPaddingChar());
-      return sign + StringUtils.substring(result, 1);
+      return StringUtils.substring(result, 1) + sign;
 
     }
     public String remove(String value, FormatInstructions instructions) {
