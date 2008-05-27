@@ -19,13 +19,29 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Apply signing. Will always chop most significant digit incase the
- *
- * todo: in case of positive numbers sign should be removed under remove procedure
+ * Sign defines where to place a sign defining a positive or negative number.
+ * Is to be used in formatters operating numbers.
+ * 
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.1.0
  */
 public enum Sign {
+
+
+  /**
+   * Doesn't do anything with signs.
+   * This just delegate to the {@link Align} defined in {@link FormatInstructions}.
+   */
+  NOSIGN {
+    public String apply(String value, FormatInstructions instructions) {
+      return instructions.getAlignment().apply(value, instructions.getLength(), instructions.getPaddingChar());
+    }public String remove(String value, FormatInstructions instructions) {
+      return instructions.getAlignment().remove(value, instructions.getPaddingChar());
+  }},
+
+  /**
+   * Prepend the sign to the string
+   */
   PREPEND {
     public String apply(String value, FormatInstructions instructions) {
       String sign = StringUtils.substring(value, 0, 1);
@@ -40,12 +56,15 @@ public enum Sign {
 
     public String remove(String value, FormatInstructions instructions) {
       String sign = StringUtils.substring(value, 0, 1);
-      String valueWithoutSign;
-      valueWithoutSign = StringUtils.substring(value, 1);
+      String valueWithoutSign = StringUtils.substring(value, 1);
       String result = instructions.getAlignment().remove(valueWithoutSign, instructions.getPaddingChar());
       return sign + result;
     }
   },
+
+  /**
+   * Append the sign to the string
+   */
   APPEND {
     public String apply(String value, FormatInstructions instructions) {
       String sign = StringUtils.substring(value, value.length()-1, value.length());
@@ -60,8 +79,7 @@ public enum Sign {
     }
     public String remove(String value, FormatInstructions instructions) {
       String sign = StringUtils.substring(value, value.length()-1);
-      String valueWithoutSign;
-      valueWithoutSign = StringUtils.substring(value, 0, value.length()-1);
+      String valueWithoutSign = StringUtils.substring(value, 0, value.length()-1);
       String result = instructions.getAlignment().remove(valueWithoutSign, instructions.getPaddingChar());
       return sign + result;
   }
