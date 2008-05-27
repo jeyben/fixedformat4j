@@ -31,6 +31,10 @@ public class StringFormatter extends AbstractFixedFormatter {
   }
 
   public String asString(Object obj, FormatInstructions instructions) {
-    return (String) obj;
+    String result = null;
+    if (obj != null) {
+    result = (String) obj;
+    }
+    return result;
   }
 }

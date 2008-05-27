@@ -31,6 +31,10 @@ public class LongFormatter extends AbstractNumberFormatter {
   }
 
   public String asString(Object obj, FormatInstructions instructions) {
-    return Long.toString((Long) obj);
+    String result = null;
+    if (obj != null) {
+    result = Long.toString((Long) obj);
+    }
+    return result;
   }
 }

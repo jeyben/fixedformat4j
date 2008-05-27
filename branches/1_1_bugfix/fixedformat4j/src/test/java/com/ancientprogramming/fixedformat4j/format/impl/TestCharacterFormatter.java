@@ -36,5 +36,6 @@ public class TestCharacterFormatter extends TestCase {
 
   public void testFormat() {
     assertEquals("J", formatter.format('J', new FormatInstructions(1, Align.LEFT, ' ', null, null, null, null)));
+    assertEquals(" ", formatter.format(null, new FormatInstructions(1, Align.LEFT, ' ', null, null, null, null)));
   }
 }
