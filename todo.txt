@@ -1,3 +1,8 @@
+  Bug
+------------------------------------------
+  - ensure writing null values should not print null as string
+  - ensure that we can read a string that is to short for the offsets defined
+
   Features
 ------------------------------------------
   - cannot create instances of inner class records
