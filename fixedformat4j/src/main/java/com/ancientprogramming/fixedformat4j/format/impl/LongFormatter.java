@@ -27,7 +27,7 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 public class LongFormatter extends AbstractNumberFormatter {
 
   public Object asObject(String string, FormatInstructions instructions) {
-    return Long.parseLong(stripSigningForPositiveAndZeroNumbers(string));
+    return Long.parseLong(string);
   }
 
   public String asString(Object obj, FormatInstructions instructions) {

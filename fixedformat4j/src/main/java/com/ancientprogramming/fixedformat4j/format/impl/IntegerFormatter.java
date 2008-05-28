@@ -26,7 +26,7 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 public class IntegerFormatter extends AbstractNumberFormatter {
 
   public Object asObject(String string, FormatInstructions instructions) {
-    return Integer.parseInt(stripSigningForPositiveAndZeroNumbers(string));
+    return Integer.parseInt(string);
   }
 
   public String asString(Object obj, FormatInstructions instructions) {

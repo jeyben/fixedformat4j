@@ -21,6 +21,8 @@ import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
 import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.annotation.Sign;
+import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber.DEFAULT_POSITIVE_SIGN;
+import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber.DEFAULT_NEGATIVE_SIGN;
 
 import java.math.BigDecimal;
 
@@ -32,46 +34,45 @@ public class TestBigDecimalFormatter extends TestCase {
   BigDecimalFormatter formatter = new BigDecimalFormatter();
 
   public void testParse() {
-    assertEquals(new BigDecimal("100.50"), formatter.parse("+000010050", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(2, false, '.'))));
-    assertEquals(new BigDecimal("1234.56"), formatter.parse("+000123456", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals(new BigDecimal("100.50"), formatter.parse("+000010050", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals(new BigDecimal("1234.56"), formatter.parse("+000123456", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.'))));
 
     //use delimiter
-    assertEquals(new BigDecimal("1234.56"), formatter.parse("+001234.56", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(2, true, '.'))));
-    assertEquals(new BigDecimal("123.456"), formatter.parse("+00123_456", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(3, true, '_'))));
+    assertEquals(new BigDecimal("1234.56"), formatter.parse("+001234.56", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, true, '.'))));
+    assertEquals(new BigDecimal("123.456"), formatter.parse("+00123_456", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(3, true, '_'))));
 
     //no decimals
-    assertEquals(new BigDecimal("123456"), formatter.parse("+000123456", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(0, true, '_'))));
+    assertEquals(new BigDecimal("123456"), formatter.parse("+000123456", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(0, true, '_'))));
 
-    assertEquals(new BigDecimal("0"), formatter.parse("+000000000", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(0, true, '_'))));
-    assertEquals(new BigDecimal("0"), formatter.parse("-000000000", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(0, true, '_'))));
+    assertEquals(new BigDecimal("0"), formatter.parse("+000000000", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(0, true, '_'))));
+    assertEquals(new BigDecimal("0"), formatter.parse("-000000000", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(0, true, '_'))));
 
-    assertEquals(new BigDecimal("-100.50"), formatter.parse("-000010050", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals(new BigDecimal("-100.50"), formatter.parse("-000010050", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.'))));
 
     //test signing prepended
-    assertEquals(new BigDecimal("0"), formatter.parse("000000000+", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND), new FixedFormatDecimalData(2, true, '.'))));
+    assertEquals(new BigDecimal("0"), formatter.parse("000000000+", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, true, '.'))));
 
-    assertEquals(new BigDecimal("0"), formatter.parse("000000000+", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND), new FixedFormatDecimalData(2, false, '.'))));
-    assertEquals(new BigDecimal("0"), formatter.parse("000000000-", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND), new FixedFormatDecimalData(2, false, '.'))));
-    assertEquals(new BigDecimal("100.50"), formatter.parse("000010050+", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND), new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals(new BigDecimal("0"), formatter.parse("000000000+", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals(new BigDecimal("0"), formatter.parse("000000000-", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.'))));
 
-    assertEquals(new BigDecimal("-100.50"), formatter.parse("000010050-", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND), new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals(new BigDecimal("-100.50"), formatter.parse("000010050-", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.'))));
   }
 
   public void testFormat() {
-    assertEquals("+000010050", formatter.format(new BigDecimal(100.5), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(2, false, '.'))));
-    assertEquals("+000001005", formatter.format(new BigDecimal(100.51), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(1, false, '.'))));
-    assertEquals("+000123456", formatter.format(new BigDecimal(1234.562), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals("+000010050", formatter.format(new BigDecimal(100.5), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals("+000001005", formatter.format(new BigDecimal(100.51), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(1, false, '.'))));
+    assertEquals("+000123456", formatter.format(new BigDecimal(1234.562), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.'))));
 
-    assertEquals("+001234.56", formatter.format(new BigDecimal(1234.562), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(2, true, '.'))));
-    assertEquals("+00123.456", formatter.format(new BigDecimal(123.4562), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(3, true, '.'))));
+    assertEquals("+001234.56", formatter.format(new BigDecimal(1234.562), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, true, '.'))));
+    assertEquals("+00123.456", formatter.format(new BigDecimal(123.4562), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(3, true, '.'))));
 
-    assertEquals("+00000.000", formatter.format(new BigDecimal(0.0), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(3, true, '.'))));
-    assertEquals("+00000.000", formatter.format(null, new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(3, true, '.'))));
+    assertEquals("+00000.000", formatter.format(new BigDecimal(0.0), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(3, true, '.'))));
+    assertEquals("+00000.000", formatter.format(null, new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(3, true, '.'))));
 
     //the number is bigger than the total length
-    assertEquals("+456789.01", formatter.format(new BigDecimal(123456789.01), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(2, true, '.'))));
+    assertEquals("+456789.01", formatter.format(new BigDecimal(123456789.01), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, true, '.'))));
 
-    assertEquals("-000010050", formatter.format(new BigDecimal(-100.5), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(2, false, '.'))));
-    assertEquals("+000000.00", formatter.format(new BigDecimal(0), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND), new FixedFormatDecimalData(2, true, '.'))));
+    assertEquals("-000010050", formatter.format(new BigDecimal(-100.5), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.'))));
+    assertEquals("+000000.00", formatter.format(new BigDecimal(0), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, true, '.'))));
   }
 }

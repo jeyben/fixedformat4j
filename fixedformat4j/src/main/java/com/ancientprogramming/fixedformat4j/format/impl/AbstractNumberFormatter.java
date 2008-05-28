@@ -21,12 +21,20 @@ import com.ancientprogramming.fixedformat4j.annotation.Sign;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Apply signing according to
+ * Apply signing to values
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.1.0
  */
 public abstract class AbstractNumberFormatter extends AbstractFixedFormatter {
+
+  /**
+   * Override and applies signing instead of align.
+   *
+   * @param value the value
+   * @param instructions the instructions
+   * @return the parsed object
+   */
   public Object parse(String value, FormatInstructions instructions) {
     Object result = null;
     if (value != null) {
@@ -37,19 +45,14 @@ public abstract class AbstractNumberFormatter extends AbstractFixedFormatter {
     return result;
   }
 
-  public String format(Object value, FormatInstructions instructions) {
-    return instructions.getFixedFormatNumberData().getSigning().apply(asString(value, instructions), instructions);
+  /**
+     * Override and applies signing instead of align.
+     *
+     * @param obj the object to format
+     * @param instructions the instructions
+     * @return the raw value
+     */
+    public String format(Object obj, FormatInstructions instructions) {
+    return instructions.getFixedFormatNumberData().getSigning().apply(asString(obj, instructions), instructions);
   }
-
-  public String stripSigningForPositiveAndZeroNumbers(String value) {
-    String sign = StringUtils.substring(value, 0, 1);
-    String unsignedValue = StringUtils.substring(value, 1);
-    String result = value;
-    
-    if (StringUtils.isEmpty(unsignedValue) || "+".equals(sign)) {
-      result = unsignedValue;
-    }
-    return StringUtils.isEmpty(result) ? "0" : result;
-  }
-
 }
