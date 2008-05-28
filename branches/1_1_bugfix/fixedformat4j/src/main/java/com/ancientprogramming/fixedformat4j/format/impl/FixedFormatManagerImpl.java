@@ -17,15 +17,16 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.*;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
-import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
-import com.ancientprogramming.fixedformat4j.format.FormatContext;
-import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.*;
+import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
+import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
+import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
+import com.ancientprogramming.fixedformat4j.format.FormatContext;
+import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
-import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
+import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -256,7 +257,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   private FixedFormatNumberData getFixedFormatNumberData(FixedFormatNumber annotation) {
     FixedFormatNumberData result = null;
     if (annotation != null) {
-      result = new FixedFormatNumberData(annotation.sign());
+      result = new FixedFormatNumberData(annotation.sign(), annotation.positiveSign(), annotation.negativeSign());
     } else {
       result = FixedFormatNumberData.DEFAULT;
     }

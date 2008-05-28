@@ -15,6 +15,7 @@
  */
 package com.ancientprogramming.fixedformat4j.format.data;
 import com.ancientprogramming.fixedformat4j.annotation.Sign;
+import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber.*;
 
 /**
  * Data object containing the exact same data as {@link com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber}
@@ -24,14 +25,28 @@ import com.ancientprogramming.fixedformat4j.annotation.Sign;
  */
 public class FixedFormatNumberData {
 
-  private Sign signing;
-  public static final FixedFormatNumberData DEFAULT = new FixedFormatNumberData(Sign.NOSIGN);
+  public static final FixedFormatNumberData DEFAULT = new FixedFormatNumberData(Sign.NOSIGN, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN);
 
-  public FixedFormatNumberData(Sign signing) {
+  private Sign signing;
+  private char positiveSign;
+  private char negativeSign;
+
+  public FixedFormatNumberData(Sign signing, char positiveSign, char negativeSign) {
     this.signing = signing;
+    this.positiveSign = positiveSign;
+    this.negativeSign = negativeSign;
   }
 
+  
   public Sign getSigning() {
     return signing;
+  }
+
+  public Character getPositiveSign() {
+    return positiveSign;
+  }
+
+  public Character getNegativeSign() {
+    return negativeSign;
   }
 }

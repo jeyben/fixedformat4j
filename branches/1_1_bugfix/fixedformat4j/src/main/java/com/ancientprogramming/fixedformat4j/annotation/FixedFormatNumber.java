@@ -33,6 +33,13 @@ public @interface FixedFormatNumber {
   //annotation com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber is missing <clinit>
   //public static final Sign DEFAULT_SIGN = Sign.NOSIGN;
 
+  public static final char DEFAULT_POSITIVE_SIGN = '+';
+  public static final char DEFAULT_NEGATIVE_SIGN = '-';
+
 
   Sign sign() default Sign.NOSIGN;
+
+  char positiveSign() default DEFAULT_POSITIVE_SIGN;
+
+  char negativeSign() default DEFAULT_NEGATIVE_SIGN;
 }

@@ -93,6 +93,6 @@ public abstract class AbstractDecimalFormatter extends AbstractNumberFormatter {
       }
 
     }
-    return stripSigningForPositiveAndZeroNumbers(toConvert);
+    return toConvert;
   }
 }
