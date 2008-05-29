@@ -34,9 +34,9 @@ public class TestFixedFormatManagerImpl extends TestCase {
 
   private static String STR = "some text ";
 
-  public static final String MY_RECORD_DATA = "some text +012320080514CT+011+000001035+000002056-0012 0120";
-  public static final String MULTIBLE_RECORD_DATA = "some      2008101320081013                       +100";
-  public static final String MULTIBLE_RECORD_DATA_X_PADDED = "some      2008101320081013xxxxxxxxxxxxxxxxxxxxxxx+100";
+  public static final String MY_RECORD_DATA = "some text 0012320080514CT001100000010350000002056-0012 0120";
+  public static final String MULTIBLE_RECORD_DATA = "some      2008101320081013                       0100";
+  public static final String MULTIBLE_RECORD_DATA_X_PADDED = "some      2008101320081013xxxxxxxxxxxxxxxxxxxxxxx0100";
 
   FixedFormatManager manager = null;
 

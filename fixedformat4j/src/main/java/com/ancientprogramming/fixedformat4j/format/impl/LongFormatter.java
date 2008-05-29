@@ -24,13 +24,17 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public class LongFormatter extends AbstractNumberFormatter {
+public class LongFormatter extends AbstractNumberFormatter<Long> {
 
-  public Object asObject(String string, FormatInstructions instructions) {
-    return Long.parseLong(stripSigningForPositiveAndZeroNumbers(string));
+  public Long asObject(String string, FormatInstructions instructions) {
+    return Long.parseLong(string);
   }
 
-  public String asString(Object obj, FormatInstructions instructions) {
-    return Long.toString((Long) obj);
+  public String asString(Long obj, FormatInstructions instructions) {
+    String result = null;
+    if (obj != null) {
+    result = Long.toString(obj);
+    }
+    return result;
   }
 }

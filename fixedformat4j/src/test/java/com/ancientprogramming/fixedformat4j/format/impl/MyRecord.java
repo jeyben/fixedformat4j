@@ -15,12 +15,7 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
-import com.ancientprogramming.fixedformat4j.annotation.Align;
-import com.ancientprogramming.fixedformat4j.annotation.Field;
-import com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean;
-import com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal;
-import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
-import com.ancientprogramming.fixedformat4j.annotation.Record;
+import com.ancientprogramming.fixedformat4j.annotation.*;
 
 import java.util.Date;
 import java.math.BigDecimal;
@@ -117,9 +112,9 @@ public class MyRecord {
     this.floatData = floatData;
   }
 
-
   @Field(offset = 50, length = 10, align = Align.RIGHT, paddingChar = '0')
   @FixedFormatDecimal(decimals = 4, decimalDelimiter = ' ', useDecimalDelimiter = true)
+  @FixedFormatNumber(sign = Sign.PREPEND)
   public BigDecimal getBigDecimalData() {
     return bigDecimalData;
   }
