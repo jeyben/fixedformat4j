@@ -29,7 +29,7 @@ import org.apache.commons.logging.Log;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public abstract class AbstractDecimalFormatter extends AbstractNumberFormatter {
+public abstract class AbstractDecimalFormatter<T> extends AbstractNumberFormatter<T> {
 
   private static final Log LOG = LogFactory.getLog(AbstractDecimalFormatter.class);
 
@@ -48,7 +48,7 @@ public abstract class AbstractDecimalFormatter extends AbstractNumberFormatter {
 
   }
 
-  public String asString(Object obj, FormatInstructions instructions) {
+  public String asString(T obj, FormatInstructions instructions) {
 
     String rawString = obj != null ? FORMATTER.format(obj) : ZERO_STRING;
     if (LOG.isDebugEnabled()) {
@@ -93,6 +93,6 @@ public abstract class AbstractDecimalFormatter extends AbstractNumberFormatter {
       }
 
     }
-    return stripSigningForPositiveAndZeroNumbers(toConvert);
+    return toConvert;
   }
 }

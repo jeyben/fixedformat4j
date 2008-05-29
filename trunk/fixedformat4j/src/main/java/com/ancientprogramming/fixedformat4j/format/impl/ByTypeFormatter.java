@@ -19,13 +19,12 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatContext;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatUtil;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.math.BigDecimal;
-import java.io.Serializable;
 
 /**
  * Formatter capable of formatting a bunch of known java standard library classes. So far:

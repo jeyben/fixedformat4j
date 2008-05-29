@@ -18,6 +18,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
+import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
@@ -30,18 +31,14 @@ public class TestStringFormatter extends TestCase {
   private FixedFormatter formatter = new StringFormatter();
 
   public void testParse() {
-    FormatInstructions instructions = new FormatInstructions(10, Align.LEFT, ' ', null, null, null, null);
-    String input = "string";
-    Object parseResult = formatter.parse(input, instructions);
-    Assert.assertEquals(String.class, parseResult.getClass());
+    Assert.assertEquals("string", formatter.parse("string    ", new FormatInstructions(10, Align.LEFT, ' ', null, null, null, null)));    
+    Assert.assertEquals("s", formatter.parse("s", new FormatInstructions(10, Align.LEFT, ' ', null, null, null, null)));    
+    Assert.assertEquals("", formatter.parse("", new FormatInstructions(10, Align.LEFT, ' ', null, null, null, null)));
   }
 
   public void testFormat() {
-    FormatInstructions instructions = new FormatInstructions(10, Align.LEFT, ' ', null, null, null, null);
-    String input = "string";
-    String expected = "string    ";
-
-    String formatResult = formatter.format(input, instructions);
-    Assert.assertEquals("expected[" + expected + "] - actual[" + formatResult + "]", expected, formatResult);
+    Assert.assertEquals("          ", formatter.format(null, new FormatInstructions(10, Align.LEFT, ' ', null, null, null, null)));
+    Assert.assertEquals("          ", formatter.format("", new FormatInstructions(10, Align.LEFT, ' ', null, null, null, null)));
+    Assert.assertEquals("a string i", formatter.format("a string is too long", new FormatInstructions(10, Align.LEFT, ' ', null, null, null, null)));
   }
 }

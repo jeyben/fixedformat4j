@@ -33,6 +33,7 @@ public class TestBooleanFormatter extends TestCase {
   public void testParse() {
     assertEquals(true, formatter.parse("T", new FormatInstructions(1, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null, null)));
     assertEquals(false, formatter.parse("F ", new FormatInstructions(2, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null, null)));
+    assertEquals(false, formatter.parse(" ", new FormatInstructions(1, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null, null)));
     try {
       formatter.parse("", new FormatInstructions(0, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null, null));
     } catch (FixedFormatException e) {
@@ -43,5 +44,6 @@ public class TestBooleanFormatter extends TestCase {
   public void testFormat() {
     assertEquals("T", formatter.format(true, new FormatInstructions(1, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null, null)));
     assertEquals("F", formatter.format(false, new FormatInstructions(1, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null, null)));
+    assertEquals("F", formatter.format(null, new FormatInstructions(1, Align.LEFT, ' ', null, new FixedFormatBooleanData("T", "F"), null, null)));
   }
 }
