@@ -26,9 +26,9 @@ import org.apache.commons.lang.StringUtils;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public class BooleanFormatter extends AbstractFixedFormatter {
+public class BooleanFormatter extends AbstractFixedFormatter<Boolean> {
 
-  public Object asObject(String string, FormatInstructions instructions) throws FixedFormatException {
+  public Boolean asObject(String string, FormatInstructions instructions) throws FixedFormatException {
     Boolean result = false;
     if (!StringUtils.isEmpty(string)) {
       if (instructions.getFixedFormatBooleanData().getTrueValue().equals(string)) {
@@ -42,10 +42,10 @@ public class BooleanFormatter extends AbstractFixedFormatter {
     return result;
   }
 
-  public String asString(Object obj, FormatInstructions instructions) {
+  public String asString(Boolean obj, FormatInstructions instructions) {
     String result = instructions.getFixedFormatBooleanData().getFalseValue();
     if (obj != null) {
-      result = ((Boolean) obj) ? instructions.getFixedFormatBooleanData().getTrueValue() : instructions.getFixedFormatBooleanData().getFalseValue();
+      result = obj ? instructions.getFixedFormatBooleanData().getTrueValue() : instructions.getFixedFormatBooleanData().getFalseValue();
     }
     return result;
   }
