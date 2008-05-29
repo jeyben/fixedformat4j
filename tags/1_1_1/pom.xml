@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <name>Fixed Format for Java - root</name>
+  <groupId>com.ancientprogramming.fixedformat4j</groupId>
+
+  <version>1.1.1</version>
+  <artifactId>fixedformat4j-root</artifactId>
+  <packaging>pom</packaging>
+
+  <inceptionYear>2008</inceptionYear>
+  <organization>
+    <name>ancientprogramming</name>
+    <url>http://www.ancientprogramming.com</url>
+  </organization>
+  <description>
+    <![CDATA[Fixed Format for Java root]]>
+  </description>
+  <url>http://www.ancientprogramming.com/fixedformat4j</url>
+
+  <prerequisites>
+    <maven>2.0.7</maven>
+  </prerequisites>
+
+  <scm>
+    <connection>scm:svn:http://fixedformat4j.googlecode.com/svn/trunk</connection>
+    <url>http://code.google.com/p/fixedformat4j/source/browse/trunk</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <name>Jacob von Eyben</name>
+      <id>jeyben</id>
+      <email>jacobvoneyben@gmail.com</email>
+      <organization>ancientprogramming.com</organization>
+    </developer>
+  </developers>
+
+  <modules>
+    <module>fixedformat4j</module>
+    <module>samples</module>
+  </modules>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://fixedformat4j.googlecode.com/svn/tags</tagBase>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+
+
+
+
