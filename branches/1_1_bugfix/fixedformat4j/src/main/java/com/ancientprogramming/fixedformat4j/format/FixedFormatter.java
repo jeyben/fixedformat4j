@@ -15,10 +15,16 @@
  */
 package com.ancientprogramming.fixedformat4j.format;
 
+import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
+import com.ancientprogramming.fixedformat4j.format.impl.DateFormatter;
 
 /**
- * Formatter interface capable of transforming data to and from a string used in text records
+ * Formatter capable of transforming data to and from a string used in text records.
+ * <p/>
+ * A concrete class is used together with the @{@link Field} annotation.
+ * <p/>
+ * Example: <p><code>@Field(offset = 1, length = 20, formatter = {@link DateFormatter}.class)</code></p>
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
