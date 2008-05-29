@@ -18,7 +18,7 @@ package com.ancientprogramming.fixedformat4j.format;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 
 /**
- * Formatter interface capable of transfaormaing data to and from the string used in records
+ * Formatter interface capable of transforming data to and from a string used in text records
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
