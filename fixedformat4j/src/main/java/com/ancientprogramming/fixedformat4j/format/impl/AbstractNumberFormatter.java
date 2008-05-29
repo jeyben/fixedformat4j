@@ -26,7 +26,7 @@ import org.apache.commons.lang.StringUtils;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.1.0
  */
-public abstract class AbstractNumberFormatter extends AbstractFixedFormatter {
+public abstract class AbstractNumberFormatter<T> extends AbstractFixedFormatter<T> {
 
   /**
    * Override and applies signing instead of align.
@@ -35,8 +35,8 @@ public abstract class AbstractNumberFormatter extends AbstractFixedFormatter {
    * @param instructions the instructions
    * @return the parsed object
    */
-  public Object parse(String value, FormatInstructions instructions) {
-    Object result = null;
+  public T parse(String value, FormatInstructions instructions) {
+    T result = null;
     if (value != null) {
       Sign signing = instructions.getFixedFormatNumberData().getSigning();
       String rawString = signing.remove(value, instructions);
@@ -52,7 +52,7 @@ public abstract class AbstractNumberFormatter extends AbstractFixedFormatter {
      * @param instructions the instructions
      * @return the raw value
      */
-    public String format(Object obj, FormatInstructions instructions) {
-    return instructions.getFixedFormatNumberData().getSigning().apply(asString(obj, instructions), instructions);
-  }
+    public String format(T obj, FormatInstructions instructions) {
+      return instructions.getFixedFormatNumberData().getSigning().apply(asString(obj, instructions), instructions);
+    }
 }

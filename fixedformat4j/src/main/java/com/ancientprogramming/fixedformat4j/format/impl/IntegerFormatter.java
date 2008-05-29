@@ -23,16 +23,16 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public class IntegerFormatter extends AbstractNumberFormatter {
+public class IntegerFormatter extends AbstractNumberFormatter<Integer> {
 
-  public Object asObject(String string, FormatInstructions instructions) {
+  public Integer asObject(String string, FormatInstructions instructions) {
     return Integer.parseInt(string);
   }
 
-  public String asString(Object obj, FormatInstructions instructions) {
+  public String asString(Integer obj, FormatInstructions instructions) {
     String result = null;
     if (obj != null) {
-      result = Integer.toString((Integer) obj);
+      result = Integer.toString(obj);
     }
     return result;
   }

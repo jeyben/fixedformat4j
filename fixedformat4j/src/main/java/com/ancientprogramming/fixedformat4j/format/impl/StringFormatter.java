@@ -24,16 +24,16 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public class StringFormatter extends AbstractFixedFormatter {
+public class StringFormatter extends AbstractFixedFormatter<String> {
 
-  public Object asObject(String obj, FormatInstructions instructions) {
-    return obj;
+  public String asObject(String string, FormatInstructions instructions) {
+    return string;
   }
 
-  public String asString(Object obj, FormatInstructions instructions) {
+  public String asString(String string, FormatInstructions instructions) {
     String result = null;
-    if (obj != null) {
-    result = (String) obj;
+    if (string != null) {
+    result = string;
     }
     return result;
   }

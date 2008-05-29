@@ -23,9 +23,9 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public class FloatFormatter extends AbstractDecimalFormatter {
+public class FloatFormatter extends AbstractDecimalFormatter<Float> {
   
-  public Object asObject(String string, FormatInstructions instructions) {
+  public Float asObject(String string, FormatInstructions instructions) {
       String toConvert = getStringToConvert(string, instructions);
       return Float.parseFloat("".equals(toConvert) ? "0" : toConvert);
     }

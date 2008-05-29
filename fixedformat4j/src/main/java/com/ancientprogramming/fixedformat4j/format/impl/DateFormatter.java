@@ -31,10 +31,10 @@ import java.util.Date;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public class DateFormatter extends AbstractFixedFormatter {
+public class DateFormatter extends AbstractFixedFormatter<Date> {
 
-  public Object asObject(String string, FormatInstructions instructions) throws FixedFormatException {
-    Object result = null;
+  public Date asObject(String string, FormatInstructions instructions) throws FixedFormatException {
+    Date result = null;
 
     if (!StringUtils.isEmpty(string)) {
       try {
@@ -46,11 +46,10 @@ public class DateFormatter extends AbstractFixedFormatter {
     return result;
   }
 
-  public String asString(Object obj, FormatInstructions instructions) {
+  public String asString(Date date, FormatInstructions instructions) {
     String result = null;
-    if (obj != null) {
-      Date date = (Date) obj;
-      result =  getFormatter(instructions.getFixedFormatPatternData().getPattern()).format(date);
+    if (date != null) {
+      result = getFormatter(instructions.getFixedFormatPatternData().getPattern()).format(date);
     }
     return result;
   }

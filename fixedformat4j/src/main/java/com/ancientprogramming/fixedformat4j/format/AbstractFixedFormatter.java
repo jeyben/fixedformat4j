@@ -15,17 +15,15 @@
  */
 package com.ancientprogramming.fixedformat4j.format;
 
-import com.ancientprogramming.fixedformat4j.annotation.Sign;
-
 /**
  * Handles default formatting and parsing based on FixedFormatAnnotation values.
  *
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public abstract class AbstractFixedFormatter implements FixedFormatter {
-  public Object parse(String value, FormatInstructions instructions) {
-    Object result = null;
+public abstract class AbstractFixedFormatter<T> implements FixedFormatter<T> {
+  public T parse(String value, FormatInstructions instructions) {
+    T result = null;
     if (value != null) {
       instructions.getFixedFormatNumberData();
       result = asObject(instructions.getAlignment().remove(value, instructions.getPaddingChar()), instructions);
@@ -33,11 +31,11 @@ public abstract class AbstractFixedFormatter implements FixedFormatter {
     return result;
   }
 
-  public String format(Object value, FormatInstructions instructions) {
+  public String format(T value, FormatInstructions instructions) {
     return instructions.getAlignment().apply(asString(value, instructions), instructions.getLength(), instructions.getPaddingChar());
   }
 
-  public abstract Object asObject(String string, FormatInstructions instructions);
+  public abstract T asObject(String string, FormatInstructions instructions);
 
-  public abstract String asString(Object obj, FormatInstructions instructions);
+  public abstract String asString(T obj, FormatInstructions instructions);
 }

@@ -23,9 +23,9 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public interface FixedFormatter {
+public interface FixedFormatter<T> {
 
-  Object parse(String value, FormatInstructions instructions) throws FixedFormatException;
+  T parse(String value, FormatInstructions instructions) throws FixedFormatException;
 
-  String format(Object value, FormatInstructions instructions) throws FixedFormatException;
+  String format(T value, FormatInstructions instructions) throws FixedFormatException;
 }
