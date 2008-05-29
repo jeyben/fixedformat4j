@@ -15,12 +15,9 @@
  */
 package com.ancientprogramming.fixedformat4j.format;
 
+import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
-import com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean;
-import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
-import com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal;
 
 /**
  * Utility class used when loading and exporting to and from fixedformat data.
@@ -47,7 +44,7 @@ public class FixedFormatUtil {
       result = record.substring(offset, offset + length);
     } else {
       result = null;
-      LOG.warn("Could not fetch data from record as the recordlength[" + record.length() + "] was shorter than the requested offset[" + offset + "] + length[" + length + "] of the request data. Returning null");
+      LOG.debug("Could not fetch data from record as the recordlength[" + record.length() + "] was shorter than the requested offset[" + offset + "] + length[" + length + "] of the request data. Returning null");
     }
     return result;
   }
