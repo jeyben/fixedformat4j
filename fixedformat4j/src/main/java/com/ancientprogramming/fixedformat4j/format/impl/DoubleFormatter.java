@@ -23,9 +23,9 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public class DoubleFormatter extends AbstractDecimalFormatter {
+public class DoubleFormatter extends AbstractDecimalFormatter<Double> {
 
-  public Object asObject(String string, FormatInstructions instructions) {
+  public Double asObject(String string, FormatInstructions instructions) {
     String toConvert = getStringToConvert(string, instructions);
     return Double.parseDouble("".equals(toConvert) ? "0" : toConvert);
   }
