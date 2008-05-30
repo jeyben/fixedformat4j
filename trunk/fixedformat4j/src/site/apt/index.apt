@@ -31,15 +31,14 @@ Fixedformat4j
 
 +--
 @Record
-public class MyRecord {
+public class BasicRecord {
 
   private String stringData;
   private Integer integerData;
   private Date dateData;
-  private BigDecimal bigDecimalData;
 
 
-  @Field(offset = 1, length = 10, align = Align.RIGHT, paddingChar = ' ')
+  @Field(offset = 1, length = 10)
   public String getStringData() {
     return stringData;
   }
@@ -57,7 +56,8 @@ public class MyRecord {
     this.integerData = integerData;
   }
 
-  @Field(offset = 16, length = 8)
+  @Field(offset = 16, length = 10)
+  @FixedFormatPattern("yyyy-MM-dd")
   public Date getDateData() {
     return dateData;
   }
@@ -65,48 +65,36 @@ public class MyRecord {
   public void setDateData(Date dateData) {
     this.dateData = dateData;
   }
-
-  @Field(offset = 24, length = 10, align = Align.RIGHT, paddingChar = '0')
-  public BigDecimal getBigDecimalData() {
-    return bigDecimalData;
-  }
-
-  public void setBigDecimalData(BigDecimal bigDecimalData) {
-    this.bigDecimalData = bigDecimalData;
-  }
 }
 +--
 
   This annotated class can now be loaded and exported using a FixedFormatManager
 
 +--
-...
-  //setup testdata
-  final String MY_RECORD_DATA = "some text +012320080525+000120120";
-  Calendar someDay = Calendar.getInstance();
-  someDay.set(2008, 4, 25, 0, 0, 0); //month is zerobased, hench 4 equals May
-  someDay.set(Calendar.MILLISECOND, 0);
+public class BasicUsage {
 
-  //create instance of manager
-  FixedFormatManager = manager = new FixedFormatManagerImpl();
+  private static FixedFormatManager manager = new FixedFormatManagerImpl();
 
-  //load and assert that the loaded data is correct
-  MyRecord loadedRecord = manager.load(MyRecord.class, MY_RECORD_DATA);
-  Assert.equals("some text ", loadedRcord.getStringData());
-  Assert.equals(new Integer(123), loadedRcord.getIntegerData());
-  Assert.equals(someday, loadedRcord.getDateData());
-  Assert.equals(new BigDecimal(12.012), loadedRcord.getBigDecimalData());
+  public static void main(String[] args) {
+    String string = "string    001232008-05-29";
+    BasicRecord record = manager.load(BasicRecord.class, string);
 
-  //an export should bring back the exact same string as we loaded
-  Assert.assertEquals(MY_RECORD_DATA, manager.export(loadedRecord));
-
-...
+    System.out.println("The parsed string: " + record.getStringData());
+    System.out.println("The parsed integer: " + record.getIntegerData());
+    System.out.println("The parsed date: " + record.getDateData());
+  }
+}
 +--
 
-* Tutorials
+  Running this simple program will generate the following output.
 
-  * {{{fiveMinutesTutorial.html}5 minutes tutorial}} on how to read and write fixed formatted files using fixedformat4j.
+  Note that the integer changed value in the exported string.
 
-  * Creating custom formatter to handle custom datatypes (TBD)
++--
+The parsed string: string
+The parsed integer: 123
+The parsed date: Thu May 29 00:00:00 CEST 2008
+Exported: string    001002008-05-29
++--
 
-  * 
+  You can see the sourcecode for this sample here.

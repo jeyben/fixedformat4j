@@ -17,17 +17,19 @@
     <menu name="Overview">
       <item name="Introduction" href="/index.html"/>
       <item name="5 minutes tutorial" href="/fiveMinutesTutorial.html"/>
-      <item name="Usage" href="/usage.html"/>
-      <item name="FAQ" href="/faq.html"/>
+<!--      <item name="Usage" href="/usage.html"/> -->
+<!--      <item name="FAQ" href="/faq.html"/> -->
     </menu>
 
     <menu name="Get It">
       <item name="Get fixedformat4j" href="/get-it.html"/>
     </menu>
 
+    <!--
     <menu name="Examples">
       <item name="Custom Formatter" href="/example-custom-formatter.html"/>
     </menu>
+    -->
 
     <menu ref="reports"/>
   </body>
