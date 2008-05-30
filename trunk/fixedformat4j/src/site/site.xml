@@ -22,12 +22,11 @@
     </menu>
 
     <menu name="Get It">
-      <item name="Download" href="/download.html"/>
-      <item name="From ibibio" href="/download.html"/>
+      <item name="Get fixedformat4j" href="/get-it.html"/>
     </menu>
 
     <menu name="Examples">
-      <item name="Creating Formatters" href="/example-formatter.html"/>
+      <item name="Custom Formatter" href="/example-custom-formatter.html"/>
     </menu>
 
     <menu ref="reports"/>

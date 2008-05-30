@@ -22,13 +22,13 @@ package com.ancientprogramming.fixedformat4j.format;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
-public class FormatContext {
+public class FormatContext<T> {
 
   private int offset;
-  private Class dataType;
+  private Class<T> dataType;
   private Class<? extends FixedFormatter> formatter;
 
-  public FormatContext(int offset, Class dataType, Class<? extends FixedFormatter> formatter) {
+  public FormatContext(int offset, Class<T> dataType, Class<? extends FixedFormatter> formatter) {
     this.offset = offset;
     this.dataType = dataType;
     this.formatter = formatter;
@@ -38,7 +38,7 @@ public class FormatContext {
     return offset;
   }
 
-  public Class getDataType() {
+  public Class<T> getDataType() {
     return dataType;
   }
 
