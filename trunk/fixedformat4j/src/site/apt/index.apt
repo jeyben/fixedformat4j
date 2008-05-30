@@ -10,14 +10,23 @@ Fixedformat4j
   your code you can setup the offsets and format for your instructions when reading/writing to and from fixed format files.
 
   Fixedformat4j handles the following build in datatypes:
+
   * String
+
   * Character
+
   * Long
+
   * Integer
+
   * Double
+
   * Float
+
   * Date
+
   * Boolean
+
   * BigDecmial
 
   At the same time it is straight forward to write and plugin your own formatters for custom datatypes.
@@ -97,4 +106,4 @@ The parsed date: Thu May 29 00:00:00 CEST 2008
 Exported: string    001002008-05-29
 +--
 
-  You can see the sourcecode for this sample here.
+  You can see the sourcecode for this sample {{{http://code.google.com/p/fixedformat4j/source/browse/trunk/samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/basic}here}}.
