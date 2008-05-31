@@ -16,8 +16,7 @@
 
     <menu name="Overview">
       <item name="Introduction" href="/index.html"/>
-      <item name="5 minutes tutorial" href="/fiveMinutesTutorial.html"/>
-<!--      <item name="Usage" href="/usage.html"/> -->
+      <item name="Usage" href="/usage/index.html"/> 
 <!--      <item name="FAQ" href="/faq.html"/> -->
     </menu>
 
