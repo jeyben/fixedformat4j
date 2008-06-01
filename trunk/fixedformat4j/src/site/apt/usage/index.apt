@@ -45,4 +45,26 @@ public class BasicRecord {
 
 * Annotations
 
-  TBD
+** @Record
+
+  Used on classes notifying the manager that the class can be loaded and exported into a string.
+
+** @Field
+
+  Used on getter methods contains general instructions on how to format and parse the data.
+
+** @FixedFormatNumber
+
+  Used on getter methods describing if and how a number is signed
+
+** @FixedFormatDecimal
+
+  Used on getter methods containing instructions for a decimal number.
+
+** @FixedFormatPattern
+
+  Used on getter methods containing a pattern attribute. Used to describe how a date is to be parsed.
+
+** @FixedFormatBoolean
+
+  Used on getter methods containing instructions on how a boolean is handled.
