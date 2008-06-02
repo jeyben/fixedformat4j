@@ -28,6 +28,7 @@ import java.util.Date;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.2.0
  */
+//START-SNIPPET: basicrecord
 @Record
 public class BasicRecord {
 
@@ -64,3 +65,4 @@ public class BasicRecord {
     this.dateData = dateData;
   }
 }
+//END-SNIPPET: basicrecord
