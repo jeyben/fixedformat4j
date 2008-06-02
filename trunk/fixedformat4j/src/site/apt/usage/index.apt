@@ -40,7 +40,7 @@ public class BasicRecord {
   public void setStringData(String stringData) {
     this.stringData = stringData;
   }
-}
+}                                      
 +---
 
 * Annotations

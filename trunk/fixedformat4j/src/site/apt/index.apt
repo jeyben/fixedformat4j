@@ -38,62 +38,11 @@ Fixedformat4j
 
   A sample can be seen here:
 
-+--
-@Record
-public class BasicRecord {
-
-  private String stringData;
-  private Integer integerData;
-  private Date dateData;
-
-
-  @Field(offset = 1, length = 10)
-  public String getStringData() {
-    return stringData;
-  }
-
-  public void setStringData(String stringData) {
-    this.stringData = stringData;
-  }
-
-  @Field(offset = 11, length = 5, align = Align.RIGHT, paddingChar = '0')
-  public Integer getIntegerData() {
-    return integerData;
-  }
-
-  public void setIntegerData(Integer integerData) {
-    this.integerData = integerData;
-  }
-
-  @Field(offset = 16, length = 10)
-  @FixedFormatPattern("yyyy-MM-dd")
-  public Date getDateData() {
-    return dateData;
-  }
-
-  public void setDateData(Date dateData) {
-    this.dateData = dateData;
-  }
-}
-+--
+%{snippet|id=basicrecord|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/basic/BasicRecord.java}
 
   This annotated class can now be loaded and exported using a FixedFormatManager
 
-+--
-public class BasicUsage {
-
-  private static FixedFormatManager manager = new FixedFormatManagerImpl();
-
-  public static void main(String[] args) {
-    String string = "string    001232008-05-29";
-    BasicRecord record = manager.load(BasicRecord.class, string);
-
-    System.out.println("The parsed string: " + record.getStringData());
-    System.out.println("The parsed integer: " + record.getIntegerData());
-    System.out.println("The parsed date: " + record.getDateData());
-  }
-}
-+--
+%{snippet|id=basicusage|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/basic/BasicUsage.java}
 
   Running this simple program will generate the following output.
 

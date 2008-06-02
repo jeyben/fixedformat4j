@@ -24,6 +24,7 @@ import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.2.0
  */
+//START-SNIPPET: basicusage
 public class BasicUsage {
 
   private static FixedFormatManager manager = new FixedFormatManagerImpl();
@@ -40,3 +41,4 @@ public class BasicUsage {
     System.out.println("Exported: " + manager.export(record));
   }
 }
+//END-SNIPPET: basicusage
