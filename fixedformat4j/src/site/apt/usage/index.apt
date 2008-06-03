@@ -26,23 +26,10 @@ Usage
 
   The Following example defines one string property on a pojo class called BasicRecord
 
-+---
-@Record
-public class BasicRecord {
+%{code-snippet|id=basicrecord|code=java|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/usage/BasicUsageRecord.java}
 
-  public String stringData;
-
-  @Field(offset = 1, length = 10)
-  public String getStringData() {
-    return stringData;
-  }
-
-  public void setStringData(String stringData) {
-    this.stringData = stringData;
-  }
-}                                      
-+---
-
+  TBD
+  
 * Annotations
 
 ** @Record
