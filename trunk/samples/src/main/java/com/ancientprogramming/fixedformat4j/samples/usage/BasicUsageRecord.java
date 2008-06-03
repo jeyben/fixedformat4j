@@ -28,13 +28,13 @@ import java.util.Date;
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.2.0
  */
-//START-SNIPPET: basicrecord
+//START-SNIPPET: basicusage
 @Record
 public class BasicUsageRecord {
 
   private String stringData;
 
-  @Field(offset = 1, length = 10)
+  @Field(offset = 1, length = 35)
   public String getStringData() {
     return stringData;
   }
@@ -43,4 +43,4 @@ public class BasicUsageRecord {
     this.stringData = stringData;
   }
 }
-//END-SNIPPET: basicrecord
+//END-SNIPPET: basicusage
