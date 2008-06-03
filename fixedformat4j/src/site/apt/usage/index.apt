@@ -26,32 +26,21 @@ Usage
 
   The Following example defines one string property on a pojo class called BasicRecord
 
-%{code-snippet|id=basicrecord|code=java|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/usage/BasicUsageRecord.java}
+%{code-snippet|id=basicusage|code=java|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/usage/BasicUsageRecord.java}
 
-  TBD
+* FixedFormatManager
+
+  An instance of a fixedformatmanager does the work of translating annotation instructions and controlling the actual
+  parsing and formatting.
+
+  Fixedformat4j comes with an implementation of a FixedFormatManager called FixedFormatManagerImpl.
+
+** Example
+
+%{code-snippet|id=basicusage|code=java|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/usage/BasicUsageManager.java}
   
 * Annotations
 
-** @Record
+  As you can see you will use annotations to instruct the manager on how to load and export data.
 
-  Used on classes notifying the manager that the class can be loaded and exported into a string.
-
-** @Field
-
-  Used on getter methods contains general instructions on how to format and parse the data.
-
-** @FixedFormatNumber
-
-  Used on getter methods describing if and how a number is signed
-
-** @FixedFormatDecimal
-
-  Used on getter methods containing instructions for a decimal number.
-
-** @FixedFormatPattern
-
-  Used on getter methods containing a pattern attribute. Used to describe how a date is to be parsed.
-
-** @FixedFormatBoolean
-
-  Used on getter methods containing instructions on how a boolean is handled.
+  A complete list of annotations can be found {{{annotations.html}here}}.

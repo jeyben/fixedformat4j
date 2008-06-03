@@ -16,8 +16,10 @@
 
     <menu name="Overview">
       <item name="Introduction" href="/index.html"/>
-      <item name="Usage" href="/usage/index.html"/> 
-<!--      <item name="FAQ" href="/faq.html"/> -->
+      <item name="Usage" href="/usage/index.html" collapse="true">
+        <item name="Annotations" href="/usage/annotations.html"/>
+      </item>
+      <item name="FAQ" href="/faq.html"/>
     </menu>
 
     <menu name="Get It">
