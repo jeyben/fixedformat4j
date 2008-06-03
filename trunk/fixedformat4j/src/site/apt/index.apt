@@ -38,11 +38,11 @@ Fixedformat4j
 
   A sample can be seen here:
 
-%{snippet|id=basicrecord|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/basic/BasicRecord.java}
+%{code-snippet|id=basicrecord|code=java|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/basic/BasicRecord.java}
 
   This annotated class can now be loaded and exported using a FixedFormatManager
 
-%{snippet|id=basicusage|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/basic/BasicUsage.java}
+%{code-snippet|id=basicusage|code=java|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/basic/BasicUsage.java}
 
   Running this simple program will generate the following output.
 
@@ -55,4 +55,4 @@ The parsed date: Thu May 29 00:00:00 CEST 2008
 Exported: string    001002008-05-29
 +--
 
-  You can see the sourcecode for this sample {{{http://code.google.com/p/fixedformat4j/source/browse/trunk/samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/basic}here}}.
+  You can see the complete sourcecode for this sample {{{http://code.google.com/p/fixedformat4j/source/browse/trunk/samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/basic}here}}.

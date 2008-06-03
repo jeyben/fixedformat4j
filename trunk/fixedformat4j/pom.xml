@@ -113,6 +113,13 @@
           <templateDirectory>${basedir}/src/site</templateDirectory>
           <templateFile>src/site/fixedformat4j-template.vm</templateFile>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>com.ancientprogramming.maven.doxia</groupId>
+            <artifactId>doxia-module-syntaxhighlighter</artifactId>
+            <version>1.0-alpha-11</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
