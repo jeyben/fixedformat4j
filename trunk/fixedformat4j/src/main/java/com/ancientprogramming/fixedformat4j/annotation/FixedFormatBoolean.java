@@ -31,10 +31,25 @@ import java.lang.annotation.ElementType;
 @Target({ElementType.METHOD, ElementType.FIELD})
 public @interface FixedFormatBoolean {
 
+  /**
+   * The default <code>true</code> value
+   */
   public static final String TRUE_VALUE = "T";
+
+  /**
+   * The default <code>false</code> value
+   */
   public static final String FALSE_VALUE = "F";
 
+  /**
+   * The string to map a boolean true value to.
+   * @return contains the string representation of a <code>true</code> value
+   */
   String trueValue() default TRUE_VALUE;
 
+  /**
+   * The string to map a boolean false value to.
+   * @return contains the string representation of a <code>false</code> value
+   */
   String falseValue() default FALSE_VALUE;
 }
