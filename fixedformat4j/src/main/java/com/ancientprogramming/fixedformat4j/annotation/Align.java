@@ -25,6 +25,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum Align {
 
+  /**
+   * Pad or chop data to the left, so the text is aligned to the right
+   */
   RIGHT {
     public String apply(String data, int length, char paddingChar) {
       String result;
@@ -50,6 +53,10 @@ public enum Align {
       return result;
     }},
 
+
+  /**
+   * Pad or chop data to the right, so the text is aligned to the left
+   */
   LEFT {
     public String apply(String data, int length, char paddingChar) {
       String result;
