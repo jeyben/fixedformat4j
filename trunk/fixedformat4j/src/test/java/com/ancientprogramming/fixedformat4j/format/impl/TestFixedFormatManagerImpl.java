@@ -50,7 +50,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
     MyRecord loadedRecord = manager.load(MyRecord.class, MY_RECORD_DATA);
     Assert.assertNotNull(loadedRecord);
     Assert.assertEquals(STR, loadedRecord.getStringData());
-    Assert.assertTrue(loadedRecord.getBooleanData());
+    Assert.assertTrue(loadedRecord.isBooleanData());
   }
 
   public void testLoadMultibleFieldsRecord() {

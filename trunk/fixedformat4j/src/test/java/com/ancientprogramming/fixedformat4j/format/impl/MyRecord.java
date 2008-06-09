@@ -77,7 +77,7 @@ public class MyRecord {
   }
 
   @Field(offset = 25, length = 1)
-  public Boolean getBooleanData() {
+  public Boolean isBooleanData() {
     return booleanData;
   }
 
