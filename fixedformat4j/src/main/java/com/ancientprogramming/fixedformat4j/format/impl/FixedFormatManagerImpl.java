@@ -183,10 +183,10 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   private Class getDatatype(Method method, Field fieldAnno) {
     Class datatype;
-    if (isGetter(method)) {
+    if (followsBeanStandard(method)) {
       datatype = method.getReturnType();
     } else {
-      throw new FixedFormatException(format("%s annotations must be placed on getter methods", fieldAnno.getClass().getName()));
+      throw new FixedFormatException(format("Cannot annotate method %s, with %s annotation. %s annotations must be placed on methods starting with 'get' or 'is'", method.getName(), fieldAnno.getClass().getName(), fieldAnno.getClass().getName()));
     }
     return datatype;
   }
@@ -211,9 +211,16 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return result;
   }
 
-
   private String stripMethodPrefix(String name) {
+
+    if (name.startsWith("get") || name.startsWith("set")) {
     return name.substring(3);
+    } else if (name.startsWith("is")) {
+      return name.substring(2);
+    } else {
+      return name;
+    }
+
   }
 
 
@@ -235,7 +242,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   private FixedFormatPatternData getFixedFormatPatternData(FixedFormatPattern annotation) {
-    FixedFormatPatternData result = null;
+    FixedFormatPatternData result;
     if (annotation != null) {
       result = new FixedFormatPatternData(annotation.value());
     } else {
@@ -245,7 +252,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   private FixedFormatBooleanData getFixedFormatBooleanData(FixedFormatBoolean annotation) {
-    FixedFormatBooleanData result = null;
+    FixedFormatBooleanData result;
     if (annotation != null) {
       result = new FixedFormatBooleanData(annotation.trueValue(), annotation.falseValue());
     } else {
@@ -255,7 +262,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   private FixedFormatNumberData getFixedFormatNumberData(FixedFormatNumber annotation) {
-    FixedFormatNumberData result = null;
+    FixedFormatNumberData result;
     if (annotation != null) {
       result = new FixedFormatNumberData(annotation.sign(), annotation.positiveSign(), annotation.negativeSign());
     } else {
@@ -265,7 +272,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   private FixedFormatDecimalData getFixedFormatDecimalData(FixedFormatDecimal annotation) {
-    FixedFormatDecimalData result = null;
+    FixedFormatDecimalData result;
     if (annotation != null) {
       result = new FixedFormatDecimalData(annotation.decimals(), annotation.useDecimalDelimiter(), annotation.decimalDelimiter());
     } else {
@@ -274,7 +281,8 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return result;
   }
 
-  private boolean isGetter(Method method) {
-    return method.getName().startsWith("get");
+  private boolean followsBeanStandard(Method method) {
+    String methodName = method.getName();
+    return methodName.startsWith("get") || methodName.startsWith("is");
   }
 }
