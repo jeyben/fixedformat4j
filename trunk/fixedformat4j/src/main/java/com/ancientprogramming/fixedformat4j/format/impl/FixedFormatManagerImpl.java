@@ -17,12 +17,9 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.*;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
-import com.ancientprogramming.fixedformat4j.format.FormatContext;
-import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
+import com.ancientprogramming.fixedformat4j.format.*;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
@@ -167,14 +164,19 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return recordAnno;
   }
 
-  private Object readDataAccordingFieldAnnotation(String data, Method method, Field fieldAnno) {
+  private Object readDataAccordingFieldAnnotation(String data, Method method, Field fieldAnno) throws ParseException {
     Class datatype = getDatatype(method, fieldAnno);
 
     FormatContext context = getFormatContext(datatype, fieldAnno);
     FixedFormatter formatter = getFixedFormatterInstance(context.getFormatter(), context);
     FormatInstructions formatdata = getFormatInstructions(method, fieldAnno);
 
-    Object loadedData = formatter.parse(fetchData(data, formatdata, context), formatdata);
+    Object loadedData;
+    try {
+    loadedData = formatter.parse(fetchData(data, formatdata, context), formatdata);
+    } catch (RuntimeException e) {
+      throw new ParseException(data, context, formatdata, e);
+    }
     if (LOG.isDebugEnabled()) {
       LOG.debug("the loaded data[" + loadedData + "]");
     }

@@ -48,8 +48,8 @@ public class FixedFormatBooleanData {
 
   public String toString() {
     return "FixedFormatBooleanData{" +
-        "trueValue='" + trueValue + '\'' +
-        ", falseValue='" + falseValue + '\'' +
+        "trueValue='" + trueValue + "'" +
+        ", falseValue='" + falseValue + "'" +
         '}';
   }
 }

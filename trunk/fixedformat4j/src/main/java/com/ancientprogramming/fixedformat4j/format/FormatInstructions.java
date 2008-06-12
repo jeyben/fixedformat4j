@@ -79,7 +79,7 @@ public class FormatInstructions {
     return "FormatInstructions{" +
         "length=" + length +
         ", alignment=" + alignment +
-        ", paddingChar=" + paddingChar +
+        ", paddingChar='" + paddingChar + "'" + 
         ", fixedFormatPatternData=" + fixedFormatPatternData +
         ", fixedFormatBooleanData=" + fixedFormatBooleanData +
         ", fixedFormatNumberData=" + fixedFormatNumberData +

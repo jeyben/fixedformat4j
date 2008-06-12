@@ -48,4 +48,13 @@ public class FixedFormatDecimalData {
   public char getDecimalDelimiter() {
     return decimalDelimiter;
   }
+
+
+  public String toString() {
+    return "FixedFormatDecimalData{" +
+        "decimals=" + decimals +
+        ", useDecimalDelimiter=" + useDecimalDelimiter +
+        ", decimalDelimiter='" + decimalDelimiter + "'" + 
+        '}';
+  }
 }
