@@ -50,7 +50,7 @@ public class FormatContext<T> {
   public String toString() {
     return "FormatContext{" +
         "offset=" + offset +
-        ", dataType=" + dataType +
+        ", dataType=" + dataType.getName() +
         ", formatter=" + formatter.getName() +
         '}';
   }

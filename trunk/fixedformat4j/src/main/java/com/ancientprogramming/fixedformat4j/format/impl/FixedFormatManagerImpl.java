@@ -67,14 +67,14 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       Field fieldAnnotation = method.getAnnotation(Field.class);
       Fields fieldsAnnotation = method.getAnnotation(Fields.class);
       if (fieldAnnotation != null) {
-        Object loadedData = readDataAccordingFieldAnnotation(data, method, fieldAnnotation);
+        Object loadedData = readDataAccordingFieldAnnotation(fixedFormatRecordClass, data, method, fieldAnnotation);
         foundData.put(methodName, loadedData);
       } else if (fieldsAnnotation != null) {
         //assert that the fields annotation contains minimum one field anno
         if (fieldsAnnotation.value() == null || fieldsAnnotation.value().length == 0) {
           throw new FixedFormatException(format("%s annotation must contain minimum one %s annotation", Fields.class.getName(), Field.class.getName()));
         }
-        Object loadedData = readDataAccordingFieldAnnotation(data, method, fieldsAnnotation.value()[0]);
+        Object loadedData = readDataAccordingFieldAnnotation(fixedFormatRecordClass, data, method, fieldsAnnotation.value()[0]);
         foundData.put(methodName, loadedData);
       }
     }
@@ -164,18 +164,19 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return recordAnno;
   }
 
-  private Object readDataAccordingFieldAnnotation(String data, Method method, Field fieldAnno) throws ParseException {
+  private <T> Object readDataAccordingFieldAnnotation(Class<T> clazz, String data, Method method, Field fieldAnno) throws ParseException {
     Class datatype = getDatatype(method, fieldAnno);
 
     FormatContext context = getFormatContext(datatype, fieldAnno);
     FixedFormatter formatter = getFixedFormatterInstance(context.getFormatter(), context);
     FormatInstructions formatdata = getFormatInstructions(method, fieldAnno);
 
+    String dataToParse = fetchData(data, formatdata, context);
     Object loadedData;
     try {
-    loadedData = formatter.parse(fetchData(data, formatdata, context), formatdata);
+    loadedData = formatter.parse(dataToParse, formatdata);
     } catch (RuntimeException e) {
-      throw new ParseException(data, context, formatdata, e);
+      throw new ParseException(data, dataToParse, clazz, method, context, formatdata, e);
     }
     if (LOG.isDebugEnabled()) {
       LOG.debug("the loaded data[" + loadedData + "]");

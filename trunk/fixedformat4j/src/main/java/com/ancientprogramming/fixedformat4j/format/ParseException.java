@@ -17,6 +17,8 @@ package com.ancientprogramming.fixedformat4j.format;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 
+import java.lang.reflect.Method;
+
 /**
  * Used in cases where data couldn't be parse according to the context and instructions.
  *
@@ -25,26 +27,7 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
  */
 public class ParseException extends FixedFormatException {
 
-  private String data;
-  private FormatContext formatContext;
-  private FormatInstructions formatInstructions;
-
-  public ParseException(String data, FormatContext formatContext, FormatInstructions formatInstructions, Throwable throwable) {
-    super("Could not parse data[" + data + "], " + formatContext.toString() + ", " + formatInstructions.toString(), throwable);
-    this.data = data;
-    this.formatContext = formatContext;
-    this.formatInstructions = formatInstructions;
-  }
-
-  public String getData() {
-    return data;
-  }
-
-  public FormatContext getFormatContext() {
-    return formatContext;
-  }
-
-  public FormatInstructions getFormatInstructions() {
-    return formatInstructions;
+  public ParseException(String completeString, String data, Class clazz, Method method, FormatContext formatContext, FormatInstructions formatInstructions, Throwable e) {
+    super("failed to parse '" + data + "' at offset " + formatContext.getOffset() + " as " + formatContext.getDataType().getName() + " from '" + completeString + "'. Got format instructions from " + clazz.getName() + "." + method.getName() + ". See details{" + formatContext.toString() + ", " +formatInstructions.toString() + "}", e);
   }
 }
