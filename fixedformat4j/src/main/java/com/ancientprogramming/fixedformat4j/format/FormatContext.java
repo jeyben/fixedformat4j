@@ -51,7 +51,7 @@ public class FormatContext<T> {
     return "FormatContext{" +
         "offset=" + offset +
         ", dataType=" + dataType +
-        ", formatter=" + formatter +
+        ", formatter=" + formatter.getName() +
         '}';
   }
 }

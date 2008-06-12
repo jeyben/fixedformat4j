@@ -36,4 +36,11 @@ public class FixedFormatPatternData {
   public String getPattern() {
     return pattern;
   }
+
+
+  public String toString() {
+    return "FixedFormatPatternData{" +
+        "pattern='" + pattern + '\'' +
+        '}';
+  }
 }

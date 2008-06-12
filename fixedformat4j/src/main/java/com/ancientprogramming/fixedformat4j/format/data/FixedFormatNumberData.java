@@ -49,4 +49,13 @@ public class FixedFormatNumberData {
   public Character getNegativeSign() {
     return negativeSign;
   }
+
+
+  public String toString() {
+    return "FixedFormatNumberData{" +
+        "signing=" + signing +
+        ", positiveSign='" + positiveSign + "'" +
+        ", negativeSign='" + negativeSign + "'" + 
+        '}';
+  }
 }

@@ -16,6 +16,7 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
+import com.ancientprogramming.fixedformat4j.format.ParseException;
 import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
 import com.ancientprogramming.fixedformat4j.format.impl.MultibleFieldsRecord;
 import com.ancientprogramming.fixedformat4j.format.impl.MyRecord;
@@ -26,11 +27,16 @@ import junit.framework.TestCase;
 import java.util.Calendar;
 import java.math.BigDecimal;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @author Jacob von Eyben www.ancientprogramming.com
  * @since 1.0.0
  */
 public class TestFixedFormatManagerImpl extends TestCase {
+
+  private static final Log LOG = LogFactory.getLog(TestFixedFormatManagerImpl.class);
 
   private static String STR = "some text ";
 
@@ -112,6 +118,18 @@ public class TestFixedFormatManagerImpl extends TestCase {
     try {
       manager.load(String.class, "some");
     } catch (FixedFormatException e) {
+      //expected
+    }
+  }
+
+  public void testParseFail() {
+    try {
+      manager.load(MyRecord.class, "foobarfoobarfoobarfoobar");
+      fail("expected parse exception");
+    } catch (ParseException e) {
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("bu", e);
+      }
       //expected
     }
   }
