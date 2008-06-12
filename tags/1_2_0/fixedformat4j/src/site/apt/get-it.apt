@@ -1,0 +1,23 @@
+  ------
+  5 minutes tutorial
+  ------
+  Jacob von Eyben
+  ------
+
+Get the latest version of fixedformat4j
+
+  Fixedformat4j is available in one of two ways:
+
+  [[1]] You can either download it from the {{{http://code.google.com/p/fixedformat4j/downloads/list}download list}} at {{http://fixedformat4j.googlecode.com}}.
+
+  You can see fixedformat4j's dependencies {{{dependencies.html}here}}. 
+
+  [[2]] You can depend on fixedformat4j by adding the following dependency to your maven project:
+
++---
+  <dependency>
+    <groupId>com.ancientprogramming.fixedformat4j</groupId>
+    <artifactId>fixedformat4j</artifactId>
+    <version>1.1.1</version>
+  </dependency>
++---
