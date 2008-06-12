@@ -4,6 +4,16 @@
     <author email="jacobvoneyben@gmail.com">Jacob von Eyben</author>
   </properties>
   <body>
+    <release version="1.2.0" date="comming" description="Improved error reporting">
+      <action dev="jeyben" type="add">
+        Improved error reporting when fail to parse a string.
+        All details about how data was suppose to be parse will be included in the error message.
+        The class and method name of the instance trying to create will be included as well.
+      </action>
+      <action dev="jeyben" type="add" issue="5">
+        Added the ability to annotate methods starting with 'is' in addition to 'get'.
+      </action>
+    </release>
     <release version="1.1.1" date="2008-05-29" description="Bugfixes and generified">
       <action dev="jeyben" type="add">
         Added the ability to not sign numbers. And made it default
