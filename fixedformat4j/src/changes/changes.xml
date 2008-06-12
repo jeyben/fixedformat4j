@@ -4,7 +4,7 @@
     <author email="jacobvoneyben@gmail.com">Jacob von Eyben</author>
   </properties>
   <body>
-    <release version="1.2.0" date="comming" description="Improved error reporting">
+    <release version="1.2.0" date="2008-06-12" description="Improved error reporting">
       <action dev="jeyben" type="add">
         Improved error reporting when fail to parse a string.
         All details about how data was suppose to be parse will be included in the error message.
