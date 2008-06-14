@@ -30,7 +30,7 @@
           Your formatter receives this isntance when the parse and format methods of your formatter is called by the FixedFormatManager.<br />
           Ex. if you would like to access the value given to the FixedFormatPattern annotation you do this through the formatInstruction.getFixedFormatPatternData().getPattern()</p>
         <p>To instruct the manager to use you custom formatter, you set the formatter attribute of the field annotation:</p>
-        <p>@Field(lenght = 10, formatter = CustomFormatter.class)</p>
+        <p>@Field(offset = 1, length = 10, formatter = CustomFormatter.class)</p>
       </answer>
     </faq>
   </part>
