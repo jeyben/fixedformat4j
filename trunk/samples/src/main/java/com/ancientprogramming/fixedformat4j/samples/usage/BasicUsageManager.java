@@ -22,7 +22,7 @@ import com.ancientprogramming.fixedformat4j.samples.basic.BasicRecord;
 /**
  * Shows the basic usage
  *
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.2.0
  */
 public class BasicUsageManager {

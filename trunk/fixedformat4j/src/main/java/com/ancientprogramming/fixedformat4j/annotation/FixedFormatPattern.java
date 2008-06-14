@@ -24,7 +24,7 @@ import java.lang.annotation.ElementType;
  * Used together with FixedFormatField annotations to provide a pattern for the data.
  * This annotation is required for {@link java.util.Date} datatype.
  *
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
 

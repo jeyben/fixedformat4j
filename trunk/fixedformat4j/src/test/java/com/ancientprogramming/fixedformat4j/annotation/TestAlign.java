@@ -18,7 +18,7 @@ package com.ancientprogramming.fixedformat4j.annotation;
 import junit.framework.TestCase;
 
 /**
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
 public class TestAlign extends TestCase {

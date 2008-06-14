@@ -19,7 +19,7 @@ package com.ancientprogramming.fixedformat4j.format;
  * Contains context for loading and exporting fixedformat data.
  * The context describes what kind of formatter to use, what datatype to convert and what offset to fetch data from.
  *
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
 public class FormatContext<T> {

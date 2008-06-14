@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
 /**
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.1.0
  */
 

@@ -23,7 +23,7 @@ import java.lang.annotation.ElementType;
 /**
  * Define representations for {@link Boolean#TRUE} and {@link Boolean#FALSE}
  *
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
 

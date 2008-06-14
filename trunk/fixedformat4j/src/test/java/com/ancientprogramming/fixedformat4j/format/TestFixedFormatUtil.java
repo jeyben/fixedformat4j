@@ -20,7 +20,7 @@ import com.ancientprogramming.fixedformat4j.format.impl.StringFormatter;
 import junit.framework.TestCase;
 
 /**
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
 public class TestFixedFormatUtil extends TestCase {

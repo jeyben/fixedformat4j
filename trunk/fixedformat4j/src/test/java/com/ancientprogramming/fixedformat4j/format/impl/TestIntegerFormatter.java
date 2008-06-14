@@ -26,7 +26,7 @@ import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
 import junit.framework.TestCase;
 
 /**
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
 public class TestIntegerFormatter extends TestCase {
