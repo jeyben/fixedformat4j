@@ -37,7 +37,7 @@ import java.util.Set;
 /**
  * Load and export data to and from fixedformat
  *
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
 public class FixedFormatManagerImpl implements FixedFormatManager {

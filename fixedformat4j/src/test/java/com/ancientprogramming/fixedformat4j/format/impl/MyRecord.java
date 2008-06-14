@@ -23,7 +23,7 @@ import java.math.BigDecimal;
 /**
  * A record used in testcases
  *
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
 @Record

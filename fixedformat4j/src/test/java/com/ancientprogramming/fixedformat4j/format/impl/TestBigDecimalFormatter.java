@@ -27,7 +27,7 @@ import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber.
 import java.math.BigDecimal;
 
 /**
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
 public class TestBigDecimalFormatter extends TestCase {

@@ -18,7 +18,7 @@ package com.ancientprogramming.fixedformat4j.format;
 /**
  * Handles default formatting and parsing based on FixedFormatAnnotation values.
  *
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
 public abstract class AbstractFixedFormatter<T> implements FixedFormatter<T> {

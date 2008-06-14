@@ -26,7 +26,7 @@ import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber.
 
 /**
  *
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
 public class TestLongFormatter extends TestCase {

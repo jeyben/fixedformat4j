@@ -26,7 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
 public class TestDateFormatter extends TestCase {

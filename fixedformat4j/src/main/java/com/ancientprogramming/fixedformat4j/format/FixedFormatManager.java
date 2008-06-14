@@ -21,7 +21,7 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
  * Interface used to interact with fixed format annotations.
  *
  * A <code>FixedFormatManager</code> is associated with one type of fixed format data.
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
 public interface FixedFormatManager {

@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 /**
  * Base class for formatting decimal data
  *
- * @author Jacob von Eyben www.ancientprogramming.com
+ * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
 public abstract class AbstractDecimalFormatter<T> extends AbstractNumberFormatter<T> {
