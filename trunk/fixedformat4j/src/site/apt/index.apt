@@ -6,8 +6,8 @@
 
 Fixedformat4j
 
-  Fixedformat4j is an easy to use Java framework for working with fixed formatted text files. By annotating
-  your code you can setup the offsets and format as for your data when reading/writing to and from fixed format files.
+  Fixedformat4j is an easy to use Java framework for working with flat fixed formatted text files. By annotating
+  your code you can setup the offsets and format as for your data when reading/writing to and from flat fixed format files.
 
   Fixedformat4j handles the following build in datatypes:
 
