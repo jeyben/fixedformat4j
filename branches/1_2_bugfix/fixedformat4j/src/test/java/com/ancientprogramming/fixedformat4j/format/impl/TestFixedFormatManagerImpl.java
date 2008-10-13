@@ -122,6 +122,21 @@ public class TestFixedFormatManagerImpl extends TestCase {
     }
   }
 
+
+  public void testExportAnnotatedInnerClass() {
+    MyRecord.MyStaticInnerClass myStaticInnerClass = new MyRecord.MyStaticInnerClass();
+    myStaticInnerClass.setStringData("xyz");
+    String exportedString = manager.export("xyz       ", myStaticInnerClass);
+    Assert.assertEquals("xyz       ", exportedString);
+
+    MyRecord myRecord = new MyRecord();
+    MyRecord.MyInnerClass myInnerClass = myRecord.new MyInnerClass();
+    myInnerClass.setStringData("abc");
+    exportedString = manager.export("abc       ", myInnerClass);
+    Assert.assertEquals("abc       ", exportedString);
+  }
+
+
   public void testParseFail() {
     try {
       manager.load(MyRecord.class, "foobarfoobarfoobarfoobar");
