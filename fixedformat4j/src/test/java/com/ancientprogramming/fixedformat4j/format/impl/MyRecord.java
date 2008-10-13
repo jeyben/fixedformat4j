@@ -17,8 +17,8 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.*;
 
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * A record used in testcases
@@ -62,7 +62,7 @@ public class MyRecord {
   public Date getDateData() {
     return dateData;
   }
-                                 
+
   public void setDateData(Date dateData) {
     this.dateData = dateData;
   }
@@ -121,5 +121,37 @@ public class MyRecord {
 
   public void setBigDecimalData(BigDecimal bigDecimalData) {
     this.bigDecimalData = bigDecimalData;
+  }
+
+  @Record
+  static class MyStaticInnerClass {
+
+    private String stringData;
+
+    @Field(offset = 1, length = 10)
+    public String getStringData() {
+      return stringData;
+    }
+
+    public void setStringData(String stringData) {
+      this.stringData = stringData;
+    }
+  }
+
+  @Record
+  public class MyInnerClass {
+
+    private String stringData;
+
+    public MyInnerClass() {}
+
+    @Field(offset = 1, length = 10)
+    public String getStringData() {
+      return stringData;
+    }
+
+    public void setStringData(String stringData) {
+      this.stringData = stringData;
+    }
   }
 }

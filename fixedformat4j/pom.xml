@@ -5,7 +5,7 @@
   <name>Fixed Format for Java</name>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
 
-  <version>1.2.0</version>
+  <version>1.2.1-SNAPSHOT</version>
   <artifactId>fixedformat4j</artifactId>
   <packaging>jar</packaging>
 
