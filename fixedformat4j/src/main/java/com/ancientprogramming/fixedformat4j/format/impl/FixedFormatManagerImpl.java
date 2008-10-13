@@ -17,9 +17,9 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.*;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
+import com.ancientprogramming.fixedformat4j.format.*;
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
-import com.ancientprogramming.fixedformat4j.format.*;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
@@ -46,6 +46,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   public <T> T load(Class<T> fixedFormatRecordClass, String data) {
     HashMap<String, Object> foundData = new HashMap<String, Object>();
+    HashMap<String, Class<?>> methodClass = new HashMap<String, Class<?>>();
     //assert the record is marked with a Record
     getAndAssertRecordAnnotation(fixedFormatRecordClass);
 
@@ -69,6 +70,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       if (fieldAnnotation != null) {
         Object loadedData = readDataAccordingFieldAnnotation(fixedFormatRecordClass, data, method, fieldAnnotation);
         foundData.put(methodName, loadedData);
+        methodClass.put(methodName, method.getReturnType());
       } else if (fieldsAnnotation != null) {
         //assert that the fields annotation contains minimum one field anno
         if (fieldsAnnotation.value() == null || fieldsAnnotation.value().length == 0) {
@@ -76,6 +78,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
         }
         Object loadedData = readDataAccordingFieldAnnotation(fixedFormatRecordClass, data, method, fieldsAnnotation.value()[0]);
         foundData.put(methodName, loadedData);
+        methodClass.put(methodName, method.getReturnType());
       }
     }
 
@@ -85,7 +88,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
       Object foundDataObj = foundData.get(key);
       if (foundDataObj != null) {
-        Class datatype = foundData.get(key).getClass();
+    	Class datatype = methodClass.get(key);
         Method method;
         try {
           method = fixedFormatRecordClass.getMethod(setterMethodName, datatype);
