@@ -42,12 +42,19 @@ public class ByTypeFormatter implements FixedFormatter {
 
   static {
     KNOWN_FORMATTERS.put(String.class, StringFormatter.class);
+    KNOWN_FORMATTERS.put(int.class, IntegerFormatter.class);
     KNOWN_FORMATTERS.put(Integer.class, IntegerFormatter.class);
+    KNOWN_FORMATTERS.put(long.class, LongFormatter.class);
     KNOWN_FORMATTERS.put(Long.class, LongFormatter.class);
     KNOWN_FORMATTERS.put(Date.class, DateFormatter.class);
+    KNOWN_FORMATTERS.put(Date.class, DateFormatter.class);
+    KNOWN_FORMATTERS.put(char.class, CharacterFormatter.class);
     KNOWN_FORMATTERS.put(Character.class, CharacterFormatter.class);
+    KNOWN_FORMATTERS.put(boolean.class, BooleanFormatter.class);
     KNOWN_FORMATTERS.put(Boolean.class, BooleanFormatter.class);
+    KNOWN_FORMATTERS.put(double.class, DoubleFormatter.class);
     KNOWN_FORMATTERS.put(Double.class, DoubleFormatter.class);
+    KNOWN_FORMATTERS.put(float.class, FloatFormatter.class);
     KNOWN_FORMATTERS.put(Float.class, FloatFormatter.class);
     KNOWN_FORMATTERS.put(BigDecimal.class,  BigDecimalFormatter.class);
   }

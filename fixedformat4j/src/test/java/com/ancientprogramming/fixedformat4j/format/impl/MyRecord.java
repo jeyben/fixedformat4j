@@ -38,6 +38,7 @@ public class MyRecord {
   private Double doubleData;
   private Float floatData;
   private BigDecimal bigDecimalData;
+  private float simpleFloatData;
 
 
   @Field(offset = 1, length = 10, align = Align.RIGHT, paddingChar = ' ')
@@ -122,6 +123,16 @@ public class MyRecord {
   public void setBigDecimalData(BigDecimal bigDecimalData) {
     this.bigDecimalData = bigDecimalData;
   }
+
+  @Field(offset = 60, length = 10, align = Align.RIGHT, paddingChar = '0')
+  public float getSimpleFloatData() {
+    return simpleFloatData;
+  }
+
+  public void setSimpleFloatData(float simpleFloatData) {
+    this.simpleFloatData = simpleFloatData;
+  }
+
 
   @Record
   static class MyStaticNestedClass {
