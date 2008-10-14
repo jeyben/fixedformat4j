@@ -139,7 +139,7 @@ public class MyRecord {
   }
 
   @Record
-  class MyStaticInnerClass {
+  class MyInnerClass {
 
     private String stringData;
 
