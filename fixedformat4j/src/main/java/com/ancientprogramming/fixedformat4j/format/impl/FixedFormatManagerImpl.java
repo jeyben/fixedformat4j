@@ -56,7 +56,29 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       Constructor<T> constructor = fixedFormatRecordClass.getDeclaredConstructor();
       instance = constructor.newInstance();
     } catch (NoSuchMethodException e) {
-      throw new FixedFormatException(format("%s is missing a default constructor which is nessesary to be loaded through %s", fixedFormatRecordClass.getName(), getClass().getName()));
+      //If the class is a possible inner class do some more work
+      Class declaringClass = fixedFormatRecordClass.getDeclaringClass();
+      if (declaringClass != null) {
+        try {
+          Object declaringClassInstance = null;
+          try {
+            Constructor declaringClassConstructor = declaringClass.getDeclaredConstructor();
+            declaringClassInstance = declaringClassConstructor.newInstance();
+          } catch (NoSuchMethodException dex) {
+            throw new FixedFormatException(format("Trying to create instance of innerclass %s, but the declaring class %s is missing a default constructor which is nessesary to be loaded through %s", fixedFormatRecordClass.getName(), declaringClass.getName(), getClass().getName()));
+          } catch (Exception de) {
+            throw new FixedFormatException(format("unable to create instance of declaring class %s, which is needed to instansiate %s", declaringClass.getName(), fixedFormatRecordClass.getName()), e);
+          }
+          Constructor<T> constructor = fixedFormatRecordClass.getDeclaredConstructor(declaringClass);
+          instance = constructor.newInstance(declaringClassInstance);
+        } catch (NoSuchMethodException ex) {
+          throw new FixedFormatException(format("%s is missing a default constructor which is nessesary to be loaded through %s", fixedFormatRecordClass.getName(), getClass().getName()));
+        } catch (Exception ex) {
+          throw new FixedFormatException(format("unable to create instance of %s", fixedFormatRecordClass.getName()), e);
+        }
+      } else {
+        throw new FixedFormatException(format("%s is missing a default constructor which is nessesary to be loaded through %s", fixedFormatRecordClass.getName(), getClass().getName()));
+      }
     } catch (Exception e) {
       throw new FixedFormatException(format("unable to create instance of %s", fixedFormatRecordClass.getName()), e);
     }

@@ -137,4 +137,19 @@ public class MyRecord {
       this.stringData = stringData;
     }
   }
+
+  @Record
+  class MyStaticInnerClass {
+
+    private String stringData;
+
+    @Field(offset = 1, length = 10)
+    public String getStringData() {
+      return stringData;
+    }
+
+    public void setStringData(String stringData) {
+      this.stringData = stringData;
+    }
+  }
 }

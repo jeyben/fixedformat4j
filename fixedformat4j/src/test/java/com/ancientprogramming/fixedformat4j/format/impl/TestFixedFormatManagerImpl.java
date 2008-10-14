@@ -123,13 +123,25 @@ public class TestFixedFormatManagerImpl extends TestCase {
     myStaticNestedClass.setStringData("xyz");
     String exportedString = manager.export(myStaticNestedClass);
     Assert.assertEquals("xyz       ", exportedString);
- }
+  }
+
+  public void testExportAnnotatedInnerClass() {
+    MyRecord myRecord = new MyRecord();
+    MyRecord.MyStaticInnerClass myStaticInnerClass = myRecord.new MyStaticInnerClass();
+    myStaticInnerClass.setStringData("xyz");
+    String exportedString = manager.export(myStaticInnerClass);
+    Assert.assertEquals("xyz       ", exportedString);
+  }
 
   public void testImportAnnotatedNestedClass() {
     MyRecord.MyStaticNestedClass staticNested = manager.load(MyRecord.MyStaticNestedClass.class, "xyz       ");
     Assert.assertEquals("xyz", staticNested.getStringData());
   }
 
+  public void testImportAnnotatedInnerClass() {
+    MyRecord.MyStaticInnerClass staticInner = manager.load(MyRecord.MyStaticInnerClass.class, "xyz       ");
+    Assert.assertEquals("xyz", staticInner.getStringData());
+  }
 
   public void testParseFail() {
     try {
