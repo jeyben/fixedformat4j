@@ -36,7 +36,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
 
   private static String STR = "some text ";
 
-  public static final String MY_RECORD_DATA = "some text 0012320080514CT001100000010350000002056-0012 0120";
+  public static final String MY_RECORD_DATA = "some text 0012320080514CT001100000010350000002056-0012 01200000002056";
   public static final String MULTIBLE_RECORD_DATA = "some      2008101320081013                       0100";
   public static final String MULTIBLE_RECORD_DATA_X_PADDED = "some      2008101320081013xxxxxxxxxxxxxxxxxxxxxxx0100";
 
@@ -81,6 +81,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
     myRecord.setIntegerData(123);
     myRecord.setStringData("some text ");
     myRecord.setBigDecimalData(new BigDecimal(-12.012));
+    myRecord.setSimpleFloatData(20.56F);
     Assert.assertEquals("wrong record exported", MY_RECORD_DATA, manager.export(myRecord));
   }
 
