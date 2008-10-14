@@ -53,7 +53,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     //create instance to set data into
     T instance;
     try {
-      Constructor<T> constructor = fixedFormatRecordClass.getConstructor();
+      Constructor<T> constructor = fixedFormatRecordClass.getDeclaredConstructor();
       instance = constructor.newInstance();
     } catch (NoSuchMethodException e) {
       throw new FixedFormatException(format("%s is missing a default constructor which is nessesary to be loaded through %s", fixedFormatRecordClass.getName(), getClass().getName()));
