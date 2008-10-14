@@ -6,7 +6,6 @@
   Features
 ------------------------------------------
   - Let the manager answer on format/parse errors.
-  - cannot create instances of inner class records
   - support round, ceil, floor etc. when handling decimal data.
   - specific exception for errors that occurs because of wrong annotation usage
   - Having Beloeb and OreBeloeb, KrBeloeb it would be nice to be able to represent the setters and getters as Beloeb and use a specific formatter for the two supclasses:
