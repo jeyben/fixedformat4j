@@ -124,26 +124,9 @@ public class MyRecord {
   }
 
   @Record
-  static class MyStaticInnerClass {
+  static class MyStaticNestedClass {
 
     private String stringData;
-
-    @Field(offset = 1, length = 10)
-    public String getStringData() {
-      return stringData;
-    }
-
-    public void setStringData(String stringData) {
-      this.stringData = stringData;
-    }
-  }
-
-  @Record
-  public class MyInnerClass {
-
-    private String stringData;
-
-    public MyInnerClass() {}
 
     @Field(offset = 1, length = 10)
     public String getStringData() {

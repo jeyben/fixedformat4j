@@ -15,20 +15,16 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
+import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import com.ancientprogramming.fixedformat4j.format.ParseException;
-import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
-import com.ancientprogramming.fixedformat4j.format.impl.MultibleFieldsRecord;
-import com.ancientprogramming.fixedformat4j.format.impl.MyRecord;
-import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import junit.framework.Assert;
 import junit.framework.TestCase;
-
-import java.util.Calendar;
-import java.math.BigDecimal;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.math.BigDecimal;
+import java.util.Calendar;
 
 /**
  * @author Jacob von Eyben - http://www.ancientprogramming.com
@@ -122,18 +118,16 @@ public class TestFixedFormatManagerImpl extends TestCase {
     }
   }
 
-
-  public void testExportAnnotatedInnerClass() {
-    MyRecord.MyStaticInnerClass myStaticInnerClass = new MyRecord.MyStaticInnerClass();
-    myStaticInnerClass.setStringData("xyz");
-    String exportedString = manager.export("xyz       ", myStaticInnerClass);
+  public void testExportAnnotatedNestedClass() {
+    MyRecord.MyStaticNestedClass myStaticNestedClass = new MyRecord.MyStaticNestedClass();
+    myStaticNestedClass.setStringData("xyz");
+    String exportedString = manager.export(myStaticNestedClass);
     Assert.assertEquals("xyz       ", exportedString);
+ }
 
-    MyRecord myRecord = new MyRecord();
-    MyRecord.MyInnerClass myInnerClass = myRecord.new MyInnerClass();
-    myInnerClass.setStringData("abc");
-    exportedString = manager.export("abc       ", myInnerClass);
-    Assert.assertEquals("abc       ", exportedString);
+  public void testImportAnnotatedNestedClass() {
+    MyRecord.MyStaticNestedClass staticNested = manager.load(MyRecord.MyStaticNestedClass.class, "xyz       ");
+    Assert.assertEquals("xyz", staticNested.getStringData());
   }
 
 
