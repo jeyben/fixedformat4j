@@ -123,24 +123,46 @@ public class TestFixedFormatManagerImpl extends TestCase {
     myStaticNestedClass.setStringData("xyz");
     String exportedString = manager.export(myStaticNestedClass);
     Assert.assertEquals("xyz       ", exportedString);
+
+    NoDefaultConstructorClass.MyStaticNestedClass myStaticNestedClass2 = new NoDefaultConstructorClass.MyStaticNestedClass();
+    myStaticNestedClass2.setStringData("xyz");
+    String exportedString2 = manager.export(myStaticNestedClass2);
+    Assert.assertEquals("xyz       ", exportedString2);
   }
 
   public void testExportAnnotatedInnerClass() {
     MyRecord myRecord = new MyRecord();
-    MyRecord.MyStaticInnerClass myStaticInnerClass = myRecord.new MyStaticInnerClass();
-    myStaticInnerClass.setStringData("xyz");
-    String exportedString = manager.export(myStaticInnerClass);
+    MyRecord.MyInnerClass myInnerClass = myRecord.new MyInnerClass();
+    myInnerClass.setStringData("xyz");
+    String exportedString = manager.export(myInnerClass);
+    Assert.assertEquals("xyz       ", exportedString);
+ 
+    NoDefaultConstructorClass noDefaultConstructorClass = new NoDefaultConstructorClass("foobar");
+    NoDefaultConstructorClass.MyInnerClass myInnerClass2 = noDefaultConstructorClass.new MyInnerClass();
+    myInnerClass2.setStringData("xyz");
+    exportedString = manager.export(myInnerClass2);
     Assert.assertEquals("xyz       ", exportedString);
   }
 
   public void testImportAnnotatedNestedClass() {
     MyRecord.MyStaticNestedClass staticNested = manager.load(MyRecord.MyStaticNestedClass.class, "xyz       ");
     Assert.assertEquals("xyz", staticNested.getStringData());
+
+    NoDefaultConstructorClass.MyStaticNestedClass staticNested2 = manager.load(NoDefaultConstructorClass.MyStaticNestedClass.class, "xyz       ");
+    Assert.assertEquals("xyz", staticNested2.getStringData());
   }
 
   public void testImportAnnotatedInnerClass() {
-    MyRecord.MyStaticInnerClass staticInner = manager.load(MyRecord.MyStaticInnerClass.class, "xyz       ");
-    Assert.assertEquals("xyz", staticInner.getStringData());
+    MyRecord.MyInnerClass inner = manager.load(MyRecord.MyInnerClass.class, "xyz       ");
+    Assert.assertEquals("xyz", inner.getStringData());
+
+
+    try {
+      manager.load(NoDefaultConstructorClass.MyInnerClass.class, "xyz       ");
+      fail(String.format("expected an %s exception to be thrown", FixedFormatException.class.getName()));
+    } catch (FixedFormatException e) {
+      //expected this
+    }
   }
 
   public void testParseFail() {
