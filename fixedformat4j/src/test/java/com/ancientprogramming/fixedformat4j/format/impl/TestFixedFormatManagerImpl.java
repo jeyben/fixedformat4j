@@ -15,20 +15,16 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
+import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import com.ancientprogramming.fixedformat4j.format.ParseException;
-import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
-import com.ancientprogramming.fixedformat4j.format.impl.MultibleFieldsRecord;
-import com.ancientprogramming.fixedformat4j.format.impl.MyRecord;
-import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import junit.framework.Assert;
 import junit.framework.TestCase;
-
-import java.util.Calendar;
-import java.math.BigDecimal;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.math.BigDecimal;
+import java.util.Calendar;
 
 /**
  * @author Jacob von Eyben - http://www.ancientprogramming.com
@@ -40,7 +36,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
 
   private static String STR = "some text ";
 
-  public static final String MY_RECORD_DATA = "some text 0012320080514CT001100000010350000002056-0012 0120";
+  public static final String MY_RECORD_DATA = "some text 0012320080514CT001100000010350000002056-0012 01200000002056";
   public static final String MULTIBLE_RECORD_DATA = "some      2008101320081013                       0100";
   public static final String MULTIBLE_RECORD_DATA_X_PADDED = "some      2008101320081013xxxxxxxxxxxxxxxxxxxxxxx0100";
 
@@ -85,6 +81,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
     myRecord.setIntegerData(123);
     myRecord.setStringData("some text ");
     myRecord.setBigDecimalData(new BigDecimal(-12.012));
+    myRecord.setSimpleFloatData(20.56F);
     Assert.assertEquals("wrong record exported", MY_RECORD_DATA, manager.export(myRecord));
   }
 
@@ -119,6 +116,53 @@ public class TestFixedFormatManagerImpl extends TestCase {
       manager.load(String.class, "some");
     } catch (FixedFormatException e) {
       //expected
+    }
+  }
+
+  public void testExportAnnotatedNestedClass() {
+    MyRecord.MyStaticNestedClass myStaticNestedClass = new MyRecord.MyStaticNestedClass();
+    myStaticNestedClass.setStringData("xyz");
+    String exportedString = manager.export(myStaticNestedClass);
+    Assert.assertEquals("xyz       ", exportedString);
+
+    NoDefaultConstructorClass.MyStaticNestedClass myStaticNestedClass2 = new NoDefaultConstructorClass.MyStaticNestedClass();
+    myStaticNestedClass2.setStringData("xyz");
+    String exportedString2 = manager.export(myStaticNestedClass2);
+    Assert.assertEquals("xyz       ", exportedString2);
+  }
+
+  public void testExportAnnotatedInnerClass() {
+    MyRecord myRecord = new MyRecord();
+    MyRecord.MyInnerClass myInnerClass = myRecord.new MyInnerClass();
+    myInnerClass.setStringData("xyz");
+    String exportedString = manager.export(myInnerClass);
+    Assert.assertEquals("xyz       ", exportedString);
+ 
+    NoDefaultConstructorClass noDefaultConstructorClass = new NoDefaultConstructorClass("foobar");
+    NoDefaultConstructorClass.MyInnerClass myInnerClass2 = noDefaultConstructorClass.new MyInnerClass();
+    myInnerClass2.setStringData("xyz");
+    exportedString = manager.export(myInnerClass2);
+    Assert.assertEquals("xyz       ", exportedString);
+  }
+
+  public void testImportAnnotatedNestedClass() {
+    MyRecord.MyStaticNestedClass staticNested = manager.load(MyRecord.MyStaticNestedClass.class, "xyz       ");
+    Assert.assertEquals("xyz", staticNested.getStringData());
+
+    NoDefaultConstructorClass.MyStaticNestedClass staticNested2 = manager.load(NoDefaultConstructorClass.MyStaticNestedClass.class, "xyz       ");
+    Assert.assertEquals("xyz", staticNested2.getStringData());
+  }
+
+  public void testImportAnnotatedInnerClass() {
+    MyRecord.MyInnerClass inner = manager.load(MyRecord.MyInnerClass.class, "xyz       ");
+    Assert.assertEquals("xyz", inner.getStringData());
+
+
+    try {
+      manager.load(NoDefaultConstructorClass.MyInnerClass.class, "xyz       ");
+      fail(String.format("expected an %s exception to be thrown", FixedFormatException.class.getName()));
+    } catch (FixedFormatException e) {
+      //expected this
     }
   }
 
