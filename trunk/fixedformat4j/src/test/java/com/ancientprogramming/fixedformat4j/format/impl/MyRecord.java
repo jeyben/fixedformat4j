@@ -17,8 +17,8 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.*;
 
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * A record used in testcases
@@ -38,6 +38,7 @@ public class MyRecord {
   private Double doubleData;
   private Float floatData;
   private BigDecimal bigDecimalData;
+  private float simpleFloatData;
 
 
   @Field(offset = 1, length = 10, align = Align.RIGHT, paddingChar = ' ')
@@ -62,7 +63,7 @@ public class MyRecord {
   public Date getDateData() {
     return dateData;
   }
-                                 
+
   public void setDateData(Date dateData) {
     this.dateData = dateData;
   }
@@ -121,5 +122,45 @@ public class MyRecord {
 
   public void setBigDecimalData(BigDecimal bigDecimalData) {
     this.bigDecimalData = bigDecimalData;
+  }
+
+  @Field(offset = 60, length = 10, align = Align.RIGHT, paddingChar = '0')
+  public float getSimpleFloatData() {
+    return simpleFloatData;
+  }
+
+  public void setSimpleFloatData(float simpleFloatData) {
+    this.simpleFloatData = simpleFloatData;
+  }
+
+
+  @Record
+  static class MyStaticNestedClass {
+
+    private String stringData;
+
+    @Field(offset = 1, length = 10)
+    public String getStringData() {
+      return stringData;
+    }
+
+    public void setStringData(String stringData) {
+      this.stringData = stringData;
+    }
+  }
+
+  @Record
+  class MyInnerClass {
+
+    private String stringData;
+
+    @Field(offset = 1, length = 10)
+    public String getStringData() {
+      return stringData;
+    }
+
+    public void setStringData(String stringData) {
+      this.stringData = stringData;
+    }
   }
 }
