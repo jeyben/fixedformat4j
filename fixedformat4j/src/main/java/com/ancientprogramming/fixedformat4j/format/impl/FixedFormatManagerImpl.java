@@ -17,9 +17,9 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.*;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
+import com.ancientprogramming.fixedformat4j.format.*;
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
-import com.ancientprogramming.fixedformat4j.format.*;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
@@ -46,16 +46,41 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   public <T> T load(Class<T> fixedFormatRecordClass, String data) {
     HashMap<String, Object> foundData = new HashMap<String, Object>();
+    HashMap<String, Class<?>> methodClass = new HashMap<String, Class<?>>();
     //assert the record is marked with a Record
     getAndAssertRecordAnnotation(fixedFormatRecordClass);
 
     //create instance to set data into
     T instance;
     try {
-      Constructor<T> constructor = fixedFormatRecordClass.getConstructor();
+      Constructor<T> constructor = fixedFormatRecordClass.getDeclaredConstructor();
       instance = constructor.newInstance();
     } catch (NoSuchMethodException e) {
-      throw new FixedFormatException(format("%s is missing a default constructor which is nessesary to be loaded through %s", fixedFormatRecordClass.getName(), getClass().getName()));
+      //If the class is a possible inner class do some more work
+      Class declaringClass = fixedFormatRecordClass.getDeclaringClass();
+      if (declaringClass != null) {
+        try {
+          Object declaringClassInstance = null;
+          try {
+            Constructor declaringClassConstructor = declaringClass.getDeclaredConstructor();
+            declaringClassInstance = declaringClassConstructor.newInstance();
+          } catch (NoSuchMethodException dex) {
+            throw new FixedFormatException(format("Trying to create instance of innerclass %s, but the declaring class %s is missing a default constructor which is nessesary to be loaded through %s", fixedFormatRecordClass.getName(), declaringClass.getName(), getClass().getName()));
+          } catch (Exception de) {
+            throw new FixedFormatException(format("unable to create instance of declaring class %s, which is needed to instansiate %s", declaringClass.getName(), fixedFormatRecordClass.getName()), e);
+          }
+          Constructor<T> constructor = fixedFormatRecordClass.getDeclaredConstructor(declaringClass);
+          instance = constructor.newInstance(declaringClassInstance);
+        } catch (FixedFormatException ex) {
+          throw ex;
+        } catch (NoSuchMethodException ex) {
+          throw new FixedFormatException(format("%s is missing a default constructor which is nessesary to be loaded through %s", fixedFormatRecordClass.getName(), getClass().getName()));
+        } catch (Exception ex) {
+          throw new FixedFormatException(format("unable to create instance of %s", fixedFormatRecordClass.getName()), e);
+        }
+      } else {
+        throw new FixedFormatException(format("%s is missing a default constructor which is nessesary to be loaded through %s", fixedFormatRecordClass.getName(), getClass().getName()));
+      }
     } catch (Exception e) {
       throw new FixedFormatException(format("unable to create instance of %s", fixedFormatRecordClass.getName()), e);
     }
@@ -69,6 +94,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       if (fieldAnnotation != null) {
         Object loadedData = readDataAccordingFieldAnnotation(fixedFormatRecordClass, data, method, fieldAnnotation);
         foundData.put(methodName, loadedData);
+        methodClass.put(methodName, method.getReturnType());
       } else if (fieldsAnnotation != null) {
         //assert that the fields annotation contains minimum one field anno
         if (fieldsAnnotation.value() == null || fieldsAnnotation.value().length == 0) {
@@ -76,6 +102,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
         }
         Object loadedData = readDataAccordingFieldAnnotation(fixedFormatRecordClass, data, method, fieldsAnnotation.value()[0]);
         foundData.put(methodName, loadedData);
+        methodClass.put(methodName, method.getReturnType());
       }
     }
 
@@ -85,7 +112,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
       Object foundDataObj = foundData.get(key);
       if (foundDataObj != null) {
-        Class datatype = foundData.get(key).getClass();
+    	Class datatype = methodClass.get(key);
         Method method;
         try {
           method = fixedFormatRecordClass.getMethod(setterMethodName, datatype);
