@@ -61,7 +61,7 @@
   <distributionManagement>
     <site>
       <id>ancientprogramming</id>
-      <url>scp://ancientprogramming.com/home/ancientp/www/fixedformat4j</url>
+      <url>scp://ancientprogramming.com/home/ancientp/www/_fixedformat4j</url>
     </site>
   </distributionManagement>
 
