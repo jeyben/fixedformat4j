@@ -380,11 +380,11 @@
     </div>
 
     <!-- syntax highlighter -->
-    <link type="text/css" rel="stylesheet" href="http://ancientprogramming.com/syntaxhighlighter/SyntaxHighlighter.css"></link>
-    <script language="javascript" src="http://ancientprogramming.com/syntaxhighlighter/shCore.js"></script>
-        <script language="javascript" src="http://ancientprogramming.com/syntaxhighlighter/shBrushCSharp.js"></script>
-        <script language="javascript" src="http://ancientprogramming.com/syntaxhighlighter/shBrushJava.js"></script>
-        <script language="javascript" src="http://ancientprogramming.com/syntaxhighlighter/shBrushXml.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://syntaxhighlighter.ancientprogramming.com/syntaxhighlighter/SyntaxHighlighter.css"></link>
+    <script language="javascript" src="http://syntaxhighlighter.ancientprogramming.com/syntaxhighlighter/shCore.js"></script>
+        <script language="javascript" src="http://syntaxhighlighter.ancientprogramming.com/syntaxhighlighter/shBrushCSharp.js"></script>
+        <script language="javascript" src="http://syntaxhighlighter.ancientprogramming.com/syntaxhighlighter/shBrushJava.js"></script>
+        <script language="javascript" src="http://syntaxhighlighter.ancientprogramming.com/syntaxhighlighter/shBrushXml.js"></script>
     <script language="javascript">
     dp.SyntaxHighlighter.ClipboardSwf = '/flash/clipboard.swf';
     dp.SyntaxHighlighter.HighlightAll('code');
