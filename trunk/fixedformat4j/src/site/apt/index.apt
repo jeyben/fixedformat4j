@@ -13,19 +13,19 @@ Fixedformat4j
 
   * String
 
-  * Character
+  * Character / char
 
-  * Long
+  * Long / long
 
-  * Integer
+  * Integer / int
 
-  * Double
+  * Double / double
 
-  * Float
+  * Float /float
+
+  * Boolean / boolean
 
   * Date
-
-  * Boolean
 
   * BigDecmial
 
