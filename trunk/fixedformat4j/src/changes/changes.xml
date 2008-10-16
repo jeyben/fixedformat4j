@@ -4,7 +4,7 @@
     <author email="jacobvoneyben@gmail.com">Jacob von Eyben</author>
   </properties>
   <body>
-    <release version="1.2.1" date="" description="Support for static nested and inner classes.">
+    <release version="1.2.1" date="2008-10-15" description="Minor bugfixes as well as support for static nested and inner classes.">
       <action dev="jeyben" type="add" issue="8">
         Added support for processing annotated static nested classes and inner classes.
       </action>
