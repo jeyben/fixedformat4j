@@ -4,6 +4,11 @@
     <author email="jacobvoneyben@gmail.com">Jacob von Eyben</author>
   </properties>
   <body>
+    <release version="1.2.2" date="2008-10-17" description="Bugfix release.">
+      <action dev="jeyben" type="fix" issue="9">
+        Fixed issue where data wasn't loaded if the text length was shorter just a bit shorter than the last field in a record.
+      </action>
+    </release>
     <release version="1.2.1" date="2008-10-15" description="Minor bugfixes as well as support for static nested and inner classes.">
       <action dev="jeyben" type="add" issue="8">
         Added support for processing annotated static nested classes and inner classes.
