@@ -19,6 +19,8 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import static java.lang.String.format;
+
 /**
  * Utility class used when loading and exporting to and from fixedformat data.
  *
@@ -42,9 +44,18 @@ public class FixedFormatUtil {
     int length = instructions.getLength();
     if (record.length() >= offset + length) {
       result = record.substring(offset, offset + length);
+    } else if (record.length() > offset) {
+      //the field does contain data, but is not as long as the instructions tells.
+      result = record.substring(offset, record.length());
+      if (LOG.isDebugEnabled()) {
+        LOG.warn(format("The record field was not as long as expected by the instructions. Expected field to be %s long but it was %s.", length, record.length()));
+      }
     } else {
       result = null;
-      LOG.debug("Could not fetch data from record as the recordlength[" + record.length() + "] was shorter than the requested offset[" + offset + "] + length[" + length + "] of the request data. Returning null");
+      LOG.warn(format("Could not fetch data from record as the recordlength[%s] was shorter than or equal to the requested offset[%s] of the request data. Returning null", record.length(), offset));
+    }
+    if (LOG.isDebugEnabled()) {
+      LOG.debug(format("fetched '%s' from record", result));
     }
     return result;
   }

@@ -21,6 +21,7 @@ import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
 import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * Verifies Issue 9
@@ -32,14 +33,21 @@ public class TestIssue9 extends TestCase {
 
   FixedFormatManager fixedFormatManager = new FixedFormatManagerImpl();
 
+  @Test
   public void testLastColumnIsIgnored() {
     String text21 = "1234567890some       ";
     String text20 = "1234567890some      ";
     String text19 = "1234567890some     ";
+    String text11 = "1234567890x";
+    String text10 = "1234567890";
+    String text9 = "123456789";
 
     assertText(1234567890, "some", fixedFormatManager.load(Issue9.class, text21));
-    assertText(1234567890, "some", fixedFormatManager.load(Issue9.class, text20));
+    assertText(1234567890, "some", fixedFormatManager.load(Issue9.class, text20));  
     assertText(1234567890, "some", fixedFormatManager.load(Issue9.class, text19));
+    assertText(1234567890, "x", fixedFormatManager.load(Issue9.class, text11));
+    assertText(1234567890, null, fixedFormatManager.load(Issue9.class, text10));
+    assertText(123456789, null, fixedFormatManager.load(Issue9.class, text9));
 
   }
 
