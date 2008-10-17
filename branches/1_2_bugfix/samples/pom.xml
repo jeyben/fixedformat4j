@@ -5,7 +5,7 @@
   <name>Fixed Format for Java Samples</name>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
 
-  <version>1.2.2</version>
+  <version>1.2.3-SNAPSHOT</version>
   <artifactId>fixedformat4j-samples</artifactId>
   <packaging>jar</packaging>
 
@@ -62,7 +62,7 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>fixedformat4j</artifactId>
-      <version>1.2.2</version>
+      <version>1.2.3-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
