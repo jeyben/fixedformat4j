@@ -12,12 +12,31 @@ Get the latest version of fixedformat4j
 
   You can see fixedformat4j's dependencies {{{dependencies.html}here}}. 
 
-  [[2]] You can depend on fixedformat4j by adding the following dependency to your maven project:
+  [[2]] You can depend on fixedformat4j in your maven project by adding the following dependency to your pom.xml:
 
 +---
   <dependency>
     <groupId>com.ancientprogramming.fixedformat4j</groupId>
     <artifactId>fixedformat4j</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.2</version>
   </dependency>
++---
+
+Repository
+
+  I will submit an upload request to the maven ibiblio repository after each release. Unfortunately it can take som time
+  to process such an upload request and that is why I have created a public maven repository where the latest fixedformat4j
+  releases can be found.
+
+  Just add the following to your pom.xml and you will always have access to the latest fixedformat4j versions!
+
++---
+  <repositories>
+    ...
+    <repository>
+      <id>fixedformat4j-repo</id>
+      <url>http://maven.ancientprogramming.com/repository</url>
+    </repository>
+    ...
+  </repositories>
 +---
