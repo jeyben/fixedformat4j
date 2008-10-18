@@ -9,11 +9,13 @@
         Added support Short/short as a known datatype in fixedformat4j.
       </action>
     </release>
+
     <release version="1.2.2" date="2008-10-17" description="Bugfix release.">
       <action dev="jeyben" type="fix" issue="9">
         Fixed issue where data wasn't loaded if the text length was shorter just a bit shorter than the last field in a record.
       </action>
     </release>
+
     <release version="1.2.1" date="2008-10-15" description="Minor bugfixes as well as support for static nested and inner classes.">
       <action dev="jeyben" type="add" issue="8">
         Added support for processing annotated static nested classes and inner classes.
@@ -25,6 +27,7 @@
         Added support for primitive datatypes like int, boolean, float etc.
       </action>
     </release>
+
     <release version="1.2.0" date="2008-06-12" description="Improved error reporting">
       <action dev="jeyben" type="add">
         Improved error reporting when fail to parse a string.
@@ -35,6 +38,7 @@
         Added the ability to annotate methods starting with 'is' in addition to 'get'.
       </action>
     </release>
+
     <release version="1.1.1" date="2008-05-29" description="Bugfixes and generified">
       <action dev="jeyben" type="add">
         Added the ability to not sign numbers. And made it default
