@@ -15,8 +15,9 @@
     <url>http://www.ancientprogramming.com</url>
   </organization>
   <description>
-    <![CDATA[Fixedformat4j is intended to be an easy to use, small and non intrusive java framework for working with fixed
-    formatted plain text files.]]>
+    <![CDATA[Fixedformat4j is intended to be an easy to use, small and non intrusive Java framework for working with
+    flat fixed formatted text files. By annotating your code you can setup the offsets and format as for your data when
+    reading/writing to and from flat fixed format files.]]>
   </description>
   <url>http://fixedformat4j.ancientprogramming.com</url>
 
