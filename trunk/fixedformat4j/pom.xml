@@ -63,6 +63,10 @@
       <id>ancientprogramming</id>
       <url>scp://ancientprogramming.com/home/ancientp/www/_fixedformat4j</url>
     </site>
+    <repository>
+      <id>ancientprogramming</id>
+      <url>scp://ancientprogramming.com/home/ancientp/www/_maven/repository</url>
+    </repository>
   </distributionManagement>
 
   <dependencies>
@@ -92,6 +96,16 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <mailingLists>
+    <mailingList>
+      <name>Fixedformat4j User List</name>
+      <post>fixedformat4j-user-list@googlegroups.com</post>
+      <unsubscribe>fixedformat4j-user-list+unsubscribe@googlegroups.com</unsubscribe>
+      <subscribe>http://groups.google.com/group/fixedformat4j-user-list/subscribe</subscribe>
+      <archive>http://groups.google.com/group/fixedformat4j-user-list/topics?gvc=2</archive>
+    </mailingList>
+  </mailingLists>
 
   <build>
     <defaultGoal>install</defaultGoal>
