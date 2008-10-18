@@ -15,8 +15,8 @@
     <url>http://www.ancientprogramming.com</url>
   </organization>
   <description>
-    <![CDATA[The fixedformat4j library provides an an easy way to work with fixed formatted plain text files
-    as you know them from mainframe system etc]]>
+    <![CDATA[Fixedformat4j is intended to be an easy to use, small and non intrusive java framework for working with fixed
+    formatted plain text files.]]>
   </description>
   <url>http://fixedformat4j.ancientprogramming.com</url>
 
