@@ -28,7 +28,7 @@ import java.util.Map;
 
 /**
  * Formatter capable of formatting a bunch of known java standard library classes. So far:
- * {@link String}, {@link Integer}, {@link Long}, {@link Date},
+ * {@link String}, {@link Integer}, {@link Short}, {@link Long}, {@link Date},
  * {@link Character}, {@link Boolean}, {@link Double}, {@link Float} and {@link BigDecimal}
  *
  *
@@ -42,6 +42,8 @@ public class ByTypeFormatter implements FixedFormatter {
 
   static {
     KNOWN_FORMATTERS.put(String.class, StringFormatter.class);
+    KNOWN_FORMATTERS.put(short.class, ShortFormatter.class);
+    KNOWN_FORMATTERS.put(Short.class, ShortFormatter.class);
     KNOWN_FORMATTERS.put(int.class, IntegerFormatter.class);
     KNOWN_FORMATTERS.put(Integer.class, IntegerFormatter.class);
     KNOWN_FORMATTERS.put(long.class, LongFormatter.class);
