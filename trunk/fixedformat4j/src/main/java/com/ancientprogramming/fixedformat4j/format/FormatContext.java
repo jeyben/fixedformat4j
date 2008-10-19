@@ -26,9 +26,9 @@ public class FormatContext<T> {
 
   private int offset;
   private Class<T> dataType;
-  private Class<? extends FixedFormatter> formatter;
+  private Class<? extends FixedFormatter<T>> formatter;
 
-  public FormatContext(int offset, Class<T> dataType, Class<? extends FixedFormatter> formatter) {
+  public FormatContext(int offset, Class<T> dataType, Class<? extends FixedFormatter<T>> formatter) {
     this.offset = offset;
     this.dataType = dataType;
     this.formatter = formatter;
@@ -42,7 +42,7 @@ public class FormatContext<T> {
     return dataType;
   }
 
-  public Class<? extends FixedFormatter> getFormatter() {
+  public Class<? extends FixedFormatter<T>> getFormatter() {
     return formatter;
   }
 
