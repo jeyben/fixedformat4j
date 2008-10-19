@@ -26,7 +26,7 @@ import junit.framework.TestCase;
 public class TestFixedFormatUtil extends TestCase {
 
   public void testGetInstance() {
-    FixedFormatUtil.getFixedFormatterInstance(StringFormatter.class, new FormatContext(1, java.lang.String.class, StringFormatter.class));
+    FixedFormatUtil.getFixedFormatterInstance(StringFormatter.class, new FormatContext<String>(1, java.lang.String.class, StringFormatter.class));
     FixedFormatUtil.getFixedFormatterInstance(ByTypeFormatter.class, new FormatContext(1, java.lang.String.class, ByTypeFormatter.class));
   }
 }

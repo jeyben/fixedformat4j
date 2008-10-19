@@ -35,7 +35,7 @@ import java.util.Map;
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
-public class ByTypeFormatter implements FixedFormatter {
+public class ByTypeFormatter implements FixedFormatter<Object> {
   private FormatContext context;
 
   private static final Map<Class<? extends Serializable>, Class<? extends FixedFormatter>> KNOWN_FORMATTERS = new HashMap<Class<? extends Serializable>, Class<? extends FixedFormatter>>();

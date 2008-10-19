@@ -60,7 +60,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       Class declaringClass = fixedFormatRecordClass.getDeclaringClass();
       if (declaringClass != null) {
         try {
-          Object declaringClassInstance = null;
+          Object declaringClassInstance;
           try {
             Constructor declaringClassConstructor = declaringClass.getDeclaredConstructor();
             declaringClassInstance = declaringClassConstructor.newInstance();
@@ -191,6 +191,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return recordAnno;
   }
 
+  @SuppressWarnings({"unchecked"})
   private <T> Object readDataAccordingFieldAnnotation(Class<T> clazz, String data, Method method, Field fieldAnno) throws ParseException {
     Class datatype = getDatatype(method, fieldAnno);
 
@@ -221,11 +222,12 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return datatype;
   }
 
+  @SuppressWarnings({"unchecked"})
   private <T> String exportDataAccordingFieldAnnotation(T fixedFormatRecord, Method method, Field fieldAnno) {
     String result;
     Class datatype = getDatatype(method, fieldAnno);
 
-    FormatContext context = getFormatContext(datatype, fieldAnno);
+    FormatContext<T> context = getFormatContext(datatype, fieldAnno);
     FixedFormatter formatter = getFixedFormatterInstance(context.getFormatter(), context);
     FormatInstructions formatdata = getFormatInstructions(method, fieldAnno);
     Object valueObject;
@@ -254,8 +256,9 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
 
-  private FormatContext getFormatContext(Class datatype, Field fieldAnno) {
-    FormatContext context = null;
+  @SuppressWarnings({"unchecked"})
+  private <T> FormatContext<T> getFormatContext(Class<T> datatype, Field fieldAnno) {
+    FormatContext<T> context = null;
     if (fieldAnno != null) {
       context = new FormatContext(fieldAnno.offset(), datatype, fieldAnno.formatter());
     }
