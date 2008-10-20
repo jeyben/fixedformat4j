@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import static java.lang.String.format;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -51,6 +52,56 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     getAndAssertRecordAnnotation(fixedFormatRecordClass);
 
     //create instance to set data into
+    T instance = createRecordInstance(fixedFormatRecordClass);
+
+    //look for setter annotations and read data from the 'data' string
+    Method[] allMethods = fixedFormatRecordClass.getMethods();
+    for (Method method : allMethods) {
+      String methodName = stripMethodPrefix(method.getName());
+      Field fieldAnnotation = method.getAnnotation(Field.class);
+      Fields fieldsAnnotation = method.getAnnotation(Fields.class);
+      if (fieldAnnotation != null) {
+        readFieldData(fixedFormatRecordClass, data, foundData, methodClass, method, methodName, fieldAnnotation);
+      } else if (fieldsAnnotation != null) {
+        //assert that the fields annotation contains minimum one field anno
+        if (fieldsAnnotation.value() == null || fieldsAnnotation.value().length == 0) {
+          throw new FixedFormatException(format("%s annotation must contain minimum one %s annotation", Fields.class.getName(), Field.class.getName()));
+        }
+        readFieldData(fixedFormatRecordClass, data, foundData, methodClass, method, methodName, fieldsAnnotation.value()[0]);
+      }
+    }
+
+    Set<String> keys = foundData.keySet();
+    for (String key : keys) {
+      String setterMethodName = "set" + key;
+
+      Object foundDataObj = foundData.get(key);
+      if (foundDataObj != null) {
+        Class datatype = methodClass.get(key);
+        Method method;
+        try {
+          method = fixedFormatRecordClass.getMethod(setterMethodName, datatype);
+        } catch (NoSuchMethodException e) {
+          throw new FixedFormatException(format("setter method named %s.%s(%s) does not exist", fixedFormatRecordClass.getName(), setterMethodName, datatype));
+        }
+        try {
+          method.invoke(instance, foundData.get(key));
+        } catch (Exception e) {
+          throw new FixedFormatException(format("could not invoke method %s.%s(%s)", fixedFormatRecordClass.getName(), setterMethodName, datatype), e);
+        }
+      }
+
+    }
+    return instance;
+  }
+
+  private <T> void readFieldData(Class<T> fixedFormatRecordClass, String data, HashMap<String, Object> foundData, HashMap<String, Class<?>> methodClass, Method method, String methodName, Field fieldAnnotation) {
+    Object loadedData = readDataAccordingFieldAnnotation(fixedFormatRecordClass, data, method, fieldAnnotation);
+    foundData.put(methodName, loadedData);
+    methodClass.put(methodName, method.getReturnType());
+  }
+
+  private <T> T createRecordInstance(Class<T> fixedFormatRecordClass) {
     T instance;
     try {
       Constructor<T> constructor = fixedFormatRecordClass.getDeclaredConstructor();
@@ -83,49 +134,6 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       }
     } catch (Exception e) {
       throw new FixedFormatException(format("unable to create instance of %s", fixedFormatRecordClass.getName()), e);
-    }
-
-    //look for setter annotations and read data from the 'data' string
-    Method[] allMethods = fixedFormatRecordClass.getMethods();
-    for (Method method : allMethods) {
-      String methodName = stripMethodPrefix(method.getName());
-      Field fieldAnnotation = method.getAnnotation(Field.class);
-      Fields fieldsAnnotation = method.getAnnotation(Fields.class);
-      if (fieldAnnotation != null) {
-        Object loadedData = readDataAccordingFieldAnnotation(fixedFormatRecordClass, data, method, fieldAnnotation);
-        foundData.put(methodName, loadedData);
-        methodClass.put(methodName, method.getReturnType());
-      } else if (fieldsAnnotation != null) {
-        //assert that the fields annotation contains minimum one field anno
-        if (fieldsAnnotation.value() == null || fieldsAnnotation.value().length == 0) {
-          throw new FixedFormatException(format("%s annotation must contain minimum one %s annotation", Fields.class.getName(), Field.class.getName()));
-        }
-        Object loadedData = readDataAccordingFieldAnnotation(fixedFormatRecordClass, data, method, fieldsAnnotation.value()[0]);
-        foundData.put(methodName, loadedData);
-        methodClass.put(methodName, method.getReturnType());
-      }
-    }
-
-    Set<String> keys = foundData.keySet();
-    for (String key : keys) {
-      String setterMethodName = "set" + key;
-
-      Object foundDataObj = foundData.get(key);
-      if (foundDataObj != null) {
-    	Class datatype = methodClass.get(key);
-        Method method;
-        try {
-          method = fixedFormatRecordClass.getMethod(setterMethodName, datatype);
-        } catch (NoSuchMethodException e) {
-          throw new FixedFormatException(format("setter method named %s.%s(%s) does not exist", fixedFormatRecordClass.getName(), setterMethodName, datatype));
-        }
-        try {
-          method.invoke(instance, foundData.get(key));
-        } catch (Exception e) {
-          throw new FixedFormatException(format("could not invoke method %s.%s(%s)", fixedFormatRecordClass.getName(), setterMethodName, datatype), e);
-        }
-      }
-
     }
     return instance;
   }
@@ -195,16 +203,25 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   private <T> Object readDataAccordingFieldAnnotation(Class<T> clazz, String data, Method method, Field fieldAnno) throws ParseException {
     Class datatype = getDatatype(method, fieldAnno);
 
+    //recursive follow if the datatype is annotated with the @Record annotation
+
     FormatContext context = getFormatContext(datatype, fieldAnno);
     FixedFormatter formatter = getFixedFormatterInstance(context.getFormatter(), context);
     FormatInstructions formatdata = getFormatInstructions(method, fieldAnno);
 
     String dataToParse = fetchData(data, formatdata, context);
+
     Object loadedData;
-    try {
-    loadedData = formatter.parse(dataToParse, formatdata);
-    } catch (RuntimeException e) {
-      throw new ParseException(data, dataToParse, clazz, method, context, formatdata, e);
+
+    Annotation recordAnno = datatype.getAnnotation(Record.class);
+    if (recordAnno != null) {
+      loadedData = load(datatype, dataToParse);
+    } else {
+      try {
+        loadedData = formatter.parse(dataToParse, formatdata);
+      } catch (RuntimeException e) {
+        throw new ParseException(data, dataToParse, clazz, method, context, formatdata, e);
+      }
     }
     if (LOG.isDebugEnabled()) {
       LOG.debug("the loaded data[" + loadedData + "]");
@@ -236,7 +253,13 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     } catch (Exception e) {
       throw new FixedFormatException(format("could not invoke method %s.%s(%s)", fixedFormatRecord.getClass().getName(), method.getName(), datatype), e);
     }
-    result = formatter.format(valueObject, formatdata);
+
+    //recursivly follow if the valueObject is annotated as a record
+    if (valueObject.getClass().getAnnotation(Record.class) != null) {
+      result = export(valueObject);
+    } else {
+      result = formatter.format(valueObject, formatdata);
+    }
     if (LOG.isDebugEnabled()) {
       LOG.debug(format("exported %s ", result));
     }
@@ -246,7 +269,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   private String stripMethodPrefix(String name) {
 
     if (name.startsWith("get") || name.startsWith("set")) {
-    return name.substring(3);
+      return name.substring(3);
     } else if (name.startsWith("is")) {
       return name.substring(2);
     } else {
