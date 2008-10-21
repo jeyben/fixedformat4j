@@ -27,7 +27,68 @@ import java.lang.reflect.Method;
  */
 public class ParseException extends FixedFormatException {
 
-  public ParseException(String completeString, String data, Class clazz, Method method, FormatContext formatContext, FormatInstructions formatInstructions, Throwable e) {
-    super("failed to parse '" + data + "' at offset " + formatContext.getOffset() + " as " + formatContext.getDataType().getName() + " from '" + completeString + "'. Got format instructions from " + clazz.getName() + "." + method.getName() + ". See details{" + formatContext.toString() + ", " +formatInstructions.toString() + "}", e);
+  private String completeText;
+  private String failedText;
+  private Class annotatedClass;
+  private Method annotatedMethod;
+  private FormatContext formatContext;
+  private FormatInstructions formatInstructions;
+
+  public ParseException(String completeText, String failedText, Class annotatedClass, Method annotatedMethod, FormatContext formatContext, FormatInstructions formatInstructions, Throwable cause) {
+    super("Failed to parse '" + failedText + "' at offset " + formatContext.getOffset() + " as " + formatContext.getDataType().getName() + " from '" + completeText + "'. Got format instructions from " + annotatedClass.getName() + "." + annotatedMethod.getName() + ". See details{" + formatContext.toString() + ", " +formatInstructions.toString() + "}", cause);
+     this.completeText = completeText;
+    this.failedText = failedText;
+    this.annotatedClass = annotatedClass;
+    this.annotatedMethod = annotatedMethod;
+    this.formatContext = formatContext;
+    this.formatInstructions = formatInstructions;
+  }
+
+  /**
+   * Contains the complete text that failed to be parsed
+   * @return String containing the complete text
+   */
+  public String getCompleteText() {
+    return completeText;
+  }
+
+  /**
+   * The part of the complete text that failed the actual parsing according to the {@link #getFormatInstructions()}
+   * @return String containing the part that failed
+   */
+  public String getFailedText() {
+    return failedText;
+  }
+
+  /**
+   * The Class containing the fixedformat annotations
+   * @return the Class
+   */
+  public Class getAnnotatedClass() {
+    return annotatedClass;
+  }
+
+  /**
+   * The method containing the annotations that was used to trying to parse the text in {@link #getFailedText()}
+   * @return the annotated method
+   */
+  public Method getAnnotatedMethod() {
+    return annotatedMethod;
+  }
+
+  /**
+   * The context within the parsing was tried
+   * @return the format context
+   */
+  public FormatContext getFormatContext() {
+    return formatContext;
+  }
+
+  /**
+   * The format instructions used to try parsing the text in {@link #getFailedText()}
+   * @return
+   */
+  public FormatInstructions getFormatInstructions() {
+    return formatInstructions;
   }
 }

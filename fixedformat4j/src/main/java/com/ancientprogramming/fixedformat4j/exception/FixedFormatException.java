@@ -22,6 +22,7 @@ package com.ancientprogramming.fixedformat4j.exception;
  * @since 1.0.0
  */
 public class FixedFormatException extends RuntimeException {
+
   public FixedFormatException(String s) {
     super(s);
   }
