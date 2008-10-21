@@ -19,8 +19,9 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 
 /**
  * Interface used to interact with fixed format annotations.
- *
+ * <p/>
  * A <code>FixedFormatManager</code> is associated with one type of fixed format data.
+ *
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
@@ -28,10 +29,13 @@ public interface FixedFormatManager {
 
   /**
    * Create an instance of the fixedFormatClass and load the data string into the object according to the annotations.
+   *
    * @param clazz the class to instanciate
-   * @param data the data to load
+   * @param data  the data to load
    * @return an object loaded with the fixedformat data
-   * @throws FixedFormatException in case the fixedFormatRecord class cannot be loaded
+   * @throws ParseException       in case that some specific parsing fails. Ex. a field could't be parsed according to some annotation instructions.
+   *                              This exception contains detailed information telling what failed to be loaded.
+   * @throws FixedFormatException in case the fixedFormatRecord class cannot be loaded. Ex. the Class wasn't annotated with a @Record annotation
    */
   <T> T load(Class<T> clazz, String data) throws FixedFormatException;
 
