@@ -26,9 +26,19 @@ public abstract class AbstractFixedFormatter<T> implements FixedFormatter<T> {
     T result = null;
     if (value != null) {
       instructions.getFixedFormatNumberData();
-      result = asObject(instructions.getAlignment().remove(value, instructions.getPaddingChar()), instructions);
+      result = asObject(getRemovePadding(value, instructions), instructions);
     }
     return result;
+  }
+
+  /**
+   * Removes the padding characters defined in the instructions.
+   * @param value the string to remove padding chars from
+   * @param instructions the instructions containing the padding char
+   * @return the remaining string value after padding chars was removed. The empty string if he <code>value</code> only contained adding chars.
+   */
+  String getRemovePadding(String value, FormatInstructions instructions) {
+    return instructions.getAlignment().remove(value, instructions.getPaddingChar());
   }
 
   public String format(T value, FormatInstructions instructions) {
