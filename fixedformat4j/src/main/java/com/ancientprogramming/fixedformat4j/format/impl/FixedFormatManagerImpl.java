@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * Load and export data to and from fixedformat
+ * Load and export objects to and from fixed formatted string representation
  *
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
@@ -45,6 +45,9 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   private static final Log LOG = LogFactory.getLog(FixedFormatManagerImpl.class);
 
+  /**
+   * @inheritDoc
+   */
   public <T> T load(Class<T> fixedFormatRecordClass, String data) {
     HashMap<String, Object> foundData = new HashMap<String, Object>();
     HashMap<String, Class<?>> methodClass = new HashMap<String, Class<?>>();
@@ -138,8 +141,11 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return instance;
   }
 
-  public <T> String export(String existingData, T fixedFormatRecord) {
-    StringBuffer result = new StringBuffer(existingData);
+  /**
+   * @inheritDoc
+   */
+  public <T> String export(String template, T fixedFormatRecord) {
+    StringBuffer result = new StringBuffer(template);
     Record record = getAndAssertRecordAnnotation(fixedFormatRecord.getClass());
 
     Class fixedFormatRecordClass = fixedFormatRecord.getClass();
@@ -174,6 +180,9 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return result.toString();
   }
 
+  /**
+   * @inheritDoc
+   */
   public <T> String export(T fixedFormatRecord) {
     return export("", fixedFormatRecord);
   }
