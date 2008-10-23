@@ -31,7 +31,23 @@ import com.ancientprogramming.fixedformat4j.format.impl.DateFormatter;
  */
 public interface FixedFormatter<T> {
 
+  /**
+   * Parses the given String value according to the format instruction.
+   * How the data is parsed and to what object is defined by the implementor.
+   * @param value the data to parse.
+   * @param instructions contains the instructions telling how to parse the value
+   * @return An instance of T after the value was parsed according to the instructions
+   * @throws FixedFormatException if the value could not be parsed according to the instructions
+   */
   T parse(String value, FormatInstructions instructions) throws FixedFormatException;
 
+
+  /**
+   * Formats an instance of T according to the instructions
+   * @param value the object to format
+   * @param instructions contains the instructions telling how to format the value
+   * @return a string representation of the value object after it was formatted according to the instructions
+   * @throws FixedFormatException if the value could not be formatted according to the instructions
+   */
   String format(T value, FormatInstructions instructions) throws FixedFormatException;
 }

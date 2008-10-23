@@ -20,7 +20,7 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import java.lang.reflect.Method;
 
 /**
- * Used in cases where data couldn't be parse according to the context and instructions.
+ * Used in cases where data couldn't be parse according to the {@link FormatContext} and {@link FormatInstructions}.
  *
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.2.0
@@ -34,6 +34,16 @@ public class ParseException extends FixedFormatException {
   private FormatContext formatContext;
   private FormatInstructions formatInstructions;
 
+  /**
+   * Create an new instance
+   * @param completeText the complete text that failed to be parsed
+   * @param failedText the part of the complete text that failed the actual parsing according to the {@link #getFormatInstructions()}
+   * @param annotatedClass the Class containing the fixedformat annotations
+   * @param annotatedMethod the method containing the annotations that was used to trying to parse the text in {@link #getFailedText()}
+   * @param formatContext the context within the parsing was tried
+   * @param formatInstructions The format instructions used to try parsing the text in {@link #getFailedText()}
+   * @param cause the reason why the data couldn't be parsed
+   */
   public ParseException(String completeText, String failedText, Class annotatedClass, Method annotatedMethod, FormatContext formatContext, FormatInstructions formatInstructions, Throwable cause) {
     super("Failed to parse '" + failedText + "' at offset " + formatContext.getOffset() + " as " + formatContext.getDataType().getName() + " from '" + completeText + "'. Got format instructions from " + annotatedClass.getName() + "." + annotatedMethod.getName() + ". See details{" + formatContext.toString() + ", " +formatInstructions.toString() + "}", cause);
      this.completeText = completeText;
@@ -86,7 +96,7 @@ public class ParseException extends FixedFormatException {
 
   /**
    * The format instructions used to try parsing the text in {@link #getFailedText()}
-   * @return
+   * @return the format instructions
    */
   public FormatInstructions getFormatInstructions() {
     return formatInstructions;
