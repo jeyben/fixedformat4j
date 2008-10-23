@@ -49,7 +49,6 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
     KNOWN_FORMATTERS.put(long.class, LongFormatter.class);
     KNOWN_FORMATTERS.put(Long.class, LongFormatter.class);
     KNOWN_FORMATTERS.put(Date.class, DateFormatter.class);
-    KNOWN_FORMATTERS.put(Date.class, DateFormatter.class);
     KNOWN_FORMATTERS.put(char.class, CharacterFormatter.class);
     KNOWN_FORMATTERS.put(Character.class, CharacterFormatter.class);
     KNOWN_FORMATTERS.put(boolean.class, BooleanFormatter.class);
