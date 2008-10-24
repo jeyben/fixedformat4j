@@ -40,7 +40,7 @@
 
   <scm>
     <connection>scm:svn:http://fixedformat4j.googlecode.com/svn/trunk/fixedformat4j</connection>
-    <developerConnection>scm:svn:http://fixedformat4j.googlecode.com/svn/trunk/fixedformat4j</developerConnection>
+    <developerConnection>scm:svn:https://fixedformat4j.googlecode.com/svn/trunk/fixedformat4j</developerConnection>
     <url>http://code.google.com/p/fixedformat4j/source/browse/trunk/fixedformat4j</url>
   </scm>
 
