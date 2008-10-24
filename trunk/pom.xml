@@ -24,7 +24,7 @@
 
   <scm>
     <connection>scm:svn:http://fixedformat4j.googlecode.com/svn/trunk</connection>
-    <developerConnection>scm:svn:http://fixedformat4j.googlecode.com/svn/trunk</developerConnection>
+    <developerConnection>scm:svn:https://fixedformat4j.googlecode.com/svn/trunk</developerConnection>
     <url>http://code.google.com/p/fixedformat4j/source/browse/trunk</url>
   </scm>
 
