@@ -15,7 +15,7 @@ Nested records
   
 ** Example
 
-  The Following example shows how wrap  can use nested records:
+  The Following example shows how you can use nested records:
 
 %{code-snippet|id=basicrecord|code=java|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/basic/BasicRecord.java}
 
