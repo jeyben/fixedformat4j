@@ -10,7 +10,8 @@
       </action>
       <action dev="jeyben" type="add" issue="7">
         Support for @Record annotated classes can contain other @Record annotated classes and still get proberly imported and exported.
-        Especially usefull when you like to store data that fits together in one object. i.e. creditcard informations.
+        Especially usefull when you like to store logically grouped domain objects. i.e. creditcard informations inside a record
+        containing other information as well.
       </action>
       <action dev="jeyben" type="add" issue="10">
         The ParseException now contains getter methods making it possible to retreive the reasons why the parsing went wrong.
