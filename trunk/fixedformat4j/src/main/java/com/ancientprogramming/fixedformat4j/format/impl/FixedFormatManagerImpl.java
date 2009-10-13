@@ -209,7 +209,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   @SuppressWarnings({"unchecked"})
-  private <T> Object readDataAccordingFieldAnnotation(Class<T> clazz, String data, Method method, Field fieldAnno) throws ParseException {
+  protected <T> Object readDataAccordingFieldAnnotation(Class<T> clazz, String data, Method method, Field fieldAnno) throws ParseException {
     Class datatype = getDatatype(method, fieldAnno);
 
     //recursive follow if the datatype is annotated with the @Record annotation
