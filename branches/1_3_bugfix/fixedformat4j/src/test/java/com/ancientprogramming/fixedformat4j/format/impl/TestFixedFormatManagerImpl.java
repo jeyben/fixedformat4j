@@ -67,6 +67,20 @@ public class TestFixedFormatManagerImpl extends TestCase {
   }
 
   public void testExportRecordObject() {
+    MyRecord myRecord = createMyRecord();
+    Assert.assertEquals("wrong record exported", MY_RECORD_DATA, manager.export(myRecord));
+  }
+
+  public void testExportNestedRecordObject() {
+    MyRecord myRecord = createMyRecord();
+    MyOtherRecord myOtherRecord = new MyOtherRecord(myRecord);
+    Assert.assertEquals("wrong record exported", MY_RECORD_DATA, manager.export(myOtherRecord));
+
+    myOtherRecord = new MyOtherRecord((MyRecord) null);
+    Assert.assertEquals("wrong record exported", "", manager.export(myOtherRecord));
+  }
+
+  private MyRecord createMyRecord() {
     Calendar someDay = Calendar.getInstance();
     someDay.set(2008, 4, 14, 0, 0, 0);
     someDay.set(Calendar.MILLISECOND, 0);
@@ -82,7 +96,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
     myRecord.setStringData("some text ");
     myRecord.setBigDecimalData(new BigDecimal(-12.012));
     myRecord.setSimpleFloatData(20.56F);
-    Assert.assertEquals("wrong record exported", MY_RECORD_DATA, manager.export(myRecord));
+    return myRecord;
   }
 
   public void testExportMultibleFieldRecordObject() {

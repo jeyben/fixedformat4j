@@ -264,7 +264,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     }
 
     //recursivly follow if the valueObject is annotated as a record
-    if (valueObject.getClass().getAnnotation(Record.class) != null) {
+    if (valueObject != null && valueObject.getClass().getAnnotation(Record.class) != null) {
       result = export(valueObject);
     } else {
       result = formatter.format(valueObject, formatdata);
