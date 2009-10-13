@@ -5,6 +5,9 @@
   </properties>
   <body>
     <release version="1.3.0" date="" description="">
+      <action dev="per.olesen" type="add" issue="13">
+        Support skipping unparseable fields within records.
+      </action>
       <action dev="jeyben" type="add">
         Added a Short/short build-in formatter and added this to the ByTypeFormatter.
       </action>
