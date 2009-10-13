@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright 2005 The Apache Software Foundation
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Annotations</title>
+  </properties>
+  <body>
+
+    <section name="Annotations">
+      <p>
+        Annotations is used to instruct the manager on how to handle properties when loading and exporting classes to
+        and from strings.
+        <br/>See the complete list of annotations here:
+      </p>
+
+      <subsection name="Record">
+        <p>Record annotations is used on classes.<br/>It marks that the class contains additional Field annotations
+          on its getter methods and can be imported and exported to and from string representation using the
+          FixedFormatManager
+        </p>
+        <table>
+          <caption>
+            <strong>Record</strong>
+          </caption>
+          <tr>
+            <th>Attribute</th>
+            <th>Default</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>length</td>
+            <td>-1</td>
+            <td>int</td>
+            <td>no</td>
+            <td>Defines a minimum length the string represenation of a class should have.
+              <br/>
+              If the string initially is shorter thatn the given length the string is padded with the given paddingChar
+            </td>
+          </tr>
+          <tr>
+            <td>paddingChar</td>
+            <td>' '</td>
+            <td>char</td>
+            <td>no</td>
+            <td>The paddingChar to use if padding is needed.</td>
+          </tr>
+        </table>
+      </subsection>
+
+      <subsection name="Field">
+        <p>Field annotations are used on getter methods. It contains basic mapping instructions and it is required
+          for getter/setter pairs that is supposed to be mapped to and from string representation.
+        </p>
+        <table>
+          <caption>
+            <strong>Field</strong>
+          </caption>
+          <tr>
+            <th>Attribute</th>
+            <th>Default</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>offset</td>
+            <td>-</td>
+            <td>int</td>
+            <td>yes</td>
+            <td>Defines the offset in a string where the data for this field starts.</td>
+          </tr>
+          <tr>
+            <td>length</td>
+            <td>-</td>
+            <td>int</td>
+            <td>yes</td>
+            <td>Defines the length for this field in string representation.</td>
+          </tr>
+          <tr>
+            <td>align</td>
+            <td>Align.
+              <a href="http://fixedformat4j.ancientprogramming.com/apidocs/com/ancientprogramming/fixedformat4j/annotation/Align.html#LEFT">
+                LEFT
+              </a>
+            </td>
+            <td>Align</td>
+            <td>no</td>
+            <td>Defines how to align the field value when it is represented as a string.</td>
+          </tr>
+          <tr>
+            <td>paddingChar</td>
+            <td>' '</td>
+            <td>char</td>
+            <td>no</td>
+            <td>The character to pad with if the given length is longer than the field value in string representation.
+            </td>
+          </tr>
+          <tr>
+            <td>formatter</td>
+            <td><a
+                href="http://fixedformat4j.ancientprogramming.com/apidocs/com/ancientprogramming/fixedformat4j/format/impl/ByTypeFormatter.html">
+              ByTypeFormatter</a>.class
+            </td>
+            <td>Class&lt;FixedFormatter&gt;</td>
+            <td>no</td>
+            <td>The formatter to use when reading and writing the field to and from string representation.</td>
+          </tr>
+        </table>
+      </subsection>
+      <subsection name="Fields">
+        <p>Fields annotations are used on getter methods in case a single field maps to more than just one
+        position in a string.</p>
+        <table>
+          <caption>
+            <strong>Fields</strong>
+          </caption>
+          <tr>
+            <th>Attribute</th>
+            <th>Default</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>value</td>
+            <td>-</td>
+            <td>Field[]</td>
+            <td>yes</td>
+            <td>If a single field is mapped more than once in a string a Fields annotation can be used to describe this.
+              <br/>
+              Not: when reading the field from a string only the first Field annotation in the array will be read.
+            </td>
+          </tr>
+        </table>
+      </subsection>
+      <subsection name="FixedFormatBoolean">
+        <p>FixedFormatBoolean annotations are used on getter methods. It is optional and is used when the datatype to map is
+          a Boolean object.</p>
+        <table>
+          <caption>
+            <strong>FixedFormatBoolean</strong>
+          </caption>
+          <tr>
+            <th>Attribute</th>
+            <th>Default</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>trueValue</td>
+            <td>"T"</td>
+            <td>String</td>
+            <td>no</td>
+            <td>Defines how a field should be represented when the field is a equal to java.lang.Boolean.TRUE</td>
+          </tr>
+          <tr>
+            <td>falseValue</td>
+            <td>"F"</td>
+            <td>String</td>
+            <td>no</td>
+            <td>Defines how a field should be represented when the field is a equal to java.lang.Boolean.FALSE</td>
+          </tr>
+        </table>
+      </subsection>
+      <subsection name="FixedFormatNumber">
+        <p>description on its way...</p>
+        <table>
+          <caption>
+            <strong>FixedFormatNumber</strong>
+          </caption>
+          <tr>
+            <th>Attribute</th>
+            <th>Default</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>sign</td>
+            <td>Sign.NOSIGN</td>
+            <td>Sign</td>
+            <td>no</td>
+            <td>Defines if and how a number field should be signed when represented as a string.
+              Besides the default no signing, it is possible to append or prepend a sign.
+            </td>
+          </tr>
+          <tr>
+            <td>positiveSign</td>
+            <td>'+'</td>
+            <td>char</td>
+            <td>no</td>
+            <td>Defines the character representing a positive sign.</td>
+          </tr>
+          <tr>
+            <td>negativeSign</td>
+            <td>'-'</td>
+            <td>char</td>
+            <td>no</td>
+            <td>Defines the character representing a negative sign.</td>
+          </tr>
+        </table>
+      </subsection>
+      <subsection name="FixedFormatDecimal">
+        <p>description on its way...</p>
+        <table>
+          <caption>
+            <strong>FixedFormatDecimal</strong>
+          </caption>
+          <tr>
+            <th>Attribute</th>
+            <th>Default</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>decimals</td>
+            <td>2</td>
+            <td>int</td>
+            <td>no</td>
+            <td>Defines the number of decimals the field contains.</td>
+          </tr>
+          <tr>
+            <td>useDecimalDelimiter</td>
+            <td>false</td>
+            <td>boolean</td>
+            <td>no</td>
+            <td>Defines if the field contains a decimal delimiter when represented as a string.</td>
+          </tr>
+          <tr>
+            <td>decimalDelimiter</td>
+            <td>'.'</td>
+            <td>char</td>
+            <td>no</td>
+            <td>Defines the decimal delimiter to use if the useDecimalDelimiter equals to true</td>
+          </tr>
+        </table>
+      </subsection>
+      <subsection name="FixedFormatPattern">
+        <p>description on its way...</p>
+        <table>
+          <caption>
+            <strong>FixedFormatPattern</strong>
+          </caption>
+          <tr>
+            <th>Attribute</th>
+            <th>Default</th>
+            <th>Type</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>value</td>
+            <td>-</td>
+            <td>String</td>
+            <td>yes</td>
+            <td>Defines pattern to use when parsing and formatting the field intro string representation.
+              <br/>
+              This is currently only used to format dates using the same patterns the
+              <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormatter</a>
+              uses
+            </td>
+          </tr>
+        </table>
+      </subsection>
+    </section>
+  </body>
+</document>
