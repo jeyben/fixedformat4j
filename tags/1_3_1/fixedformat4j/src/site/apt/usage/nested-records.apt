@@ -1,0 +1,37 @@
+  ------
+  Nested records
+  ------
+  Jacob von Eyben
+  ------
+
+Nested records
+
+* Overview
+
+  A record annotated class can contain nested record annotated member objects that will be processed by the FixedFormatManager.
+
+  When the FixedFormatManager meets a Field annotated getter method returning a Record annotated object, the FixedFormatManager
+  will format the field as a Record and *not* use any given formatter.
+  
+** Example
+
+  The Following example shows how you can use nested records:
+
+%{code-snippet|id=basicrecord|code=java|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/basic/BasicRecord.java}
+
+%{code-snippet|id=nestedrecord|code=java|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/usage/NestedRecord.java}
+
+  And here is a simple main program showing how to access nested record data:
+
+%{code-snippet|id=nestedrecordusage|code=java|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/usage/NestedRecordUsage.java}
+
+  The outut looks like this:
+
++---
+foo  bar       001232008-10-21
+foo
+bar
+123
+Tue Oct 21 00:00:00 CEST 2008
+foo  fubar     098762008-10-21
++---

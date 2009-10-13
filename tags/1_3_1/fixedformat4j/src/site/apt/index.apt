@@ -1,0 +1,56 @@
+  ------
+  A Java API for working with fixed formatted textfiles
+  ------
+  Jacob von Eyben
+  ------
+
+Fixedformat4j introduction
+
+  Fixedformat4j is intended to be an easy to use, small and non intrusive Java framework for working with flat fixed formatted text files. By annotating
+  your code you can setup the offsets and format as for your data when reading/writing to and from flat fixed format files.
+
+  Fixedformat4j handles many build in datatypes like: String, Character/char, Long/long, Integer/int, Short/short, Double / double, Float /float, Boolean / boolean, Date and BigDecmial
+
+  At the same time it is straight forward to write and plugin your own formatters for custom datatypes.
+
+* Why should I use Fixedformat4j?
+
+  If you need to read or write fixed format text, fixedformat4j is the api to use:
+
+  * Support for both loading and exporting objects to and from text
+
+  * Uses annotations as a clean way to instruct how your data should be read and written.
+
+  * Support for many build-in datatypes, which means you don't have to write format and parse rutines.
+
+  * Handles signed numbers. ex. string like '-1000' or '1000-' can be treated as a negative 1000 number.
+
+  * Detailed error reporting incase a parsing fails.
+
+  * Deployed into the global maven repository for easy accesss.
+
+* Getting started
+
+  To start using Fixedformat4j you only have to annotate your getter methods and use the FixedFormatManager to load and
+  export your fixedformat text according to your annotation instructions.
+
+  A sample can be seen here:
+
+%{code-snippet|id=basicrecord|code=java|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/basic/BasicRecord.java}
+
+  This annotated class can now be loaded and exported using a FixedFormatManager
+
+%{code-snippet|id=basicusage|code=java|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/basic/BasicUsage.java}
+
+  Running this simple program will generate the following output.
+
+  Note that the integer changed value in the exported string.
+
++--
+The parsed string: string
+The parsed integer: 123
+The parsed date: Thu May 29 00:00:00 CEST 2008
+Exported: string    001002008-05-29
++--
+
+  You can see the complete sourcecode for this sample {{{http://code.google.com/p/fixedformat4j/source/browse/trunk/samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/basic}here}}.
