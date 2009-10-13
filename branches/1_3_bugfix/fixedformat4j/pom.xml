@@ -1,0 +1,205 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <name>Fixed Format for Java</name>
+  <groupId>com.ancientprogramming.fixedformat4j</groupId>
+
+  <version>1.4.0-SNAPSHOT</version>
+  <artifactId>fixedformat4j</artifactId>
+  <packaging>jar</packaging>
+
+  <inceptionYear>2008</inceptionYear>
+  <organization>
+    <name>ancientprogramming.com</name>
+    <url>http://www.ancientprogramming.com</url>
+  </organization>
+  <description>
+    <![CDATA[Fixedformat4j is intended to be an easy to use, small and non intrusive Java framework for working with
+    flat fixed formatted text files. By annotating your code you can setup the offsets and format as for your data when
+    reading/writing to and from flat fixed format files.]]>
+  </description>
+  <url>http://fixedformat4j.ancientprogramming.com</url>
+
+  <prerequisites>
+    <maven>2.0.7</maven>
+  </prerequisites>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <issueManagement>
+    <system>Google Code</system>
+    <url>http://code.google.com/p/fixedformat4j/issues/list</url>
+  </issueManagement>
+
+  <scm>
+    <connection>scm:svn:http://fixedformat4j.googlecode.com/svn/trunk/fixedformat4j</connection>
+    <developerConnection>scm:svn:https://fixedformat4j.googlecode.com/svn/trunk/fixedformat4j</developerConnection>
+    <url>http://code.google.com/p/fixedformat4j/source/browse/trunk/fixedformat4j</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <name>Jacob von Eyben</name>
+      <id>jeyben</id>
+      <email>jacobvoneyben@gmail.com</email>
+      <organization/>
+      <organizationUrl/>
+      <url>http://www.ancientprogramming.com</url>
+      <timezone>2</timezone>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <distributionManagement>
+    <site>
+      <id>ancientprogramming</id>
+      <url>scp://ancientprogramming.com/home/ancientp/www/_fixedformat4j</url>
+    </site>
+    <repository>
+      <id>ancientprogramming</id>
+      <url>scp://ancientprogramming.com/home/ancientp/www/_maven/repository</url>
+    </repository>
+  </distributionManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.4</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.14</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <mailingLists>
+    <mailingList>
+      <name>Fixedformat4j User List</name>
+      <post>fixedformat4j-user-list@googlegroups.com</post>
+      <unsubscribe>fixedformat4j-user-list+unsubscribe@googlegroups.com</unsubscribe>
+      <subscribe>http://groups.google.com/group/fixedformat4j-user-list/subscribe</subscribe>
+      <archive>http://groups.google.com/group/fixedformat4j-user-list/topics?gvc=2</archive>
+    </mailingList>
+  </mailingLists>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+          <encoding>UTF-8</encoding>
+          <debug>true</debug>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <templateDirectory>${basedir}/src/site</templateDirectory>
+          <templateFile>src/site/fixedformat4j-template.vm</templateFile>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>com.ancientprogramming.maven.doxia</groupId>
+            <artifactId>doxia-module-syntaxhighlighter</artifactId>
+            <version>1.0-alpha-11</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://fixedformat4j.googlecode.com/svn/tags/fixedformat4j</tagBase>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>bin</descriptorRef>
+            <descriptorRef>src</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changes-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>changes-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+        <configuration>
+          <issueLinkTemplate>%URL%/detail?id=%ISSUE%</issueLinkTemplate>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>
+
+
+
+

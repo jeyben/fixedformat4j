@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Fixedformat4j">
+
+  <bannerLeft>
+    <name>fixedformat4j</name>
+    <!--<src>images/logos/fixedformat4j.gif</src>-->
+    <!--<href>http://fixedformat4j.ancientprogramming.com/</href>-->
+  </bannerLeft>
+
+
+  <body>
+    <links>
+      <item name="Ancientprogramming Blog" href="http://www.ancientprogramming.com"/>
+      <item name="Fixedformat4j at googlecode" href="http://code.google.com/p/fixedformat4j"/>
+    </links>
+
+    <menu name="Overview">
+      <item name="Introduction" href="/index.html"/>
+      <item name="Usage" href="/usage/index.html" collapse="true">
+        <item name="Annotations" href="/usage/annotations.html"/>
+        <item name="Nested records" href="/usage/nested-records.html"/>
+      </item>
+      <item name="FAQ" href="/faq.html"/>
+    </menu>
+
+    <menu name="Get It">
+      <item name="Get fixedformat4j" href="/get-it.html"/>
+    </menu>
+
+    <!--
+    <menu name="Examples">
+      <item name="Custom Formatter" href="/example-custom-formatter.html"/>
+    </menu>
+    -->
+
+    <menu ref="reports"/>
+  </body>
+</project>

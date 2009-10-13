@@ -1,0 +1,46 @@
+  ------
+  Usage
+  ------
+  Jacob von Eyben
+  ------
+
+Usage
+
+* Overview
+
+  To read and write text to and from java objects you will annotate your java object with instructions
+  on where data is located in the string and how to translate the data into meaningful objects.
+
+  You will use an instance of the FixedFormatManager to load and export the data to and from string representation.
+
+  Fixedformat4j rely on your java object adhere to the following conventions for being able to
+  load and export data:
+
+  [[1]] A class that is to be used in fixedformat4j has to be annotated with the Record annotation.
+
+  [[2]] A property is a pair of a getter and a setter method.
+
+  [[3]] The getter method is annotated with instructions on how to convert to and from string representation.
+
+** Example
+
+  The Following example defines one string property on a pojo class called BasicRecord
+
+%{code-snippet|id=basicusage|code=java|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/usage/BasicUsageRecord.java}
+
+* FixedFormatManager
+
+  An instance of a fixedformatmanager does the work of translating annotation instructions and controlling the actual
+  parsing and formatting.
+
+  Fixedformat4j comes with an implementation of a FixedFormatManager called FixedFormatManagerImpl.
+
+** Example
+
+%{code-snippet|id=basicusage|code=java|file=../samples/src/main/java/com/ancientprogramming/fixedformat4j/samples/usage/BasicUsageManager.java}
+  
+* Annotations
+
+  As you can see you will use annotations to instruct the manager on how to load and export data.
+
+  A complete list of annotations can be found {{{annotations.html}here}}.
