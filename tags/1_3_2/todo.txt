@@ -1,0 +1,143 @@
+  Bug
+------------------------------------------
+  - ensure writing null values should not print null as string
+  - ensure that we can read a string that is to short for the offsets defined
+
+  Features
+------------------------------------------
+  - Let the manager answer on format/parse errors.
+  - support round, ceil, floor etc. when handling decimal data.
+  - specific exception for errors that occurs because of wrong annotation usage
+  - Having Beloeb and OreBeloeb, KrBeloeb it would be nice to be able to represent the setters and getters as Beloeb and use a specific formatter for the two supclasses:
+
+
+  
+  @Field(offset = 18, length = 5, align = Align.RIGHT, paddingChar = '0', formatter = OereBeloebFormatter.class)
+  public Beloeb getTimepris() {
+    return timepris;
+  }
+
+  public void setTimepris(OereBeloeb timepris) {
+    this.timepris = timepris;
+  }
+
+  @Field(offset = 38, length = 9, align = Align.RIGHT, paddingChar = '0', formatter = OereBeloebFormatter.class)
+  public Beloeb getTotalBeloeb() {
+    return totalBeloeb;
+  }
+
+  public void setTotalBeloeb(OereBeloeb totalBeloeb) {    //<-- This should be a Bleob and not a specific OereBeloeb
+    this.totalBeloeb = totalBeloeb;
+  }
+
+public abstract class Beloeb implements Serializable, Comparable<Beloeb> {
+
+  private Long oereBeloeb;
+
+  protected Beloeb() {
+  }
+
+  protected Long getOereBeloeb() {
+    return oereBeloeb;
+  }
+
+  protected void setOereBeloeb(Long oereBeloeb) {
+    this.oereBeloeb = oereBeloeb;
+  }
+
+  public double asKr() {
+    return oereBeloeb / 100.0;
+  }
+
+  public long asOere() {
+    return oereBeloeb;
+  }
+
+  public String formattedTwoDecimals() {
+    return NumberUtil.formatAsDecimal(asKr());
+  }
+
+  public int compareTo(Beloeb b) {
+    return oereBeloeb.compareTo(b.oereBeloeb);
+  }
+
+  public boolean lessThan(Beloeb beloeb) {
+    return compareTo(beloeb) < 0;
+  }
+
+  public boolean greaterThan(Beloeb beloeb) {
+    return compareTo(beloeb) > 0;
+  }
+
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Beloeb)) return false;
+
+    Beloeb beloeb = (Beloeb) o;
+
+    return compareTo(beloeb) == 0;
+  }
+
+  public int hashCode() {
+    return (oereBeloeb != null ? oereBeloeb.hashCode() : 0);
+  }
+}
+
+@Embeddable
+public class OereBeloeb extends Beloeb {
+
+  protected OereBeloeb() {
+  }
+
+  public OereBeloeb(Integer oerebeloeb) {
+    setBeloeb((long) oerebeloeb);
+  }
+
+  public OereBeloeb(Long oerebeloeb) {
+    setBeloeb(oerebeloeb);
+  }
+
+  protected Long getBeloeb() {
+    return super.getOereBeloeb();
+  }
+
+  protected void setBeloeb(Long beloeb) {
+    super.setOereBeloeb(beloeb);
+  }
+
+  @Override
+  public String toString() {
+    return String.format("OereBeloeb [ore = %d]", getOereBeloeb());
+  }
+}
+
+@Embeddable
+public class KrBeloeb extends Beloeb {
+
+  protected KrBeloeb() {
+  }
+
+  public KrBeloeb(Integer beloeb) {
+    setBeloeb(beloeb.longValue());
+  }
+
+  protected Long getBeloeb() {
+    return super.getOereBeloeb() / 100;
+  }
+
+  protected void setBeloeb(Long beloeb) {
+    super.setOereBeloeb(beloeb * 100);
+  }
+
+  @Override
+  public String toString() {
+    return String.format("KrBeloeb [ore = %d]", getOereBeloeb());
+  }
+}
+
+
+  Site
+------------------------------------------
+  - Include reports
+  - Include http://cobertura.sourceforge.net/
+  - document
