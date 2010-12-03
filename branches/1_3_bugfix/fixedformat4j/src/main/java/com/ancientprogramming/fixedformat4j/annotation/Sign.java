@@ -81,9 +81,9 @@ public enum Sign {
    */
   APPEND {
     public String apply(String value, FormatInstructions instructions) {
-      String sign = StringUtils.substring(value, value.length()-1, value.length());
+      String sign = StringUtils.substring(value, 0, 1);
       if ("-".equals(sign)) {
-        value = StringUtils.substring(value, 0, value.length()-1);
+        value = StringUtils.substring(value, 1);
       } else {
         sign = "+";
       }
