@@ -4,6 +4,12 @@
     <author email="jacobvoneyben@gmail.com">Jacob von Eyben</author>
   </properties>
   <body>
+    <release version="1.3.2" date="20101203" description="">
+      <action dev="per.olesen" type="bug" issue="18">
+        Sign.APPEND.apply fails to detect minus symbol correctly
+      </action>
+    </release>
+
     <release version="1.3.0" date="" description="">
       <action dev="per.olesen" type="add" issue="13">
         Support skipping unparseable fields within records.
