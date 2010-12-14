@@ -16,6 +16,9 @@
 package com.ancientprogramming.fixedformat4j.format.data;
 
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal;
+
+import java.math.RoundingMode;
+
 import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal.*;
 
 /**
@@ -29,12 +32,15 @@ public class FixedFormatDecimalData {
   private int decimals;
   private boolean useDecimalDelimiter;
   private char decimalDelimiter;
-  public static final FixedFormatDecimalData DEFAULT = new FixedFormatDecimalData(DECIMALS, USE_DECIMAL_DELIMITER, DECIMAL_DELIMITER);
+  private RoundingMode roundingMode;
+  
+  public static final FixedFormatDecimalData DEFAULT = new FixedFormatDecimalData(DECIMALS, USE_DECIMAL_DELIMITER, DECIMAL_DELIMITER, ROUNDING_MODE);
 
-  public FixedFormatDecimalData(int decimals, boolean useDecimalDelimiter, char decimalDelimiter) {
+  public FixedFormatDecimalData(int decimals, boolean useDecimalDelimiter, char decimalDelimiter, RoundingMode roundingMode) {
     this.decimals = decimals;
     this.useDecimalDelimiter = useDecimalDelimiter;
     this.decimalDelimiter = decimalDelimiter;
+    this.roundingMode = roundingMode;
   }
 
   public int getDecimals() {
@@ -49,12 +55,16 @@ public class FixedFormatDecimalData {
     return decimalDelimiter;
   }
 
+  public RoundingMode getRoundingMode() {
+    return roundingMode;
+  }
 
   public String toString() {
     return "FixedFormatDecimalData{" +
         "decimals=" + decimals +
         ", useDecimalDelimiter=" + useDecimalDelimiter +
         ", decimalDelimiter='" + decimalDelimiter + "'" + 
+        ", roundingMode='" + roundingMode + "'" + 
         '}';
   }
 }

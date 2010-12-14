@@ -15,11 +15,19 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
-import com.ancientprogramming.fixedformat4j.annotation.*;
+import com.ancientprogramming.fixedformat4j.annotation.Field;
+import com.ancientprogramming.fixedformat4j.annotation.Fields;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
+import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
-import com.ancientprogramming.fixedformat4j.format.*;
-import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
-import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
+import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
+import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
+import com.ancientprogramming.fixedformat4j.format.FormatContext;
+import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
+import com.ancientprogramming.fixedformat4j.format.ParseException;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
@@ -28,12 +36,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import static java.lang.String.format;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Set;
+
+import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
+import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
+import static java.lang.String.format;
 
 /**
  * Load and export objects to and from fixed formatted string representation
@@ -339,7 +350,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   private FixedFormatDecimalData getFixedFormatDecimalData(FixedFormatDecimal annotation) {
     FixedFormatDecimalData result;
     if (annotation != null) {
-      result = new FixedFormatDecimalData(annotation.decimals(), annotation.useDecimalDelimiter(), annotation.decimalDelimiter());
+      result = new FixedFormatDecimalData(annotation.decimals(), annotation.useDecimalDelimiter(), annotation.decimalDelimiter(), annotation.roundingMode());
     } else {
       result = FixedFormatDecimalData.DEFAULT;
     }
