@@ -16,12 +16,11 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.text.DecimalFormat;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 
 /**
  * Base class for formatting decimal data
@@ -33,32 +32,25 @@ public abstract class AbstractDecimalFormatter<T> extends AbstractNumberFormatte
 
   private static final Log LOG = LogFactory.getLog(AbstractDecimalFormatter.class);
 
-  protected static final char DECIMAL_SEPARATOR;
-  protected static final char GROUPING_SEPARATOR;
-  protected static final String ZERO_STRING;
-  protected static final DecimalFormat FORMATTER;
-
-  static {
-    FORMATTER = new DecimalFormat();
-    FORMATTER.setDecimalSeparatorAlwaysShown(true);
-
-    DECIMAL_SEPARATOR = FORMATTER.getDecimalFormatSymbols().getDecimalSeparator();
-    GROUPING_SEPARATOR = FORMATTER.getDecimalFormatSymbols().getGroupingSeparator();
-    ZERO_STRING = "0" + DECIMAL_SEPARATOR + "0";
-
-  }
-
   public String asString(T obj, FormatInstructions instructions) {
+    DecimalFormat formatter = new DecimalFormat();
+    formatter.setDecimalSeparatorAlwaysShown(true);
+    formatter.setMaximumFractionDigits(instructions.getFixedFormatDecimalData().getDecimals());
+    formatter.setRoundingMode(instructions.getFixedFormatDecimalData().getRoundingMode());
 
-    String rawString = obj != null ? FORMATTER.format(obj) : ZERO_STRING;
+    char decimalSeparator = formatter.getDecimalFormatSymbols().getDecimalSeparator();
+    char groupingSeparator = formatter.getDecimalFormatSymbols().getGroupingSeparator();
+    String zeroString = "0" + decimalSeparator + "0";
+
+    String rawString = obj != null ? formatter.format(obj) : zeroString;
     if (LOG.isDebugEnabled()) {
-      LOG.debug("rawString: " + rawString + " - G[" + GROUPING_SEPARATOR + "] D[" + DECIMAL_SEPARATOR + "]");
+      LOG.debug("rawString: " + rawString + " - G[" + groupingSeparator + "] D[" + decimalSeparator + "]");
     }
-    rawString = rawString.replaceAll("\\" + GROUPING_SEPARATOR, "");
+    rawString = rawString.replaceAll("\\" + groupingSeparator, "");
     boolean useDecimalDelimiter = instructions.getFixedFormatDecimalData().isUseDecimalDelimiter();
 
-    String beforeDelimiter = rawString.substring(0, rawString.indexOf(DECIMAL_SEPARATOR));
-    String afterDelimiter = rawString.substring(rawString.indexOf(DECIMAL_SEPARATOR)+1, rawString.length());
+    String beforeDelimiter = rawString.substring(0, rawString.indexOf(decimalSeparator));
+    String afterDelimiter = rawString.substring(rawString.indexOf(decimalSeparator)+1, rawString.length());
     if (LOG.isDebugEnabled()) {
       LOG.debug("beforeDelimiter[" + beforeDelimiter + "], afterDelimiter[" + afterDelimiter + "]");
     }

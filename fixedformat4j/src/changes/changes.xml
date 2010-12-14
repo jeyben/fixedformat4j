@@ -4,6 +4,17 @@
     <author email="jacobvoneyben@gmail.com">Jacob von Eyben</author>
   </properties>
   <body>
+    <release version="1.3.3" date="20101214" description="">
+      <action dev="per.olesen" type="bug" issue="16">
+        @FixedFormatDecimal with more than 3 decimals truncates decimals
+      </action>
+      <action dev="per.olesen" type="add" issue="20">
+        AbstractDecimalFormatter should support explicit rounding
+      </action>
+      <action dev="per.olesen" type="bug" issue="21">
+        AbstractDecimalFormatter DecimalFormat usage is not thread-safe
+      </action>
+    </release>
     <release version="1.3.2" date="20101203" description="">
       <action dev="per.olesen" type="bug" issue="18">
         Sign.APPEND.apply fails to detect minus symbol correctly
