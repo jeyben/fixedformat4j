@@ -14,16 +14,15 @@
       <action dev="per.olesen" type="bug" issue="21">
         AbstractDecimalFormatter DecimalFormat usage is not thread-safe
       </action>
+      <action dev="per.olesen" type="bug" issue="22">
+        AbstractDecimalFormatter hard codes '0' as padding char - should honor annotation paddingChar setting
+      </action>
     </release>
     <release version="1.3.2" date="20101203" description="">
       <action dev="per.olesen" type="bug" issue="18">
         Sign.APPEND.apply fails to detect minus symbol correctly
       </action>
     </release>
-    <action dev="per.olesen" type="bug" issue="22">
-      AbstractDecimalFormatter hard codes '0' as padding char - should honor annotation paddingChar setting
-    </action>
-
     <release version="1.3.0" date="" description="">
       <action dev="per.olesen" type="add" issue="13">
         Support skipping unparseable fields within records.
