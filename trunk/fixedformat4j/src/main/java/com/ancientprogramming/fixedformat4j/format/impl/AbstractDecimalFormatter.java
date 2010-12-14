@@ -72,7 +72,7 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
 
     //trim decimals
     afterDelimiter = StringUtils.substring(afterDelimiter, 0, decimals);
-    afterDelimiter = StringUtils.rightPad(afterDelimiter, decimals, '0');
+    afterDelimiter = StringUtils.rightPad(afterDelimiter, decimals, instructions.getPaddingChar());
 
     String delimiter = useDecimalDelimiter ? "" + instructions.getFixedFormatDecimalData().getDecimalDelimiter() : "";
     String result = beforeDelimiter + delimiter + afterDelimiter;
