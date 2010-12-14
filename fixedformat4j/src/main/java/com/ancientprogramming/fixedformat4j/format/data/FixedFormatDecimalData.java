@@ -34,7 +34,7 @@ public class FixedFormatDecimalData {
   private char decimalDelimiter;
   private RoundingMode roundingMode;
   
-  public static final FixedFormatDecimalData DEFAULT = new FixedFormatDecimalData(DECIMALS, USE_DECIMAL_DELIMITER, DECIMAL_DELIMITER, ROUNDING_MODE);
+  public static final FixedFormatDecimalData DEFAULT = new FixedFormatDecimalData(DECIMALS, USE_DECIMAL_DELIMITER, DECIMAL_DELIMITER, RoundingMode.valueOf(ROUNDING_MODE));
 
   public FixedFormatDecimalData(int decimals, boolean useDecimalDelimiter, char decimalDelimiter, RoundingMode roundingMode) {
     this.decimals = decimals;

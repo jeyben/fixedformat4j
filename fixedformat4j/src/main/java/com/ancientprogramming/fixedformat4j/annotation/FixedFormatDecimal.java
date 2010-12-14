@@ -15,11 +15,11 @@
  */
 package com.ancientprogramming.fixedformat4j.annotation;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.annotation.ElementType;
-import java.math.RoundingMode;
+import java.math.BigDecimal;
 
 /**
  * @author Jacob von Eyben - http://www.ancientprogramming.com
@@ -33,7 +33,7 @@ public @interface FixedFormatDecimal {
   public static final int DECIMALS = 2;
   public static final boolean USE_DECIMAL_DELIMITER = false;
   public static final char DECIMAL_DELIMITER = '.';
-  public static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_UP;
+  public static final int ROUNDING_MODE = BigDecimal.ROUND_HALF_UP;
 
   int decimals() default DECIMALS;
 
@@ -41,6 +41,6 @@ public @interface FixedFormatDecimal {
 
   char decimalDelimiter() default DECIMAL_DELIMITER;
 
-  RoundingMode roundingMode() default RoundingMode.HALF_UP;
+  int roundingMode() default ROUNDING_MODE;
   
 }
