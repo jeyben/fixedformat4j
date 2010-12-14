@@ -15,10 +15,9 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
+import com.ancientprogramming.fixedformat4j.annotation.Sign;
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
-import com.ancientprogramming.fixedformat4j.annotation.Sign;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Apply signing to values
@@ -26,7 +25,7 @@ import org.apache.commons.lang.StringUtils;
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.1.0
  */
-public abstract class AbstractNumberFormatter<T> extends AbstractFixedFormatter<T> {
+public abstract class AbstractNumberFormatter<T extends Number> extends AbstractFixedFormatter<T> {
 
   /**
    * Override and applies signing instead of align.
