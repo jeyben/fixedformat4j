@@ -25,7 +25,7 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.1.0
  */
-public abstract class AbstractNumberFormatter<T extends Number> extends AbstractFixedFormatter<T> {
+public abstract class AbstractNumberFormatter<T> extends AbstractFixedFormatter<T> {
 
   /**
    * Override and applies signing instead of align.
