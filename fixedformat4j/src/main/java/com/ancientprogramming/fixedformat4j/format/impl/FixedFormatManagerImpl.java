@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -350,7 +351,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   private FixedFormatDecimalData getFixedFormatDecimalData(FixedFormatDecimal annotation) {
     FixedFormatDecimalData result;
     if (annotation != null) {
-      result = new FixedFormatDecimalData(annotation.decimals(), annotation.useDecimalDelimiter(), annotation.decimalDelimiter(), annotation.roundingMode());
+      result = new FixedFormatDecimalData(annotation.decimals(), annotation.useDecimalDelimiter(), annotation.decimalDelimiter(), RoundingMode.valueOf(annotation.roundingMode()));
     } else {
       result = FixedFormatDecimalData.DEFAULT;
     }
