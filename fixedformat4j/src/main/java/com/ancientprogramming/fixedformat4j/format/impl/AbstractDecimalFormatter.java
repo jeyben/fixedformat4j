@@ -38,7 +38,7 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
     BigDecimal roundedValue = null;
     int decimals = instructions.getFixedFormatDecimalData().getDecimals();
     if (obj != null) {
-      BigDecimal value = obj instanceof BigDecimal ? (BigDecimal)obj : new BigDecimal(obj.doubleValue());
+      BigDecimal value = obj instanceof BigDecimal ? (BigDecimal)obj : BigDecimal.valueOf(obj.doubleValue());
 
       RoundingMode roundingMode = instructions.getFixedFormatDecimalData().getRoundingMode();
 
