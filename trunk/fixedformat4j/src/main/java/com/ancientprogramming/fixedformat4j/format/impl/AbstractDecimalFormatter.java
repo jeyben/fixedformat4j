@@ -20,6 +20,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 /**
@@ -28,21 +30,34 @@ import java.text.DecimalFormat;
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
-public abstract class AbstractDecimalFormatter<T> extends AbstractNumberFormatter<T> {
+public abstract class AbstractDecimalFormatter<T extends Number> extends AbstractNumberFormatter<T> {
 
   private static final Log LOG = LogFactory.getLog(AbstractDecimalFormatter.class);
 
   public String asString(T obj, FormatInstructions instructions) {
+    BigDecimal roundedValue = null;
+    int decimals = instructions.getFixedFormatDecimalData().getDecimals();
+    if (obj != null) {
+      BigDecimal value = obj instanceof BigDecimal ? (BigDecimal)obj : new BigDecimal(obj.doubleValue());
+
+      RoundingMode roundingMode = instructions.getFixedFormatDecimalData().getRoundingMode();
+
+      roundedValue = value.setScale(decimals, roundingMode);
+
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Value before rounding = '" + value + "', value after rounding = '" + roundedValue + "', decimals = " + decimals + ", rounding mode = " + roundingMode);
+      }
+    }
+       
     DecimalFormat formatter = new DecimalFormat();
     formatter.setDecimalSeparatorAlwaysShown(true);
-    formatter.setMaximumFractionDigits(instructions.getFixedFormatDecimalData().getDecimals());
-    formatter.setRoundingMode(instructions.getFixedFormatDecimalData().getRoundingMode());
+    formatter.setMaximumFractionDigits(decimals);
 
     char decimalSeparator = formatter.getDecimalFormatSymbols().getDecimalSeparator();
     char groupingSeparator = formatter.getDecimalFormatSymbols().getGroupingSeparator();
     String zeroString = "0" + decimalSeparator + "0";
 
-    String rawString = obj != null ? formatter.format(obj) : zeroString;
+    String rawString = roundedValue != null ? formatter.format(roundedValue) : zeroString;
     if (LOG.isDebugEnabled()) {
       LOG.debug("rawString: " + rawString + " - G[" + groupingSeparator + "] D[" + decimalSeparator + "]");
     }
@@ -55,7 +70,6 @@ public abstract class AbstractDecimalFormatter<T> extends AbstractNumberFormatte
       LOG.debug("beforeDelimiter[" + beforeDelimiter + "], afterDelimiter[" + afterDelimiter + "]");
     }
 
-    int decimals = instructions.getFixedFormatDecimalData().getDecimals();
     //trim decimals
     afterDelimiter = StringUtils.substring(afterDelimiter, 0, decimals);
     afterDelimiter = StringUtils.rightPad(afterDelimiter, decimals, '0');
