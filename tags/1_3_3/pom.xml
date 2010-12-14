@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <name>Fixed Format for Java - root</name>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
- <version>1.3.0-SNAPSHOT</version>
+ <version>1.3.3</version>
   <artifactId>fixedformat4j-root</artifactId>
   <packaging>pom</packaging>
 
