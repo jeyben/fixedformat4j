@@ -78,10 +78,6 @@ public class TestBigDecimalFormatter extends TestCase {
     assertEquals("+000000.00", formatter.format(new BigDecimal(0), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, true, '.', RoundingMode.UNNECESSARY))));
   }
 
-  public void testFormatWithSpecialPaddingChar() {
-    assertEquals("+XXXX1005X", formatter.format(new BigDecimal(100.5), new FormatInstructions(10, Align.RIGHT, 'X', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.', RoundingMode.UNNECESSARY))));
-  }
-  
   public void testFormatWithRounding() {
     // test rounding
     assertEquals("+000001.17", formatter.format(new BigDecimal(1.165), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, true, '.', RoundingMode.HALF_UP))));
