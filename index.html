@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Fixedformat4j by jeyben</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Fixedformat4j</h1>
+      <h2 class="project-tagline">Fixedformat4j is an easy to use Java framework for working with flat fixed formatted text files. By annotating your code you can setup the offsets and format as for your data when reading/writing to and from flat fixed format files</h2>
+      <a href="https://github.com/jeyben/fixedformat4j" class="btn">View on GitHub</a>
+      <a href="https://github.com/jeyben/fixedformat4j/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/jeyben/fixedformat4j/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h3>
+<a id="fixedformat4j" class="anchor" href="#fixedformat4j" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fixedformat4j</h3>
+
+<p>Fixedformat4j is an easy to use Java framework for working with flat fixed formatted text files. By annotating your code you can setup the offsets and format as for your data when reading/writing to and from flat fixed format files.</p>
+
+<p>Fixedformat4j handles the following build in datatypes:</p>
+
+<ul>
+<li>String</li>
+<li>Character / char</li>
+<li>Long / long</li>
+<li>Integer / int</li>
+<li>Double / double</li>
+<li>Float /float</li>
+<li>Boolean / boolean</li>
+<li>Date</li>
+<li>BigDecimal</li>
+</ul>
+
+<p>At the same time it is straight forward to write and plugin your own formatters for custom datatypes.</p>
+
+<h3>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting started</h3>
+
+<p>To start using Fixedformat4j you only have to annotate your getter methods and use the FixedFormatManager to load and export your fixedformat text according to your annotation instructions.</p>
+
+<p>A sample can be seen here:</p>
+
+<pre><code>@Record
+public class BasicRecord {
+
+  private String stringData;
+  private Integer integerData;
+  private Date dateData;
+
+
+  @Field(offset = 1, length = 10)
+  public String getStringData() {
+    return stringData;
+  }
+
+  public void setStringData(String stringData) {
+    this.stringData = stringData;
+  }
+
+  @Field(offset = 11, length = 5, align = Align.RIGHT, paddingChar = '0')
+  public Integer getIntegerData() {
+    return integerData;
+  }
+
+  public void setIntegerData(Integer integerData) {
+    this.integerData = integerData;
+  }
+
+  @Field(offset = 16, length = 10)
+  @FixedFormatPattern("yyyy-MM-dd")
+  public Date getDateData() {
+    return dateData;
+  }
+
+  public void setDateData(Date dateData) {
+    this.dateData = dateData;
+  }
+}
+</code></pre>
+
+<p>This annotated class can now be loaded and exported using a FixedFormatManager</p>
+
+<pre><code>public class BasicUsage {
+
+  private static FixedFormatManager manager = new FixedFormatManagerImpl();
+
+  public static void main(String[] args) {
+    String string = "string    001232008-05-29";
+    BasicRecord record = manager.load(BasicRecord.class, string);
+    System.out.println("The parsed string: " + record.getStringData());
+    System.out.println("The parsed integer: " + record.getIntegerData());
+    System.out.println("The parsed date: " + record.getDateData());
+    record.setIntegerData(100);
+    System.out.println("Exported: " + manager.export(record));
+  }
+}
+</code></pre>
+
+<p>Running this simple program will generate the following output.</p>
+
+<p>Note that the integer changed value in the exported string.</p>
+
+<blockquote>
+<p>The parsed string: string
+The parsed integer: 123
+The parsed date: Thu May 29 00:00:00 CEST 2008
+Exported: string    001002008-05-29</p>
+</blockquote>
+
+<h3>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+
+<p>Fixedformat4j was originally started by Jacob von Eyben (<a href="https://github.com/jeyben" class="user-mention">@jeyben</a>). Per Olsen (<a href="https://github.com/polesen" class="user-mention">@polesen</a>) has contributed several times. </p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/jeyben/fixedformat4j">Fixedformat4j</a> is maintained by <a href="https://github.com/jeyben">jeyben</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-1865749-10");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
+
