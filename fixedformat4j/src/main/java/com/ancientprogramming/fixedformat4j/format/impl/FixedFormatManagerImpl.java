@@ -239,7 +239,23 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       loadedData = load(datatype, dataToParse);
     } else {
       try {
-        loadedData = formatter.parse(dataToParse, formatdata);
+				boolean isNull = false;
+				final char nullChar = formatdata.getNullChar();
+				final char paddChar = formatdata.getPaddingChar();
+				if (nullChar != paddChar) {
+					isNull = true;
+					for (int i = 0; i < dataToParse.length(); i++) {
+						if (nullChar != dataToParse.charAt(i)) {
+							isNull = false;
+							break;
+						}
+					}
+				}
+				if (isNull) {
+					loadedData = null;
+				} else {
+					loadedData = formatter.parse(dataToParse, formatdata);
+				}
       } catch (RuntimeException e) {
         throw new ParseException(data, dataToParse, clazz, method, context, formatdata, e);
       }
@@ -279,7 +295,11 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     if (valueObject != null && valueObject.getClass().getAnnotation(Record.class) != null) {
       result = export(valueObject);
     } else {
-      result = formatter.format(valueObject, formatdata);
+			if (valueObject != null) {
+				result = formatter.format(valueObject, formatdata);
+			} else {
+				result = StringUtils.leftPad("", formatdata.getLength(), formatdata.getNullChar());
+			}
     }
     if (LOG.isDebugEnabled()) {
       LOG.debug(format("exported %s ", result));
@@ -315,7 +335,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     FixedFormatBooleanData booleanData = getFixedFormatBooleanData(method.getAnnotation(FixedFormatBoolean.class));
     FixedFormatNumberData numberData = getFixedFormatNumberData(method.getAnnotation(FixedFormatNumber.class));
     FixedFormatDecimalData decimalData = getFixedFormatDecimalData(method.getAnnotation(FixedFormatDecimal.class));
-    return new FormatInstructions(fieldAnno.length(), fieldAnno.align(), fieldAnno.paddingChar(), patternData, booleanData, numberData, decimalData);
+    return new FormatInstructions(fieldAnno.length(), fieldAnno.align(), fieldAnno.paddingChar(), fieldAnno.nullChar(), patternData, booleanData, numberData, decimalData);
   }
 
   private FixedFormatPatternData getFixedFormatPatternData(FixedFormatPattern annotation) {
