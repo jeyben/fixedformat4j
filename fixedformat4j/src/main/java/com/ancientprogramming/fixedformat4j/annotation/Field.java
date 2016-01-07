@@ -56,11 +56,11 @@ public @interface Field {
    */
   char paddingChar() default ' ';
 
-	/**
-	 * The character to pad with if data is null
-	 * @return the null character
-	 */
-	char nullChar() default ' ';
+  /**
+   * The character to pad with if data is null
+   * @return the null character
+   */
+  char nullChar() default ' ';
 
   Class<? extends FixedFormatter> formatter() default ByTypeFormatter.class;
 
