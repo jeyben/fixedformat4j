@@ -38,6 +38,17 @@ public class FormatInstructions {
   private FixedFormatNumberData fixedFormatNumberData;
   private FixedFormatDecimalData fixedFormatDecimalData;
 
+   public FormatInstructions(int length, Align alignment, char paddingChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData) {
+    this.length = length;
+    this.alignment = alignment;
+    this.paddingChar = paddingChar;
+    this.nullChar = paddingChar;
+    this.fixedFormatPatternData = fixedFormatPatternData;
+    this.fixedFormatBooleanData = fixedFormatBooleanData;
+    this.fixedFormatNumberData = fixedFormatNumberData;
+    this.fixedFormatDecimalData = fixedFormatDecimalData;
+  }  
+  
   public FormatInstructions(int length, Align alignment, char paddingChar, char nullChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData) {
     this.length = length;
     this.alignment = alignment;
@@ -48,16 +59,6 @@ public class FormatInstructions {
     this.fixedFormatNumberData = fixedFormatNumberData;
     this.fixedFormatDecimalData = fixedFormatDecimalData;
   }
-  public FormatInstructions(int length, Align alignment, char paddingChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData) {
-    this.length = length;
-    this.alignment = alignment;
-    this.paddingChar = paddingChar;
-    this.nullChar = ' ';
-    this.fixedFormatPatternData = fixedFormatPatternData;
-    this.fixedFormatBooleanData = fixedFormatBooleanData;
-    this.fixedFormatNumberData = fixedFormatNumberData;
-    this.fixedFormatDecimalData = fixedFormatDecimalData;
-  }  
 
   public int getLength() {
     return length;
