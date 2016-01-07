@@ -32,15 +32,28 @@ public class FormatInstructions {
   private int length;
   private Align alignment;
   private char paddingChar;
+  private char nullChar;
   private FixedFormatPatternData fixedFormatPatternData;
   private FixedFormatBooleanData fixedFormatBooleanData;
   private FixedFormatNumberData fixedFormatNumberData;
   private FixedFormatDecimalData fixedFormatDecimalData;
 
-  public FormatInstructions(int length, Align alignment, char paddingChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData) {
+   public FormatInstructions(int length, Align alignment, char paddingChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData) {
     this.length = length;
     this.alignment = alignment;
     this.paddingChar = paddingChar;
+    this.nullChar = paddingChar;
+    this.fixedFormatPatternData = fixedFormatPatternData;
+    this.fixedFormatBooleanData = fixedFormatBooleanData;
+    this.fixedFormatNumberData = fixedFormatNumberData;
+    this.fixedFormatDecimalData = fixedFormatDecimalData;
+  }  
+  
+  public FormatInstructions(int length, Align alignment, char paddingChar, char nullChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData) {
+    this.length = length;
+    this.alignment = alignment;
+    this.paddingChar = paddingChar;
+    this.nullChar = nullChar;
     this.fixedFormatPatternData = fixedFormatPatternData;
     this.fixedFormatBooleanData = fixedFormatBooleanData;
     this.fixedFormatNumberData = fixedFormatNumberData;
@@ -58,7 +71,11 @@ public class FormatInstructions {
   public char getPaddingChar() {
     return paddingChar;
   }
-
+ 
+  public char getNullChar() {
+    return nullChar;
+  }
+ 
   public FixedFormatPatternData getFixedFormatPatternData() {
     return fixedFormatPatternData;
   }
@@ -79,7 +96,8 @@ public class FormatInstructions {
     return "FormatInstructions{" +
         "length=" + length +
         ", alignment=" + alignment +
-        ", paddingChar='" + paddingChar + "'" + 
+        ", paddingChar='" + paddingChar + "'" +
+        ", nullChar='" + nullChar + "'" +         
         ", fixedFormatPatternData=" + fixedFormatPatternData +
         ", fixedFormatBooleanData=" + fixedFormatBooleanData +
         ", fixedFormatNumberData=" + fixedFormatNumberData +
