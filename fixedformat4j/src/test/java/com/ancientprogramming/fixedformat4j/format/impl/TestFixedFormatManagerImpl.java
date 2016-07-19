@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author Jacob von Eyben - http://www.ancientprogramming.com
@@ -36,7 +37,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
 
   private static String STR = "some text ";
 
-  public static final String MY_RECORD_DATA = "some text 0012320080514CT001100000010350000002056-0012 01200000002056";
+  public static final String MY_RECORD_DATA = "some text 0012320080514CT001100000010350000002056-0012 01200000002056abcd";
   public static final String MULTIBLE_RECORD_DATA = "some      2008101320081013                       0100";
   public static final String MULTIBLE_RECORD_DATA_X_PADDED = "some      2008101320081013xxxxxxxxxxxxxxxxxxxxxxx0100";
 
@@ -63,7 +64,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
     MultibleFieldsRecord loadedRecord = manager.load(MultibleFieldsRecord.class, MULTIBLE_RECORD_DATA);
     Assert.assertNotNull(loadedRecord);
     Assert.assertEquals("some      ", loadedRecord.getStringData());
-    Assert.assertEquals(someDay.getTime(), loadedRecord.getDateData());
+    Assert.assertEquals(someDay.getTime(), loadedRecord.getDateData()[0]);
   }
 
   public void testExportRecordObject() {
@@ -75,8 +76,10 @@ public class TestFixedFormatManagerImpl extends TestCase {
     MyRecord myRecord = createMyRecord();
     MyOtherRecord myOtherRecord = new MyOtherRecord(myRecord);
     Assert.assertEquals("wrong record exported", MY_RECORD_DATA, manager.export(myOtherRecord));
+  }
 
-    myOtherRecord = new MyOtherRecord((MyRecord) null);
+  public void testNull() {
+    MyOtherRecord myOtherRecord = new MyOtherRecord((MyRecord) null);
     Assert.assertEquals("wrong record exported", "", manager.export(myOtherRecord));
   }
 
@@ -96,6 +99,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
     myRecord.setStringData("some text ");
     myRecord.setBigDecimalData(new BigDecimal(-12.012));
     myRecord.setSimpleFloatData(20.56F);
+    myRecord.setStringArray(new String[] {"ab", "cd"});
     return myRecord;
   }
 
@@ -105,11 +109,12 @@ public class TestFixedFormatManagerImpl extends TestCase {
     someDay.set(Calendar.MILLISECOND, 0);
 
     MultibleFieldsRecord multibleFieldsRecord = new MultibleFieldsRecord();
-    multibleFieldsRecord.setDateData(someDay.getTime());
+    multibleFieldsRecord.setDateData(new Date[] { someDay.getTime(), someDay.getTime() });
     multibleFieldsRecord.setStringData("some      ");
     multibleFieldsRecord.setIntegerdata(100);
     manager.export(multibleFieldsRecord);
-    Assert.assertEquals("wrong record exported", MULTIBLE_RECORD_DATA, manager.export(multibleFieldsRecord));
+    final String result = manager.export(multibleFieldsRecord);
+    Assert.assertEquals("wrong record exported", MULTIBLE_RECORD_DATA, result);
   }
 
   public void testExportIntoExistingString() {
@@ -118,7 +123,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
     someDay.set(Calendar.MILLISECOND, 0);
 
     MultibleFieldsRecord multibleFieldsRecord = new MultibleFieldsRecord();
-    multibleFieldsRecord.setDateData(someDay.getTime());
+    multibleFieldsRecord.setDateData(new Date[] { someDay.getTime(), someDay.getTime() });
     multibleFieldsRecord.setStringData("some      ");
     multibleFieldsRecord.setIntegerdata(100);
     String exportedString = manager.export("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", multibleFieldsRecord);
@@ -190,5 +195,12 @@ public class TestFixedFormatManagerImpl extends TestCase {
       }
       //expected
     }
+  }
+
+  public void testLoadStringArray() {
+    MyRecord record = manager.load(MyRecord.class, MY_RECORD_DATA);
+    final String[] result = record.getStringArray();
+    Assert.assertEquals("ab", result[0]);
+    Assert.assertEquals("cd", result[1]);
   }
 }
