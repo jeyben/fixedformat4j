@@ -32,7 +32,6 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 public @interface Field {
-
   /**
    * A one based offset to insert data at in a record.
    * @return the offset as an int
@@ -57,5 +56,4 @@ public @interface Field {
   char paddingChar() default ' ';
 
   Class<? extends FixedFormatter> formatter() default ByTypeFormatter.class;
-
 }

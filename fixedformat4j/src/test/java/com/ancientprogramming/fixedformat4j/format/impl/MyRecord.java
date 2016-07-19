@@ -39,6 +39,7 @@ public class MyRecord {
   private Float floatData;
   private BigDecimal bigDecimalData;
   private float simpleFloatData;
+  private String[] stringArray;
 
 
   @Field(offset = 1, length = 10, align = Align.RIGHT, paddingChar = ' ')
@@ -133,7 +134,6 @@ public class MyRecord {
     this.simpleFloatData = simpleFloatData;
   }
 
-
   @Record
   static class MyStaticNestedClass {
 
@@ -163,4 +163,9 @@ public class MyRecord {
       this.stringData = stringData;
     }
   }
+
+  @Fields(offset = 70, length = 2, count = 2)
+  public String[] getStringArray() { return stringArray; }
+
+  public void setStringArray(String[] stringArray) { this.stringArray = stringArray; }
 }
