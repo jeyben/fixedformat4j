@@ -31,7 +31,7 @@ public @interface Fields {
 
   /**
    * Defines a list of field annotations.
-   * Usefull a field is to be mapped different palces in the text
+   * Usefull when fields have to be mapped to different places in the text
    * @return a list of {@link Field} annotations
    */
   public abstract Field[] value();
