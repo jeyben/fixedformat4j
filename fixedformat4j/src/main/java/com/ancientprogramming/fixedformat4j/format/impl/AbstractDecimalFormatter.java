@@ -90,9 +90,13 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
       toConvert = string.replace(delimiter, '.'); //convert to normal delimiter
     } else {
       int decimals = instructions.getFixedFormatDecimalData().getDecimals();
-      if (decimals > 0 && string.length() >= decimals) {
+      final boolean theZeroString = string.matches("^[0]+$");
+      //only change the string to convert if data contains decimals AND is not the zero string
+      if (decimals > 0 && !theZeroString) {
+        //ensuring the string to convert is at least as long as the decimals length
+        string = StringUtils.leftPad(string, decimals, "0");
         String beforeDelimiter = string.substring(0, string.length()-decimals);
-        String afterDelimiter = string.substring(string.length()-decimals, string.length());
+        String afterDelimiter = string.substring(string.length()-decimals);
         toConvert = beforeDelimiter + '.' + afterDelimiter;
       } else {
         toConvert = string;
