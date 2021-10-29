@@ -18,7 +18,6 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.Fields;
-import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 
 import java.util.Date;
@@ -31,7 +30,7 @@ import java.util.Date;
 public class MultibleFieldsRecord {
 
   private String stringData;
-  private Date dateData;
+  private Date[] dateData;
   private Integer integerdata;
 
   @Field(offset = 1, length = 10, align = Align.RIGHT, paddingChar = ' ')
@@ -44,11 +43,11 @@ public class MultibleFieldsRecord {
   }
 
   @Fields({@Field(offset = 11, length = 8), @Field(offset = 19, length = 8)})
-  public Date getDateData() {
+  public Date[] getDateData() {
     return dateData;
   }
 
-  public void setDateData(Date dateData) {
+  public void setDateData(Date[] dateData) {
     this.dateData = dateData;
   }
 
