@@ -83,25 +83,31 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
   }
  
   protected String getStringToConvert(String string, FormatInstructions instructions) {
-    String toConvert;
+    String toConvert = string;
     boolean useDecimalDelimiter = instructions.getFixedFormatDecimalData().isUseDecimalDelimiter();
-    if(useDecimalDelimiter) {
+    if (useDecimalDelimiter) {
       char delimiter = instructions.getFixedFormatDecimalData().getDecimalDelimiter();
-      toConvert = string.replace(delimiter, '.'); //convert to normal delimiter
-    } else {
-      int decimals = instructions.getFixedFormatDecimalData().getDecimals();
-      final boolean theZeroString = string.matches("^[0]+$");
-      //only change the string to convert if data contains decimals AND is not the zero string
-      if (decimals > 0 && !theZeroString) {
-        //ensuring the string to convert is at least as long as the decimals length
-        string = StringUtils.leftPad(string, decimals, "0");
-        String beforeDelimiter = string.substring(0, string.length()-decimals);
-        String afterDelimiter = string.substring(string.length()-decimals);
-        toConvert = beforeDelimiter + '.' + afterDelimiter;
-      } else {
-        toConvert = string;
-      }
+      toConvert = toConvert.replace(String.valueOf(delimiter), ""); //
+    }
+    boolean applyNegativeSign = false;
+    final Character negativeSignChar = instructions.getFixedFormatNumberData().getNegativeSign();
+    if (negativeSignChar != null && toConvert.startsWith(negativeSignChar.toString())) {
+      toConvert = toConvert.replaceFirst(negativeSignChar.toString(), "");
+      applyNegativeSign = true;
+    }
 
+    int decimals = instructions.getFixedFormatDecimalData().getDecimals();
+    final boolean theZeroString = toConvert.matches("^[0]+$");
+    //only change the string to convert if data contains decimals AND is not the zero string
+    if (decimals > 0 && !theZeroString) {
+      //ensuring the string to convert is at least as long as the decimals length
+      toConvert = StringUtils.leftPad(toConvert, decimals, "0");
+      String beforeDelimiter = toConvert.substring(0, toConvert.length()-decimals);
+      String afterDelimiter = toConvert.substring(toConvert.length()-decimals);
+      toConvert = beforeDelimiter + '.' + afterDelimiter;
+    }
+    if (applyNegativeSign) {
+      toConvert = "-" + toConvert;
     }
     return toConvert;
   }
