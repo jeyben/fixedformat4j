@@ -16,12 +16,12 @@
 package com.ancientprogramming.fixedformat4j.annotation;
 
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Sign defines where to place a sign defining a positive or negative number.
  * Is to be used in formatters operating numbers.
- * 
+ *
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.1.0
  */
