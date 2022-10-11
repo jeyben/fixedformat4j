@@ -16,7 +16,7 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -48,7 +48,7 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
         LOG.debug("Value before rounding = '" + value + "', value after rounding = '" + roundedValue + "', decimals = " + decimals + ", rounding mode = " + roundingMode);
       }
     }
-       
+
     DecimalFormat formatter = new DecimalFormat();
     formatter.setDecimalSeparatorAlwaysShown(true);
     formatter.setMaximumFractionDigits(decimals);
@@ -81,7 +81,7 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
     }
     return result;
   }
- 
+
   protected String getStringToConvert(String string, FormatInstructions instructions) {
     String toConvert;
     boolean useDecimalDelimiter = instructions.getFixedFormatDecimalData().isUseDecimalDelimiter();
