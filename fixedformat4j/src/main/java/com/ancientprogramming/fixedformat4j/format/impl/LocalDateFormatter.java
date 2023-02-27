@@ -37,7 +37,7 @@ public class LocalDateFormatter extends AbstractFixedFormatter<LocalDate> {
 
     if (!StringUtils.isEmpty(string)) {
       try {
-        result = LocalDate.parse(string);
+        result = LocalDate.parse(string,getFormatter(instructions.getFixedFormatPatternData().getPattern()));
       } catch (DateTimeParseException e) {
         throw new FixedFormatException("Could not parse value[" + string + "] by pattern[" + instructions.getFixedFormatPatternData().getPattern() + "] to " + LocalDate.class.getName());
       }
