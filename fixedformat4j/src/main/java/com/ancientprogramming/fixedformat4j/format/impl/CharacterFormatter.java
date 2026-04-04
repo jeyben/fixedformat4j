@@ -17,8 +17,8 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class CharacterFormatter extends AbstractFixedFormatter<Character> {
 
-  private static final Log LOG = LogFactory.getLog(CharacterFormatter.class);
+  private static final Logger LOG = LoggerFactory.getLogger(CharacterFormatter.class);
 
   public Character asObject(String string, FormatInstructions instructions) {
     Character result = null;

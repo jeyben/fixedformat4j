@@ -78,10 +78,11 @@
       <version>3.17.0</version>
     </dependency>
 
+    <!-- Library API only — consumers choose their own SLF4J backend -->
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.1.1</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>2.0.17</version>
     </dependency>
 
     <dependency>
@@ -91,10 +92,11 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Lightweight SLF4J backend for tests only -->
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.14</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.17</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

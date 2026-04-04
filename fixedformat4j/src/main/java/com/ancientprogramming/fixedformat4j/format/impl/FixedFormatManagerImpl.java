@@ -33,8 +33,8 @@ import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -55,7 +55,7 @@ import static java.lang.String.format;
  */
 public class FixedFormatManagerImpl implements FixedFormatManager {
 
-  private static final Log LOG = LogFactory.getLog(FixedFormatManagerImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(FixedFormatManagerImpl.class);
 
   /**
    * @inheritDoc

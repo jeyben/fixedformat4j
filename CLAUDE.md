@@ -2,6 +2,20 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Java Version
+
+Tests require Java 11. Set `JAVA_HOME` before running Maven:
+
+```bash
+# Temurin 11 (installed via brew install --cask temurin@11 or sdkman)
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-11.jdk/Contents/Home
+
+# Or use java_home helper on macOS
+export JAVA_HOME=$(/usr/libexec/java_home -v 11)
+
+mvn test
+```
+
 ## Build and Test Commands
 
 This is a Maven multi-module project. Run from the repo root:

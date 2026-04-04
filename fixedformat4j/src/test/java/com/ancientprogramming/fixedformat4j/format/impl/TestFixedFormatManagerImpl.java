@@ -20,8 +20,8 @@ import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import com.ancientprogramming.fixedformat4j.format.ParseException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TestFixedFormatManagerImpl {
 
-  private static final Log LOG = LogFactory.getLog(TestFixedFormatManagerImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(TestFixedFormatManagerImpl.class);
 
   private static String STR = "some text ";
 
