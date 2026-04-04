@@ -15,7 +15,7 @@
  */
 package com.ancientprogramming.fixedformat4j.annotation;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Capable of pad or chop data in a given direction
