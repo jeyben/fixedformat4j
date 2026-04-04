@@ -20,20 +20,22 @@ import com.ancientprogramming.fixedformat4j.annotation.Sign;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import java.math.RoundingMode;
 
 import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber.DEFAULT_NEGATIVE_SIGN;
 import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber.DEFAULT_POSITIVE_SIGN;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
-public class TestFloatFormatter extends TestCase {
+public class TestFloatFormatter {
   FloatFormatter formatter = new FloatFormatter();
 
+  @Test
   public void testParse() {
     assertEquals(100.50F, formatter.parse("0000010050", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, false, '.', RoundingMode.UNNECESSARY))));
     assertEquals(1234.56F, formatter.parse("0000123456", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, new FixedFormatDecimalData(2, false, '.', RoundingMode.UNNECESSARY))));
@@ -52,6 +54,7 @@ public class TestFloatFormatter extends TestCase {
     assertEquals(-100.50F, formatter.parse("-000010050", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.', RoundingMode.UNNECESSARY))));
   }
 
+  @Test
   public void testFormat() {
     assertEquals("+000010050", formatter.format(100.5F, new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.', RoundingMode.UNNECESSARY))));
     assertEquals("+000001005", formatter.format(100.51F, new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(1, false, '.', RoundingMode.HALF_UP))));

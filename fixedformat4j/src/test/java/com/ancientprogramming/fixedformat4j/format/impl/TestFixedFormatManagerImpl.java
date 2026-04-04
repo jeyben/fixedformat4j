@@ -15,22 +15,26 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
+import com.ancientprogramming.fixedformat4j.annotation.Field;
+import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import com.ancientprogramming.fixedformat4j.format.ParseException;
-import junit.framework.Assert;
-import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
-public class TestFixedFormatManagerImpl extends TestCase {
+public class TestFixedFormatManagerImpl {
 
   private static final Log LOG = LogFactory.getLog(TestFixedFormatManagerImpl.class);
 
@@ -42,42 +46,45 @@ public class TestFixedFormatManagerImpl extends TestCase {
 
   FixedFormatManager manager = null;
 
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  @BeforeEach
+  public void setUp() {
     manager = new FixedFormatManagerImpl();
   }
 
+  @Test
   public void testLoadRecord() {
     MyRecord loadedRecord = manager.load(MyRecord.class, MY_RECORD_DATA);
-    Assert.assertNotNull(loadedRecord);
-    Assert.assertEquals(STR, loadedRecord.getStringData());
-    Assert.assertTrue(loadedRecord.isBooleanData());
+    assertNotNull(loadedRecord);
+    assertEquals(STR, loadedRecord.getStringData());
+    assertTrue(loadedRecord.isBooleanData());
   }
 
+  @Test
   public void testLoadMultibleFieldsRecord() {
     //when reading data having multible field annotations the first field will decide what data to return
     Calendar someDay = Calendar.getInstance();
     someDay.set(2008, 9, 13, 0, 0, 0);
     someDay.set(Calendar.MILLISECOND, 0);
     MultibleFieldsRecord loadedRecord = manager.load(MultibleFieldsRecord.class, MULTIBLE_RECORD_DATA);
-    Assert.assertNotNull(loadedRecord);
-    Assert.assertEquals("some      ", loadedRecord.getStringData());
-    Assert.assertEquals(someDay.getTime(), loadedRecord.getDateData());
+    assertNotNull(loadedRecord);
+    assertEquals("some      ", loadedRecord.getStringData());
+    assertEquals(someDay.getTime(), loadedRecord.getDateData());
   }
 
+  @Test
   public void testExportRecordObject() {
     MyRecord myRecord = createMyRecord();
-    Assert.assertEquals("wrong record exported", MY_RECORD_DATA, manager.export(myRecord));
+    assertEquals(MY_RECORD_DATA, manager.export(myRecord), "wrong record exported");
   }
 
+  @Test
   public void testExportNestedRecordObject() {
     MyRecord myRecord = createMyRecord();
     MyOtherRecord myOtherRecord = new MyOtherRecord(myRecord);
-    Assert.assertEquals("wrong record exported", MY_RECORD_DATA, manager.export(myOtherRecord));
+    assertEquals(MY_RECORD_DATA, manager.export(myOtherRecord), "wrong record exported");
 
     myOtherRecord = new MyOtherRecord((MyRecord) null);
-    Assert.assertEquals("wrong record exported", "", manager.export(myOtherRecord));
+    assertEquals("", manager.export(myOtherRecord), "wrong record exported");
   }
 
   private MyRecord createMyRecord() {
@@ -99,6 +106,7 @@ public class TestFixedFormatManagerImpl extends TestCase {
     return myRecord;
   }
 
+  @Test
   public void testExportMultibleFieldRecordObject() {
     Calendar someDay = Calendar.getInstance();
     someDay.set(2008, 9, 13, 0, 0, 0);
@@ -109,9 +117,10 @@ public class TestFixedFormatManagerImpl extends TestCase {
     multibleFieldsRecord.setStringData("some      ");
     multibleFieldsRecord.setIntegerdata(100);
     manager.export(multibleFieldsRecord);
-    Assert.assertEquals("wrong record exported", MULTIBLE_RECORD_DATA, manager.export(multibleFieldsRecord));
+    assertEquals(MULTIBLE_RECORD_DATA, manager.export(multibleFieldsRecord), "wrong record exported");
   }
 
+  @Test
   public void testExportIntoExistingString() {
     Calendar someDay = Calendar.getInstance();
     someDay.set(2008, 9, 13, 0, 0, 0);
@@ -122,73 +131,124 @@ public class TestFixedFormatManagerImpl extends TestCase {
     multibleFieldsRecord.setStringData("some      ");
     multibleFieldsRecord.setIntegerdata(100);
     String exportedString = manager.export("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", multibleFieldsRecord);
-    Assert.assertEquals("wrong record exported", MULTIBLE_RECORD_DATA_X_PADDED, exportedString);
+    assertEquals(MULTIBLE_RECORD_DATA_X_PADDED, exportedString, "wrong record exported");
   }
 
+  @Test
   public void testLoadNonRecordAnnotatedClass() {
-    try {
-      manager.load(String.class, "some");
-    } catch (FixedFormatException e) {
-      //expected
-    }
+    assertThrows(FixedFormatException.class, () -> manager.load(String.class, "some"));
   }
 
+  @Test
   public void testExportAnnotatedNestedClass() {
     MyRecord.MyStaticNestedClass myStaticNestedClass = new MyRecord.MyStaticNestedClass();
     myStaticNestedClass.setStringData("xyz");
     String exportedString = manager.export(myStaticNestedClass);
-    Assert.assertEquals("xyz       ", exportedString);
+    assertEquals("xyz       ", exportedString);
 
     NoDefaultConstructorClass.MyStaticNestedClass myStaticNestedClass2 = new NoDefaultConstructorClass.MyStaticNestedClass();
     myStaticNestedClass2.setStringData("xyz");
     String exportedString2 = manager.export(myStaticNestedClass2);
-    Assert.assertEquals("xyz       ", exportedString2);
+    assertEquals("xyz       ", exportedString2);
   }
 
+  @Test
   public void testExportAnnotatedInnerClass() {
     MyRecord myRecord = new MyRecord();
     MyRecord.MyInnerClass myInnerClass = myRecord.new MyInnerClass();
     myInnerClass.setStringData("xyz");
     String exportedString = manager.export(myInnerClass);
-    Assert.assertEquals("xyz       ", exportedString);
- 
+    assertEquals("xyz       ", exportedString);
+
     NoDefaultConstructorClass noDefaultConstructorClass = new NoDefaultConstructorClass("foobar");
     NoDefaultConstructorClass.MyInnerClass myInnerClass2 = noDefaultConstructorClass.new MyInnerClass();
     myInnerClass2.setStringData("xyz");
     exportedString = manager.export(myInnerClass2);
-    Assert.assertEquals("xyz       ", exportedString);
+    assertEquals("xyz       ", exportedString);
   }
 
+  @Test
   public void testImportAnnotatedNestedClass() {
     MyRecord.MyStaticNestedClass staticNested = manager.load(MyRecord.MyStaticNestedClass.class, "xyz       ");
-    Assert.assertEquals("xyz", staticNested.getStringData());
+    assertEquals("xyz", staticNested.getStringData());
 
     NoDefaultConstructorClass.MyStaticNestedClass staticNested2 = manager.load(NoDefaultConstructorClass.MyStaticNestedClass.class, "xyz       ");
-    Assert.assertEquals("xyz", staticNested2.getStringData());
+    assertEquals("xyz", staticNested2.getStringData());
   }
 
+  @Test
   public void testImportAnnotatedInnerClass() {
     MyRecord.MyInnerClass inner = manager.load(MyRecord.MyInnerClass.class, "xyz       ");
-    Assert.assertEquals("xyz", inner.getStringData());
+    assertEquals("xyz", inner.getStringData());
 
-
-    try {
-      manager.load(NoDefaultConstructorClass.MyInnerClass.class, "xyz       ");
-      fail(String.format("expected an %s exception to be thrown", FixedFormatException.class.getName()));
-    } catch (FixedFormatException e) {
-      //expected this
-    }
+    assertThrows(FixedFormatException.class, () ->
+      manager.load(NoDefaultConstructorClass.MyInnerClass.class, "xyz       ")
+    );
   }
 
+  @Test
   public void testParseFail() {
-    try {
-      manager.load(MyRecord.class, "foobarfoobarfoobarfoobar");
-      fail("expected parse exception");
-    } catch (ParseException e) {
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("bu", e);
-      }
-      //expected
-    }
+    assertThrows(ParseException.class, () ->
+      manager.load(MyRecord.class, "foobarfoobarfoobarfoobar")
+    );
+  }
+
+  @Test
+  public void testRecordLengthPadsExportedString() {
+    FixedLengthRecord rec = new FixedLengthRecord();
+    rec.setName("hi");
+    String exported = manager.export(rec);
+    assertEquals(10, exported.length());
+    assertEquals("hi        ", exported);
+  }
+
+  @Test
+  public void testRecordCustomPaddingChar() {
+    PaddedRecord rec = new PaddedRecord();
+    rec.setName("hi");
+    String exported = manager.export(rec);
+    assertEquals(10, exported.length());
+    assertTrue(exported.startsWith("hi"));
+    assertEquals("hi********", exported);
+  }
+
+  @Test
+  public void testIsPrefixedBooleanGetterRoundTrip() {
+    BooleanRecord rec = new BooleanRecord();
+    rec.setActive(true);
+    String exported = manager.export(rec);
+    assertEquals("T", exported);
+    BooleanRecord loaded = manager.load(BooleanRecord.class, "T");
+    assertTrue(loaded.isActive());
+  }
+
+  // --- Helper record classes for edge case tests ---
+
+  @Record(length = 10)
+  public static class FixedLengthRecord {
+    private String name;
+
+    @Field(offset = 1, length = 5)
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+  }
+
+  @Record(length = 10, paddingChar = '*')
+  public static class PaddedRecord {
+    private String name;
+
+    @Field(offset = 1, length = 2)
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+  }
+
+  @Record
+  public static class BooleanRecord {
+    private boolean active;
+
+    @com.ancientprogramming.fixedformat4j.annotation.Field(offset = 1, length = 1)
+    @com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean(trueValue = "T", falseValue = "F")
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
   }
 }

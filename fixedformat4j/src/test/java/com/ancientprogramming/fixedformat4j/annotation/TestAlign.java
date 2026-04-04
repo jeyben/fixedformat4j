@@ -15,14 +15,17 @@
  */
 package com.ancientprogramming.fixedformat4j.annotation;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
-public class TestAlign extends TestCase {
+public class TestAlign {
 
+  @Test
   public void testLeftPadding() {
     assertEquals(" ", Align.RIGHT.apply(null, 1, ' '));
     assertEquals(" ", Align.RIGHT.apply(" ", 1, ' '));
@@ -33,6 +36,7 @@ public class TestAlign extends TestCase {
     assertEquals("__foobar", Align.RIGHT.apply("foobar", 8, '_'));
   }
 
+  @Test
   public void testLeftRemove() {
     assertEquals("", Align.RIGHT.remove(null, ' '));
     assertEquals("", Align.RIGHT.remove(" ", ' '));
@@ -40,6 +44,7 @@ public class TestAlign extends TestCase {
     assertEquals("foobar", Align.RIGHT.remove("  foobar", ' '));
   }
 
+  @Test
   public void testRightPadding() {
     assertEquals(" ", Align.LEFT.apply(null, 1, ' '));
     assertEquals(" ", Align.LEFT.apply(" ", 1, ' '));
@@ -50,10 +55,25 @@ public class TestAlign extends TestCase {
     assertEquals("foobar__", Align.LEFT.apply("foobar", 8, '_'));
   }
 
+  @Test
   public void testRightRemove() {
     assertEquals("", Align.LEFT.remove(null, ' '));
     assertEquals("", Align.LEFT.remove(" ", ' '));
     assertEquals("foobar", Align.LEFT.remove("foobar  ", ' '));
     assertEquals("  foobar", Align.LEFT.remove("  foobar", ' '));
+  }
+
+  @Test
+  public void testEmptyStringInput() {
+    assertEquals("   ", Align.LEFT.apply("", 3, ' '));
+    assertEquals("   ", Align.RIGHT.apply("", 3, ' '));
+    assertEquals("", Align.LEFT.remove("", ' '));
+    assertEquals("", Align.RIGHT.remove("", ' '));
+  }
+
+  @Test
+  public void testStringExactlyAtBoundary() {
+    assertEquals("abc", Align.LEFT.apply("abc", 3, ' '));
+    assertEquals("abc", Align.RIGHT.apply("abc", 3, ' '));
   }
 }

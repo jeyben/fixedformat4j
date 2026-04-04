@@ -20,8 +20,9 @@ import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
-import junit.framework.TestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Verifies Issue 7 - record contains other fixedformatted records
@@ -29,7 +30,7 @@ import org.junit.Test;
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.3.0
  */
-public class TestIssue7 extends TestCase {
+public class TestIssue7 {
 
   FixedFormatManager fixedFormatManager = new FixedFormatManagerImpl();
 
@@ -79,7 +80,7 @@ public class TestIssue7 extends TestCase {
     }
 
     @Field(offset = 6, length = 10)
-       public NestedIssue7 getNestedIssue7() {
+    public NestedIssue7 getNestedIssue7() {
       return nestedIssue7;
     }
 

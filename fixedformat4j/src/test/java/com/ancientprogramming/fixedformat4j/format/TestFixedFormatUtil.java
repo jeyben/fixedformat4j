@@ -17,14 +17,15 @@ package com.ancientprogramming.fixedformat4j.format;
 
 import com.ancientprogramming.fixedformat4j.format.impl.ByTypeFormatter;
 import com.ancientprogramming.fixedformat4j.format.impl.StringFormatter;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
-public class TestFixedFormatUtil extends TestCase {
+public class TestFixedFormatUtil {
 
+  @Test
   public void testGetInstance() {
     FixedFormatUtil.getFixedFormatterInstance(StringFormatter.class, new FormatContext<String>(1, java.lang.String.class, StringFormatter.class));
     FixedFormatUtil.getFixedFormatterInstance(ByTypeFormatter.class, new FormatContext(1, java.lang.String.class, ByTypeFormatter.class));
