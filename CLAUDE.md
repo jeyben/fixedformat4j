@@ -66,4 +66,4 @@ The library maps Java POJOs annotated with `@Record` and `@Field` to/from fixed-
 - Field offsets are **1-based**.
 - `@Field` annotations go on **getter** methods (`get*` or `is*`); the manager derives the setter name by reflection.
 - The default formatter (`ByTypeFormatter`) is chosen automatically from the getter's return type; specify `formatter=` on `@Field` only when overriding.
-- Tests live in `fixedformat4j/src/test/java/` and use JUnit 4. Issue-specific regression tests are under `issues/` sub-package.
+- Tests live in `fixedformat4j/src/test/java/` and use JUnit 5 (Jupiter). Issue-specific regression tests are under `issues/` sub-package.
