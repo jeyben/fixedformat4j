@@ -2,10 +2,13 @@ package com.ancientprogramming.fixedformat4j.annotation;
 
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class TestSign extends TestCase {
+import static org.junit.jupiter.api.Assertions.*;
 
+public class TestSign {
+
+  @Test
   public void testSignNoSign() {
     assertEquals("0000000000", Sign.NOSIGN.apply("", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
     assertEquals("0000000000", Sign.NOSIGN.apply("0", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
@@ -13,6 +16,7 @@ public class TestSign extends TestCase {
     assertEquals("10000", Sign.NOSIGN.remove("0000010000", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
   }
 
+  @Test
   public void testSignAppend() {
     assertEquals("000000000+", Sign.APPEND.apply("", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
     assertEquals("000000000+", Sign.APPEND.apply("0", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
@@ -26,6 +30,21 @@ public class TestSign extends TestCase {
     assertEquals("-2001", Sign.APPEND.remove("000002001-", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
   }
 
+  @Test
+  public void testSignZeroWithPrepend() {
+    // Zero should get positive sign
+    assertEquals("+000000000", Sign.PREPEND.apply("0", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
+    // Removing sign from zero-valued string
+    assertEquals("0", Sign.PREPEND.remove("+000000000", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
+  }
+
+  @Test
+  public void testSignZeroWithAppend() {
+    assertEquals("000000000+", Sign.APPEND.apply("0", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
+    assertEquals("0", Sign.APPEND.remove("000000000+", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
+  }
+
+  @Test
   public void testSignPrepend() {
     assertEquals("+000000000", Sign.PREPEND.apply("", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
     assertEquals("+000000000", Sign.PREPEND.apply("0", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
@@ -36,7 +55,5 @@ public class TestSign extends TestCase {
     assertEquals("0", Sign.PREPEND.remove("-000000000", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
     assertEquals("-1", Sign.PREPEND.remove("-000000001", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
     assertEquals("-2001", Sign.PREPEND.remove("-000002001", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
-   }
-
-
+  }
 }

@@ -22,12 +22,12 @@ import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
 import com.ancientprogramming.fixedformat4j.annotation.Align;
-import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 
 import java.util.Date;
 
-import junit.framework.TestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Verifies Issue 10 - parse exception contains details for better error reporting posibilities
@@ -35,25 +35,22 @@ import org.junit.Test;
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.3.0
  */
-public class TestIssue10 extends TestCase {
+public class TestIssue10 {
 
   FixedFormatManager fixedFormatManager = new FixedFormatManagerImpl();
 
   @Test
   public void testParseExceptionContainsDetails() {
-
     String text = "some 20081021123f5foobar";
-    try {
-      fixedFormatManager.load(Issue10.class, text);
-      fail("expected a parseexception");
-    } catch (ParseException e) {
-      assertEquals(Issue10.class, e.getAnnotatedClass());
-      assertEquals("getNumber", e.getAnnotatedMethod().getName());
-      assertEquals(text, e.getCompleteText());
-      assertEquals("123f5", e.getFailedText());
-      assertEquals(int.class, e.getFormatContext().getDataType());
-      assertEquals(5, e.getFormatInstructions().getLength());
-    }
+    ParseException ex = assertThrows(ParseException.class, () ->
+      fixedFormatManager.load(Issue10.class, text)
+    );
+    assertEquals(Issue10.class, ex.getAnnotatedClass());
+    assertEquals("getNumber", ex.getAnnotatedMethod().getName());
+    assertEquals(text, ex.getCompleteText());
+    assertEquals("123f5", ex.getFailedText());
+    assertEquals(int.class, ex.getFormatContext().getDataType());
+    assertEquals(5, ex.getFormatInstructions().getLength());
   }
 
   @Record
@@ -101,6 +98,4 @@ public class TestIssue10 extends TestCase {
       this.text2 = text2;
     }
   }
-
-
 }

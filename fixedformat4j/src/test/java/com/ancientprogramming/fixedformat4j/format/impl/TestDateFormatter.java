@@ -19,29 +19,49 @@ import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import java.util.Calendar;
 import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
-public class TestDateFormatter extends TestCase {
+public class TestDateFormatter {
 
   public FixedFormatter formatter = new DateFormatter();
 
+  @Test
   public void testParse() {
-    Assert.assertEquals(getDate(1979, 10, 13), formatter.parse("13101979", new FormatInstructions(8, Align.LEFT, ' ', new FixedFormatPatternData("ddMMyyyy"), null, null, null)));
-    Assert.assertEquals(null, formatter.parse("        ", new FormatInstructions(8, Align.LEFT, ' ', new FixedFormatPatternData("ddMMyyyy"), null, null, null)));
+    assertEquals(getDate(1979, 10, 13), formatter.parse("13101979", new FormatInstructions(8, Align.LEFT, ' ', new FixedFormatPatternData("ddMMyyyy"), null, null, null)));
+    assertNull(formatter.parse("        ", new FormatInstructions(8, Align.LEFT, ' ', new FixedFormatPatternData("ddMMyyyy"), null, null, null)));
   }
 
+  @Test
   public void testFormat() {
-    Assert.assertEquals("10032008", formatter.format(getDate(2008, 3, 10), new FormatInstructions(8, Align.LEFT, ' ', new FixedFormatPatternData("ddMMyyyy"), null, null, null)));
-    Assert.assertEquals("08", formatter.format(getDate(2008, 3, 10), new FormatInstructions(2, Align.LEFT, ' ', new FixedFormatPatternData("yy"), null, null, null)));
-    Assert.assertEquals("  ", formatter.format(null, new FormatInstructions(2, Align.LEFT, ' ', new FixedFormatPatternData("yy"), null, null, null)));
+    assertEquals("10032008", formatter.format(getDate(2008, 3, 10), new FormatInstructions(8, Align.LEFT, ' ', new FixedFormatPatternData("ddMMyyyy"), null, null, null)));
+    assertEquals("08", formatter.format(getDate(2008, 3, 10), new FormatInstructions(2, Align.LEFT, ' ', new FixedFormatPatternData("yy"), null, null, null)));
+    assertEquals("  ", formatter.format(null, new FormatInstructions(2, Align.LEFT, ' ', new FixedFormatPatternData("yy"), null, null, null)));
+  }
+
+  @Test
+  public void testAlternativePattern() {
+    assertEquals("20080310", formatter.format(getDate(2008, 3, 10), new FormatInstructions(8, Align.LEFT, ' ', new FixedFormatPatternData("yyyyMMdd"), null, null, null)));
+    assertEquals(getDate(2008, 3, 10), formatter.parse("20080310", new FormatInstructions(8, Align.LEFT, ' ', new FixedFormatPatternData("yyyyMMdd"), null, null, null)));
+  }
+
+  @Test
+  public void testNullInputParseReturnsNull() {
+    // all-spaces → stripped to empty → returns null
+    assertNull(formatter.parse("        ", new FormatInstructions(8, Align.LEFT, ' ', new FixedFormatPatternData("yyyyMMdd"), null, null, null)));
+  }
+
+  @Test
+  public void testNullFormatReturnsSpaces() {
+    assertEquals("        ", formatter.format(null, new FormatInstructions(8, Align.LEFT, ' ', new FixedFormatPatternData("yyyyMMdd"), null, null, null)));
   }
 
   public Date getDate(int year, int month, int day) {

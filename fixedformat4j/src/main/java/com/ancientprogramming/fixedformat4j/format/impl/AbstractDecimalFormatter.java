@@ -16,9 +16,9 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -32,7 +32,7 @@ import java.text.DecimalFormat;
  */
 public abstract class AbstractDecimalFormatter<T extends Number> extends AbstractNumberFormatter<T> {
 
-  private static final Log LOG = LogFactory.getLog(AbstractDecimalFormatter.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AbstractDecimalFormatter.class);
 
   public String asString(T obj, FormatInstructions instructions) {
     BigDecimal roundedValue = null;

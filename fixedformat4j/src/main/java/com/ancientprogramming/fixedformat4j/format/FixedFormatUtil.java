@@ -16,8 +16,8 @@
 package com.ancientprogramming.fixedformat4j.format;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.lang.String.format;
 
@@ -29,7 +29,7 @@ import static java.lang.String.format;
  */
 public class FixedFormatUtil {
 
-  private static final Log LOG = LogFactory.getLog(FixedFormatUtil.class);
+  private static final Logger LOG = LoggerFactory.getLogger(FixedFormatUtil.class);
 
   /**
    * Fetch data from the record string according to the {@link FormatInstructions} and {@link FormatContext}

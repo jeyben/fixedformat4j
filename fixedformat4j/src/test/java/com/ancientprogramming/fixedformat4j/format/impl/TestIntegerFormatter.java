@@ -21,21 +21,23 @@ import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import java.math.RoundingMode;
 
 import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber.DEFAULT_NEGATIVE_SIGN;
 import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber.DEFAULT_POSITIVE_SIGN;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
-public class TestIntegerFormatter extends TestCase {
+public class TestIntegerFormatter {
 
   private FixedFormatter formatter = new IntegerFormatter();
 
+  @Test
   public void testParse() {
     assertEquals(100, formatter.parse("0000000100", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
     assertEquals(100, formatter.parse("100", new FormatInstructions(3, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
@@ -46,6 +48,7 @@ public class TestIntegerFormatter extends TestCase {
     assertEquals(-1234, formatter.parse("-000001234", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), null)));
   }
 
+  @Test
   public void testFormat() {
     assertEquals("+000000100", formatter.format(100, new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.', RoundingMode.UNNECESSARY))));
     assertEquals("+000000101", formatter.format(101, new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(1, false, '.', RoundingMode.UNNECESSARY))));
@@ -53,5 +56,26 @@ public class TestIntegerFormatter extends TestCase {
     assertEquals("-000001234", formatter.format(-1234, new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.', RoundingMode.UNNECESSARY))));
     assertEquals("+000000000", formatter.format(0, new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.', RoundingMode.UNNECESSARY))));
     assertEquals("+000000000", formatter.format(null, new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.', RoundingMode.UNNECESSARY))));
+  }
+
+  @Test
+  public void testMaxAndMinValue() {
+    // MAX_VALUE round-trip via NOSIGN
+    assertEquals(Integer.MAX_VALUE, formatter.parse(String.valueOf(Integer.MAX_VALUE), new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
+    assertEquals(Integer.MIN_VALUE, formatter.parse(String.valueOf(Integer.MIN_VALUE), new FormatInstructions(11, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
+  }
+
+  @Test
+  public void testAppendSign() {
+    assertEquals("000001234+", formatter.format(1234, new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(0, false, '.', RoundingMode.UNNECESSARY))));
+    assertEquals("000001234-", formatter.format(-1234, new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(0, false, '.', RoundingMode.UNNECESSARY))));
+    assertEquals(1234, formatter.parse("000001234+", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), null)));
+    assertEquals(-1234, formatter.parse("000001234-", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), null)));
+  }
+
+  @Test
+  public void testZeroWithSign() {
+    assertEquals("+000000000", formatter.format(0, new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(0, false, '.', RoundingMode.UNNECESSARY))));
+    assertEquals("000000000+", formatter.format(0, new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(0, false, '.', RoundingMode.UNNECESSARY))));
   }
 }

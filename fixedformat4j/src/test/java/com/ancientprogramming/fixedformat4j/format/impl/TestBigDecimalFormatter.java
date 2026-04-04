@@ -20,21 +20,23 @@ import com.ancientprogramming.fixedformat4j.annotation.Sign;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber.DEFAULT_NEGATIVE_SIGN;
 import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber.DEFAULT_POSITIVE_SIGN;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Jacob von Eyben - http://www.ancientprogramming.com
  * @since 1.0.0
  */
-public class TestBigDecimalFormatter extends TestCase {
+public class TestBigDecimalFormatter {
   BigDecimalFormatter formatter = new BigDecimalFormatter();
 
+  @Test
   public void testParse() {
     //one decimal
     assertEquals(BigDecimal.ZERO, formatter.parse("+000000000", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(1, false, '.', RoundingMode.UNNECESSARY))));
@@ -78,9 +80,9 @@ public class TestBigDecimalFormatter extends TestCase {
     assertEquals(new BigDecimal("-100.50"), formatter.parse("000010050-", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.APPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.', RoundingMode.UNNECESSARY))));
   }
 
+  @Test
   public void testFormat() {
     assertEquals("+000000001", formatter.format(new BigDecimal(0.01), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.', RoundingMode.HALF_UP))));
-
 
     assertEquals("+000010050", formatter.format(new BigDecimal(100.5), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, false, '.', RoundingMode.UNNECESSARY))));
     assertEquals("+000001005", formatter.format(new BigDecimal(100.51), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(1, false, '.', RoundingMode.HALF_UP))));
@@ -99,24 +101,53 @@ public class TestBigDecimalFormatter extends TestCase {
     assertEquals("+000000.00", formatter.format(new BigDecimal(0), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, true, '.', RoundingMode.UNNECESSARY))));
   }
 
+  @Test
   public void testFormatWithRounding() {
-    // test rounding
     assertEquals("+000001.17", formatter.format(new BigDecimal(1.165), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, true, '.', RoundingMode.HALF_UP))));
   }
-  
+
+  @Test
   public void testFormatBigDecimalWith4DecimalsKeepAllDecimalsNoDecimalDelimiter() {
-    assertEquals("+00012345612", formatter.format(new BigDecimal(1234.5612), new FormatInstructions(12, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(4, false, '.', RoundingMode.HALF_UP))));	    
+    assertEquals("+00012345612", formatter.format(new BigDecimal(1234.5612), new FormatInstructions(12, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(4, false, '.', RoundingMode.HALF_UP))));
   }
 
+  @Test
   public void testFormatBigDecimalWith5DecimalsTo4DecimalsNoDecimalDelimiter() {
     assertEquals("+00012345612", formatter.format(new BigDecimal(1234.56121), new FormatInstructions(12, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(4, false, '.', RoundingMode.HALF_UP))));
   }
-  
-  public void testFormatBigDecimalWith4DecimalsKeepAllDecimalsUseDecimalDelimiter () {
-    assertEquals("+001234.5612", formatter.format(new BigDecimal(1234.5612), new FormatInstructions(12, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(4, true, '.', RoundingMode.HALF_UP))));  
+
+  @Test
+  public void testFormatBigDecimalWith4DecimalsKeepAllDecimalsUseDecimalDelimiter() {
+    assertEquals("+001234.5612", formatter.format(new BigDecimal(1234.5612), new FormatInstructions(12, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(4, true, '.', RoundingMode.HALF_UP))));
   }
-  
-  public void testFormatBigDecimalWith5DecimalsTo4DecimalsUseDecimalDelimiter () {
-    assertEquals("+00123.4561", formatter.format(new BigDecimal(123.45612), new FormatInstructions(11, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(4, true, '.', RoundingMode.HALF_UP))));  
+
+  @Test
+  public void testFormatBigDecimalWith5DecimalsTo4DecimalsUseDecimalDelimiter() {
+    assertEquals("+00123.4561", formatter.format(new BigDecimal(123.45612), new FormatInstructions(11, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(4, true, '.', RoundingMode.HALF_UP))));
+  }
+
+  @Test
+  public void testRoundingModeDown() {
+    // 1.165 rounded DOWN to 2 decimals = 1.16 (truncate toward zero)
+    assertEquals("+000001.16", formatter.format(new BigDecimal("1.165"), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, true, '.', RoundingMode.DOWN))));
+  }
+
+  @Test
+  public void testRoundingModeCeiling() {
+    // 1.161 rounded CEILING to 2 decimals = 1.17
+    assertEquals("+000001.17", formatter.format(new BigDecimal("1.161"), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, true, '.', RoundingMode.CEILING))));
+  }
+
+  @Test
+  public void testRoundingModeFloor() {
+    // 1.169 rounded FLOOR to 2 decimals = 1.16
+    assertEquals("+000001.16", formatter.format(new BigDecimal("1.169"), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(2, true, '.', RoundingMode.FLOOR))));
+  }
+
+  @Test
+  public void testScaleZero() {
+    // no decimals: 42 formatted as integer-style
+    assertEquals("+000000042", formatter.format(new BigDecimal("42"), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(0, false, '.', RoundingMode.UNNECESSARY))));
+    assertEquals(new BigDecimal("42"), formatter.parse("+000000042", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(0, false, '.', RoundingMode.UNNECESSARY))));
   }
 }
