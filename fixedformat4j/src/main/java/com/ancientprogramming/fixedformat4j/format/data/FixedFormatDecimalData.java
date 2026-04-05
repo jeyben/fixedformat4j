@@ -24,7 +24,7 @@ import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal
 /**
  * Data object containing the exact same data as {@link FixedFormatDecimal}
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 public class FixedFormatDecimalData {

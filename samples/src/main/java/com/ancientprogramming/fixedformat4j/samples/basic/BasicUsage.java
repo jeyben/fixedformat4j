@@ -21,7 +21,7 @@ import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
 /**
  * Shows the basic usage
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.2.0
  */
 //START-SNIPPET: basicusage

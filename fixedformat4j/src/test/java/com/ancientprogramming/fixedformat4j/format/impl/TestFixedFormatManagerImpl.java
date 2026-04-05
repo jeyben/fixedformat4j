@@ -16,6 +16,7 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.Field;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
@@ -26,12 +27,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Calendar;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 public class TestFixedFormatManagerImpl {
@@ -213,6 +215,31 @@ public class TestFixedFormatManagerImpl {
   }
 
   @Test
+  public void testLocalDateRoundTrip() {
+    LocalDateRecord rec = new LocalDateRecord();
+    rec.setEventDate(LocalDate.of(2026, 4, 5));
+    rec.setLabel("launch");
+    String exported = manager.export(rec);
+    assertEquals("launch    20260405", exported);
+
+    LocalDateRecord loaded = manager.load(LocalDateRecord.class, exported);
+    assertEquals("launch", loaded.getLabel());
+    assertEquals(LocalDate.of(2026, 4, 5), loaded.getEventDate());
+  }
+
+  @Test
+  public void testLocalDateNullRoundTrip() {
+    LocalDateRecord rec = new LocalDateRecord();
+    rec.setLabel("test");
+    // null date → 8 spaces in the string
+    String exported = manager.export(rec);
+    assertEquals("test      " + "        ", exported);
+
+    LocalDateRecord loaded = manager.load(LocalDateRecord.class, exported);
+    assertNull(loaded.getEventDate());
+  }
+
+  @Test
   public void testIsPrefixedBooleanGetterRoundTrip() {
     BooleanRecord rec = new BooleanRecord();
     rec.setActive(true);
@@ -220,6 +247,21 @@ public class TestFixedFormatManagerImpl {
     assertEquals("T", exported);
     BooleanRecord loaded = manager.load(BooleanRecord.class, "T");
     assertTrue(loaded.isActive());
+  }
+
+  @Record
+  public static class LocalDateRecord {
+    private String label;
+    private LocalDate eventDate;
+
+    @Field(offset = 1, length = 10)
+    public String getLabel() { return label; }
+    public void setLabel(String label) { this.label = label; }
+
+    @Field(offset = 11, length = 8)
+    @FixedFormatPattern("yyyyMMdd")
+    public LocalDate getEventDate() { return eventDate; }
+    public void setEventDate(LocalDate eventDate) { this.eventDate = eventDate; }
   }
 
   // --- Helper record classes for edge case tests ---

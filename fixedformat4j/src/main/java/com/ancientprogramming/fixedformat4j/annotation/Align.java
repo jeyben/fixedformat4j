@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Capable of pad or chop data in a given direction
  *
- * @author Jacob von Eyben- http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 public enum Align {

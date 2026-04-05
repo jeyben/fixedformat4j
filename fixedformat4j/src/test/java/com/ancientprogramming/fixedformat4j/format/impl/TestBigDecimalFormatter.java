@@ -31,7 +31,7 @@ import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber.
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 public class TestBigDecimalFormatter {

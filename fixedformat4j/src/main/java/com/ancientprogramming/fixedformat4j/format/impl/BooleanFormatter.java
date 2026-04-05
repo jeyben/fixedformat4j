@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Formatter for {@link Boolean} data
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 public class BooleanFormatter extends AbstractFixedFormatter<Boolean> {

@@ -21,7 +21,7 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 /**
  * Formatter for {@link String} data
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 public class StringFormatter extends AbstractFixedFormatter<String> {

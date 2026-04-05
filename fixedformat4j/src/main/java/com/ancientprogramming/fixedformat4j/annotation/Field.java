@@ -26,7 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * This annotation descibes how a setter/getter pairs should be formatted by the fixedFormatManager.
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)

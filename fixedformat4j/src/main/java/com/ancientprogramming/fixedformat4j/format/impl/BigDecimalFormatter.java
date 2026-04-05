@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 /**
  * Formatter for {@link BigDecimal} data
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 public class BigDecimalFormatter extends AbstractDecimalFormatter<BigDecimal> {

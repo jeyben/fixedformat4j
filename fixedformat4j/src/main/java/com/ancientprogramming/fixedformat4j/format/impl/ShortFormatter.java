@@ -20,7 +20,7 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 /**
  * Formatter for {@link Short} data
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.3.0
  */
 public class ShortFormatter extends AbstractNumberFormatter<Short> {

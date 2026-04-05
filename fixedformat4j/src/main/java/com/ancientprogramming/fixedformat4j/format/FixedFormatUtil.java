@@ -24,7 +24,7 @@ import static java.lang.String.format;
 /**
  * Utility class used when loading and exporting to and from fixedformat data.
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 public class FixedFormatUtil {

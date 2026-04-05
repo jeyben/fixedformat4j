@@ -24,7 +24,7 @@ import com.ancientprogramming.fixedformat4j.annotation.Record;
 import java.util.Date;
 
 /**
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 @Record
