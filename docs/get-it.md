@@ -51,6 +51,23 @@ Add the GitHub Packages registry to your `pom.xml`:
 </dependency>
 ```
 
+## No GitHub account? Download manually
+
+If you do not have a GitHub account, download `fixedformat4j-1.4.0.jar` directly from the [1.4.0 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_4_0) and install it into your local Maven repository:
+
+```bash
+mvn install:install-file \
+  -Dfile=fixedformat4j-1.4.0.jar \
+  -DgroupId=com.ancientprogramming.fixedformat4j \
+  -DartifactId=fixedformat4j \
+  -Dversion=1.4.0 \
+  -Dpackaging=jar
+```
+
+After that the standard `<dependency>` block from Step 3 works as-is — no `<repository>` entry or token needed.
+
+If you want to share the artifact across a team, deploy it to a private Nexus or Artifactory instance using `mvn deploy:deploy-file` with the same coordinates and your repository URL.
+
 ## Logging
 
 fixedformat4j uses [SLF4J](https://www.slf4j.org/) for logging. SLF4J is a logging facade — you must provide a binding on the classpath to route log output to your preferred logging framework (e.g. Logback, Log4j 2, or `slf4j-simple`).
