@@ -63,4 +63,4 @@ Annotations instruct the manager on how to load and export data. See the [comple
 
 ---
 
-[Home](../index) | [Annotations](annotations) | [Nested Records](nested-records) | [Get It](../get-it)
+[Home](../index) | [Annotations](annotations) | [Nested Records](nested-records) | [Examples](../examples) | [Get It](../get-it)

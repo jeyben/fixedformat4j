@@ -119,4 +119,4 @@ foo  fubar     098762008-10-21
 
 ---
 
-[Home](../index) | [Usage](index) | [Annotations](annotations)
+[Home](../index) | [Usage](index) | [Annotations](annotations) | [Examples](../examples)
