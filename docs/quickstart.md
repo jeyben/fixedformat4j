@@ -8,7 +8,7 @@ This guide takes you from zero to a working fixed-format record in four steps.
 
 ## Prerequisites
 
-- Java 8 or later
+- Java 11 or later
 - Maven (or Gradle — adapt the dependency coordinates accordingly)
 
 ## Step 1 — Add the dependency

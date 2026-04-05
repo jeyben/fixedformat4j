@@ -121,11 +121,38 @@ With `useDecimalDelimiter = true` and length 7: `"012.50"` parses to `12.50`.
 
 ## @FixedFormatPattern
 
-Configures pattern-based formatting. Currently used for `Date` fields via `SimpleDateFormat` patterns.
+Configures pattern-based formatting for date fields.
 
 | Attribute | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `value` | `String` | yes | — | The pattern string, e.g. `"yyyy-MM-dd"` for dates. Uses the same syntax as `SimpleDateFormat`. |
+| `value` | `String` | yes | `"yyyyMMdd"` | The pattern string, e.g. `"yyyyMMdd"` or `"yyyy-MM-dd"`. |
+
+Supported field types and their underlying formatter:
+
+| Field type | Formatter class | Pattern syntax |
+|---|---|---|
+| `java.util.Date` | `DateFormatter` | `SimpleDateFormat` patterns |
+| `java.time.LocalDate` | `LocalDateFormatter` | `DateTimeFormatter` patterns |
+
+Both types use the same pattern syntax (e.g. `yyyyMMdd`, `yyyy-MM-dd`, `ddMMyyyy`).
+
+**Example with `LocalDate`:**
+
+```java
+@Field(offset = 1, length = 8)
+@FixedFormatPattern("yyyyMMdd")
+public LocalDate getEventDate() { return eventDate; }
+```
+
+String `"20260405"` parses to `LocalDate.of(2026, 4, 5)`; exporting writes `"20260405"` back.
+
+**Example with `Date`:**
+
+```java
+@Field(offset = 1, length = 8)
+@FixedFormatPattern("yyyyMMdd")
+public Date getHireDate() { return hireDate; }
+```
 
 ---
 

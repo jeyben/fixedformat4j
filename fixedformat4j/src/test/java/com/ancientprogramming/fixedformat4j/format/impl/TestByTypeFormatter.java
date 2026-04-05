@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -154,6 +155,15 @@ public class TestByTypeFormatter {
     FormatInstructions instr = new FormatInstructions(8, Align.LEFT, ' ',
         new FixedFormatPatternData("yyyyMMdd"), null, null, null);
     assertNotNull(f.parse("20080514", instr));
+  }
+
+  @Test
+  public void testDispatchesToLocalDateFormatter() {
+    ByTypeFormatter f = formatterFor(LocalDate.class);
+    FormatInstructions instr = new FormatInstructions(8, Align.LEFT, ' ',
+        new FixedFormatPatternData("yyyyMMdd"), null, null, null);
+    assertEquals(LocalDate.of(2026, 4, 5), f.parse("20260405", instr));
+    assertEquals("20260405", f.format(LocalDate.of(2026, 4, 5), instr));
   }
 
   @Test
