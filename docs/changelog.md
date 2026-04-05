@@ -29,10 +29,4 @@ title: Changelog
 
 ---
 
-## 1.3.7
-
-See [Maven Central](https://central.sonatype.com/artifact/com.ancientprogramming.fixedformat4j/fixedformat4j/1.3.7) for the 1.3.7 release.
-
----
-
 [Home](index) | [Usage](usage/) | [Get It](get-it) | [FAQ](faq)
