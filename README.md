@@ -1,6 +1,6 @@
 This project was originally hosted at https://code.google.com/p/fixedformat4j/
 
-<a href="https://travis-ci.org/jeyben/fixedformat4j"><img src="https://travis-ci.org/jeyben/fixedformat4j.svg?branch=master" /></a>
+[![Nightly Build](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml/badge.svg?branch=master)](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml)
 
 After google decided to close down code.google.com the repository was moved.
 
