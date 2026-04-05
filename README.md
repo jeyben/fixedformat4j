@@ -1,7 +1,110 @@
-This project was originally hosted at https://code.google.com/p/fixedformat4j/
+# fixedformat4j
 
 [![Nightly Build](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml/badge.svg?branch=master)](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/com.ancientprogramming.fixedformat4j/fixedformat4j)](https://central.sonatype.com/artifact/com.ancientprogramming.fixedformat4j/fixedformat4j)
 
-After google decided to close down code.google.com the repository was moved.
+A small, non-intrusive Java library for reading and writing fixed-width flat-file records using annotations.
 
-Go to the official Fixedformat4j page for documentation: https://jeyben.github.io/fixedformat4j/
+## Why fixedformat4j?
+
+Fixed-width files are common in banking, payroll, government, and legacy system integration. fixedformat4j lets you describe your record layout once — as annotations on a plain Java class — and then load and export records without writing any parsing or formatting code yourself.
+
+- **Annotation-driven** — declare field offsets, lengths, alignment, and padding in one place
+- **Rich type support** — `String`, `Integer`, `Long`, `Short`, `Double`, `Float`, `BigDecimal`, `Boolean`, `Character`, `Date`, `LocalDate`
+- **Signed numbers** — handles `'-1000'` and `'1000-'` both as negative values
+- **Implicit decimals** — store `BigDecimal` without a decimal point in the file
+- **Nested records** — embed one `@Record` class inside another
+- **Extensible** — plug in your own formatter for any custom type
+
+## What's new in 1.4.0
+
+- **`java.time.LocalDate` support** — use `LocalDate` fields directly; configure the pattern with `@FixedFormatPattern` (default: `yyyyMMdd`)
+- **Java 11 minimum** — Java 8 is no longer supported
+- **SLF4J logging** — replaces Commons Logging; add any SLF4J binding (e.g. Logback) or none at all
+
+## Quick start
+
+### 1. Add the dependency
+
+```xml
+<dependency>
+  <groupId>com.ancientprogramming.fixedformat4j</groupId>
+  <artifactId>fixedformat4j</artifactId>
+  <version>1.4.0</version>
+</dependency>
+```
+
+Requires **Java 11 or later**. If you want log output, add an [SLF4J binding](https://www.slf4j.org/manual.html#swapping) such as `logback-classic`; without one the library still works, just silently.
+
+### 2. Annotate your record class
+
+```java
+import com.ancientprogramming.fixedformat4j.annotation.*;
+import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
+import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
+import java.time.LocalDate;
+
+@Record
+public class EmployeeRecord {
+
+  private String name;
+  private Integer employeeId;
+  private LocalDate hireDate;
+
+  @Field(offset = 1, length = 20)
+  public String getName() { return name; }
+  public void setName(String name) { this.name = name; }
+
+  @Field(offset = 21, length = 6, align = Align.RIGHT, paddingChar = '0')
+  public Integer getEmployeeId() { return employeeId; }
+  public void setEmployeeId(Integer employeeId) { this.employeeId = employeeId; }
+
+  @Field(offset = 27, length = 8)
+  @FixedFormatPattern("yyyyMMdd")
+  public LocalDate getHireDate() { return hireDate; }
+  public void setHireDate(LocalDate hireDate) { this.hireDate = hireDate; }
+}
+```
+
+- `@Record` marks the class as a fixed-format record.
+- `@Field` goes on the **getter**; `offset` is **1-based**.
+- Each mapped getter must have a corresponding setter.
+
+### 3. Load from a string
+
+```java
+FixedFormatManager manager = new FixedFormatManagerImpl();
+
+String line = "Jane Smith          00042320260405";
+EmployeeRecord record = manager.load(EmployeeRecord.class, line);
+
+System.out.println(record.getName());       // "Jane Smith"
+System.out.println(record.getEmployeeId()); // 423
+System.out.println(record.getHireDate());   // 2026-04-05
+```
+
+### 4. Export to a string
+
+```java
+record.setEmployeeId(999);
+String exported = manager.export(record);
+System.out.println(exported);
+// "Jane Smith          00099920260405"
+```
+
+Every field is re-padded to its declared length using the configured alignment and padding character.
+
+## Documentation
+
+Full documentation is available at **https://jeyben.github.io/fixedformat4j/**:
+
+- [Quick Start](https://jeyben.github.io/fixedformat4j/quickstart) — step-by-step walkthrough
+- [Annotations reference](https://jeyben.github.io/fixedformat4j/usage/annotations) — every annotation attribute explained
+- [Examples](https://jeyben.github.io/fixedformat4j/examples) — financial records, booleans, file processing, custom formatters
+- [Nested Records](https://jeyben.github.io/fixedformat4j/usage/nested-records) — embedding one record inside another
+- [FAQ](https://jeyben.github.io/fixedformat4j/faq)
+- [Changelog](https://jeyben.github.io/fixedformat4j/changelog)
+
+## License
+
+Apache License 2.0 — see [LICENSE](LICENSE) for details.
