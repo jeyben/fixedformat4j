@@ -18,10 +18,6 @@
   </description>
   <url>http://www.ancientprogramming.com/fixedformat4j</url>
 
-  <prerequisites>
-    <maven>2.0.7</maven>
-  </prerequisites>
-
   <scm>
     <connection>scm:git:https://github.com/jeyben/fixedformat4j.git</connection>
     <developerConnection>scm:git:git@github.com:jeyben/fixedformat4j.git</developerConnection>
@@ -37,6 +33,10 @@
       <organization>ancientprogramming.com</organization>
     </developer>
   </developers>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
   <modules>
     <module>fixedformat4j</module>
