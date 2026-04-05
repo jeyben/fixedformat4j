@@ -22,7 +22,7 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 /**
  * Apply signing to values
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.1.0
  */
 public abstract class AbstractNumberFormatter<T> extends AbstractFixedFormatter<T> {

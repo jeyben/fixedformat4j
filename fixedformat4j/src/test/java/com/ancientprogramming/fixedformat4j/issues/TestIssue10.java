@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Verifies Issue 10 - parse exception contains details for better error reporting posibilities
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.3.0
  */
 public class TestIssue10 {

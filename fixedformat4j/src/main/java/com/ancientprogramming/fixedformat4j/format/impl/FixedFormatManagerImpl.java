@@ -50,7 +50,7 @@ import static java.lang.String.format;
 /**
  * Load and export objects to and from fixed formatted string representation
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 public class FixedFormatManagerImpl implements FixedFormatManager {

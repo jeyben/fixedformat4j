@@ -20,7 +20,7 @@ import com.ancientprogramming.fixedformat4j.format.impl.StringFormatter;
 import org.junit.jupiter.api.Test;
 
 /**
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 public class TestFixedFormatUtil {

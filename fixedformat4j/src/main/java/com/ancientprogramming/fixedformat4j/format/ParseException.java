@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 /**
  * Used in cases where data couldn't be parse according to the {@link FormatContext} and {@link FormatInstructions}.
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.2.0
  */
 public class ParseException extends FixedFormatException {

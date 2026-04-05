@@ -30,7 +30,7 @@ import java.time.format.DateTimeParseException;
  * The pattern is configured via {@link com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern}.
  * The default pattern is {@code yyyyMMdd}.
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.4.0
  */
 public class LocalDateFormatter extends AbstractFixedFormatter<LocalDate> {

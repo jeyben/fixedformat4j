@@ -23,7 +23,7 @@ import java.util.Date;
 /**
  * A record used in testcases
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 @Record

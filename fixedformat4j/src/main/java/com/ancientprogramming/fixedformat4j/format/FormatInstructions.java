@@ -24,7 +24,7 @@ import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
 /**
  * Contains instructions on how to export and load fixed formatted data.
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 public class FormatInstructions {

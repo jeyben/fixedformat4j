@@ -23,7 +23,7 @@ import java.lang.annotation.ElementType;
 /**
  * Marks a class as a representation of a fixed format record
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 

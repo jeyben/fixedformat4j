@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 import java.math.BigDecimal;
 
 /**
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 

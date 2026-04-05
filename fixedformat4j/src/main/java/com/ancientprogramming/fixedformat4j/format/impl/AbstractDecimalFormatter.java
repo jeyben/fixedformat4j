@@ -27,7 +27,7 @@ import java.text.DecimalFormat;
 /**
  * Base class for formatting decimal data
  *
- * @author Jacob von Eyben - http://www.ancientprogramming.com
+ * @author Jacob von Eyben - https://eybenconsult.com
  * @since 1.0.0
  */
 public abstract class AbstractDecimalFormatter<T extends Number> extends AbstractNumberFormatter<T> {
