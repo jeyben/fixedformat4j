@@ -4,7 +4,44 @@ title: Get fixedformat4j
 
 # Get the latest version of fixedformat4j
 
-Add the following dependency to your `pom.xml`:
+fixedformat4j 1.4.0 is published to **GitHub Packages**.
+
+## Requirements
+
+- **Java 11 or later** — Java 8 is no longer supported as of version 1.4.0.
+
+## Step 1 — Authenticate with GitHub Packages
+
+GitHub Packages requires a GitHub personal access token (classic) with at least the `read:packages` scope, even for public packages.
+
+Create a token at **GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)** and add the following server to your Maven `~/.m2/settings.xml`:
+
+```xml
+<settings>
+  <servers>
+    <server>
+      <id>github</id>
+      <username>YOUR_GITHUB_USERNAME</username>
+      <password>YOUR_PERSONAL_ACCESS_TOKEN</password>
+    </server>
+  </servers>
+</settings>
+```
+
+## Step 2 — Add the repository
+
+Add the GitHub Packages registry to your `pom.xml`:
+
+```xml
+<repositories>
+  <repository>
+    <id>github</id>
+    <url>https://maven.pkg.github.com/jeyben/fixedformat4j</url>
+  </repository>
+</repositories>
+```
+
+## Step 3 — Add the dependency
 
 ```xml
 <dependency>
@@ -13,12 +50,6 @@ Add the following dependency to your `pom.xml`:
   <version>1.4.0</version>
 </dependency>
 ```
-
-The library is available on [Maven Central](https://central.sonatype.com/artifact/com.ancientprogramming.fixedformat4j/fixedformat4j).
-
-## Requirements
-
-- **Java 11 or later** — Java 8 is no longer supported as of version 1.4.0.
 
 ## Logging
 

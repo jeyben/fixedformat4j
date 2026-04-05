@@ -1,7 +1,7 @@
 # fixedformat4j
 
 [![Nightly Build](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml/badge.svg?branch=master)](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/com.ancientprogramming.fixedformat4j/fixedformat4j)](https://central.sonatype.com/artifact/com.ancientprogramming.fixedformat4j/fixedformat4j)
+[![GitHub Packages](https://img.shields.io/badge/GitHub%20Packages-1.4.0-blue?logo=github)](https://github.com/jeyben/fixedformat4j/packages)
 
 A small, non-intrusive Java library for reading and writing fixed-width flat-file records using annotations.
 
@@ -26,15 +26,40 @@ Fixed-width files are common in banking, payroll, government, and legacy system 
 
 ### 1. Add the dependency
 
+fixedformat4j is published to **GitHub Packages**. Add the repository and dependency to your `pom.xml`:
+
 ```xml
-<dependency>
-  <groupId>com.ancientprogramming.fixedformat4j</groupId>
-  <artifactId>fixedformat4j</artifactId>
-  <version>1.4.0</version>
-</dependency>
+<repositories>
+  <repository>
+    <id>github</id>
+    <url>https://maven.pkg.github.com/jeyben/fixedformat4j</url>
+  </repository>
+</repositories>
+
+<dependencies>
+  <dependency>
+    <groupId>com.ancientprogramming.fixedformat4j</groupId>
+    <artifactId>fixedformat4j</artifactId>
+    <version>1.4.0</version>
+  </dependency>
+</dependencies>
+```
+
+GitHub Packages requires a personal access token with `read:packages` scope. Add it to your `~/.m2/settings.xml`:
+
+```xml
+<servers>
+  <server>
+    <id>github</id>
+    <username>YOUR_GITHUB_USERNAME</username>
+    <password>YOUR_PERSONAL_ACCESS_TOKEN</password>
+  </server>
+</servers>
 ```
 
 Requires **Java 11 or later**. If you want log output, add an [SLF4J binding](https://www.slf4j.org/manual.html#swapping) such as `logback-classic`; without one the library still works, just silently.
+
+See [Get It](https://jeyben.github.io/fixedformat4j/get-it) for full setup instructions.
 
 ### 2. Annotate your record class
 
