@@ -78,8 +78,8 @@ The library maps Java POJOs annotated with `@Record` and `@Field` to/from fixed-
 ## GitHub Actions
 
 All workflows must use Node.js 24 compatible actions (Node.js 20 is removed from runners September 16, 2026):
-- Prefer actions with native Node.js 24 support: `actions/checkout@v6`, `actions/setup-java@v5`.
-- For actions without a Node.js 24-native version yet (e.g. `configure-pages`, `jekyll-build-pages`, `upload-pages-artifact`, `deploy-pages`), add `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` to the workflow-level `env:` block.
+- Prefer actions with native Node.js 24 support: `actions/checkout@v6`, `actions/setup-java@v5`, `actions/configure-pages@v6`, `actions/upload-pages-artifact@v4`, `actions/deploy-pages@v5`.
+- For actions without a Node.js 24-native version yet (e.g. `jekyll-build-pages`), add `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` to the workflow-level `env:` block.
 
 ## Key Conventions
 
