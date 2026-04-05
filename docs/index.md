@@ -17,7 +17,6 @@ It is also straightforward to write and plug in your own formatters for custom d
 - Support for many built-in datatypes — no need to write format and parse routines
 - Handles signed numbers (e.g. `'-1000'` or `'1000-'` can be treated as negative 1000)
 - Detailed error reporting when parsing fails
-- Available in the Maven Central repository
 
 ## Getting started
 
