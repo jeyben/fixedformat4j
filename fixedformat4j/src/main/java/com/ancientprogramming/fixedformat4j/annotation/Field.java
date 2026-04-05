@@ -46,7 +46,7 @@ public @interface Field {
   int length();
 
   /**
-   * @return The direction of the padding. Defaults to {@link Align#RIGHT}.
+   * @return The direction of the padding. Defaults to {@link Align#LEFT}.
    */
   Align align() default Align.LEFT;
 
