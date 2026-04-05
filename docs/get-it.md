@@ -10,7 +10,7 @@ Add the following dependency to your `pom.xml`:
 <dependency>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j</artifactId>
-  <version>1.3.7</version>
+  <version>1.4.0</version>
 </dependency>
 ```
 
