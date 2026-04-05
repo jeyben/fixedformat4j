@@ -61,6 +61,24 @@ Requires **Java 11 or later**. If you want log output, add an [SLF4J binding](ht
 
 See [Get It](https://jeyben.github.io/fixedformat4j/get-it) for full setup instructions.
 
+<details>
+<summary>No GitHub account? Download manually</summary>
+
+Download `fixedformat4j-1.4.0.jar` from the [1.4.0 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_4_0), then install it into your local Maven repository:
+
+```bash
+mvn install:install-file \
+  -Dfile=fixedformat4j-1.4.0.jar \
+  -DgroupId=com.ancientprogramming.fixedformat4j \
+  -DartifactId=fixedformat4j \
+  -Dversion=1.4.0 \
+  -Dpackaging=jar
+```
+
+After that the standard `<dependency>` block works as-is — no `<repository>` entry or token needed. To deploy to a private Nexus or Artifactory instance instead, see [Get It](https://jeyben.github.io/fixedformat4j/get-it).
+
+</details>
+
 ### 2. Annotate your record class
 
 ```java
