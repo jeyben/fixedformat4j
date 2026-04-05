@@ -61,13 +61,10 @@
   </developers>
 
   <distributionManagement>
-    <site>
-      <id>ancientprogramming</id>
-      <url>scp://ancientprogramming.com/home/ancientp/www/_fixedformat4j</url>
-    </site>
     <repository>
-      <id>ancientprogramming</id>
-      <url>scp://ancientprogramming.com/home/ancientp/www/_maven/repository</url>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/jeyben/fixedformat4j</url>
     </repository>
   </distributionManagement>
 
