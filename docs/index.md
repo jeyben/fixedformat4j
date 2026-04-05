@@ -20,78 +20,20 @@ It is also straightforward to write and plug in your own formatters for custom d
 
 ## Getting started
 
-Annotate your getter methods and use the `FixedFormatManager` to load and export your fixed-format text.
+Annotate your getter methods and use the `FixedFormatManager` to load and export your fixed-format text. The [Quick Start guide](quickstart) walks you through each step with a full working example.
+
+In short: add `@Record` to your class, add `@Field` to each getter with an `offset` and `length`, then call `manager.load(...)` or `manager.export(...)`:
 
 ```java
-@Record
-public class BasicRecord {
-
-  private String stringData;
-  private Integer integerData;
-  private Date dateData;
-
-  @Field(offset = 1, length = 10)
-  public String getStringData() {
-    return stringData;
-  }
-
-  public void setStringData(String stringData) {
-    this.stringData = stringData;
-  }
-
-  @Field(offset = 11, length = 5, align = Align.RIGHT, paddingChar = '0')
-  public Integer getIntegerData() {
-    return integerData;
-  }
-
-  public void setIntegerData(Integer integerData) {
-    this.integerData = integerData;
-  }
-
-  @Field(offset = 16, length = 10)
-  @FixedFormatPattern("yyyy-MM-dd")
-  public Date getDateData() {
-    return dateData;
-  }
-
-  public void setDateData(Date dateData) {
-    this.dateData = dateData;
-  }
-}
+FixedFormatManager manager = new FixedFormatManagerImpl();
+String line = "string    001232008-05-29";
+BasicRecord record = manager.load(BasicRecord.class, line);
+record.setIntegerData(100);
+System.out.println(manager.export(record)); // "string    001002008-05-29"
 ```
 
-This annotated class can now be loaded and exported using a `FixedFormatManager`:
-
-```java
-public class BasicUsage {
-
-  private static FixedFormatManager manager = new FixedFormatManagerImpl();
-
-  public static void main(String[] args) {
-    String string = "string    001232008-05-29";
-    BasicRecord record = manager.load(BasicRecord.class, string);
-
-    System.out.println("The parsed string: " + record.getStringData());
-    System.out.println("The parsed integer: " + record.getIntegerData());
-    System.out.println("The parsed date: " + record.getDateData());
-
-    record.setIntegerData(100);
-    System.out.println("Exported: " + manager.export(record));
-  }
-}
-```
-
-Running this program produces:
-
-```
-The parsed string: string
-The parsed integer: 123
-The parsed date: Thu May 29 00:00:00 CEST 2008
-Exported: string    001002008-05-29
-```
-
-Note that the integer changed value in the exported string.
+See the [Quick Start](quickstart) for the full annotated class and step-by-step explanation, or jump straight to [Examples](examples) for practical scenarios.
 
 ---
 
-[Usage](usage/) | [Get It](get-it) | [FAQ](faq)
+[Quick Start](quickstart) | [Usage](usage/) | [Examples](examples) | [Get It](get-it) | [FAQ](faq)
