@@ -30,7 +30,7 @@ import java.lang.annotation.RetentionPolicy;
  * @since 1.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
+@Target({ElementType.METHOD, ElementType.FIELD})
 public @interface Field {
 
   /**

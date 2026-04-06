@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
@@ -76,15 +77,18 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       Field fieldAnnotation = method.getAnnotation(Field.class);
       Fields fieldsAnnotation = method.getAnnotation(Fields.class);
       if (fieldAnnotation != null) {
-        readFieldData(fixedFormatRecordClass, data, foundData, methodClass, method, methodName, fieldAnnotation);
+        readFieldData(fixedFormatRecordClass, data, foundData, methodClass, method, method, methodName, fieldAnnotation);
       } else if (fieldsAnnotation != null) {
         //assert that the fields annotation contains minimum one field anno
         if (fieldsAnnotation.value() == null || fieldsAnnotation.value().length == 0) {
           throw new FixedFormatException(format("%s annotation must contain minimum one %s annotation", Fields.class.getName(), Field.class.getName()));
         }
-        readFieldData(fixedFormatRecordClass, data, foundData, methodClass, method, methodName, fieldsAnnotation.value()[0]);
+        readFieldData(fixedFormatRecordClass, data, foundData, methodClass, method, method, methodName, fieldsAnnotation.value()[0]);
       }
     }
+
+    // scan Java fields for @Field / @Fields annotations (supports plain POJOs and Lombok)
+    scanJavaFieldAnnotationsForLoad(fixedFormatRecordClass, data, foundData, methodClass);
 
     Set<String> keys = foundData.keySet();
     for (String key : keys) {
@@ -110,10 +114,82 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return instance;
   }
 
-  private <T> void readFieldData(Class<T> fixedFormatRecordClass, String data, HashMap<String, Object> foundData, HashMap<String, Class<?>> methodClass, Method method, String methodName, Field fieldAnnotation) {
-    Object loadedData = readDataAccordingFieldAnnotation(fixedFormatRecordClass, data, method, fieldAnnotation);
+  private <T> void readFieldData(Class<T> fixedFormatRecordClass, String data, HashMap<String, Object> foundData, HashMap<String, Class<?>> methodClass, Method getter, AnnotatedElement annotationSource, String methodName, Field fieldAnnotation) {
+    Object loadedData = readDataAccordingFieldAnnotation(fixedFormatRecordClass, data, getter, annotationSource, fieldAnnotation);
     foundData.put(methodName, loadedData);
-    methodClass.put(methodName, method.getReturnType());
+    methodClass.put(methodName, getter.getReturnType());
+  }
+
+  private <T> void scanJavaFieldAnnotationsForLoad(Class<T> fixedFormatRecordClass, String data, HashMap<String, Object> foundData, HashMap<String, Class<?>> methodClass) {
+    Class<?> current = fixedFormatRecordClass;
+    while (current != null && current != Object.class) {
+      for (java.lang.reflect.Field javaField : current.getDeclaredFields()) {
+        Field fieldAnnotation = javaField.getAnnotation(Field.class);
+        Fields fieldsAnnotation = javaField.getAnnotation(Fields.class);
+        if (fieldAnnotation == null && fieldsAnnotation == null) {
+          continue;
+        }
+        Method getter = findGetter(fixedFormatRecordClass, javaField);
+        // check for conflict: getter also has @Field or @Fields
+        if (getter.getAnnotation(Field.class) != null || getter.getAnnotation(Fields.class) != null) {
+          LOG.error("Configuration mismatch: @Field annotation found on both field '{}' and its getter method '{}' in class '{}'. The field annotation will be used.",
+              javaField.getName(), getter.getName(), fixedFormatRecordClass.getName());
+        }
+        String methodName = stripMethodPrefix(getter.getName());
+        if (fieldAnnotation != null) {
+          readFieldData(fixedFormatRecordClass, data, foundData, methodClass, getter, javaField, methodName, fieldAnnotation);
+        } else {
+          if (fieldsAnnotation.value() == null || fieldsAnnotation.value().length == 0) {
+            throw new FixedFormatException(format("%s annotation must contain minimum one %s annotation", Fields.class.getName(), Field.class.getName()));
+          }
+          readFieldData(fixedFormatRecordClass, data, foundData, methodClass, getter, javaField, methodName, fieldsAnnotation.value()[0]);
+        }
+      }
+      current = current.getSuperclass();
+    }
+  }
+
+  private <T> void scanJavaFieldAnnotationsForExport(T fixedFormatRecord, Class<?> fixedFormatRecordClass, HashMap<Integer, String> foundData) {
+    Class<?> current = fixedFormatRecordClass;
+    while (current != null && current != Object.class) {
+      for (java.lang.reflect.Field javaField : current.getDeclaredFields()) {
+        Field fieldAnnotation = javaField.getAnnotation(Field.class);
+        Fields fieldsAnnotation = javaField.getAnnotation(Fields.class);
+        if (fieldAnnotation == null && fieldsAnnotation == null) {
+          continue;
+        }
+        Method getter = findGetter(fixedFormatRecordClass, javaField);
+        // check for conflict: getter also has @Field or @Fields
+        if (getter.getAnnotation(Field.class) != null || getter.getAnnotation(Fields.class) != null) {
+          LOG.error("Configuration mismatch: @Field annotation found on both field '{}' and its getter method '{}' in class '{}'. The field annotation will be used.",
+              javaField.getName(), getter.getName(), fixedFormatRecordClass.getName());
+        }
+        if (fieldAnnotation != null) {
+          String exportedData = exportDataAccordingFieldAnnotation(fixedFormatRecord, getter, javaField, fieldAnnotation);
+          foundData.put(fieldAnnotation.offset(), exportedData);
+        } else {
+          for (Field field : fieldsAnnotation.value()) {
+            String exportedData = exportDataAccordingFieldAnnotation(fixedFormatRecord, getter, javaField, field);
+            foundData.put(field.offset(), exportedData);
+          }
+        }
+      }
+      current = current.getSuperclass();
+    }
+  }
+
+  private Method findGetter(Class<?> clazz, java.lang.reflect.Field field) {
+    String name = field.getName();
+    String cap = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+    try {
+      return clazz.getMethod("get" + cap);
+    } catch (NoSuchMethodException e) {
+      try {
+        return clazz.getMethod("is" + cap);
+      } catch (NoSuchMethodException e2) {
+        throw new FixedFormatException(format("No getter found for field '%s' in class %s. Expected 'get%s()' or 'is%s()'.", name, clazz.getName(), cap, cap));
+      }
+    }
   }
 
   private <T> T createRecordInstance(Class<T> fixedFormatRecordClass) {
@@ -167,16 +243,19 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       Field fieldAnnotation = method.getAnnotation(Field.class);
       Fields fieldsAnnotation = method.getAnnotation(Fields.class);
       if (fieldAnnotation != null) {
-        String exportedData = exportDataAccordingFieldAnnotation(fixedFormatRecord, method, fieldAnnotation);
+        String exportedData = exportDataAccordingFieldAnnotation(fixedFormatRecord, method, method, fieldAnnotation);
         foundData.put(fieldAnnotation.offset(), exportedData);
       } else if (fieldsAnnotation != null) {
         Field[] fields = fieldsAnnotation.value();
         for (Field field : fields) {
-          String exportedData = exportDataAccordingFieldAnnotation(fixedFormatRecord, method, field);
+          String exportedData = exportDataAccordingFieldAnnotation(fixedFormatRecord, method, method, field);
           foundData.put(field.offset(), exportedData);
         }
       }
     }
+
+    // scan Java fields for @Field / @Fields annotations (supports plain POJOs and Lombok)
+    scanJavaFieldAnnotationsForExport(fixedFormatRecord, fixedFormatRecordClass, foundData);
 
     Set<Integer> sortedoffsets = foundData.keySet();
     for (Integer offset : sortedoffsets) {
@@ -222,13 +301,18 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   @SuppressWarnings({"unchecked"})
   protected <T> Object readDataAccordingFieldAnnotation(Class<T> clazz, String data, Method method, Field fieldAnno) throws ParseException {
-    Class datatype = getDatatype(method, fieldAnno);
+    return readDataAccordingFieldAnnotation(clazz, data, method, method, fieldAnno);
+  }
+
+  @SuppressWarnings({"unchecked"})
+  protected <T> Object readDataAccordingFieldAnnotation(Class<T> clazz, String data, Method getter, AnnotatedElement annotationSource, Field fieldAnno) throws ParseException {
+    Class datatype = getDatatype(getter, fieldAnno);
 
     //recursive follow if the datatype is annotated with the @Record annotation
 
     FormatContext context = getFormatContext(datatype, fieldAnno);
     FixedFormatter formatter = getFixedFormatterInstance(context.getFormatter(), context);
-    FormatInstructions formatdata = getFormatInstructions(method, fieldAnno);
+    FormatInstructions formatdata = getFormatInstructions(annotationSource, fieldAnno);
 
     String dataToParse = fetchData(data, formatdata, context);
 
@@ -241,7 +325,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       try {
         loadedData = formatter.parse(dataToParse, formatdata);
       } catch (RuntimeException e) {
-        throw new ParseException(data, dataToParse, clazz, method, context, formatdata, e);
+        throw new ParseException(data, dataToParse, clazz, getter, context, formatdata, e);
       }
     }
     if (LOG.isDebugEnabled()) {
@@ -262,17 +346,22 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   @SuppressWarnings({"unchecked"})
   private <T> String exportDataAccordingFieldAnnotation(T fixedFormatRecord, Method method, Field fieldAnno) {
+    return exportDataAccordingFieldAnnotation(fixedFormatRecord, method, method, fieldAnno);
+  }
+
+  @SuppressWarnings({"unchecked"})
+  private <T> String exportDataAccordingFieldAnnotation(T fixedFormatRecord, Method getter, AnnotatedElement annotationSource, Field fieldAnno) {
     String result;
-    Class datatype = getDatatype(method, fieldAnno);
+    Class datatype = getDatatype(getter, fieldAnno);
 
     FormatContext<T> context = getFormatContext(datatype, fieldAnno);
     FixedFormatter formatter = getFixedFormatterInstance(context.getFormatter(), context);
-    FormatInstructions formatdata = getFormatInstructions(method, fieldAnno);
+    FormatInstructions formatdata = getFormatInstructions(annotationSource, fieldAnno);
     Object valueObject;
     try {
-      valueObject = method.invoke(fixedFormatRecord);
+      valueObject = getter.invoke(fixedFormatRecord);
     } catch (Exception e) {
-      throw new FixedFormatException(format("could not invoke method %s.%s(%s)", fixedFormatRecord.getClass().getName(), method.getName(), datatype), e);
+      throw new FixedFormatException(format("could not invoke method %s.%s(%s)", fixedFormatRecord.getClass().getName(), getter.getName(), datatype), e);
     }
 
     //recursivly follow if the valueObject is annotated as a record
@@ -310,11 +399,11 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   }
 
-  private FormatInstructions getFormatInstructions(Method method, Field fieldAnno) {
-    FixedFormatPatternData patternData = getFixedFormatPatternData(method.getAnnotation(FixedFormatPattern.class));
-    FixedFormatBooleanData booleanData = getFixedFormatBooleanData(method.getAnnotation(FixedFormatBoolean.class));
-    FixedFormatNumberData numberData = getFixedFormatNumberData(method.getAnnotation(FixedFormatNumber.class));
-    FixedFormatDecimalData decimalData = getFixedFormatDecimalData(method.getAnnotation(FixedFormatDecimal.class));
+  private FormatInstructions getFormatInstructions(AnnotatedElement annotationSource, Field fieldAnno) {
+    FixedFormatPatternData patternData = getFixedFormatPatternData(annotationSource.getAnnotation(FixedFormatPattern.class));
+    FixedFormatBooleanData booleanData = getFixedFormatBooleanData(annotationSource.getAnnotation(FixedFormatBoolean.class));
+    FixedFormatNumberData numberData = getFixedFormatNumberData(annotationSource.getAnnotation(FixedFormatNumber.class));
+    FixedFormatDecimalData decimalData = getFixedFormatDecimalData(annotationSource.getAnnotation(FixedFormatDecimal.class));
     return new FormatInstructions(fieldAnno.length(), fieldAnno.align(), fieldAnno.paddingChar(), patternData, booleanData, numberData, decimalData);
   }
 

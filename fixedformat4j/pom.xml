@@ -83,6 +83,13 @@
     </dependency>
 
     <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.36</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>5.11.4</version>
@@ -125,6 +132,13 @@
           <target>11</target>
           <encoding>UTF-8</encoding>
           <debug>true</debug>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>1.18.36</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
 

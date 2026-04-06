@@ -244,4 +244,85 @@ See the [FAQ](faq#can-i-apply-my-own-custom-formatter) for more details on the `
 
 ---
 
+---
+
+## Example 6 — Field annotations and Lombok
+
+Since 1.5.0, `@Field` can be placed directly on a Java field instead of its getter. The manager derives the getter/setter by convention, so the two styles below are fully equivalent.
+
+**Plain POJO** — annotations on fields, getters written explicitly:
+
+```java
+@Record
+public class EmployeeRecord {
+
+  @Field(offset = 1, length = 12)
+  private String name;
+
+  @Field(offset = 13, length = 5, align = Align.RIGHT, paddingChar = '0')
+  private Integer employeeId;
+
+  @Field(offset = 18, length = 8)
+  @FixedFormatPattern("yyyyMMdd")
+  private LocalDate hireDate;
+
+  @Field(offset = 26, length = 1)
+  @FixedFormatBoolean(trueValue = "Y", falseValue = "N")
+  private Boolean active;
+
+  public String getName() { return name; }
+  public void setName(String name) { this.name = name; }
+  public Integer getEmployeeId() { return employeeId; }
+  public void setEmployeeId(Integer employeeId) { this.employeeId = employeeId; }
+  public LocalDate getHireDate() { return hireDate; }
+  public void setHireDate(LocalDate hireDate) { this.hireDate = hireDate; }
+  public Boolean getActive() { return active; }
+  public void setActive(Boolean active) { this.active = active; }
+}
+```
+
+**With Lombok** — same annotations on fields, getters/setters generated automatically:
+
+```java
+@Getter @Setter @NoArgsConstructor
+@Record
+public class EmployeeRecord {
+
+  @Field(offset = 1, length = 12)
+  private String name;
+
+  @Field(offset = 13, length = 5, align = Align.RIGHT, paddingChar = '0')
+  private Integer employeeId;
+
+  @Field(offset = 18, length = 8)
+  @FixedFormatPattern("yyyyMMdd")
+  private LocalDate hireDate;
+
+  @Field(offset = 26, length = 1)
+  @FixedFormatBoolean(trueValue = "Y", falseValue = "N")
+  private Boolean active;
+}
+```
+
+Both classes load and export identically:
+
+```java
+FixedFormatManager manager = new FixedFormatManagerImpl();
+
+String line = "Jane Doe    0004220260101Y";
+EmployeeRecord emp = manager.load(EmployeeRecord.class, line);
+
+System.out.println(emp.getName());       // "Jane Doe"
+System.out.println(emp.getEmployeeId()); // 42
+System.out.println(emp.getHireDate());   // 2026-01-01
+System.out.println(emp.getActive());     // true
+
+System.out.println(manager.export(emp));
+// "Jane Doe    0004220260101Y"
+```
+
+**Conflict behaviour:** if `@Field` is present on both a field and its getter, an error is logged and the field annotation is used. It is recommended to annotate only one location.
+
+---
+
 [Home](index) | [Quick Start](quickstart) | [Usage](usage/) | [Get It](get-it) | [FAQ](faq)
