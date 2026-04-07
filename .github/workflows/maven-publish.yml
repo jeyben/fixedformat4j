@@ -45,7 +45,8 @@ jobs:
           if [ -n "${{ inputs.version }}" ]; then
             VERSION="${{ inputs.version }}"
           else
-            VERSION="${GITHUB_REF_NAME#v}"
+            # Convert tag format 1_5_0 to Maven version 1.5.0
+            VERSION=$(echo "${GITHUB_REF_NAME}" | tr '_' '.')
           fi
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
 
