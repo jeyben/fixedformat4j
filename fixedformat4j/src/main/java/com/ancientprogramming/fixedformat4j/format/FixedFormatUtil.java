@@ -38,7 +38,7 @@ public class FixedFormatUtil {
    * @param context the context to fetch data in
    * @return the String data fetched from the record. Can be <code>null</code> if the record was shorter than the context expected
    */
-  public static String fetchData(String record, FormatInstructions instructions, FormatContext context) {
+  public static String fetchData(String record, FormatInstructions instructions, FormatContext<?> context) {
     String result;
     int offset = context.getOffset() - 1;
     int length = instructions.getLength();
@@ -60,7 +60,7 @@ public class FixedFormatUtil {
     return result;
   }
 
-  public static <T> FixedFormatter<T> getFixedFormatterInstance(Class<? extends FixedFormatter<T>> formatterClass, FormatContext context) {
+  public static <T> FixedFormatter<T> getFixedFormatterInstance(Class<? extends FixedFormatter<T>> formatterClass, FormatContext<?> context) {
     FixedFormatter<T> formatter = getFixedFormatterInstance(formatterClass, context.getClass(), context);
     if (formatter == null) {
       formatter = getFixedFormatterInstance(formatterClass, null, null);
@@ -71,7 +71,7 @@ public class FixedFormatUtil {
     return formatter;
   }
 
-  public static <T> FixedFormatter<T> getFixedFormatterInstance(Class<? extends FixedFormatter<T>> formatterClass, Class paramType, FormatContext paramValue) {
+  public static <T> FixedFormatter<T> getFixedFormatterInstance(Class<? extends FixedFormatter<T>> formatterClass, Class<?> paramType, FormatContext<?> paramValue) {
     FixedFormatter<T> result;
     if (paramType != null && paramValue != null) {
       try {

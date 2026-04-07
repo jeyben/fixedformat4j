@@ -56,6 +56,6 @@ public @interface Field {
    */
   char paddingChar() default ' ';
 
-  Class<? extends FixedFormatter> formatter() default ByTypeFormatter.class;
+  Class<? extends FixedFormatter<?>> formatter() default ByTypeFormatter.class;
 
 }

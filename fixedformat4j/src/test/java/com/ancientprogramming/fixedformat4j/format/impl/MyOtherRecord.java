@@ -26,11 +26,11 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  * A record used in testcases which contains annotated fields that reference instance of other annotated type.
  */
 @Record
-public class MyOtherRecord implements FixedFormatter {
+public class MyOtherRecord implements FixedFormatter<Object> {
 
   private MyRecord myRecord;
 
-  public MyOtherRecord(FormatContext context) {
+  public MyOtherRecord(FormatContext<?> context) {
     // dummy
   }
 

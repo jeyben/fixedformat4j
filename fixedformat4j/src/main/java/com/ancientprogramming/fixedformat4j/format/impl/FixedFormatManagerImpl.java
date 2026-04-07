@@ -154,7 +154,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       String setterMethodName = "set" + key;
       Object foundDataObj = foundData.get(key);
       if (foundDataObj != null) {
-        Class datatype = methodClass.get(key);
+        Class<?> datatype = methodClass.get(key);
         Method method;
         try {
           method = fixedFormatRecordClass.getMethod(setterMethodName, datatype);
@@ -238,10 +238,10 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   @SuppressWarnings({"unchecked"})
   protected <T> Object readDataAccordingFieldAnnotation(Class<T> clazz, String data, Method getter, AnnotatedElement annotationSource, Field fieldAnno) throws ParseException {
-    Class datatype = getDatatype(getter, fieldAnno);
+    Class<?> datatype = getDatatype(getter, fieldAnno);
 
-    FormatContext context = getFormatContext(datatype, fieldAnno);
-    FixedFormatter formatter = getFixedFormatterInstance(context.getFormatter(), context);
+    FormatContext<?> context = getFormatContext(datatype, fieldAnno);
+    FixedFormatter<?> formatter = getFixedFormatterInstance(context.getFormatter(), context);
     FormatInstructions formatdata = getFormatInstructions(annotationSource, fieldAnno);
 
     String dataToParse = fetchData(data, formatdata, context);
@@ -264,7 +264,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return loadedData;
   }
 
-  private Class getDatatype(Method method, Field fieldAnno) {
+  private Class<?> getDatatype(Method method, Field fieldAnno) {
     if (followsBeanStandard(method)) {
       return method.getReturnType();
     }
@@ -273,10 +273,10 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   @SuppressWarnings({"unchecked"})
   private <T> String exportDataAccordingFieldAnnotation(T fixedFormatRecord, AnnotationTarget target, Field fieldAnno) {
-    Class datatype = getDatatype(target.getter, fieldAnno);
+    Class<?> datatype = getDatatype(target.getter, fieldAnno);
 
-    FormatContext<T> context = getFormatContext(datatype, fieldAnno);
-    FixedFormatter formatter = getFixedFormatterInstance(context.getFormatter(), context);
+    FormatContext<?> context = getFormatContext(datatype, fieldAnno);
+    FixedFormatter<?> formatter = getFixedFormatterInstance(context.getFormatter(), context);
     FormatInstructions formatdata = getFormatInstructions(target.annotationSource, fieldAnno);
     Object valueObject;
     try {
@@ -289,7 +289,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     if (valueObject != null && valueObject.getClass().getAnnotation(Record.class) != null) {
       result = export(valueObject);
     } else {
-      result = formatter.format(valueObject, formatdata);
+      result = ((FixedFormatter<Object>) formatter).format(valueObject, formatdata);
     }
     if (LOG.isDebugEnabled()) {
       LOG.debug(format("exported %s ", result));
@@ -321,8 +321,8 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     }
   }
 
-  @SuppressWarnings({"unchecked"})
-  private <T> FormatContext<T> getFormatContext(Class<T> datatype, Field fieldAnno) {
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private FormatContext<?> getFormatContext(Class<?> datatype, Field fieldAnno) {
     if (fieldAnno != null) {
       return new FormatContext(fieldAnno.offset(), datatype, fieldAnno.formatter());
     }
@@ -376,12 +376,12 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       Constructor<T> constructor = fixedFormatRecordClass.getDeclaredConstructor();
       instance = constructor.newInstance();
     } catch (NoSuchMethodException e) {
-      Class declaringClass = fixedFormatRecordClass.getDeclaringClass();
+      Class<?> declaringClass = fixedFormatRecordClass.getDeclaringClass();
       if (declaringClass != null) {
         try {
           Object declaringClassInstance;
           try {
-            Constructor declaringClassConstructor = declaringClass.getDeclaredConstructor();
+            Constructor<?> declaringClassConstructor = declaringClass.getDeclaredConstructor();
             declaringClassInstance = declaringClassConstructor.newInstance();
           } catch (NoSuchMethodException dex) {
             throw new FixedFormatException(format("Trying to create instance of innerclass %s, but the declaring class %s is missing a default constructor which is nessesary to be loaded through %s", fixedFormatRecordClass.getName(), declaringClass.getName(), getClass().getName()));

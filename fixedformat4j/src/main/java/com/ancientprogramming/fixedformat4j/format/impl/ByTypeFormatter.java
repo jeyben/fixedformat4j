@@ -37,9 +37,9 @@ import java.util.Map;
  * @since 1.0.0
  */
 public class ByTypeFormatter implements FixedFormatter<Object> {
-  private FormatContext context;
+  private FormatContext<?> context;
 
-  private static final Map<Class<? extends Serializable>, Class<? extends FixedFormatter>> KNOWN_FORMATTERS = new HashMap<Class<? extends Serializable>, Class<? extends FixedFormatter>>();
+  private static final Map<Class<? extends Serializable>, Class<? extends FixedFormatter<?>>> KNOWN_FORMATTERS = new HashMap<>();
 
   static {
     KNOWN_FORMATTERS.put(String.class, StringFormatter.class);
@@ -62,23 +62,25 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
     KNOWN_FORMATTERS.put(BigDecimal.class,  BigDecimalFormatter.class);
   }
 
-  public ByTypeFormatter(FormatContext context) {
+  public ByTypeFormatter(FormatContext<?> context) {
     this.context = context;
   }
 
 
+  @SuppressWarnings("unchecked")
   public Object parse(String value, FormatInstructions instructions) {
-    FixedFormatter formatter = actualFormatter(context.getDataType());
+    FixedFormatter<Object> formatter = (FixedFormatter<Object>) actualFormatter(context.getDataType());
     return formatter.parse(value, instructions);
   }
 
+  @SuppressWarnings("unchecked")
   public String format(Object value, FormatInstructions instructions) {
-    FixedFormatter formatter = actualFormatter(context.getDataType());
+    FixedFormatter<Object> formatter = (FixedFormatter<Object>) actualFormatter(context.getDataType());
     return formatter.format(value, instructions);
   }
 
-  public FixedFormatter actualFormatter(final Class<? extends Object> dataType) {
-    Class<? extends FixedFormatter> formatterClass = KNOWN_FORMATTERS.get(dataType);
+  public FixedFormatter<?> actualFormatter(final Class<?> dataType) {
+    Class<? extends FixedFormatter<?>> formatterClass = KNOWN_FORMATTERS.get(dataType);
 
     if (formatterClass != null) {
       try {
