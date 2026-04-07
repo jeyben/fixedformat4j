@@ -19,7 +19,7 @@
     flat fixed formatted text files. By annotating your code you can setup the offsets and format as for your data when
     reading/writing to and from flat fixed format files.]]>
   </description>
-  <url>http://fixedformat4j.ancientprogramming.com</url>
+  <url>https://eybenconsult.com</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -52,7 +52,7 @@
       <email>jacobvoneyben@gmail.com</email>
       <organization/>
       <organizationUrl/>
-      <url>http://www.ancientprogramming.com</url>
+      <url>https://eybenconsult.com</url>
       <timezone>2</timezone>
       <roles>
         <role>Developer</role>
