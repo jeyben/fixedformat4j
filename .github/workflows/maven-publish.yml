@@ -60,7 +60,7 @@ jobs:
           MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: mvn -B deploy -pl fixedformat4j -DskipTests --no-transfer-progress
+        run: mvn -B deploy -pl fixedformat4j -DskipTests --no-transfer-progress -P release
 
       - name: Bump to next snapshot version
         run: |
