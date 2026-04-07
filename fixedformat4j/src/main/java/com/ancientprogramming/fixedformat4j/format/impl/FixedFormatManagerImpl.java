@@ -237,11 +237,6 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   @SuppressWarnings({"unchecked"})
-  protected <T> Object readDataAccordingFieldAnnotation(Class<T> clazz, String data, Method method, Field fieldAnno) throws ParseException {
-    return readDataAccordingFieldAnnotation(clazz, data, method, (AnnotatedElement) method, fieldAnno);
-  }
-
-  @SuppressWarnings({"unchecked"})
   protected <T> Object readDataAccordingFieldAnnotation(Class<T> clazz, String data, Method getter, AnnotatedElement annotationSource, Field fieldAnno) throws ParseException {
     Class datatype = getDatatype(getter, fieldAnno);
 
