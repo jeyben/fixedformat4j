@@ -17,7 +17,9 @@ Used on classes. Marks that the class contains `@Field` annotations on its gette
 
 ## @Field
 
-Used on getter methods. Contains basic mapping instructions. Required for getter/setter pairs that should be mapped to and from string representation.
+Used on getter methods or directly on fields. Contains basic mapping instructions. Required for getter/setter pairs that should be mapped to and from string representation.
+
+When placed on a field, the manager derives the getter and setter by name convention: a field named `foo` expects `getFoo()` / `setFoo()`, or `isFoo()` / `setFoo()` for boolean types. This works with both explicit getters and Lombok-generated ones. If `@Field` is present on both the field and its getter, an error is logged and the field annotation takes precedence.
 
 | Attribute | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
@@ -38,7 +40,7 @@ Example: a 5-character field with value `"Hi"` is stored as `"Hi   "` with `LEFT
 
 ## @Fields
 
-Used on getter methods when a single field maps to more than one position in a string.
+Used on getter methods or directly on fields when a single field maps to more than one position in a string.
 
 | Attribute | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|

@@ -29,9 +29,9 @@ public class ParseException extends FixedFormatException {
 
   private String completeText;
   private String failedText;
-  private Class annotatedClass;
+  private Class<?> annotatedClass;
   private Method annotatedMethod;
-  private FormatContext formatContext;
+  private FormatContext<?> formatContext;
   private FormatInstructions formatInstructions;
 
   /**
@@ -44,7 +44,7 @@ public class ParseException extends FixedFormatException {
    * @param formatInstructions The format instructions used to try parsing the text in {@link #getFailedText()}
    * @param cause the reason why the data couldn't be parsed
    */
-  public ParseException(String completeText, String failedText, Class annotatedClass, Method annotatedMethod, FormatContext formatContext, FormatInstructions formatInstructions, Throwable cause) {
+  public ParseException(String completeText, String failedText, Class<?> annotatedClass, Method annotatedMethod, FormatContext<?> formatContext, FormatInstructions formatInstructions, Throwable cause) {
     super("Failed to parse '" + failedText + "' at offset " + formatContext.getOffset() + " as " + formatContext.getDataType().getName() + " from '" + completeText + "'. Got format instructions from " + annotatedClass.getName() + "." + annotatedMethod.getName() + ". See details{" + formatContext.toString() + ", " +formatInstructions.toString() + "}", cause);
      this.completeText = completeText;
     this.failedText = failedText;
@@ -74,7 +74,7 @@ public class ParseException extends FixedFormatException {
    * The Class containing the fixedformat annotations
    * @return the Class
    */
-  public Class getAnnotatedClass() {
+  public Class<?> getAnnotatedClass() {
     return annotatedClass;
   }
 
@@ -90,7 +90,7 @@ public class ParseException extends FixedFormatException {
    * The context within the parsing was tried
    * @return the format context
    */
-  public FormatContext getFormatContext() {
+  public FormatContext<?> getFormatContext() {
     return formatContext;
   }
 

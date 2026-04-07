@@ -1,41 +1,72 @@
-# This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
-# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
-
-name: Maven Package
+name: Publish to Maven Central
 
 on:
   release:
-    types: [created]
+    types: [published]
   workflow_dispatch:
     inputs:
-      deploy_ref:
-        description: 'Tag or branch to publish (e.g. 1_4_0)'
+      version:
+        description: 'Release version (e.g. 1.5.0)'
         required: true
 
-jobs:
-  build:
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+jobs:
+  publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      packages: write
+      contents: write
 
     steps:
-    - uses: actions/checkout@v6
-      with:
-        ref: ${{ inputs.deploy_ref || github.ref }}
-    - name: Set up JDK 11
-      uses: actions/setup-java@v5
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-        settings-path: ${{ github.workspace }} # location for the settings.xml file
+      - uses: actions/checkout@v6
+        with:
+          ref: master
+          fetch-depth: 0
 
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      - name: Set up JDK 11
+        uses: actions/setup-java@v5
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          server-id: central
+          server-username: MAVEN_CENTRAL_USERNAME
+          server-password: MAVEN_CENTRAL_TOKEN
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-    - name: Publish to GitHub Packages
-      run: mvn deploy -pl fixedformat4j -DskipTests -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/jeyben/fixedformat4j -s $GITHUB_WORKSPACE/settings.xml
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Resolve release version
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            # Convert tag format 1_5_0 to Maven version 1.5.0
+            VERSION=$(echo "${GITHUB_REF_NAME}" | tr '_' '.')
+          fi
+          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Set release version in poms
+        run: |
+          mvn -B versions:set -DnewVersion=$RELEASE_VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
+          git add -A
+          git commit -m "Release $RELEASE_VERSION"
+
+      - name: Deploy to Maven Central
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: mvn -B deploy -pl fixedformat4j -DskipTests --no-transfer-progress -P release
+
+      - name: Bump to next snapshot version
+        run: |
+          NEXT=$(echo $RELEASE_VERSION | awk -F. '{print $1"."$2"."$3+1"-SNAPSHOT"}')
+          mvn -B versions:set -DnewVersion=$NEXT -DprocessAllModules=true -DgenerateBackupPoms=false
+          git add -A
+          git commit -m "Prepare $NEXT development"
+          git push origin master

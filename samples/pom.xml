@@ -11,13 +11,13 @@
 
   <inceptionYear>2008</inceptionYear>
   <organization>
-    <name>ancientprogramming.com</name>
-    <url>http://www.ancientprogramming.com</url>
+    <name>Eyben Consult</name>
+    <url>https://eybenconsult.com</url>
   </organization>
   <description>
     <![CDATA[A bunch of samples demonstrating the abilities of the fixedformat4j api]]>
   </description>
-  <url>http://fixedformat4j.ancientprogramming.com</url>
+  <url>https://eybenconsult.com</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -45,20 +45,13 @@
       <email>jacobvoneyben@gmail.com</email>
       <organization/>
       <organizationUrl/>
-      <url>http://www.ancientprogramming.com</url>
+      <url>https://eybenconsult.com</url>
       <timezone>2</timezone>
       <roles>
         <role>Developer</role>
       </roles>
     </developer>
   </developers>
-
-  <distributionManagement>
-    <site>
-      <id>ancientprogramming</id>
-      <url>scp://ancientprogramming.com/home/ancientp/www/fixedformat4j</url>
-    </site>
-  </distributionManagement>
 
   <dependencies>
     <dependency>

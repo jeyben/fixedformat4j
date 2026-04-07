@@ -11,15 +11,15 @@
 
   <inceptionYear>2008</inceptionYear>
   <organization>
-    <name>ancientprogramming.com</name>
-    <url>http://www.ancientprogramming.com</url>
+    <name>Eyben Consult</name>
+    <url>https://eybenconsult.com</url>
   </organization>
   <description>
     <![CDATA[Fixedformat4j is intended to be an easy to use, small and non intrusive Java framework for working with
     flat fixed formatted text files. By annotating your code you can setup the offsets and format as for your data when
     reading/writing to and from flat fixed format files.]]>
   </description>
-  <url>http://fixedformat4j.ancientprogramming.com</url>
+  <url>https://eybenconsult.com</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -52,21 +52,13 @@
       <email>jacobvoneyben@gmail.com</email>
       <organization/>
       <organizationUrl/>
-      <url>http://www.ancientprogramming.com</url>
+      <url>https://eybenconsult.com</url>
       <timezone>2</timezone>
       <roles>
         <role>Developer</role>
       </roles>
     </developer>
   </developers>
-
-  <distributionManagement>
-    <repository>
-      <id>github</id>
-      <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/jeyben/fixedformat4j</url>
-    </repository>
-  </distributionManagement>
 
   <dependencies>
     <dependency>
@@ -80,6 +72,13 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>2.0.17</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.44</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -125,6 +124,13 @@
           <target>11</target>
           <encoding>UTF-8</encoding>
           <debug>true</debug>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>1.18.44</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
 
@@ -157,8 +163,56 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.9.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <publishingServerId>central</publishingServerId>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.11.2</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals><goal>jar</goal></goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.7</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals><goal>sign</goal></goals>
+                <configuration>
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <reporting>
     <plugins>
