@@ -77,13 +77,13 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       Field fieldAnnotation = method.getAnnotation(Field.class);
       Fields fieldsAnnotation = method.getAnnotation(Fields.class);
       if (fieldAnnotation != null) {
-        readFieldData(fixedFormatRecordClass, data, foundData, methodClass, method, method, methodName, fieldAnnotation);
+        readFieldData(fixedFormatRecordClass, data, foundData, methodClass, method, methodName, fieldAnnotation);
       } else if (fieldsAnnotation != null) {
         //assert that the fields annotation contains minimum one field anno
         if (fieldsAnnotation.value() == null || fieldsAnnotation.value().length == 0) {
           throw new FixedFormatException(format("%s annotation must contain minimum one %s annotation", Fields.class.getName(), Field.class.getName()));
         }
-        readFieldData(fixedFormatRecordClass, data, foundData, methodClass, method, method, methodName, fieldsAnnotation.value()[0]);
+        readFieldData(fixedFormatRecordClass, data, foundData, methodClass, method, methodName, fieldsAnnotation.value()[0]);
       }
     }
 
@@ -112,6 +112,10 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
     }
     return instance;
+  }
+
+  private <T> void readFieldData(Class<T> fixedFormatRecordClass, String data, HashMap<String, Object> foundData, HashMap<String, Class<?>> methodClass, Method method, String methodName, Field fieldAnnotation) {
+    readFieldData(fixedFormatRecordClass, data, foundData, methodClass, method, method, methodName, fieldAnnotation);
   }
 
   private <T> void readFieldData(Class<T> fixedFormatRecordClass, String data, HashMap<String, Object> foundData, HashMap<String, Class<?>> methodClass, Method getter, AnnotatedElement annotationSource, String methodName, Field fieldAnnotation) {
@@ -243,12 +247,12 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       Field fieldAnnotation = method.getAnnotation(Field.class);
       Fields fieldsAnnotation = method.getAnnotation(Fields.class);
       if (fieldAnnotation != null) {
-        String exportedData = exportDataAccordingFieldAnnotation(fixedFormatRecord, method, method, fieldAnnotation);
+        String exportedData = exportDataAccordingFieldAnnotation(fixedFormatRecord, method, fieldAnnotation);
         foundData.put(fieldAnnotation.offset(), exportedData);
       } else if (fieldsAnnotation != null) {
         Field[] fields = fieldsAnnotation.value();
         for (Field field : fields) {
-          String exportedData = exportDataAccordingFieldAnnotation(fixedFormatRecord, method, method, field);
+          String exportedData = exportDataAccordingFieldAnnotation(fixedFormatRecord, method, field);
           foundData.put(field.offset(), exportedData);
         }
       }

@@ -226,6 +226,25 @@ public class TestLombokFieldAnnotations {
     assertEquals("          ", exported.substring(0, 10));
   }
 
+  // ── Mixed method + field annotations in same class ───────────────────────────
+
+  @Test
+  void testMixedAnnotations_load() {
+    MixedAnnotationRecord record = manager.load(MixedAnnotationRecord.class, "Hello00042");
+
+    assertEquals("Hello", record.getCode());
+    assertEquals(42, record.getCount());
+  }
+
+  @Test
+  void testMixedAnnotations_export() {
+    MixedAnnotationRecord record = new MixedAnnotationRecord();
+    record.setCode("Hello");
+    record.setCount(42);
+
+    assertEquals("Hello00042", manager.export(record));
+  }
+
   // ── Helper record classes ─────────────────────────────────────────────────────
 
   private LombokRecord buildLombokRecord() {
@@ -288,6 +307,22 @@ public class TestLombokFieldAnnotations {
     private String name;
 
     public void setName(String name) { this.name = name; }
+  }
+
+  /** One property uses method annotation, another uses field annotation in the same class. */
+  @Record
+  public static class MixedAnnotationRecord {
+
+    private String code;
+
+    @Field(offset = 1, length = 5)
+    public String getCode() { return code; }
+    public void setCode(String code) { this.code = code; }
+
+    @Field(offset = 6, length = 5, align = Align.RIGHT, paddingChar = '0')
+    private Integer count;
+    public Integer getCount() { return count; }
+    public void setCount(Integer count) { this.count = count; }
   }
 
   /** Base class with field annotations — tests inheritance support. */
