@@ -126,7 +126,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public <T> T load(Class<T> fixedFormatRecordClass, String data) {
     HashMap<String, Object> foundData = new HashMap<String, Object>();
@@ -178,7 +178,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public <T> String export(String template, T fixedFormatRecord) {
     StringBuffer result = new StringBuffer(template);
@@ -210,7 +210,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public <T> String export(T fixedFormatRecord) {
     return export("", fixedFormatRecord);

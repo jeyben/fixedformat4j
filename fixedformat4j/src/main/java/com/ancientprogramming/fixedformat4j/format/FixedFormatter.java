@@ -21,9 +21,9 @@ import com.ancientprogramming.fixedformat4j.format.impl.DateFormatter;
 
 /**
  * Formatter capable of transforming data to and from a string used in text records.
- * <p/>
+ * <p>
  * A concrete class is used together with the @{@link Field} annotation.
- * <p/>
+ * <p>
  * Example: <p><code>@Field(offset = 1, length = 20, formatter = {@link DateFormatter}.class)</code></p>
  *
  * @author Jacob von Eyben - https://eybenconsult.com
