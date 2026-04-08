@@ -38,14 +38,22 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
@@ -189,7 +197,11 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       Field fieldAnnotation = target.annotationSource.getAnnotation(Field.class);
       Fields fieldsAnnotation = target.annotationSource.getAnnotation(Fields.class);
       if (fieldAnnotation != null) {
-        foundData.put(fieldAnnotation.offset(), exportDataAccordingFieldAnnotation(fixedFormatRecord, target, fieldAnnotation));
+        if (fieldAnnotation.count() > 1) {
+          exportRepeatingFieldData(fixedFormatRecord, target, fieldAnnotation, foundData);
+        } else {
+          foundData.put(fieldAnnotation.offset(), exportDataAccordingFieldAnnotation(fixedFormatRecord, target, fieldAnnotation));
+        }
       } else if (fieldsAnnotation != null) {
         for (Field field : fieldsAnnotation.value()) {
           foundData.put(field.offset(), exportDataAccordingFieldAnnotation(fixedFormatRecord, target, field));
@@ -238,6 +250,12 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   @SuppressWarnings({"unchecked"})
   protected <T> Object readDataAccordingFieldAnnotation(Class<T> clazz, String data, Method getter, AnnotatedElement annotationSource, Field fieldAnno) throws ParseException {
+    validateCountAnnotation(getter, fieldAnno);
+
+    if (fieldAnno.count() > 1) {
+      return readRepeatingFieldData(clazz, data, getter, annotationSource, fieldAnno);
+    }
+
     Class<?> datatype = getDatatype(getter, fieldAnno);
 
     FormatContext<?> context = getFormatContext(datatype, fieldAnno);
@@ -264,6 +282,154 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return loadedData;
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private <T> Object readRepeatingFieldData(Class<T> clazz, String data, Method getter, AnnotatedElement annotationSource, Field fieldAnno) {
+    int count = fieldAnno.count();
+    Class<?> elementType = resolveElementType(getter);
+    FormatInstructions formatdata = getFormatInstructions(annotationSource, fieldAnno);
+
+    FormatContext protoContext = new FormatContext(fieldAnno.offset(), elementType, fieldAnno.formatter());
+    FixedFormatter<Object> formatter = (FixedFormatter<Object>) getFixedFormatterInstance(protoContext.getFormatter(), protoContext);
+
+    List<Object> elements = new ArrayList<>();
+    for (int i = 0; i < count; i++) {
+      int elementOffset = fieldAnno.offset() + fieldAnno.length() * i;
+      FormatContext elementContext = new FormatContext(elementOffset, elementType, fieldAnno.formatter());
+      String dataToParse = fetchData(data, formatdata, elementContext);
+      try {
+        elements.add(formatter.parse(dataToParse, formatdata));
+      } catch (RuntimeException e) {
+        throw new ParseException(data, dataToParse, clazz, getter, elementContext, formatdata, e);
+      }
+    }
+
+    return assembleCollection(getter, elements);
+  }
+
+  @SuppressWarnings({"unchecked"})
+  private <T> void exportRepeatingFieldData(T fixedFormatRecord, AnnotationTarget target, Field fieldAnno, HashMap<Integer, String> foundData) {
+    validateCountAnnotation(target.getter, fieldAnno);
+
+    Object value;
+    try {
+      value = target.getter.invoke(fixedFormatRecord);
+    } catch (Exception e) {
+      throw new FixedFormatException(format("could not invoke %s", fieldLabel(target.getter)), e);
+    }
+
+    if (value == null) {
+      throw new FixedFormatException("Cannot export null repeating field on " + fieldLabel(target.getter));
+    }
+
+    int count = fieldAnno.count();
+    int actualSize = value.getClass().isArray() ? Array.getLength(value) : ((Collection<?>) value).size();
+
+    if (actualSize != count) {
+      if (fieldAnno.strictExportCount()) {
+        throw new FixedFormatException(
+            "Repeating field " + fieldLabel(target.getter) + " has count=" + count
+            + " but collection size=" + actualSize);
+      } else {
+        LOG.warn("Repeating field {} has count={} but collection size={}. Exporting {} elements.",
+            fieldLabel(target.getter), count, actualSize, Math.min(count, actualSize));
+      }
+    }
+
+    int exportCount = Math.min(count, actualSize);
+    Class<?> elementType = resolveElementType(target.getter);
+    FormatInstructions formatdata = getFormatInstructions(target.annotationSource, fieldAnno);
+    @SuppressWarnings("rawtypes")
+    FormatContext protoContext = new FormatContext(fieldAnno.offset(), elementType, fieldAnno.formatter());
+    FixedFormatter<Object> formatter = (FixedFormatter<Object>) getFixedFormatterInstance(protoContext.getFormatter(), protoContext);
+
+    Iterable<?> iterable = value.getClass().isArray() ? arrayToIterable(value, exportCount) : (Collection<?>) value;
+
+    int i = 0;
+    for (Object element : iterable) {
+      if (i >= exportCount) break;
+      int elementOffset = fieldAnno.offset() + fieldAnno.length() * i;
+      foundData.put(elementOffset, formatter.format(element, formatdata));
+      i++;
+    }
+  }
+
+  private Iterable<Object> arrayToIterable(Object array, int limit) {
+    List<Object> list = new ArrayList<>(limit);
+    for (int i = 0; i < limit; i++) {
+      list.add(Array.get(array, i));
+    }
+    return list;
+  }
+
+  private void validateCountAnnotation(Method method, Field fieldAnnotation) {
+    int count = fieldAnnotation.count();
+    Class<?> returnType = method.getReturnType();
+    boolean isArrayOrCollection = returnType.isArray()
+        || Collection.class.isAssignableFrom(returnType)
+        || Iterable.class.isAssignableFrom(returnType);
+
+    if (count < 1) {
+      throw new FixedFormatException(
+          "@Field count must be >= 1 on " + fieldLabel(method) + ", was: " + count);
+    }
+    if (count == 1 && isArrayOrCollection) {
+      throw new FixedFormatException(
+          "@Field count=1 but return type is array/collection on " + fieldLabel(method)
+          + ". Use count > 1 for repeating fields.");
+    }
+    if (count > 1 && !isArrayOrCollection) {
+      throw new FixedFormatException(
+          "@Field count=" + count + " requires array or Collection return type on "
+          + fieldLabel(method) + ", found: " + returnType.getName());
+    }
+  }
+
+  private Class<?> resolveElementType(Method method) {
+    Class<?> returnType = method.getReturnType();
+    if (returnType.isArray()) {
+      return returnType.getComponentType();
+    }
+    Type genericReturnType = method.getGenericReturnType();
+    if (genericReturnType instanceof ParameterizedType) {
+      ParameterizedType pt = (ParameterizedType) genericReturnType;
+      Type[] typeArgs = pt.getActualTypeArguments();
+      if (typeArgs.length > 0 && typeArgs[0] instanceof Class) {
+        return (Class<?>) typeArgs[0];
+      }
+    }
+    throw new FixedFormatException("Cannot determine element type for repeating field on " + fieldLabel(method)
+        + ". Ensure the collection is parameterized (e.g. List<String>, not List).");
+  }
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private Object assembleCollection(Method getter, List<Object> elements) {
+    Class<?> returnType = getter.getReturnType();
+    if (returnType.isArray()) {
+      Object array = Array.newInstance(returnType.getComponentType(), elements.size());
+      for (int i = 0; i < elements.size(); i++) {
+        Array.set(array, i, elements.get(i));
+      }
+      return array;
+    } else if (LinkedList.class.isAssignableFrom(returnType)) {
+      return new LinkedList<>(elements);
+    } else if (List.class.isAssignableFrom(returnType)) {
+      return new ArrayList<>(elements);
+    } else if (SortedSet.class.isAssignableFrom(returnType)) {
+      return new TreeSet<>(elements);
+    } else if (Set.class.isAssignableFrom(returnType)) {
+      return new LinkedHashSet<>(elements);
+    } else if (Collection.class.isAssignableFrom(returnType) || Iterable.class.isAssignableFrom(returnType)) {
+      return new ArrayList<>(elements);
+    } else {
+      throw new FixedFormatException("Unsupported collection type " + returnType.getName()
+          + " on " + fieldLabel(getter) + ". Supported types: arrays, List, LinkedList, Set, SortedSet, Collection.");
+    }
+  }
+
+  private static String fieldLabel(Method method) {
+    return method.getDeclaringClass().getName() + "#" + method.getName() + "()";
+  }
+
   private Class<?> getDatatype(Method method, Field fieldAnno) {
     if (followsBeanStandard(method)) {
       return method.getReturnType();
@@ -273,6 +439,8 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   @SuppressWarnings({"unchecked"})
   private <T> String exportDataAccordingFieldAnnotation(T fixedFormatRecord, AnnotationTarget target, Field fieldAnno) {
+    validateCountAnnotation(target.getter, fieldAnno);
+
     Class<?> datatype = getDatatype(target.getter, fieldAnno);
 
     FormatContext<?> context = getFormatContext(datatype, fieldAnno);

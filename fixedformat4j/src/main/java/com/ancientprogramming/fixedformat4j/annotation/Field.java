@@ -58,4 +58,26 @@ public @interface Field {
 
   Class<? extends FixedFormatter<?>> formatter() default ByTypeFormatter.class;
 
+  /**
+   * Number of consecutive repetitions of this field.
+   * When greater than 1, the getter/setter must use an array or an ordered {@link java.util.Collection}
+   * (e.g. {@code List}, {@code Set}, {@code SortedSet}). Each repetition occupies
+   * {@code length} characters, starting at {@code offset + length * index}.
+   *
+   * @return the repetition count, must be &gt;= 1
+   */
+  int count() default 1;
+
+  /**
+   * Controls export behaviour when the actual collection/array size differs from {@link #count()}.
+   * Only relevant when {@link #count()} &gt; 1.
+   * <ul>
+   *   <li>{@code true} (default) — throws a {@link com.ancientprogramming.fixedformat4j.exception.FixedFormatException}</li>
+   *   <li>{@code false} — logs a warning and exports {@code min(count, actualSize)} elements</li>
+   * </ul>
+   *
+   * @return whether to throw on size mismatch during export
+   */
+  boolean strictExportCount() default true;
+
 }

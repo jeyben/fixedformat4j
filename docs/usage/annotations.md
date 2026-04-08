@@ -28,6 +28,8 @@ When placed on a field, the manager derives the getter and setter by name conven
 | `align` | `Align` | no | `Align.LEFT` | How to align the field value when represented as a string. |
 | `paddingChar` | `char` | no | `' '` | The character to pad with when the length is longer than the field value. |
 | `formatter` | `Class<FixedFormatter>` | no | `ByTypeFormatter.class` | The formatter to use when reading and writing the field. |
+| `count` | `int` | no | `1` | Number of consecutive repetitions of this field. When greater than 1, the getter/setter must use an array or an ordered `Collection` (`List`, `Set`, `SortedSet`, etc.). Each repetition occupies `length` characters, starting at `offset + length * index`. |
+| `strictExportCount` | `boolean` | no | `true` | Only relevant when `count > 1`. If `true` (default), a size mismatch between the array/collection and `count` during export throws a `FixedFormatException`. If `false`, a warning is logged and export proceeds with `min(count, actualSize)` elements. |
 
 **Alignment values:**
 
@@ -37,6 +39,26 @@ When placed on a field, the manager derives the getter and setter by name conven
 | `Align.RIGHT` | Left | Left | Numeric fields — value ends at the right, padding fills the left |
 
 Example: a 5-character field with value `"Hi"` is stored as `"Hi   "` with `LEFT` and `"   Hi"` with `RIGHT`.
+
+### Repeating fields
+
+When a fixed-format record contains multiple consecutive slots of the same type, use `count` instead of listing individual `@Field` annotations manually:
+
+```java
+// Three 3-character product codes at positions 1–3, 4–6, 7–9
+@Field(offset = 1, length = 3, count = 3)
+public String[] getProductCodes() { return productCodes; }
+
+// Same with a List
+@Field(offset = 1, length = 3, count = 3)
+public List<String> getProductCodes() { return productCodes; }
+
+// Lenient export: log a warning instead of throwing when sizes differ
+@Field(offset = 1, length = 3, count = 3, strictExportCount = false)
+public String[] getProductCodes() { return productCodes; }
+```
+
+Supported return types for `count > 1`: `T[]` (array), `List`, `LinkedList`, `Set` (loaded as `LinkedHashSet`), `SortedSet` (loaded as `TreeSet`), `Collection`.
 
 ## @Fields
 
