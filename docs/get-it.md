@@ -4,67 +4,40 @@ title: Get fixedformat4j
 
 # Get the latest version of fixedformat4j
 
-fixedformat4j 1.4.0 is published to **GitHub Packages**.
+fixedformat4j 1.5.0 is published to **Maven Central**.
 
 ## Requirements
 
 - **Java 11 or later** — Java 8 is no longer supported as of version 1.4.0.
 
-## Step 1 — Authenticate with GitHub Packages
+## Add the dependency
 
-GitHub Packages requires a GitHub personal access token (classic) with at least the `read:packages` scope, even for public packages.
-
-Create a token at **GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)** and add the following server to your Maven `~/.m2/settings.xml`:
-
-```xml
-<settings>
-  <servers>
-    <server>
-      <id>github</id>
-      <username>YOUR_GITHUB_USERNAME</username>
-      <password>YOUR_PERSONAL_ACCESS_TOKEN</password>
-    </server>
-  </servers>
-</settings>
-```
-
-## Step 2 — Add the repository
-
-Add the GitHub Packages registry to your `pom.xml`:
-
-```xml
-<repositories>
-  <repository>
-    <id>github</id>
-    <url>https://maven.pkg.github.com/jeyben/fixedformat4j</url>
-  </repository>
-</repositories>
-```
-
-## Step 3 — Add the dependency
+Maven Central is the default Maven repository — no extra `<repository>` configuration or authentication is needed. Simply add the dependency to your `pom.xml`:
 
 ```xml
 <dependency>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j</artifactId>
-  <version>1.4.0</version>
+  <version>1.5.0</version>
 </dependency>
 ```
 
-## No GitHub account? Download manually
+The artifact is also browsable at [central.sonatype.com](https://central.sonatype.com/artifact/com.ancientprogramming.fixedformat4j/fixedformat4j).
 
-If you do not have a GitHub account, download `fixedformat4j-1.4.0.jar` directly from the [1.4.0 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_4_0) and install it into your local Maven repository:
+## No internet access? Download manually
+
+Download `fixedformat4j-1.5.0.jar` directly from the [1.5.0 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_5_0) and install it into your local Maven repository:
 
 ```bash
 mvn install:install-file \
-  -Dfile=fixedformat4j-1.4.0.jar \
+  -Dfile=fixedformat4j-1.5.0.jar \
   -DgroupId=com.ancientprogramming.fixedformat4j \
   -DartifactId=fixedformat4j \
-  -Dversion=1.4.0 \
+  -Dversion=1.5.0 \
   -Dpackaging=jar
 ```
 
-After that the standard `<dependency>` block from Step 3 works as-is — no `<repository>` entry or token needed.
+After that the standard `<dependency>` block above works as-is — no `<repository>` entry needed.
 
 If you want to share the artifact across a team, deploy it to a private Nexus or Artifactory instance using `mvn deploy:deploy-file` with the same coordinates and your repository URL.
 

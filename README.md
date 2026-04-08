@@ -1,7 +1,7 @@
 # fixedformat4j
 
 [![Nightly Build](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml/badge.svg?branch=master)](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml)
-[![GitHub Packages](https://img.shields.io/badge/GitHub%20Packages-1.4.0-blue?logo=github)](https://github.com/jeyben/fixedformat4j/packages)
+[![Maven Central](https://img.shields.io/maven-central/v/com.ancientprogramming.fixedformat4j/fixedformat4j)](https://central.sonatype.com/artifact/com.ancientprogramming.fixedformat4j/fixedformat4j)
 
 A small, non-intrusive Java library for reading and writing fixed-width flat-file records using annotations.
 
@@ -16,45 +16,23 @@ Fixed-width files are common in banking, payroll, government, and legacy system 
 - **Nested records** — embed one `@Record` class inside another
 - **Extensible** — plug in your own formatter for any custom type
 
-## What's new in 1.4.0
+## What's new in 1.5.0
 
-- **`java.time.LocalDate` support** — use `LocalDate` fields directly; configure the pattern with `@FixedFormatPattern` (default: `yyyyMMdd`)
-- **Java 11 minimum** — Java 8 is no longer supported
-- **SLF4J logging** — replaces Commons Logging; add any SLF4J binding (e.g. Logback) or none at all
+- **Field-level `@Field` and `@Fields` annotations** — place `@Field` directly on a Java field instead of its getter. The manager derives the getter/setter by naming convention, so this works with plain POJOs and with Lombok (`@Getter`/`@Setter`) to eliminate boilerplate. See [Example 6](https://jeyben.github.io/fixedformat4j/examples#example-6--field-annotations-and-lombok) for details.
+- **Maven Central distribution** — the library is now published to Maven Central; no GitHub account or personal access token required.
 
 ## Quick start
 
 ### 1. Add the dependency
 
-fixedformat4j is published to **GitHub Packages**. Add the repository and dependency to your `pom.xml`:
+fixedformat4j is published to **Maven Central**. No repository configuration or authentication is needed — just add the dependency to your `pom.xml`:
 
 ```xml
-<repositories>
-  <repository>
-    <id>github</id>
-    <url>https://maven.pkg.github.com/jeyben/fixedformat4j</url>
-  </repository>
-</repositories>
-
-<dependencies>
-  <dependency>
-    <groupId>com.ancientprogramming.fixedformat4j</groupId>
-    <artifactId>fixedformat4j</artifactId>
-    <version>1.4.0</version>
-  </dependency>
-</dependencies>
-```
-
-GitHub Packages requires a personal access token with `read:packages` scope. Add it to your `~/.m2/settings.xml`:
-
-```xml
-<servers>
-  <server>
-    <id>github</id>
-    <username>YOUR_GITHUB_USERNAME</username>
-    <password>YOUR_PERSONAL_ACCESS_TOKEN</password>
-  </server>
-</servers>
+<dependency>
+  <groupId>com.ancientprogramming.fixedformat4j</groupId>
+  <artifactId>fixedformat4j</artifactId>
+  <version>1.5.0</version>
+</dependency>
 ```
 
 Requires **Java 11 or later**. If you want log output, add an [SLF4J binding](https://www.slf4j.org/manual.html#swapping) such as `logback-classic`; without one the library still works, just silently.
@@ -64,18 +42,18 @@ See [Get It](https://jeyben.github.io/fixedformat4j/get-it) for full setup instr
 <details>
 <summary>No GitHub account? Download manually</summary>
 
-Download `fixedformat4j-1.4.0.jar` from the [1.4.0 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_4_0), then install it into your local Maven repository:
+Download `fixedformat4j-1.5.0.jar` from the [1.5.0 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_5_0), then install it into your local Maven repository:
 
 ```bash
 mvn install:install-file \
-  -Dfile=fixedformat4j-1.4.0.jar \
+  -Dfile=fixedformat4j-1.5.0.jar \
   -DgroupId=com.ancientprogramming.fixedformat4j \
   -DartifactId=fixedformat4j \
-  -Dversion=1.4.0 \
+  -Dversion=1.5.0 \
   -Dpackaging=jar
 ```
 
-After that the standard `<dependency>` block works as-is — no `<repository>` entry or token needed. To deploy to a private Nexus or Artifactory instance instead, see [Get It](https://jeyben.github.io/fixedformat4j/get-it).
+After that the standard `<dependency>` block works as-is. To deploy to a private Nexus or Artifactory instance instead, see [Get It](https://jeyben.github.io/fixedformat4j/get-it).
 
 </details>
 
