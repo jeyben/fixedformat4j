@@ -73,4 +73,115 @@ title: Changelog
 
 ---
 
+## 1.3.4 (2010-12-14)
+
+### Bug fixes
+
+- **Issue #23** — Removed unnecessary restriction of generic type `T` to `java.lang.Number` in `AbstractNumberFormatter`.
+- **Issue #24** — Reverted the `paddingChar` honouring change introduced in 1.3.3 (issue #22).
+
+---
+
+## 1.3.3 (2010-12-14)
+
+### New features
+
+- **Issue #20** — `AbstractDecimalFormatter` now supports explicit rounding.
+
+### Bug fixes
+
+- **Issue #16** — `@FixedFormatDecimal` with more than 3 decimal places truncated the fractional digits.
+- **Issue #21** — `AbstractDecimalFormatter` `DecimalFormat` usage was not thread-safe.
+- **Issue #22** — `AbstractDecimalFormatter` hard-coded `'0'` as the padding character instead of honouring the `paddingChar` annotation setting.
+
+---
+
+## 1.3.2 (2010-12-03)
+
+### Bug fixes
+
+- **Issue #18** — `Sign.APPEND.apply` failed to detect the minus symbol correctly.
+
+---
+
+## 1.3.1
+
+### Bug fixes
+
+- **Issue #14** — Fixed `NullPointerException` during export.
+
+---
+
+## 1.3.0
+
+### New features
+
+- **Issue #7** — Nested `@Record` support: a class annotated with `@Record` can now contain fields whose type is itself a `@Record`-annotated class. Useful for grouping logically related domain objects (e.g. card details inside a larger record).
+- **Issue #10** — `ParseException` now exposes getter methods so callers can retrieve structured failure details and build localised error messages rather than relying on the English exception message.
+- **Issue #13** — Support for skipping unparseable fields within records.
+- Added built-in `Short`/`short` formatter; registered in `ByTypeFormatter`.
+
+---
+
+## 1.2.2 (2008-10-17)
+
+### Bug fixes
+
+- **Issue #9** — Fixed a loading failure when the input string was slightly shorter than the offset of the last field in the record.
+
+---
+
+## 1.2.1 (2008-10-15)
+
+### New features
+
+- **Issue #8** — Added support for annotated static nested classes and inner classes.
+- **Issue #6** — Added support for primitive types (`int`, `boolean`, `float`, etc.) in addition to their boxed counterparts. *(contributed by Marcos Lois Bermúdez)*
+
+### Bug fixes
+
+- Fixed a runtime failure when a getter or setter declared an interface or abstract class as its type and the format manager could not determine the concrete data type. *(contributed by Marcos Lois Bermúdez)*
+
+---
+
+## 1.2.0 (2008-06-12)
+
+### New features
+
+- **Issue #5** — Getters starting with `is` (in addition to `get`) can now carry `@Field` annotations.
+- Improved error reporting on parse failures: error messages now include the full format context (class name, method name, and all relevant annotation settings).
+
+---
+
+## 1.1.1 (2008-05-29)
+
+### New features
+
+- Added the ability to leave numbers unsigned; unsigned is now the default.
+
+### Changes
+
+- **Issue #4** — `FixedFormatter` interface generified. Custom formatters must be updated to specify the type parameter.
+
+### Bug fixes
+
+- Fixed a bug when parsing numbers from strings with prepended signs.
+- Fixed various smaller bugs in the built-in formatters.
+
+---
+
+## 1.1.0 (2008-05-26)
+
+### New features
+
+- Introduced the ability to parse and format signed numbers (`Sign.PREPEND`, `Sign.APPEND`).
+
+---
+
+## 1.0.0 (2008-05-25)
+
+Initial release of fixedformat4j.
+
+---
+
 [Home](index) | [Usage](usage/) | [Get It](get-it) | [FAQ](faq)
