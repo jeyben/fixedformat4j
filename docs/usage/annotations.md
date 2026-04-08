@@ -62,7 +62,14 @@ Supported return types for `count > 1`: `T[]` (array), `List`, `LinkedList`, `Se
 
 ## @Fields
 
-Used on getter methods or directly on fields when a single field maps to more than one position in a string.
+Used on getter methods or directly on fields when a single property maps to **multiple
+non-uniform positions** in the same record — for example, a date field stored at two
+different offsets in two different formats.
+
+> **Note:** `@Fields` is only needed when the field positions or formats differ between
+> entries. For consecutive slots of the **same** length and format (e.g. three 5-character
+> codes in a row), use `@Field(count = N)` on a single getter instead — it is simpler and
+> less error-prone.
 
 | Attribute | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
