@@ -85,6 +85,6 @@ public @interface Field {
    *
    * @return whether to throw on size mismatch during export
    */
-  boolean strictExportCount() default true;
+  boolean strictCount() default true;
 
 }

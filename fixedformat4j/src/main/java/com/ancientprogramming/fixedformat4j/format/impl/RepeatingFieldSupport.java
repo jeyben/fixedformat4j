@@ -91,7 +91,7 @@ class RepeatingFieldSupport {
     int actualSize = value.getClass().isArray() ? Array.getLength(value) : ((Collection<?>) value).size();
 
     if (actualSize != count) {
-      if (fieldAnno.strictExportCount()) {
+      if (fieldAnno.strictCount()) {
         throw new FixedFormatException(
             format("Repeating field %s has count=%d but collection size=%d", fieldLabel(target.getter), count, actualSize));
       } else {

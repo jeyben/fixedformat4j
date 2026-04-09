@@ -29,7 +29,7 @@ When placed on a field, the manager derives the getter and setter by name conven
 | `paddingChar` | `char` | no | `' '` | The character to pad with when the length is longer than the field value. |
 | `formatter` | `Class<FixedFormatter>` | no | `ByTypeFormatter.class` | The formatter to use when reading and writing the field. |
 | `count` | `int` | no | `1` | Number of consecutive repetitions of this field. When greater than 1, the getter/setter must use an array or an ordered `Collection` (`List`, `Set`, `SortedSet`, etc.). Each repetition occupies `length` characters, starting at `offset + length * index`. |
-| `strictExportCount` | `boolean` | no | `true` | Only relevant when `count > 1`. If `true` (default), a size mismatch between the array/collection and `count` during export throws a `FixedFormatException`. If `false`, a warning is logged and export proceeds with `min(count, actualSize)` elements. |
+| `strictCount` | `boolean` | no | `true` | Only relevant when `count > 1`. If `true` (default), a size mismatch between the array/collection and `count` during export throws a `FixedFormatException`. If `false`, a warning is logged and export proceeds with `min(count, actualSize)` elements. |
 
 **Alignment values:**
 
@@ -54,7 +54,7 @@ public String[] getProductCodes() { return productCodes; }
 public List<String> getProductCodes() { return productCodes; }
 
 // Lenient export: log a warning instead of throwing when sizes differ
-@Field(offset = 1, length = 3, count = 3, strictExportCount = false)
+@Field(offset = 1, length = 3, count = 3, strictCount = false)
 public String[] getProductCodes() { return productCodes; }
 ```
 

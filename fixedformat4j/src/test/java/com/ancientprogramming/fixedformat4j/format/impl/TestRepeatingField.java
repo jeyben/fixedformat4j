@@ -99,7 +99,7 @@ public class TestRepeatingField {
   }
 
   // -----------------------------------------------------------------------
-  // Lenient export fixtures (strictExportCount = false)
+  // Lenient export fixtures (strictCount = false)
   // -----------------------------------------------------------------------
 
   @Record
@@ -107,11 +107,11 @@ public class TestRepeatingField {
     private String[] codes;
     private Integer[] amounts;
 
-    @Field(offset = 1, length = 5, count = 3, strictExportCount = false)
+    @Field(offset = 1, length = 5, count = 3, strictCount = false)
     public String[] getCodes() { return codes; }
     public void setCodes(String[] codes) { this.codes = codes; }
 
-    @Field(offset = 16, length = 5, count = 2, align = Align.RIGHT, paddingChar = '0', strictExportCount = false)
+    @Field(offset = 16, length = 5, count = 2, align = Align.RIGHT, paddingChar = '0', strictCount = false)
     public Integer[] getAmounts() { return amounts; }
     public void setAmounts(Integer[] amounts) { this.amounts = amounts; }
   }
@@ -120,7 +120,7 @@ public class TestRepeatingField {
   static class LenientListRecord {
     private List<String> codes;
 
-    @Field(offset = 1, length = 5, count = 3, strictExportCount = false)
+    @Field(offset = 1, length = 5, count = 3, strictCount = false)
     public List<String> getCodes() { return codes; }
     public void setCodes(List<String> codes) { this.codes = codes; }
   }
@@ -375,7 +375,7 @@ public class TestRepeatingField {
   }
 
   // -----------------------------------------------------------------------
-  // Lenient export count (strictExportCount=false) — size mismatch logs WARN
+  // Lenient export count (strictCount=false) — size mismatch logs WARN
   // -----------------------------------------------------------------------
 
   private ListAppender<ILoggingEvent> attachLogCapture() {

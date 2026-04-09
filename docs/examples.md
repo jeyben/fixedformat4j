@@ -376,11 +376,11 @@ public Integer[] getPackageWeights() { return packageWeights; }
 
 **Lenient export — partial collection:**
 
-If the collection may have fewer elements than `count` (e.g. a shipment with only 2 packages), set `strictExportCount = false`. The remaining slots are left as the template value or untouched:
+If the collection may have fewer elements than `count` (e.g. a shipment with only 2 packages), set `strictCount = false`. The remaining slots are left as the template value or untouched:
 
 ```java
 @Field(offset = 7, length = 6, count = 4, align = Align.RIGHT, paddingChar = '0',
-       strictExportCount = false)
+       strictCount = false)
 public List<Integer> getPackageWeights() { return packageWeights; }
 ```
 
@@ -391,7 +391,7 @@ System.out.println(manager.export(record));
 // Warning is logged: collection size (2) < count (4)
 ```
 
-With `strictExportCount = true` (the default), passing a list of the wrong size throws a `FixedFormatException` at export time.
+With `strictCount = true` (the default), passing a list of the wrong size throws a `FixedFormatException` at export time.
 
 ---
 

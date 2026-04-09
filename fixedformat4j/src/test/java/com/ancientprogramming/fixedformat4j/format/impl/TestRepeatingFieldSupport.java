@@ -266,7 +266,7 @@ public class TestRepeatingFieldSupport {
   public static class LenientFixture {
     private String[] codes;
 
-    @Field(offset = 1, length = 5, count = 3, strictExportCount = false)
+    @Field(offset = 1, length = 5, count = 3, strictCount = false)
     public String[] getCodes() { return codes; }
     public void setCodes(String[] codes) { this.codes = codes; }
   }

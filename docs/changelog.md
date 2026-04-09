@@ -24,13 +24,13 @@ title: Changelog
   public List<String> getProductCodes() { return productCodes; }
   ```
 
-  The new `strictExportCount` attribute (default `true`) controls what happens when the
+  The new `strictCount` attribute (default `true`) controls what happens when the
   collection size does not match `count` at export time: `true` throws a
   `FixedFormatException`; `false` logs a warning and exports `min(count, actualSize)` elements.
 
   ```java
   // Lenient: export however many elements are present, up to count
-  @Field(offset = 1, length = 5, count = 3, strictExportCount = false)
+  @Field(offset = 1, length = 5, count = 3, strictCount = false)
   public List<String> getProductCodes() { return productCodes; }
   ```
 
