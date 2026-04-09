@@ -16,7 +16,10 @@
 package com.ancientprogramming.fixedformat4j.format.data;
 
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
-import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern.*;
+
+import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern.DATE_PATTERN;
+import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern.LOCALDATE_PATTERN;
+import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern.DATETIME_PATTERN;
 
 /**
  * Data object containing the exact same data as {@link FixedFormatPattern}
@@ -28,6 +31,8 @@ public class FixedFormatPatternData {
 
   private String pattern;
   public static final FixedFormatPatternData DEFAULT = new FixedFormatPatternData(DATE_PATTERN);
+  public static final FixedFormatPatternData LOCALDATE_DEFAULT = new FixedFormatPatternData(LOCALDATE_PATTERN);
+  public static final FixedFormatPatternData DATETIME_DEFAULT = new FixedFormatPatternData(DATETIME_PATTERN);
 
   /**
    * Creates a pattern data object with the given date/time pattern.

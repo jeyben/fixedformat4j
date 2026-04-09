@@ -17,6 +17,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.Fields;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
@@ -24,6 +25,7 @@ import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatContext;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.ParseException;
+import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +33,10 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
@@ -47,6 +51,7 @@ import static java.lang.String.format;
 public class FixedFormatManagerImpl implements FixedFormatManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(FixedFormatManagerImpl.class);
+  private static final Set<Class<?>> VALIDATED_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
   private final AnnotationScanner annotationScanner = new AnnotationScanner();
   private final FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
@@ -60,6 +65,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     HashMap<String, Object> foundData = new HashMap<String, Object>();
     HashMap<String, Class<?>> methodClass = new HashMap<String, Class<?>>();
     getAndAssertRecordAnnotation(fixedFormatRecordClass);
+    validatePatterns(fixedFormatRecordClass);
 
     T instance = recordInstantiator.instantiate(fixedFormatRecordClass);
 
@@ -111,6 +117,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   public <T> String export(String template, T fixedFormatRecord) {
     StringBuffer result = new StringBuffer(template);
     Record record = getAndAssertRecordAnnotation(fixedFormatRecord.getClass());
+    validatePatterns(fixedFormatRecord.getClass());
 
     HashMap<Integer, String> foundData = new HashMap<Integer, String>();
     for (AnnotationTarget target : annotationScanner.scan(fixedFormatRecord.getClass())) {
@@ -148,6 +155,40 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return export("", fixedFormatRecord);
   }
 
+  private void validatePatterns(Class<?> recordClass) {
+    if (VALIDATED_CLASSES.contains(recordClass)) {
+      return;
+    }
+    for (AnnotationTarget target : annotationScanner.scan(recordClass)) {
+      Field fieldAnnotation = target.annotationSource.getAnnotation(Field.class);
+      Fields fieldsAnnotation = target.annotationSource.getAnnotation(Fields.class);
+      if (fieldAnnotation != null) {
+        validateFieldPattern(target, fieldAnnotation);
+      } else if (fieldsAnnotation != null) {
+        for (Field field : fieldsAnnotation.value()) {
+          validateFieldPattern(target, field);
+        }
+      }
+    }
+    VALIDATED_CLASSES.add(recordClass);
+  }
+
+  private void validateFieldPattern(AnnotationTarget target, Field fieldAnnotation) {
+    Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
+    FixedFormatPattern patternAnnotation = target.annotationSource.getAnnotation(FixedFormatPattern.class);
+    String pattern;
+    if (patternAnnotation != null) {
+      pattern = patternAnnotation.value();
+    } else if (java.time.LocalDate.class.equals(datatype)) {
+      pattern = FixedFormatPatternData.LOCALDATE_DEFAULT.getPattern();
+    } else if (java.time.LocalDateTime.class.equals(datatype)) {
+      pattern = FixedFormatPatternData.DATETIME_DEFAULT.getPattern();
+    } else {
+      pattern = FixedFormatPatternData.DEFAULT.getPattern();
+    }
+    PatternValidator.validate(datatype, pattern);
+  }
+
   private void appendData(StringBuffer result, Character paddingChar, Integer offset, String data) {
     int zeroBasedOffset = offset - 1;
     while (result.length() < zeroBasedOffset) {
@@ -180,7 +221,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
     FormatContext<?> context = instructionsBuilder.context(datatype, fieldAnno);
     FixedFormatter<?> formatter = getFixedFormatterInstance(context.getFormatter(), context);
-    FormatInstructions formatdata = instructionsBuilder.build(annotationSource, fieldAnno);
+    FormatInstructions formatdata = instructionsBuilder.build(annotationSource, fieldAnno, datatype);
 
     String dataToParse = fetchData(data, formatdata, context);
 
@@ -210,7 +251,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
     FormatContext<?> context = instructionsBuilder.context(datatype, fieldAnno);
     FixedFormatter<?> formatter = getFixedFormatterInstance(context.getFormatter(), context);
-    FormatInstructions formatdata = instructionsBuilder.build(target.annotationSource, fieldAnno);
+    FormatInstructions formatdata = instructionsBuilder.build(target.annotationSource, fieldAnno, datatype);
     Object valueObject;
     try {
       valueObject = target.getter.invoke(fixedFormatRecord);

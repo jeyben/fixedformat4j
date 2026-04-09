@@ -29,7 +29,7 @@ public class TestFormatInstructionsBuilder {
   void build_defaultAnnotations_returnsDefaultData() throws Exception {
     Method getter = SimpleRecord.class.getMethod("getValue");
     Field fieldAnno = getter.getAnnotation(Field.class);
-    FormatInstructions instructions = builder.build(getter, fieldAnno);
+    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType());
     assertSame(FixedFormatPatternData.DEFAULT, instructions.getFixedFormatPatternData());
     assertSame(FixedFormatBooleanData.DEFAULT, instructions.getFixedFormatBooleanData());
     assertSame(FixedFormatNumberData.DEFAULT, instructions.getFixedFormatNumberData());
@@ -40,7 +40,7 @@ public class TestFormatInstructionsBuilder {
   void build_withFixedFormatPattern_capturesPattern() throws Exception {
     Method getter = PatternRecord.class.getMethod("getValue");
     Field fieldAnno = getter.getAnnotation(Field.class);
-    FormatInstructions instructions = builder.build(getter, fieldAnno);
+    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType());
     assertEquals("yyyyMMdd", instructions.getFixedFormatPatternData().getPattern());
   }
 
@@ -48,7 +48,7 @@ public class TestFormatInstructionsBuilder {
   void build_withFixedFormatBoolean_capturesTrueFalseValues() throws Exception {
     Method getter = BoolRecord.class.getMethod("getValue");
     Field fieldAnno = getter.getAnnotation(Field.class);
-    FormatInstructions instructions = builder.build(getter, fieldAnno);
+    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType());
     assertEquals("Y", instructions.getFixedFormatBooleanData().getTrueValue());
     assertEquals("N", instructions.getFixedFormatBooleanData().getFalseValue());
   }
@@ -57,7 +57,7 @@ public class TestFormatInstructionsBuilder {
   void build_withFixedFormatNumber_capturesSignConfig() throws Exception {
     Method getter = NumberRecord.class.getMethod("getValue");
     Field fieldAnno = getter.getAnnotation(Field.class);
-    FormatInstructions instructions = builder.build(getter, fieldAnno);
+    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType());
     assertEquals(Sign.PREPEND, instructions.getFixedFormatNumberData().getSigning());
   }
 
@@ -65,7 +65,7 @@ public class TestFormatInstructionsBuilder {
   void build_withFixedFormatDecimal_capturesDecimals() throws Exception {
     Method getter = DecimalRecord.class.getMethod("getValue");
     Field fieldAnno = getter.getAnnotation(Field.class);
-    FormatInstructions instructions = builder.build(getter, fieldAnno);
+    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType());
     assertEquals(2, instructions.getFixedFormatDecimalData().getDecimals());
   }
 
