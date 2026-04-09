@@ -4,6 +4,41 @@ title: Changelog
 
 # Changelog
 
+## 1.5.1 (unreleased)
+
+### New features
+
+- **Repeating fields** — A single `@Field` annotation can now map consecutive same-format slots
+  in a record to a Java array or ordered `Collection` via the new `count` attribute.
+  Set `count` to the number of repetitions; the getter/setter must return `T[]`, `List<T>`,
+  `LinkedList<T>`, `Set<T>`, `SortedSet<T>`, or `Collection<T>`. Each slot occupies `length`
+  characters, starting at `offset + length * index`.
+
+  ```java
+  // Three 5-character product codes packed consecutively from position 1
+  @Field(offset = 1, length = 5, count = 3)
+  public String[] getProductCodes() { return productCodes; }
+
+  // Same field mapped to a List
+  @Field(offset = 1, length = 5, count = 3)
+  public List<String> getProductCodes() { return productCodes; }
+  ```
+
+  The new `strictExportCount` attribute (default `true`) controls what happens when the
+  collection size does not match `count` at export time: `true` throws a
+  `FixedFormatException`; `false` logs a warning and exports `min(count, actualSize)` elements.
+
+  ```java
+  // Lenient: export however many elements are present, up to count
+  @Field(offset = 1, length = 5, count = 3, strictExportCount = false)
+  public List<String> getProductCodes() { return productCodes; }
+  ```
+
+  See [Repeating fields](usage/annotations#repeating-fields) in the annotation reference and
+  [Example 7](examples#example-7--repeating-fields) for a full walkthrough.
+
+---
+
 ## 1.5.0 (2026-04-08)
 
 ### New features

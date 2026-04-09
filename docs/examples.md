@@ -323,6 +323,76 @@ System.out.println(manager.export(emp));
 
 **Conflict behaviour:** if `@Field` is present on both a field and its getter, an error is logged and the field annotation is used. It is recommended to annotate only one location.
 
+## Example 7 — Repeating fields
+
+Some fixed-width formats pack several consecutive slots of the same type into a single record — for example, a shipment record that lists up to four package weights in a row. Before 1.5.1 this required a separate `@Field` for each slot. With `count` you declare it once.
+
+**Scenario:** each line in a freight file holds a shipment ID (6 chars) followed by up to four package weights in grams, each stored as a 6-character right-aligned zero-padded integer. Unused trailing slots are `"000000"`.
+
+```
+// positions: 1-6 = shipment ID, 7-12 = weight 1, 13-18 = weight 2, 19-24 = weight 3, 25-30 = weight 4
+SHIP01002500010000000000000000
+```
+
+```java
+@Record
+public class ShipmentRecord {
+
+  private String shipmentId;
+  private List<Integer> packageWeights;
+
+  @Field(offset = 1, length = 6)
+  public String getShipmentId() { return shipmentId; }
+  public void setShipmentId(String shipmentId) { this.shipmentId = shipmentId; }
+
+  // Four consecutive 6-character integer slots starting at offset 7
+  @Field(offset = 7, length = 6, count = 4, align = Align.RIGHT, paddingChar = '0')
+  public List<Integer> getPackageWeights() { return packageWeights; }
+  public void setPackageWeights(List<Integer> packageWeights) { this.packageWeights = packageWeights; }
+}
+```
+
+```java
+FixedFormatManager manager = new FixedFormatManagerImpl();
+
+String line = "SHIP01002500010000000000000000";
+ShipmentRecord record = manager.load(ShipmentRecord.class, line);
+
+System.out.println(record.getShipmentId());      // "SHIP01"
+System.out.println(record.getPackageWeights());  // [2500, 1000, 0, 0]
+
+// Update the first two weights and export
+record.setPackageWeights(List.of(3200, 1800, 500, 0));
+System.out.println(manager.export(record));
+// "SHIP01003200001800000500000000"
+```
+
+**Using an array instead of a List:**
+
+```java
+@Field(offset = 7, length = 6, count = 4, align = Align.RIGHT, paddingChar = '0')
+public Integer[] getPackageWeights() { return packageWeights; }
+```
+
+**Lenient export — partial collection:**
+
+If the collection may have fewer elements than `count` (e.g. a shipment with only 2 packages), set `strictExportCount = false`. The remaining slots are left as the template value or untouched:
+
+```java
+@Field(offset = 7, length = 6, count = 4, align = Align.RIGHT, paddingChar = '0',
+       strictExportCount = false)
+public List<Integer> getPackageWeights() { return packageWeights; }
+```
+
+```java
+record.setPackageWeights(List.of(3200, 1800)); // only 2 of 4 slots provided
+System.out.println(manager.export(record));
+// "SHIP01003200001800[slots 3 and 4 unchanged from original record]"
+// Warning is logged: collection size (2) < count (4)
+```
+
+With `strictExportCount = true` (the default), passing a list of the wrong size throws a `FixedFormatException` at export time.
+
 ---
 
 [Home](index) | [Quick Start](quickstart) | [Usage](usage/) | [Get It](get-it) | [FAQ](faq)

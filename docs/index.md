@@ -16,6 +16,7 @@ It is also straightforward to write and plug in your own formatters for custom d
 - Uses annotations as a clean way to instruct how your data should be read and written
 - Support for many built-in datatypes — no need to write format and parse routines
 - Handles signed numbers (e.g. `'-1000'` or `'1000-'` can be treated as negative 1000)
+- Repeating fields: map consecutive same-format slots to arrays or collections with a single `@Field(count = N)` annotation
 - Detailed error reporting when parsing fails
 
 ## Getting started
