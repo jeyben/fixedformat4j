@@ -56,6 +56,13 @@ public @interface Field {
    */
   char paddingChar() default ' ';
 
+  /**
+   * The formatter class to use for this field.
+   * Defaults to {@link ByTypeFormatter}, which selects the formatter automatically based on the
+   * getter's return type. Override only when custom formatting logic is required.
+   *
+   * @return the formatter class
+   */
   Class<? extends FixedFormatter<?>> formatter() default ByTypeFormatter.class;
 
   /**

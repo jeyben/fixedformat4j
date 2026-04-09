@@ -31,6 +31,7 @@ public class CharacterFormatter extends AbstractFixedFormatter<Character> {
 
   private static final Logger LOG = LoggerFactory.getLogger(CharacterFormatter.class);
 
+  /** {@inheritDoc} */
   public Character asObject(String string, FormatInstructions instructions) {
     Character result = null;
     if (!StringUtils.isEmpty(string)) {
@@ -42,6 +43,7 @@ public class CharacterFormatter extends AbstractFixedFormatter<Character> {
     return result;
   }
 
+  /** {@inheritDoc} */
   public String asString(Character obj, FormatInstructions instructions) {
     String result = "";
     if (obj != null) {

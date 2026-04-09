@@ -26,10 +26,12 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  */
 public class StringFormatter extends AbstractFixedFormatter<String> {
 
+  /** {@inheritDoc} */
   public String asObject(String string, FormatInstructions instructions) {
     return string;
   }
 
+  /** {@inheritDoc} */
   public String asString(String string, FormatInstructions instructions) {
     String result = null;
     if (string != null) {

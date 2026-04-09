@@ -25,10 +25,12 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  */
 public class ShortFormatter extends AbstractNumberFormatter<Short> {
 
+  /** {@inheritDoc} */
   public Short asObject(String string, FormatInstructions instructions) {
     return Short.parseShort(string);
   }
 
+  /** {@inheritDoc} */
   public String asString(Short obj, FormatInstructions instructions) {
     String result = null;
     if (obj != null) {

@@ -26,10 +26,12 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  */
 public class LongFormatter extends AbstractNumberFormatter<Long> {
 
+  /** {@inheritDoc} */
   public Long asObject(String string, FormatInstructions instructions) {
     return Long.parseLong(string);
   }
 
+  /** {@inheritDoc} */
   public String asString(Long obj, FormatInstructions instructions) {
     String result = null;
     if (obj != null) {

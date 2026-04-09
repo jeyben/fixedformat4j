@@ -34,6 +34,7 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
 
   private static final Logger LOG = LoggerFactory.getLogger(AbstractDecimalFormatter.class);
 
+  /** {@inheritDoc} */
   public String asString(T obj, FormatInstructions instructions) {
     BigDecimal roundedValue = null;
     int decimals = instructions.getFixedFormatDecimalData().getDecimals();

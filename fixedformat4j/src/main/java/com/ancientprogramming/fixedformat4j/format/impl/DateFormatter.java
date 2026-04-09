@@ -34,6 +34,7 @@ import java.util.Date;
  */
 public class DateFormatter extends AbstractFixedFormatter<Date> {
 
+  /** {@inheritDoc} */
   public Date asObject(String string, FormatInstructions instructions) throws FixedFormatException {
     Date result = null;
 
@@ -47,6 +48,7 @@ public class DateFormatter extends AbstractFixedFormatter<Date> {
     return result;
   }
 
+  /** {@inheritDoc} */
   public String asString(Date date, FormatInstructions instructions) {
     String result = null;
     if (date != null) {

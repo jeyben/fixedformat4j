@@ -25,6 +25,7 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  */
 public class FloatFormatter extends AbstractDecimalFormatter<Float> {
   
+  /** {@inheritDoc} */
   public Float asObject(String string, FormatInstructions instructions) {
       String toConvert = getStringToConvert(string, instructions);
       return Float.parseFloat("".equals(toConvert) ? "0" : toConvert);

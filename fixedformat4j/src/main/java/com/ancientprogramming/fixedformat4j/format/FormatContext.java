@@ -28,20 +28,42 @@ public class FormatContext<T> {
   private Class<T> dataType;
   private Class<? extends FixedFormatter<T>> formatter;
 
+  /**
+   * Creates a new format context.
+   *
+   * @param offset    the 1-based character offset of the field within the record
+   * @param dataType  the Java type of the field value
+   * @param formatter the formatter class to use for this field
+   */
   public FormatContext(int offset, Class<T> dataType, Class<? extends FixedFormatter<T>> formatter) {
     this.offset = offset;
     this.dataType = dataType;
     this.formatter = formatter;
   }
 
+  /**
+   * Returns the 1-based character offset of the field within the record.
+   *
+   * @return the field offset
+   */
   public int getOffset() {
     return offset;
   }
 
+  /**
+   * Returns the Java type of the field value.
+   *
+   * @return the data type class
+   */
   public Class<T> getDataType() {
     return dataType;
   }
 
+  /**
+   * Returns the formatter class responsible for parsing and formatting this field.
+   *
+   * @return the formatter class
+   */
   public Class<? extends FixedFormatter<T>> getFormatter() {
     return formatter;
   }

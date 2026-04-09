@@ -22,6 +22,13 @@ package com.ancientprogramming.fixedformat4j.format;
  * @since 1.0.0
  */
 public abstract class AbstractFixedFormatter<T> implements FixedFormatter<T> {
+  /**
+   * {@inheritDoc}
+   * <p>
+   * Strips padding from {@code value} according to the alignment and padding char defined in
+   * {@code instructions}, then delegates to {@link #asObject(String, FormatInstructions)}.
+   * Returns {@code null} when {@code value} is {@code null}.
+   */
   public T parse(String value, FormatInstructions instructions) {
     T result = null;
     if (value != null) {
@@ -41,11 +48,33 @@ public abstract class AbstractFixedFormatter<T> implements FixedFormatter<T> {
     return instructions.getAlignment().remove(value, instructions.getPaddingChar());
   }
 
+  /**
+   * {@inheritDoc}
+   * <p>
+   * Converts {@code value} to its string representation via
+   * {@link #asString(Object, FormatInstructions)}, then applies padding and alignment as defined
+   * in {@code instructions}.
+   */
   public String format(T value, FormatInstructions instructions) {
     return instructions.getAlignment().apply(asString(value, instructions), instructions.getLength(), instructions.getPaddingChar());
   }
 
+  /**
+   * Converts the trimmed string {@code string} to an instance of {@code T}.
+   * Padding has already been removed from {@code string} before this method is called.
+   *
+   * @param string       the raw (padding-stripped) field value
+   * @param instructions formatting instructions for the field
+   * @return the parsed value, or {@code null} if the field is empty
+   */
   public abstract T asObject(String string, FormatInstructions instructions);
 
+  /**
+   * Converts {@code obj} to its raw string representation before padding is applied.
+   *
+   * @param obj          the value to convert; may be {@code null}
+   * @param instructions formatting instructions for the field
+   * @return the string representation of {@code obj}
+   */
   public abstract String asString(T obj, FormatInstructions instructions);
 }

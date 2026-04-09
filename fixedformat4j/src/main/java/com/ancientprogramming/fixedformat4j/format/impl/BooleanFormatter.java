@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class BooleanFormatter extends AbstractFixedFormatter<Boolean> {
 
+  /** {@inheritDoc} */
   public Boolean asObject(String string, FormatInstructions instructions) throws FixedFormatException {
     Boolean result = false;
     if (!StringUtils.isEmpty(string)) {
@@ -42,6 +43,7 @@ public class BooleanFormatter extends AbstractFixedFormatter<Boolean> {
     return result;
   }
 
+  /** {@inheritDoc} */
   public String asString(Boolean obj, FormatInstructions instructions) {
     String result = instructions.getFixedFormatBooleanData().getFalseValue();
     if (obj != null) {

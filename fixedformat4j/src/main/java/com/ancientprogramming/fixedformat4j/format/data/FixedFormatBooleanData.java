@@ -32,15 +32,32 @@ public class FixedFormatBooleanData {
 
   private String falseValue;
 
+  /**
+   * Creates a boolean data object with the given string representations for {@code true} and
+   * {@code false}.
+   *
+   * @param trueValue  the string that represents a {@code true} value in the fixed-width field
+   * @param falseValue the string that represents a {@code false} value in the fixed-width field
+   */
   public FixedFormatBooleanData(String trueValue, String falseValue) {
     this.trueValue = trueValue;
     this.falseValue = falseValue;
   }
 
+  /**
+   * Returns the string representation of {@code true} for this field.
+   *
+   * @return the true-value string
+   */
   public String getTrueValue() {
     return trueValue;
   }
 
+  /**
+   * Returns the string representation of {@code false} for this field.
+   *
+   * @return the false-value string
+   */
   public String getFalseValue() {
     return falseValue;
   }

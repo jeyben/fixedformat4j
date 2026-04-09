@@ -29,6 +29,7 @@ public enum Align {
    * Pad or chop data to the left, so the text is aligned to the right
    */
   RIGHT {
+    /** {@inheritDoc} */
     public String apply(String data, int length, char paddingChar) {
       String result;
       if (data == null) {
@@ -42,6 +43,7 @@ public enum Align {
       }
       return result;
     }
+    /** {@inheritDoc} */
     public String remove(String data, char paddingChar) {
       String result = data;
       if (data == null) {
@@ -58,6 +60,7 @@ public enum Align {
    * Pad or chop data to the right, so the text is aligned to the left
    */
   LEFT {
+    /** {@inheritDoc} */
     public String apply(String data, int length, char paddingChar) {
       String result;
       if (data == null) {
@@ -72,6 +75,7 @@ public enum Align {
       return result;
     }
 
+    /** {@inheritDoc} */
     public String remove(String data, char paddingChar) {
       String result = data;
       if (data == null) {

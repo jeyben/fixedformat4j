@@ -29,10 +29,20 @@ public class FixedFormatPatternData {
   private String pattern;
   public static final FixedFormatPatternData DEFAULT = new FixedFormatPatternData(DATE_PATTERN);
 
+  /**
+   * Creates a pattern data object with the given date/time pattern.
+   *
+   * @param pattern the date/time pattern string (e.g. {@code "yyyyMMdd"})
+   */
   public FixedFormatPatternData(String pattern) {
     this.pattern = pattern;
   }
 
+  /**
+   * Returns the date/time pattern string.
+   *
+   * @return the pattern (e.g. {@code "yyyyMMdd"})
+   */
   public String getPattern() {
     return pattern;
   }

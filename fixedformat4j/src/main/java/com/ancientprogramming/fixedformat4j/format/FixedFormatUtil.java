@@ -32,11 +32,14 @@ public class FixedFormatUtil {
   private static final Logger LOG = LoggerFactory.getLogger(FixedFormatUtil.class);
 
   /**
-   * Fetch data from the record string according to the {@link FormatInstructions} and {@link FormatContext}
-   * @param record the string to fetch from
-   * @param instructions the fixed
-   * @param context the context to fetch data in
-   * @return the String data fetched from the record. Can be <code>null</code> if the record was shorter than the context expected
+   * Fetches the slice of {@code record} that corresponds to the field described by
+   * {@code instructions} and {@code context}.
+   *
+   * @param record       the full fixed-width record string
+   * @param instructions the field's formatting instructions (supplies the field length)
+   * @param context      the format context (supplies the 1-based field offset)
+   * @return the extracted field substring, or {@code null} if {@code record} is shorter than
+   *         the requested offset
    */
   public static String fetchData(String record, FormatInstructions instructions, FormatContext<?> context) {
     String result;
@@ -60,6 +63,16 @@ public class FixedFormatUtil {
     return result;
   }
 
+  /**
+   * Creates an instance of the given {@code formatterClass}, first trying a single-argument
+   * constructor that accepts a {@link FormatContext}, then falling back to a no-arg constructor.
+   *
+   * @param formatterClass the formatter class to instantiate
+   * @param context        the {@link FormatContext} passed to the single-argument constructor attempt
+   * @param <T>            the value type handled by the formatter
+   * @return a ready-to-use formatter instance
+   * @throws FixedFormatException if neither constructor is available
+   */
   public static <T> FixedFormatter<T> getFixedFormatterInstance(Class<? extends FixedFormatter<T>> formatterClass, FormatContext<?> context) {
     FixedFormatter<T> formatter = getFixedFormatterInstance(formatterClass, context.getClass(), context);
     if (formatter == null) {
@@ -71,6 +84,18 @@ public class FixedFormatUtil {
     return formatter;
   }
 
+  /**
+   * Creates an instance of {@code formatterClass} using either a single-argument constructor
+   * (when both {@code paramType} and {@code paramValue} are non-null) or a no-arg constructor.
+   * Returns {@code null} when the requested constructor does not exist.
+   *
+   * @param formatterClass the formatter class to instantiate
+   * @param paramType      the constructor parameter type; {@code null} to force the no-arg path
+   * @param paramValue     the constructor argument value; {@code null} to force the no-arg path
+   * @param <T>            the value type handled by the formatter
+   * @return a formatter instance, or {@code null} if the matching constructor is absent
+   * @throws FixedFormatException if a matching constructor exists but instantiation fails
+   */
   public static <T> FixedFormatter<T> getFixedFormatterInstance(Class<? extends FixedFormatter<T>> formatterClass, Class<?> paramType, FormatContext<?> paramValue) {
     FixedFormatter<T> result;
     if (paramType != null && paramValue != null) {

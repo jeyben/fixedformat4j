@@ -31,21 +31,42 @@ public class FixedFormatNumberData {
   private char positiveSign;
   private char negativeSign;
 
+  /**
+   * Creates a number data object.
+   *
+   * @param signing      the sign strategy controlling where the sign character appears
+   * @param positiveSign the character used to represent a positive number
+   * @param negativeSign the character used to represent a negative number
+   */
   public FixedFormatNumberData(Sign signing, char positiveSign, char negativeSign) {
     this.signing = signing;
     this.positiveSign = positiveSign;
     this.negativeSign = negativeSign;
   }
 
-  
+  /**
+   * Returns the sign strategy for this field.
+   *
+   * @return the {@link Sign} mode
+   */
   public Sign getSigning() {
     return signing;
   }
 
+  /**
+   * Returns the character used to represent a positive number.
+   *
+   * @return the positive sign character
+   */
   public Character getPositiveSign() {
     return positiveSign;
   }
 
+  /**
+   * Returns the character used to represent a negative number.
+   *
+   * @return the negative sign character
+   */
   public Character getNegativeSign() {
     return negativeSign;
   }

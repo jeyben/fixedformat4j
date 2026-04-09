@@ -32,10 +32,12 @@ public enum Sign {
    * This just delegate to the {@link Align} defined in {@link FormatInstructions}.
    */
   NOSIGN {
+    /** {@inheritDoc} */
     public String apply(String value, FormatInstructions instructions) {
       return instructions.getAlignment().apply(value, instructions.getLength(), instructions.getPaddingChar());
     }
 
+    /** {@inheritDoc} */
     public String remove(String value, FormatInstructions instructions) {
       String result =  instructions.getAlignment().remove(value, instructions.getPaddingChar());
       if (StringUtils.isEmpty(result)) {
@@ -50,6 +52,7 @@ public enum Sign {
    * Prepend the sign to the string
    */
   PREPEND {
+    /** {@inheritDoc} */
     public String apply(String value, FormatInstructions instructions) {
       String sign = StringUtils.substring(value, 0, 1);
       if ("-".equals(sign)) {
@@ -61,6 +64,7 @@ public enum Sign {
       return sign + StringUtils.substring(result, 1);
     }
 
+    /** {@inheritDoc} */
     public String remove(String value, FormatInstructions instructions) {
       String sign = StringUtils.substring(value, 0, 1);
       String valueWithoutSign = StringUtils.substring(value, 1);
@@ -80,6 +84,7 @@ public enum Sign {
    * Append the sign to the string
    */
   APPEND {
+    /** {@inheritDoc} */
     public String apply(String value, FormatInstructions instructions) {
       String sign = StringUtils.substring(value, 0, 1);
       if ("-".equals(sign)) {
@@ -91,6 +96,7 @@ public enum Sign {
       return StringUtils.substring(result, 1) + sign;
 
     }
+    /** {@inheritDoc} */
     public String remove(String value, FormatInstructions instructions) {
       String sign = StringUtils.substring(value, value.length()-1);
       String valueWithoutSign = StringUtils.substring(value, 0, value.length()-1);
@@ -122,7 +128,22 @@ public enum Sign {
   }
 
 
+  /**
+   * Applies the sign to {@code value} according to this strategy, padding the result to the
+   * length specified in {@code instructions}.
+   *
+   * @param value        the raw numeric string (may include a leading {@code -})
+   * @param instructions the formatting instructions for the field
+   * @return the sign-formatted string padded to the required length
+   */
   public abstract String apply(String value, FormatInstructions instructions);
 
+  /**
+   * Strips the sign character from {@code value} and returns the bare numeric string.
+   *
+   * @param value        the field value as read from the fixed-width record
+   * @param instructions the formatting instructions for the field
+   * @return the numeric string with the sign and padding removed
+   */
   public abstract String remove(String value, FormatInstructions instructions);
 }

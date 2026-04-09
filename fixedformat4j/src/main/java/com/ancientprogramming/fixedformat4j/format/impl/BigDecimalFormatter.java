@@ -27,6 +27,7 @@ import java.math.BigDecimal;
  */
 public class BigDecimalFormatter extends AbstractDecimalFormatter<BigDecimal> {
 
+    /** {@inheritDoc} */
     public BigDecimal asObject(String string, FormatInstructions instructions) {
       String toConvert = getStringToConvert(string, instructions);
       return new BigDecimal("".equals(toConvert) ? "0" : toConvert);

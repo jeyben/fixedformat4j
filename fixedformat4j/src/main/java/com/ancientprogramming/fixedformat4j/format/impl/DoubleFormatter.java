@@ -25,6 +25,7 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  */
 public class DoubleFormatter extends AbstractDecimalFormatter<Double> {
 
+  /** {@inheritDoc} */
   public Double asObject(String string, FormatInstructions instructions) {
     String toConvert = getStringToConvert(string, instructions);
     return Double.parseDouble("".equals(toConvert) ? "0" : toConvert);

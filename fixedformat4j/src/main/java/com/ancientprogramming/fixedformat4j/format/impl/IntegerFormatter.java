@@ -25,10 +25,12 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  */
 public class IntegerFormatter extends AbstractNumberFormatter<Integer> {
 
+  /** {@inheritDoc} */
   public Integer asObject(String string, FormatInstructions instructions) {
     return Integer.parseInt(string);
   }
 
+  /** {@inheritDoc} */
   public String asString(Integer obj, FormatInstructions instructions) {
     String result = null;
     if (obj != null) {
