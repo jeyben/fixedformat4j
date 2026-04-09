@@ -23,6 +23,7 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +31,8 @@ import java.util.Map;
 /**
  * Formatter capable of formatting a bunch of known java standard library classes. So far:
  * {@link String}, {@link Integer}, {@link Short}, {@link Long}, {@link Date}, {@link LocalDate},
- * {@link Character}, {@link Boolean}, {@link Double}, {@link Float} and {@link BigDecimal}
+ * {@link java.time.LocalDateTime}, {@link Character}, {@link Boolean}, {@link Double}, {@link Float}
+ * and {@link BigDecimal}
  *
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
@@ -51,6 +53,7 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
     KNOWN_FORMATTERS.put(Long.class, LongFormatter.class);
     KNOWN_FORMATTERS.put(Date.class, DateFormatter.class);
     KNOWN_FORMATTERS.put(LocalDate.class, LocalDateFormatter.class);
+    KNOWN_FORMATTERS.put(LocalDateTime.class, LocalDateTimeFormatter.class);
     KNOWN_FORMATTERS.put(char.class, CharacterFormatter.class);
     KNOWN_FORMATTERS.put(Character.class, CharacterFormatter.class);
     KNOWN_FORMATTERS.put(boolean.class, BooleanFormatter.class);

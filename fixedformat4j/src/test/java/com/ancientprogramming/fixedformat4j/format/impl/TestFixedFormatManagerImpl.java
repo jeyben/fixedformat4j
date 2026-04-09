@@ -28,7 +28,9 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -292,5 +294,151 @@ public class TestFixedFormatManagerImpl {
     @com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean(trueValue = "T", falseValue = "F")
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+  }
+
+  // --- Default-pattern fallback tests ---
+
+  @Test
+  public void testLocalDateNoPatternAnnotationUsesIsoLocalDateDefault() {
+    LocalDateNoPatternRecord rec = new LocalDateNoPatternRecord();
+    rec.setEventDate(LocalDate.of(2026, 4, 9));
+    String exported = manager.export(rec);
+    assertEquals("2026-04-09", exported);
+
+    LocalDateNoPatternRecord loaded = manager.load(LocalDateNoPatternRecord.class, exported);
+    assertEquals(LocalDate.of(2026, 4, 9), loaded.getEventDate());
+  }
+
+  @Record
+  public static class LocalDateNoPatternRecord {
+    private LocalDate eventDate;
+
+    @Field(offset = 1, length = 10)
+    public LocalDate getEventDate() { return eventDate; }
+    public void setEventDate(LocalDate eventDate) { this.eventDate = eventDate; }
+  }
+
+  // --- LocalDateTime round-trip tests ---
+
+  @Test
+  public void testLocalDateTimeRoundTrip() {
+    LocalDateTimeRecord rec = new LocalDateTimeRecord();
+    rec.setEventAt(LocalDateTime.of(2026, 4, 9, 14, 30, 0));
+    rec.setLabel("launch");
+    String exported = manager.export(rec);
+    assertEquals("launch    2026-04-09T14:30:00", exported);
+
+    LocalDateTimeRecord loaded = manager.load(LocalDateTimeRecord.class, exported);
+    assertEquals("launch", loaded.getLabel());
+    assertEquals(LocalDateTime.of(2026, 4, 9, 14, 30, 0), loaded.getEventAt());
+  }
+
+  @Test
+  public void testLocalDateTimeNoPatternAnnotationUsesIsoDefault() {
+    LocalDateTimeNoPatternRecord rec = new LocalDateTimeNoPatternRecord();
+    rec.setEventAt(LocalDateTime.of(2026, 4, 9, 14, 30, 0));
+    String exported = manager.export(rec);
+    assertEquals("2026-04-09T14:30:00", exported);
+
+    LocalDateTimeNoPatternRecord loaded = manager.load(LocalDateTimeNoPatternRecord.class, exported);
+    assertEquals(LocalDateTime.of(2026, 4, 9, 14, 30, 0), loaded.getEventAt());
+  }
+
+  @Record
+  public static class LocalDateTimeRecord {
+    private String label;
+    private LocalDateTime eventAt;
+
+    @Field(offset = 1, length = 10)
+    public String getLabel() { return label; }
+    public void setLabel(String label) { this.label = label; }
+
+    @Field(offset = 11, length = 19)
+    @FixedFormatPattern("yyyy-MM-dd'T'HH:mm:ss")
+    public LocalDateTime getEventAt() { return eventAt; }
+    public void setEventAt(LocalDateTime eventAt) { this.eventAt = eventAt; }
+  }
+
+  @Record
+  public static class LocalDateTimeNoPatternRecord {
+    private LocalDateTime eventAt;
+
+    @Field(offset = 1, length = 19)
+    public LocalDateTime getEventAt() { return eventAt; }
+    public void setEventAt(LocalDateTime eventAt) { this.eventAt = eventAt; }
+  }
+
+  // --- Pattern validation tests ---
+
+  @Test
+  public void testInvalidDatePatternOnLoadThrowsFixedFormatException() {
+    assertThrows(FixedFormatException.class, () ->
+        manager.load(InvalidDatePatternRecord.class, "20260409")
+    );
+  }
+
+  @Test
+  public void testInvalidDatePatternOnExportThrowsFixedFormatException() {
+    InvalidDatePatternRecord rec = new InvalidDatePatternRecord();
+    rec.setEventDate(new Date());
+    assertThrows(FixedFormatException.class, () -> manager.export(rec));
+  }
+
+  @Test
+  public void testInvalidLocalDatePatternOnLoadThrowsFixedFormatException() {
+    assertThrows(FixedFormatException.class, () ->
+        manager.load(InvalidLocalDatePatternRecord.class, "20260409")
+    );
+  }
+
+  @Test
+  public void testInvalidLocalDatePatternOnExportThrowsFixedFormatException() {
+    InvalidLocalDatePatternRecord rec = new InvalidLocalDatePatternRecord();
+    rec.setEventDate(LocalDate.of(2026, 4, 9));
+    assertThrows(FixedFormatException.class, () -> manager.export(rec));
+  }
+
+  @Test
+  public void testInvalidLocalDateTimePatternOnLoadThrowsFixedFormatException() {
+    assertThrows(FixedFormatException.class, () ->
+        manager.load(InvalidLocalDateTimePatternRecord.class, "2026-04-09T14:30:00")
+    );
+  }
+
+  @Test
+  public void testInvalidLocalDateTimePatternOnExportThrowsFixedFormatException() {
+    InvalidLocalDateTimePatternRecord rec = new InvalidLocalDateTimePatternRecord();
+    rec.setEventDateTime(LocalDateTime.of(2026, 4, 9, 14, 30, 0));
+    assertThrows(FixedFormatException.class, () -> manager.export(rec));
+  }
+
+  @Record
+  public static class InvalidDatePatternRecord {
+    private Date eventDate;
+
+    @Field(offset = 1, length = 8)
+    @FixedFormatPattern("yyyyjj")
+    public Date getEventDate() { return eventDate; }
+    public void setEventDate(Date eventDate) { this.eventDate = eventDate; }
+  }
+
+  @Record
+  public static class InvalidLocalDatePatternRecord {
+    private LocalDate eventDate;
+
+    @Field(offset = 1, length = 8)
+    @FixedFormatPattern("yyyyjj")
+    public LocalDate getEventDate() { return eventDate; }
+    public void setEventDate(LocalDate eventDate) { this.eventDate = eventDate; }
+  }
+
+  @Record
+  public static class InvalidLocalDateTimePatternRecord {
+    private LocalDateTime eventDateTime;
+
+    @Field(offset = 1, length = 19)
+    @FixedFormatPattern("yyyyjj")
+    public LocalDateTime getEventDateTime() { return eventDateTime; }
+    public void setEventDateTime(LocalDateTime eventDateTime) { this.eventDateTime = eventDateTime; }
   }
 }

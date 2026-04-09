@@ -34,6 +34,10 @@ public @interface FixedFormatPattern {
 
   public static final String DATE_PATTERN = "yyyyMMdd";
 
+  public static final String LOCALDATE_PATTERN = "yyyy-MM-dd";
+
+  public static final String DATETIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
+
   /**
    * The pattern used in formatting and parsing a fixed format field.
    * Date: yyyyMMdd

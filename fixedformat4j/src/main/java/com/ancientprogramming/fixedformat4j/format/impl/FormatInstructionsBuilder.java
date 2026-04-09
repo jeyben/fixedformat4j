@@ -16,6 +16,8 @@ import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static java.lang.String.format;
 
@@ -27,8 +29,8 @@ import static java.lang.String.format;
  */
 class FormatInstructionsBuilder {
 
-  FormatInstructions build(AnnotatedElement annotationSource, Field fieldAnno) {
-    FixedFormatPatternData patternData = patternData(annotationSource.getAnnotation(FixedFormatPattern.class));
+  FormatInstructions build(AnnotatedElement annotationSource, Field fieldAnno, Class<?> datatype) {
+    FixedFormatPatternData patternData = patternData(annotationSource.getAnnotation(FixedFormatPattern.class), datatype);
     FixedFormatBooleanData booleanData = booleanData(annotationSource.getAnnotation(FixedFormatBoolean.class));
     FixedFormatNumberData numberData = numberData(annotationSource.getAnnotation(FixedFormatNumber.class));
     FixedFormatDecimalData decimalData = decimalData(annotationSource.getAnnotation(FixedFormatDecimal.class));
@@ -52,9 +54,15 @@ class FormatInstructionsBuilder {
         method.getName(), fieldAnno.getClass().getName(), fieldAnno.getClass().getName()));
   }
 
-  private FixedFormatPatternData patternData(FixedFormatPattern annotation) {
+  private FixedFormatPatternData patternData(FixedFormatPattern annotation, Class<?> datatype) {
     if (annotation != null) {
       return new FixedFormatPatternData(annotation.value());
+    }
+    if (LocalDate.class.equals(datatype)) {
+      return FixedFormatPatternData.LOCALDATE_DEFAULT;
+    }
+    if (LocalDateTime.class.equals(datatype)) {
+      return FixedFormatPatternData.DATETIME_DEFAULT;
     }
     return FixedFormatPatternData.DEFAULT;
   }
