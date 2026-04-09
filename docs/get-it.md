@@ -57,6 +57,3 @@ Example with Logback:
 
 If no binding is found, SLF4J will print a one-time warning and silently discard all log output — the library will still function correctly.
 
----
-
-[Home](index) | [Usage](usage/) | [FAQ](faq) | [Changelog](changelog)

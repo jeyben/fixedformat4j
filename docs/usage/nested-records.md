@@ -117,6 +117,3 @@ Tue Oct 21 00:00:00 CEST 2008
 foo  fubar     098762008-10-21
 ```
 
----
-
-[Home](../index) | [Usage](index) | [Annotations](annotations) | [Examples](../examples)

@@ -393,6 +393,3 @@ System.out.println(manager.export(record));
 
 With `strictCount = true` (the default), passing a list of the wrong size throws a `FixedFormatException` at export time.
 
----
-
-[Home](index) | [Quick Start](quickstart) | [Usage](usage/) | [Get It](get-it) | [FAQ](faq)

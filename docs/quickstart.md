@@ -109,6 +109,3 @@ The export re-pads every field to its declared length using the configured align
 - [Nested Records](usage/nested-records) — embedding one `@Record` class inside another
 - [FAQ](faq)
 
----
-
-[Home](index) | [Usage](usage/) | [Examples](examples) | [Get It](get-it) | [FAQ](faq)

@@ -35,6 +35,3 @@ System.out.println(manager.export(record)); // "string    001002008-05-29"
 
 See the [Quick Start](quickstart) for the full annotated class and step-by-step explanation, or jump straight to [Examples](examples) for practical scenarios.
 
----
-
-[Quick Start](quickstart) | [Usage](usage/) | [Examples](examples) | [Get It](get-it) | [FAQ](faq) | [Changelog](changelog)

@@ -211,6 +211,3 @@ public Date getHireDate() { return hireDate; }
 public Date getHireDate() { return hireDate; }
 ```
 
----
-
-[Home](../index) | [Usage](index) | [Nested Records](nested-records) | [Examples](../examples)

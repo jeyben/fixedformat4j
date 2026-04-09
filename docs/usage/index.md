@@ -61,6 +61,3 @@ String exportedString = manager.export(record);
 
 Annotations instruct the manager on how to load and export data. See the [complete annotations reference](annotations).
 
----
-
-[Home](../index) | [Annotations](annotations) | [Nested Records](nested-records) | [Examples](../examples) | [Get It](../get-it)

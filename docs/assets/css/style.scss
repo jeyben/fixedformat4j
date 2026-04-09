@@ -1,0 +1,105 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+/* ── Two-column layout ── */
+.page-wrapper {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 220px;
+  min-width: 220px;
+  overflow-y: auto;
+  background: #f6f8fa;
+  border-right: 1px solid #e1e4e8;
+  padding: 1.5rem 1rem;
+  box-sizing: border-box;
+}
+
+.sidebar nav a {
+  display: block;
+  padding: 5px 8px;
+  border-radius: 4px;
+  color: #555;
+  text-decoration: none;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.sidebar nav a:hover {
+  color: #159957;
+  background: #eaf7f0;
+}
+
+.sidebar nav a.active {
+  color: #159957;
+  font-weight: 600;
+  background: #eaf7f0;
+}
+
+.sidebar nav .nav-children {
+  margin-left: 0.9rem;
+  border-left: 2px solid #d0d7de;
+  padding-left: 0.5rem;
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
+.sidebar nav .nav-children a {
+  font-size: 0.88rem;
+  color: #666;
+}
+
+/* ── Main content: use remaining width ── */
+.main-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Page header: clickable title ── */
+.page-header a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ── Mobile: stack sidebar above content ── */
+@media (max-width: 640px) {
+  .page-wrapper {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e1e4e8;
+    padding: 1rem;
+  }
+
+  .sidebar nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .sidebar nav a {
+    display: inline-block;
+  }
+
+  .sidebar nav .nav-children {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    border-left: none;
+    padding-left: 0;
+    margin-left: 0;
+  }
+}

@@ -235,6 +235,3 @@ title: Changelog
 
 Initial release of fixedformat4j.
 
----
-
-[Home](index) | [Usage](usage/) | [Get It](get-it) | [FAQ](faq)

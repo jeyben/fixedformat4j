@@ -1,0 +1,19 @@
+- title: Home
+  url: /
+- title: Quick Start
+  url: /quickstart
+- title: Usage
+  url: /usage/
+  children:
+    - title: Annotations
+      url: /usage/annotations
+    - title: Nested Records
+      url: /usage/nested-records
+- title: Examples
+  url: /examples
+- title: Get It
+  url: /get-it
+- title: FAQ
+  url: /faq
+- title: Changelog
+  url: /changelog

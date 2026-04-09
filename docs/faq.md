@@ -63,6 +63,3 @@ while ((line = reader.readLine()) != null) {
 
 See [Example 4 — Processing a file line by line](examples#example-4--processing-a-file-line-by-line) for a full file-reading snippet.
 
----
-
-[Home](index) | [Usage](usage/) | [Examples](examples) | [Get It](get-it)
