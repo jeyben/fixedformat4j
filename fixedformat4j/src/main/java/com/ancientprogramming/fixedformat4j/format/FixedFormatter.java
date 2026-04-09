@@ -26,7 +26,7 @@ import com.ancientprogramming.fixedformat4j.format.impl.DateFormatter;
  * <p>
  * Example: <p><code>@Field(offset = 1, length = 20, formatter = {@link DateFormatter}.class)</code></p>
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public interface FixedFormatter<T> {

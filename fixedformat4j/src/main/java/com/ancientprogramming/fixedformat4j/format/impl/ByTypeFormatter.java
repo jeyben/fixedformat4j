@@ -33,7 +33,7 @@ import java.util.Map;
  * {@link Character}, {@link Boolean}, {@link Double}, {@link Float} and {@link BigDecimal}
  *
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class ByTypeFormatter implements FixedFormatter<Object> {

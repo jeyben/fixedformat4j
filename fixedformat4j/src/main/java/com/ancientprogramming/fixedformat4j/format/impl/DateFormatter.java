@@ -29,7 +29,7 @@ import java.util.Date;
  * Formatter for {@link java.util.Date} data.
  * The formatting and parsing is perfomed by using an instance of the {@link SimpleDateFormat} class.
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class DateFormatter extends AbstractFixedFormatter<Date> {

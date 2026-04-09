@@ -20,7 +20,7 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 /**
  * Formatter for {@link Integer} data
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class IntegerFormatter extends AbstractNumberFormatter<Integer> {

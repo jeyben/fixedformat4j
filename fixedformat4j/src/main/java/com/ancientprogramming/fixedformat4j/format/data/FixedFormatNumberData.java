@@ -20,7 +20,7 @@ import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber.
 /**
  * Data object containing the exact same data as {@link com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber}
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.1.0
  */
 public class FixedFormatNumberData {

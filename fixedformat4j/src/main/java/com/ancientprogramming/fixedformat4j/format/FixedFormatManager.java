@@ -22,7 +22,7 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
  * <p>
  * A <code>FixedFormatManager</code> is associated with one type of fixed format data.
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public interface FixedFormatManager {

@@ -20,7 +20,7 @@ import static java.lang.String.format;
  * Field annotations take priority over method annotations for the same property.
  * A conflict (both annotated) is logged as a warning.
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.5.1
  */
 class AnnotationScanner {

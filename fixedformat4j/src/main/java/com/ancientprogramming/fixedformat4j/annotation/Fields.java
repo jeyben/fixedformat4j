@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 
 /**
  * Wrapper for more than one field.
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 @Retention(RetentionPolicy.RUNTIME)

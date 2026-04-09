@@ -10,7 +10,7 @@ import static java.lang.String.format;
  * Creates instances of {@code @Record}-annotated classes via reflection,
  * including support for static nested classes and non-static inner classes.
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.5.1
  */
 class RecordInstantiator {

@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
  * {@code @Field} annotation is on the getter, both references point to the same object.
  * When it is on a Java field, they differ.
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.5.1
  */
 class AnnotationTarget {

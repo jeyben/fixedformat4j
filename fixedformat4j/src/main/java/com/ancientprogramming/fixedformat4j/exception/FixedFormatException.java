@@ -18,7 +18,7 @@ package com.ancientprogramming.fixedformat4j.exception;
 /**
  * Thrown when errors occur while loading or exporting data.
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class FixedFormatException extends RuntimeException {

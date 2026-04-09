@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
  * Sign defines where to place a sign defining a positive or negative number.
  * Is to be used in formatters operating numbers.
  * 
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.1.0
  */
 public enum Sign {

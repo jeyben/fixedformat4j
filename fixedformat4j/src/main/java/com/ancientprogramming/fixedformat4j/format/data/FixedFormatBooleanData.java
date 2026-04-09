@@ -21,7 +21,7 @@ import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean
 /**
  * Data object containing the exact same data as {@link FixedFormatBoolean} 
   *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class FixedFormatBooleanData {
