@@ -379,7 +379,7 @@ public class TestRepeatingField {
   // -----------------------------------------------------------------------
 
   private ListAppender<ILoggingEvent> attachLogCapture() {
-    Logger logger = (Logger) LoggerFactory.getLogger(FixedFormatManagerImpl.class);
+    Logger logger = (Logger) LoggerFactory.getLogger(RepeatingFieldSupport.class);
     ListAppender<ILoggingEvent> appender = new ListAppender<>();
     appender.start();
     logger.addAppender(appender);
@@ -388,7 +388,7 @@ public class TestRepeatingField {
   }
 
   private void detachLogCapture(ListAppender<ILoggingEvent> appender) {
-    Logger logger = (Logger) LoggerFactory.getLogger(FixedFormatManagerImpl.class);
+    Logger logger = (Logger) LoggerFactory.getLogger(RepeatingFieldSupport.class);
     logger.detachAppender(appender);
   }
 
