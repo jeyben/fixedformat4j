@@ -2,6 +2,7 @@
 
 [![Nightly Build](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml/badge.svg?branch=master)](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.ancientprogramming.fixedformat4j/fixedformat4j)](https://central.sonatype.com/artifact/com.ancientprogramming.fixedformat4j/fixedformat4j)
+[![Mutation Score](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjeyben.github.io%2Ffixedformat4j%2Fmutation-score.json&query=%24.score&label=Mutation%20Score&color=brightgreen)](https://jeyben.github.io/fixedformat4j/pit-reports/)
 
 A small, non-intrusive Java library for reading and writing fixed-width flat-file records using annotations.
 
