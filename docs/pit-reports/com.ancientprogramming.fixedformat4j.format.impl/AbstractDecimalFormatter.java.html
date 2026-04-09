@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>AbstractDecimalFormatter.java</h1>
+
+<table class="src">
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/*</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Copyright 2004 the original author or authors.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * you may not use this file except in compliance with the License.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * You may obtain a copy of the License at</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_8'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     http://www.apache.org/licenses/LICENSE-2.0</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_10'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Unless required by applicable law or agreed to in writing, software</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_11'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * distributed under the License is distributed on an &#34;AS IS&#34; BASIS,</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_12'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_13'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * See the License for the specific language governing permissions and</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_14'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * limitations under the License.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_15'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_16'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package com.ancientprogramming.fixedformat4j.format.impl;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_17'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_18'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.ancientprogramming.fixedformat4j.format.FormatInstructions;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_19'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import org.apache.commons.lang3.StringUtils;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_20'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import org.slf4j.Logger;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_21'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import org.slf4j.LoggerFactory;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_22'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_23'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.math.BigDecimal;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_24'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.math.RoundingMode;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_25'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.text.DecimalFormat;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_26'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_27'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/**</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_28'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Base class for formatting decimal data</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_29'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_30'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @author Jacob von Eyben - &#60;a href=&#34;https://eybenconsult.com&#34;&#62;https://eybenconsult.com&#60;/a&#62;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_31'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @since 1.0.0</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_32'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_33'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>public abstract class AbstractDecimalFormatter&#60;T extends Number&#62; extends AbstractNumberFormatter&#60;T&#62; {</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_34'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_35'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  private static final Logger LOG = LoggerFactory.getLogger(AbstractDecimalFormatter.class);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_36'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_37'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /** {@inheritDoc} */</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_38'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public String asString(T obj, FormatInstructions instructions) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_39'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    BigDecimal roundedValue = null;</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_40'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    int decimals = instructions.getFixedFormatDecimalData().getDecimals();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_41'/>
+41
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_41'>1</a>
+<span>
+1. asString : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (obj != null) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_42'/>
+42
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_42'>1</a>
+<span>
+1. asString : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      BigDecimal value = obj instanceof BigDecimal ? (BigDecimal)obj : BigDecimal.valueOf(obj.doubleValue());</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_43'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_44'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      RoundingMode roundingMode = instructions.getFixedFormatDecimalData().getRoundingMode();</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_45'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_46'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      roundedValue = value.setScale(decimals, roundingMode);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_47'/>
+47
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_47'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_48'/>
+48
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_48'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      if (LOG.isDebugEnabled()) {</span></pre></td></tr>
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_49'/>
+49
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_49'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>        LOG.debug(&#34;Value before rounding = &#39;{}&#39;, value after rounding = &#39;{}&#39;, decimals = {}, rounding mode = {}&#34;, value, roundedValue, decimals, roundingMode);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_50'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_51'/>
+51
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_51'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_52'/>
+52
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_52'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>       </span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_53'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    DecimalFormat formatter = new DecimalFormat();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_54'/>
+54
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_54'>1</a>
+<span>
+1. asString : removed call to java/text/DecimalFormat::setDecimalSeparatorAlwaysShown &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    formatter.setDecimalSeparatorAlwaysShown(true);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_55'/>
+55
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_55'>1</a>
+<span>
+1. asString : removed call to java/text/DecimalFormat::setMaximumFractionDigits &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    formatter.setMaximumFractionDigits(decimals);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_56'/>
+56
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_56'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_57'/>
+57
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_57'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    char decimalSeparator = formatter.getDecimalFormatSymbols().getDecimalSeparator();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_58'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    char groupingSeparator = formatter.getDecimalFormatSymbols().getGroupingSeparator();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_59'/>
+59
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_59'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    String zeroString = String.format(&#34;0%c0&#34;, decimalSeparator);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_60'/>
+60
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_60'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_61'/>
+61
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_61'>1</a>
+<span>
+1. asString : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    String rawString = roundedValue != null ? formatter.format(roundedValue) : zeroString;</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_62'/>
+62
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_62'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    if (LOG.isDebugEnabled()) {</span></pre></td></tr>
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_63'/>
+63
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_63'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>      LOG.debug(&#34;rawString: {} - G[{}] D[{}]&#34;, rawString, groupingSeparator, decimalSeparator);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_64'/>
+64
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_64'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_65'/>
+65
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_65'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    rawString = rawString.replaceAll(&#34;\\&#34; + groupingSeparator, &#34;&#34;);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_66'/>
+66
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_66'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    boolean useDecimalDelimiter = instructions.getFixedFormatDecimalData().isUseDecimalDelimiter();</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_67'/>
+67
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_67'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_68'/>
+68
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_68'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    String beforeDelimiter = rawString.substring(0, rawString.indexOf(decimalSeparator));</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_69'/>
+69
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_69'>1</a>
+<span>
+1. asString : Replaced integer addition with subtraction &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    String afterDelimiter = rawString.substring(rawString.indexOf(decimalSeparator)+1, rawString.length());</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_70'/>
+70
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_70'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    if (LOG.isDebugEnabled()) {</span></pre></td></tr>
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_71'/>
+71
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_71'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>      LOG.debug(&#34;beforeDelimiter[{}], afterDelimiter[{}]&#34;, beforeDelimiter, afterDelimiter);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_72'/>
+72
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_72'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_73'/>
+73
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_73'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_74'/>
+74
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_74'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    //trim decimals</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_75'/>
+75
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_75'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    afterDelimiter = StringUtils.substring(afterDelimiter, 0, decimals);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_76'/>
+76
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_76'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    afterDelimiter = StringUtils.rightPad(afterDelimiter, decimals, &#39;0&#39;);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_77'/>
+77
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_77'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_78'/>
+78
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_78'>1</a>
+<span>
+1. asString : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    String delimiter = useDecimalDelimiter ? String.valueOf(instructions.getFixedFormatDecimalData().getDecimalDelimiter()) : &#34;&#34;;</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_79'/>
+79
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_79'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    String result = beforeDelimiter + delimiter + afterDelimiter;</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_80'/>
+80
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_80'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    if (LOG.isDebugEnabled()) {</span></pre></td></tr>
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_81'/>
+81
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_81'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>      LOG.debug(&#34;result[{}]&#34;, result);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_82'/>
+82
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_82'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_83'/>
+83
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_83'>1</a>
+<span>
+1. asString : replaced return value with &#34;&#34; for com/ancientprogramming/fixedformat4j/format/impl/AbstractDecimalFormatter::asString &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return result;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_84'/>
+84
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_84'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_85'/>
+85
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_85'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> </span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_86'/>
+86
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_86'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  protected String getStringToConvert(String string, FormatInstructions instructions) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_87'/>
+87
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_87'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    String toConvert = string;</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_88'/>
+88
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_88'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    boolean useDecimalDelimiter = instructions.getFixedFormatDecimalData().isUseDecimalDelimiter();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_89'/>
+89
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_89'>1</a>
+<span>
+1. getStringToConvert : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (useDecimalDelimiter) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_90'/>
+90
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_90'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      char delimiter = instructions.getFixedFormatDecimalData().getDecimalDelimiter();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_91'/>
+91
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_91'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      toConvert = toConvert.replace(String.valueOf(delimiter), &#34;&#34;); //</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_92'/>
+92
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_92'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_93'/>
+93
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_93'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    boolean applyNegativeSign = false;</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_94'/>
+94
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_94'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    final Character negativeSignChar = instructions.getFixedFormatNumberData().getNegativeSign();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_95'/>
+95
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_95'>2</a>
+<span>
+1. getStringToConvert : negated conditional &rarr; KILLED<br/>
+2. getStringToConvert : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (negativeSignChar != null &#38;&#38; toConvert.startsWith(negativeSignChar.toString())) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_96'/>
+96
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_96'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      toConvert = toConvert.replaceFirst(negativeSignChar.toString(), &#34;&#34;);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_97'/>
+97
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_97'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      applyNegativeSign = true;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_98'/>
+98
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_98'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_99'/>
+99
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_99'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_100'/>
+100
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_100'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    int decimals = instructions.getFixedFormatDecimalData().getDecimals();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_101'/>
+101
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_101'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    final boolean theZeroString = toConvert.matches(&#34;^[0]+$&#34;);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_102'/>
+102
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_102'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    //only change the string to convert if data contains decimals AND is not the zero string</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_103'/>
+103
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_103'>3</a>
+<span>
+1. getStringToConvert : changed conditional boundary &rarr; SURVIVED<br/>
+2. getStringToConvert : negated conditional &rarr; KILLED<br/>
+3. getStringToConvert : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    if (decimals &#62; 0 &#38;&#38; !theZeroString) {</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_104'/>
+104
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_104'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      //ensuring the string to convert is at least as long as the decimals length</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_105'/>
+105
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_105'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      toConvert = StringUtils.leftPad(toConvert, decimals, &#34;0&#34;);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_106'/>
+106
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_106'>1</a>
+<span>
+1. getStringToConvert : Replaced integer subtraction with addition &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      String beforeDelimiter = toConvert.substring(0, toConvert.length()-decimals);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_107'/>
+107
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_107'>1</a>
+<span>
+1. getStringToConvert : Replaced integer subtraction with addition &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      String afterDelimiter = toConvert.substring(toConvert.length()-decimals);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_108'/>
+108
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_108'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      toConvert = beforeDelimiter + &#39;.&#39; + afterDelimiter;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_109'/>
+109
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_109'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_110'/>
+110
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_110'>1</a>
+<span>
+1. getStringToConvert : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (applyNegativeSign) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_111'/>
+111
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_111'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      toConvert = &#34;-&#34;.concat(toConvert);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_112'/>
+112
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_112'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_113'/>
+113
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_113'>1</a>
+<span>
+1. getStringToConvert : replaced return value with &#34;&#34; for com/ancientprogramming/fixedformat4j/format/impl/AbstractDecimalFormatter::getStringToConvert &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return toConvert;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_114'/>
+114
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_114'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@22cf1808_115'/>
+115
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_115'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_41'>41</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_41'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>asString<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testFormatBigDecimalWith4DecimalsKeepAllDecimalsUseDecimalDelimiter()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_42'>42</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_42'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>asString<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestDoubleFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDoubleFormatter]/[method:testFormatDoubleWith4DecimalsKeepAllDecimals()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_54'>54</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_54'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>asString<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testScaleZero()]</span></span> removed call to java/text/DecimalFormat::setDecimalSeparatorAlwaysShown &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_55'>55</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_55'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>asString<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testFormatBigDecimalWith4DecimalsKeepAllDecimalsUseDecimalDelimiter()]</span></span> removed call to java/text/DecimalFormat::setMaximumFractionDigits &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_61'>61</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_61'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>asString<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testFormatBigDecimalWith4DecimalsKeepAllDecimalsUseDecimalDelimiter()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_69'>69</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_69'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>asString<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testFormatBigDecimalWith4DecimalsKeepAllDecimalsUseDecimalDelimiter()]</span></span> Replaced integer addition with subtraction &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_78'>78</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_78'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>asString<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testFormatBigDecimalWith4DecimalsKeepAllDecimalsUseDecimalDelimiter()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_83'>83</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_83'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>asString<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testFormatBigDecimalWith4DecimalsKeepAllDecimalsUseDecimalDelimiter()]</span></span> replaced return value with &#34;&#34; for com/ancientprogramming/fixedformat4j/format/impl/AbstractDecimalFormatter::asString &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_89'>89</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_89'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getStringToConvert<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestFloatFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFloatFormatter]/[method:testParse()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_95'>95</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_95'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getStringToConvert<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToDoubleFormatter()]</span></span> negated conditional &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>getStringToConvert<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testParse()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_103'>103</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_103'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getStringToConvert<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToDoubleFormatter()]</span></span> negated conditional &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>getStringToConvert<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToDoubleFormatter()]</span></span> negated conditional &rarr; KILLED</span>
+</div> <p class='SURVIVED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>getStringToConvert<br/><b>Killed by : </b>none</span></span> changed conditional boundary &rarr; SURVIVED</span>
+<a title="Click to view covering tests" class="view-covered-by-tests" onClick="document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.AbstractDecimalFormatter,-method=getStringToConvert,-methodDesc=(Ljava/lang/String;Lcom/ancientprogramming/fixedformat4j/format/FormatInstructions;)Ljava/lang/String;],-indexes=[77],-mutator=org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator]').style.display=(document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.AbstractDecimalFormatter,-method=getStringToConvert,-methodDesc=(Ljava/lang/String;Lcom/ancientprogramming/fixedformat4j/format/FormatInstructions;)Ljava/lang/String;],-indexes=[77],-mutator=org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator]').style.display == 'block')?'none':'block';">Covering tests</a>
+<div class="covered-tests" id="MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.AbstractDecimalFormatter,-method=getStringToConvert,-methodDesc=(Ljava/lang/String;Lcom/ancientprogramming/fixedformat4j/format/FormatInstructions;)Ljava/lang/String;],-indexes=[77],-mutator=org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator]" style="display:none;">Covered by tests:
+<ul>
+<li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToDoubleFormatter()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToFloatFormatter()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToBigDecimalFormatter()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToFloatPrimitive()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToDoublePrimitive()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestFloatFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFloatFormatter]/[method:testParse()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testScaleZero()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestDoubleFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDoubleFormatter]/[method:testParse()]</li> <li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatPattern_dateFieldParsedCorrectly()]</li> <li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testLombokLoad_allFieldsPopulated()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testParse()]</li> <li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatBoolean_trueParsedFromY()]</li> <li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatDecimal_bigDecimalParsedCorrectly()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testCountOneBackwardCompat()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLoadRecord()]</li> <li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testLombokRoundTrip_loadThenExportMatchesOriginal()]</li> 
+</ul>
+</div></div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_106'>106</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_106'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getStringToConvert<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToDoubleFormatter()]</span></span> Replaced integer subtraction with addition &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_107'>107</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_107'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getStringToConvert<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToDoubleFormatter()]</span></span> Replaced integer subtraction with addition &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_110'>110</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_110'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getStringToConvert<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToDoubleFormatter()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@22cf1808_113'>113</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@22cf1808_113'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getStringToConvert<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToDoubleFormatter()]</span></span> replaced return value with &#34;&#34; for com/ancientprogramming/fixedformat4j/format/impl/AbstractDecimalFormatter::getStringToConvert &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+<li class='mutator'>EMPTY_RETURNS</li>
+<li class='mutator'>FALSE_RETURNS</li>
+<li class='mutator'>INCREMENTS</li>
+<li class='mutator'>INVERT_NEGS</li>
+<li class='mutator'>MATH</li>
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+<li class='mutator'>NULL_RETURNS</li>
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+<li class='mutator'>TRUE_RETURNS</li>
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToDoubleFormatter()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToFloatFormatter()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToBigDecimalFormatter()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToFloatPrimitive()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToDoublePrimitive()] (4 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFloatFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFloatFormatter]/[method:testParse()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testScaleZero()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestDoubleFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDoubleFormatter]/[method:testParse()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatPattern_dateFieldParsedCorrectly()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testLombokLoad_allFieldsPopulated()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testParse()] (10 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatBoolean_trueParsedFromY()] (3 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatDecimal_bigDecimalParsedCorrectly()] (3 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testCountOneBackwardCompat()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLoadRecord()] (5 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testLombokRoundTrip_loadThenExportMatchesOriginal()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testFormatBigDecimalWith4DecimalsKeepAllDecimalsUseDecimalDelimiter()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testFormatBigDecimalWith5DecimalsTo4DecimalsUseDecimalDelimiter()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testRoundingModeFloor()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestDoubleFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDoubleFormatter]/[method:testFormatDoubleWith4DecimalsKeepAllDecimals()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testFormatBigDecimalWith4DecimalsKeepAllDecimalsNoDecimalDelimiter()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testFormatWithRounding()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testRoundingModeDown()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestDoubleFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDoubleFormatter]/[method:testFormatDoubleWith5DecimalsTo4Decimals()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testFormatBigDecimalWith5DecimalsTo4DecimalsNoDecimalDelimiter()] (3 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testRoundingModeCeiling()] (5 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFloatFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFloatFormatter]/[method:testFormat()] (3 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestDoubleFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDoubleFormatter]/[method:testFormat()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestBigDecimalFormatter]/[method:testFormat()] (8 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatBoolean_falseExportedAsN()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatDecimal_bigDecimalExportedCorrectly()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testLombokExport_producesCorrectString()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatPattern_dateFieldExportedCorrectly()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testExportNestedRecordObject()] (3 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testExportRecordObject()] (8 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.17.1
+
+</body>
+</html>

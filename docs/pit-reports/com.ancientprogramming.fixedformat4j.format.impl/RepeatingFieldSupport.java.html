@@ -1,0 +1,3354 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>RepeatingFieldSupport.java</h1>
+
+<table class="src">
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package com.ancientprogramming.fixedformat4j.format.impl;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.ancientprogramming.fixedformat4j.annotation.Field;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.ancientprogramming.fixedformat4j.format.FixedFormatter;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.ancientprogramming.fixedformat4j.format.FormatContext;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.ancientprogramming.fixedformat4j.format.FormatInstructions;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_8'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.ancientprogramming.fixedformat4j.format.ParseException;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import org.slf4j.Logger;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_10'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import org.slf4j.LoggerFactory;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_11'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_12'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.lang.reflect.AnnotatedElement;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_13'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.lang.reflect.Array;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_14'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.lang.reflect.Method;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_15'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.lang.reflect.ParameterizedType;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_16'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.lang.reflect.Type;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_17'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.ArrayList;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_18'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Collection;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_19'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.HashMap;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_20'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.LinkedHashSet;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_21'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.LinkedList;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_22'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.List;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_23'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Set;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_24'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.SortedSet;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_25'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.TreeSet;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_26'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_27'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_28'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_29'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import static java.lang.String.format;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_30'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_31'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/**</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_32'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Handles all {@code count &#62; 1} (repeating) field logic for both reading and exporting.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_33'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_34'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @author Jacob von Eyben - &#60;a href=&#34;https://eybenconsult.com&#34;&#62;https://eybenconsult.com&#60;/a&#62;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_35'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @since 1.6.0</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_36'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_37'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>class RepeatingFieldSupport {</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_38'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_39'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  private static final Logger LOG = LoggerFactory.getLogger(RepeatingFieldSupport.class);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_40'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_41'/>
+41
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_41'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  private final FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_42'/>
+42
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_42'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_43'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  // -------------------------------------------------------------------------</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_44'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  // Read</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_45'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  // -------------------------------------------------------------------------</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_46'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_47'/>
+47
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_47'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @SuppressWarnings({&#34;unchecked&#34;, &#34;rawtypes&#34;})</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_48'/>
+48
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_48'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  Object read(Class&#60;?&#62; clazz, String data, Method getter, AnnotatedElement annotationSource, Field fieldAnno) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_49'/>
+49
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_49'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    int count = fieldAnno.count();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_50'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    Class&#60;?&#62; elementType = resolveElementType(getter);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_51'/>
+51
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_51'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    FormatInstructions formatdata = instructionsBuilder.build(annotationSource, fieldAnno, elementType);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_52'/>
+52
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_52'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_53'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    FormatContext protoContext = new FormatContext(fieldAnno.offset(), elementType, fieldAnno.formatter());</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_54'/>
+54
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_54'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    FixedFormatter&#60;Object&#62; formatter = (FixedFormatter&#60;Object&#62;) getFixedFormatterInstance(protoContext.getFormatter(), protoContext);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_55'/>
+55
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_55'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_56'/>
+56
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_56'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    List&#60;Object&#62; elements = new ArrayList&#60;&#62;();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_57'/>
+57
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_57'>2</a>
+<span>
+1. read : changed conditional boundary &rarr; KILLED<br/>
+2. read : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    for (int i = 0; i &#60; count; i++) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_58'/>
+58
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_58'>2</a>
+<span>
+1. read : Replaced integer multiplication with division &rarr; KILLED<br/>
+2. read : Replaced integer addition with subtraction &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      int elementOffset = fieldAnno.offset() + fieldAnno.length() * i;</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_59'/>
+59
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_59'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      FormatContext elementContext = new FormatContext(elementOffset, elementType, fieldAnno.formatter());</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_60'/>
+60
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_60'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      String dataToParse = fetchData(data, formatdata, elementContext);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_61'/>
+61
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_61'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      try {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_62'/>
+62
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_62'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        elements.add(formatter.parse(dataToParse, formatdata));</span></pre></td></tr>
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_63'/>
+63
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_63'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>      } catch (RuntimeException e) {</span></pre></td></tr>
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_64'/>
+64
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_64'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>        throw new ParseException(data, dataToParse, clazz, getter, elementContext, formatdata, e);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_65'/>
+65
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_65'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_66'/>
+66
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_66'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_67'/>
+67
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_67'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_68'/>
+68
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_68'>1</a>
+<span>
+1. read : replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::read &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return assembleCollection(getter, elements);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_69'/>
+69
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_69'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_70'/>
+70
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_70'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_71'/>
+71
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_71'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  // -------------------------------------------------------------------------</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_72'/>
+72
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_72'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  // Export</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_73'/>
+73
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_73'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  // -------------------------------------------------------------------------</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_74'/>
+74
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_74'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_75'/>
+75
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_75'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @SuppressWarnings({&#34;unchecked&#34;, &#34;rawtypes&#34;})</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_76'/>
+76
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_76'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  &#60;T&#62; void export(T fixedFormatRecord, AnnotationTarget target, Field fieldAnno, HashMap&#60;Integer, String&#62; foundData) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_77'/>
+77
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_77'>1</a>
+<span>
+1. export : removed call to com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::validateCount &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    validateCount(target.getter, fieldAnno);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_78'/>
+78
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_78'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_79'/>
+79
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_79'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    Object value;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_80'/>
+80
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_80'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    try {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_81'/>
+81
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_81'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      value = target.getter.invoke(fixedFormatRecord);</span></pre></td></tr>
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_82'/>
+82
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_82'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>    } catch (Exception e) {</span></pre></td></tr>
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_83'/>
+83
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_83'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>      throw new FixedFormatException(format(&#34;could not invoke %s&#34;, fieldLabel(target.getter)), e);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_84'/>
+84
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_84'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_85'/>
+85
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_85'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_86'/>
+86
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_86'>1</a>
+<span>
+1. export : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (value == null) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_87'/>
+87
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_87'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw new FixedFormatException(format(&#34;Cannot export null repeating field on %s&#34;, fieldLabel(target.getter)));</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_88'/>
+88
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_88'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_89'/>
+89
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_89'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_90'/>
+90
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_90'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    int count = fieldAnno.count();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_91'/>
+91
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_91'>1</a>
+<span>
+1. export : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    int actualSize = value.getClass().isArray() ? Array.getLength(value) : ((Collection&#60;?&#62;) value).size();</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_92'/>
+92
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_92'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_93'/>
+93
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_93'>1</a>
+<span>
+1. export : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (actualSize != count) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_94'/>
+94
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_94'>1</a>
+<span>
+1. export : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (fieldAnno.strictCount()) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_95'/>
+95
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_95'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        throw new FixedFormatException(</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_96'/>
+96
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_96'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            format(&#34;Repeating field %s has count=%d but collection size=%d&#34;, fieldLabel(target.getter), count, actualSize));</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_97'/>
+97
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_97'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      } else {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_98'/>
+98
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_98'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        LOG.warn(&#34;Repeating field {} has count={} but collection size={}. Exporting {} elements.&#34;,</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_99'/>
+99
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_99'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            fieldLabel(target.getter), count, actualSize, Math.min(count, actualSize));</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_100'/>
+100
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_100'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_101'/>
+101
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_101'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_102'/>
+102
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_102'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_103'/>
+103
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_103'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    int exportCount = Math.min(count, actualSize);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_104'/>
+104
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_104'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    Class&#60;?&#62; elementType = resolveElementType(target.getter);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_105'/>
+105
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_105'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    FormatInstructions formatdata = instructionsBuilder.build(target.annotationSource, fieldAnno, elementType);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_106'/>
+106
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_106'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    FormatContext protoContext = new FormatContext(fieldAnno.offset(), elementType, fieldAnno.formatter());</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_107'/>
+107
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_107'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    FixedFormatter&#60;Object&#62; formatter = (FixedFormatter&#60;Object&#62;) getFixedFormatterInstance(protoContext.getFormatter(), protoContext);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_108'/>
+108
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_108'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_109'/>
+109
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_109'>1</a>
+<span>
+1. export : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    Iterable&#60;?&#62; iterable = value.getClass().isArray() ? arrayToIterable(value, exportCount) : (Collection&#60;?&#62;) value;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_110'/>
+110
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_110'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_111'/>
+111
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_111'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    int i = 0;</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_112'/>
+112
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_112'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    for (Object element : iterable) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_113'/>
+113
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_113'>2</a>
+<span>
+1. export : changed conditional boundary &rarr; SURVIVED<br/>
+2. export : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>      if (i &#62;= exportCount) break;</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_114'/>
+114
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_114'>2</a>
+<span>
+1. export : Replaced integer multiplication with division &rarr; KILLED<br/>
+2. export : Replaced integer addition with subtraction &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      int elementOffset = fieldAnno.offset() + fieldAnno.length() * i;</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_115'/>
+115
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_115'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      foundData.put(elementOffset, formatter.format(element, formatdata));</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_116'/>
+116
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_116'>1</a>
+<span>
+1. export : Changed increment from 1 to -1 &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      i++;</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_117'/>
+117
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_117'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_118'/>
+118
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_118'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_119'/>
+119
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_119'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_120'/>
+120
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_120'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  // -------------------------------------------------------------------------</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_121'/>
+121
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_121'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  // Validation &#38; utilities &#8212; package-private for direct testing</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_122'/>
+122
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_122'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  // -------------------------------------------------------------------------</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_123'/>
+123
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_123'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_124'/>
+124
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_124'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  void validateCount(Method method, Field fieldAnnotation) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_125'/>
+125
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_125'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    int count = fieldAnnotation.count();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_126'/>
+126
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_126'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    Class&#60;?&#62; returnType = method.getReturnType();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_127'/>
+127
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_127'>1</a>
+<span>
+1. validateCount : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    boolean isArrayOrCollection = returnType.isArray()</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_128'/>
+128
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_128'>1</a>
+<span>
+1. validateCount : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        || Collection.class.isAssignableFrom(returnType)</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_129'/>
+129
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_129'>1</a>
+<span>
+1. validateCount : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        || Iterable.class.isAssignableFrom(returnType);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_130'/>
+130
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_130'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_131'/>
+131
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_131'>2</a>
+<span>
+1. validateCount : changed conditional boundary &rarr; KILLED<br/>
+2. validateCount : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (count &#60; 1) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_132'/>
+132
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_132'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw new FixedFormatException(</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_133'/>
+133
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_133'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          format(&#34;@Field count must be &#62;= 1 on %s, was: %d&#34;, fieldLabel(method), count));</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_134'/>
+134
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_134'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_135'/>
+135
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_135'>2</a>
+<span>
+1. validateCount : negated conditional &rarr; KILLED<br/>
+2. validateCount : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (count == 1 &#38;&#38; isArrayOrCollection) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_136'/>
+136
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_136'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw new FixedFormatException(</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_137'/>
+137
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_137'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          format(&#34;@Field count=1 but return type is array/collection on %s. Use count &#62; 1 for repeating fields.&#34;, fieldLabel(method)));</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_138'/>
+138
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_138'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_139'/>
+139
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_139'>3</a>
+<span>
+1. validateCount : changed conditional boundary &rarr; KILLED<br/>
+2. validateCount : negated conditional &rarr; KILLED<br/>
+3. validateCount : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (count &#62; 1 &#38;&#38; !isArrayOrCollection) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_140'/>
+140
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_140'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw new FixedFormatException(</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_141'/>
+141
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_141'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          format(&#34;@Field count=%d requires array or Collection return type on %s, found: %s&#34;, count, fieldLabel(method), returnType.getName()));</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_142'/>
+142
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_142'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_143'/>
+143
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_143'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_144'/>
+144
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_144'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_145'/>
+145
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_145'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  Class&#60;?&#62; resolveElementType(Method method) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_146'/>
+146
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_146'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    Class&#60;?&#62; returnType = method.getReturnType();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_147'/>
+147
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_147'>1</a>
+<span>
+1. resolveElementType : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (returnType.isArray()) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_148'/>
+148
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_148'>1</a>
+<span>
+1. resolveElementType : replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::resolveElementType &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return returnType.getComponentType();</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_149'/>
+149
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_149'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_150'/>
+150
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_150'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    Type genericReturnType = method.getGenericReturnType();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_151'/>
+151
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_151'>1</a>
+<span>
+1. resolveElementType : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (genericReturnType instanceof ParameterizedType) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_152'/>
+152
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_152'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      ParameterizedType pt = (ParameterizedType) genericReturnType;</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_153'/>
+153
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_153'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      Type[] typeArgs = pt.getActualTypeArguments();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_154'/>
+154
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_154'>3</a>
+<span>
+1. resolveElementType : changed conditional boundary &rarr; SURVIVED<br/>
+2. resolveElementType : negated conditional &rarr; KILLED<br/>
+3. resolveElementType : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>      if (typeArgs.length &#62; 0 &#38;&#38; typeArgs[0] instanceof Class) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_155'/>
+155
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_155'>1</a>
+<span>
+1. resolveElementType : replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::resolveElementType &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return (Class&#60;?&#62;) typeArgs[0];</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_156'/>
+156
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_156'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_157'/>
+157
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_157'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_158'/>
+158
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_158'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    throw new FixedFormatException(format(&#34;Cannot determine element type for repeating field on %s. Ensure the collection is parameterized (e.g. List&#60;String&#62;, not List).&#34;, fieldLabel(method)));</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_159'/>
+159
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_159'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_160'/>
+160
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_160'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_161'/>
+161
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_161'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @SuppressWarnings({&#34;unchecked&#34;, &#34;rawtypes&#34;})</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_162'/>
+162
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_162'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  Object assembleCollection(Method getter, List&#60;Object&#62; elements) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_163'/>
+163
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_163'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    Class&#60;?&#62; returnType = getter.getReturnType();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_164'/>
+164
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_164'>1</a>
+<span>
+1. assembleCollection : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (returnType.isArray()) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_165'/>
+165
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_165'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      Object array = Array.newInstance(returnType.getComponentType(), elements.size());</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_166'/>
+166
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_166'>2</a>
+<span>
+1. assembleCollection : negated conditional &rarr; KILLED<br/>
+2. assembleCollection : changed conditional boundary &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      for (int i = 0; i &#60; elements.size(); i++) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_167'/>
+167
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_167'>1</a>
+<span>
+1. assembleCollection : removed call to java/lang/reflect/Array::set &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        Array.set(array, i, elements.get(i));</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_168'/>
+168
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_168'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_169'/>
+169
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_169'>1</a>
+<span>
+1. assembleCollection : replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::assembleCollection &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return array;</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_170'/>
+170
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_170'>1</a>
+<span>
+1. assembleCollection : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    } else if (LinkedList.class.isAssignableFrom(returnType)) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_171'/>
+171
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_171'>1</a>
+<span>
+1. assembleCollection : replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::assembleCollection &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return new LinkedList&#60;&#62;(elements);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_172'/>
+172
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_172'>1</a>
+<span>
+1. assembleCollection : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    } else if (List.class.isAssignableFrom(returnType)) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_173'/>
+173
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_173'>1</a>
+<span>
+1. assembleCollection : replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::assembleCollection &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return new ArrayList&#60;&#62;(elements);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_174'/>
+174
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_174'>1</a>
+<span>
+1. assembleCollection : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    } else if (SortedSet.class.isAssignableFrom(returnType)) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_175'/>
+175
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_175'>1</a>
+<span>
+1. assembleCollection : replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::assembleCollection &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return new TreeSet&#60;&#62;(elements);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_176'/>
+176
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_176'>1</a>
+<span>
+1. assembleCollection : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    } else if (Set.class.isAssignableFrom(returnType)) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_177'/>
+177
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_177'>1</a>
+<span>
+1. assembleCollection : replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::assembleCollection &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return new LinkedHashSet&#60;&#62;(elements);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_178'/>
+178
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_178'>2</a>
+<span>
+1. assembleCollection : negated conditional &rarr; KILLED<br/>
+2. assembleCollection : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    } else if (Collection.class.isAssignableFrom(returnType) || Iterable.class.isAssignableFrom(returnType)) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_179'/>
+179
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_179'>1</a>
+<span>
+1. assembleCollection : replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::assembleCollection &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return new ArrayList&#60;&#62;(elements);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_180'/>
+180
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_180'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    } else {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_181'/>
+181
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_181'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw new FixedFormatException(format(&#34;Unsupported collection type %s on %s. Supported types: arrays, List, LinkedList, Set, SortedSet, Collection.&#34;, returnType.getName(), fieldLabel(getter)));</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_182'/>
+182
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_182'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_183'/>
+183
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_183'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_184'/>
+184
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_184'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_185'/>
+185
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_185'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private Iterable&#60;Object&#62; arrayToIterable(Object array, int limit) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_186'/>
+186
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_186'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    List&#60;Object&#62; list = new ArrayList&#60;&#62;(limit);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_187'/>
+187
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_187'>2</a>
+<span>
+1. arrayToIterable : changed conditional boundary &rarr; KILLED<br/>
+2. arrayToIterable : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    for (int i = 0; i &#60; limit; i++) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_188'/>
+188
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_188'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      list.add(Array.get(array, i));</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_189'/>
+189
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_189'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_190'/>
+190
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_190'>1</a>
+<span>
+1. arrayToIterable : replaced return value with Collections.emptyList for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::arrayToIterable &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return list;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_191'/>
+191
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_191'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_192'/>
+192
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_192'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_193'/>
+193
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_193'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private static String fieldLabel(Method method) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_194'/>
+194
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_194'>1</a>
+<span>
+1. fieldLabel : replaced return value with &#34;&#34; for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::fieldLabel &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return format(&#34;%s#%s()&#34;, method.getDeclaringClass().getName(), method.getName());</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_195'/>
+195
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_195'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@e21d73_196'/>
+196
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_196'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_57'>57</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_57'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:read_repeatingField_parsesAllElements()]</span></span> changed conditional boundary &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>read<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:read_repeatingField_parsesAllElements()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_58'>58</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_58'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:read_repeatingField_parsesAllElements()]</span></span> Replaced integer multiplication with division &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>read<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:read_repeatingField_parsesAllElements()]</span></span> Replaced integer addition with subtraction &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_68'>68</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_68'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:read_repeatingField_parsesAllElements()]</span></span> replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::read &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_77'>77</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_77'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>export<br/><b>Killed by : </b>none</span></span> removed call to com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::validateCount &rarr; SURVIVED</span>
+<a title="Click to view covering tests" class="view-covered-by-tests" onClick="document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.RepeatingFieldSupport,-method=export,-methodDesc=(Ljava/lang/Object;Lcom/ancientprogramming/fixedformat4j/format/impl/AnnotationTarget;Lcom/ancientprogramming/fixedformat4j/annotation/Field;Ljava/util/HashMap;)V],-indexes=[7],-mutator=org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator]').style.display=(document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.RepeatingFieldSupport,-method=export,-methodDesc=(Ljava/lang/Object;Lcom/ancientprogramming/fixedformat4j/format/impl/AnnotationTarget;Lcom/ancientprogramming/fixedformat4j/annotation/Field;Ljava/util/HashMap;)V],-indexes=[7],-mutator=org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator]').style.display == 'block')?'none':'block';">Covering tests</a>
+<div class="covered-tests" id="MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.RepeatingFieldSupport,-method=export,-methodDesc=(Ljava/lang/Object;Lcom/ancientprogramming/fixedformat4j/format/impl/AnnotationTarget;Lcom/ancientprogramming/fixedformat4j/annotation/Field;Ljava/util/HashMap;)V],-indexes=[7],-mutator=org.pitest.mutationtest.engine.gregor.mutators.VoidMethodCallMutator]" style="display:none;">Covered by tests:
+<ul>
+<li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_nullCollection_throwsFixedFormatException()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_sizeMismatch_strictMode_throwsFixedFormatException()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_repeatingField_writesAllElements()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_sizeMismatch_nonStrictMode_logsWarnAndExportsMin()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportNullArrayThrows()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportArrayLongerThanCountStrictThrows()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportArrayShorterThanCountStrictThrows()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportNullListThrows()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportIntegerArray()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportStringList()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportStringArray()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportLinkedHashSet()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportArrayLongerThanCountLenientLogsWarn()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportListShorterThanCountLenientLogsWarn()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportArrayShorterThanCountLenientLogsWarn()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testRoundTripStringArray()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testRoundTripIntegerArray()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testRoundTripStringList()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testRoundTripLinkedHashSet()]</li> 
+</ul>
+</div></div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_86'>86</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_86'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>export<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_nullCollection_throwsFixedFormatException()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_91'>91</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_91'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>export<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_sizeMismatch_strictMode_throwsFixedFormatException()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_93'>93</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_93'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>export<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_sizeMismatch_strictMode_throwsFixedFormatException()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_94'>94</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_94'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>export<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_sizeMismatch_strictMode_throwsFixedFormatException()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_109'>109</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_109'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>export<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_repeatingField_writesAllElements()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_113'>113</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_113'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>export<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_repeatingField_writesAllElements()]</span></span> negated conditional &rarr; KILLED</span>
+</div> <p class='SURVIVED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>export<br/><b>Killed by : </b>none</span></span> changed conditional boundary &rarr; SURVIVED</span>
+<a title="Click to view covering tests" class="view-covered-by-tests" onClick="document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.RepeatingFieldSupport,-method=export,-methodDesc=(Ljava/lang/Object;Lcom/ancientprogramming/fixedformat4j/format/impl/AnnotationTarget;Lcom/ancientprogramming/fixedformat4j/annotation/Field;Ljava/util/HashMap;)V],-indexes=[239],-mutator=org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator]').style.display=(document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.RepeatingFieldSupport,-method=export,-methodDesc=(Ljava/lang/Object;Lcom/ancientprogramming/fixedformat4j/format/impl/AnnotationTarget;Lcom/ancientprogramming/fixedformat4j/annotation/Field;Ljava/util/HashMap;)V],-indexes=[239],-mutator=org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator]').style.display == 'block')?'none':'block';">Covering tests</a>
+<div class="covered-tests" id="MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.RepeatingFieldSupport,-method=export,-methodDesc=(Ljava/lang/Object;Lcom/ancientprogramming/fixedformat4j/format/impl/AnnotationTarget;Lcom/ancientprogramming/fixedformat4j/annotation/Field;Ljava/util/HashMap;)V],-indexes=[239],-mutator=org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator]" style="display:none;">Covered by tests:
+<ul>
+<li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_repeatingField_writesAllElements()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_sizeMismatch_nonStrictMode_logsWarnAndExportsMin()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportNullListThrows()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportIntegerArray()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportStringList()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportStringArray()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportLinkedHashSet()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportArrayLongerThanCountLenientLogsWarn()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportListShorterThanCountLenientLogsWarn()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportArrayShorterThanCountLenientLogsWarn()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testRoundTripStringArray()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testRoundTripIntegerArray()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testRoundTripStringList()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testRoundTripLinkedHashSet()]</li> 
+</ul>
+</div></div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_114'>114</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_114'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>export<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_repeatingField_writesAllElements()]</span></span> Replaced integer multiplication with division &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>export<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_repeatingField_writesAllElements()]</span></span> Replaced integer addition with subtraction &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_116'>116</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_116'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>export<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_repeatingField_writesAllElements()]</span></span> Changed increment from 1 to -1 &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_127'>127</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_127'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>validateCount<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:validateCount_countGreaterOneOnScalar_throwsFixedFormatException()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_128'>128</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_128'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>validateCount<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:validateCount_countGreaterOneOnScalar_throwsFixedFormatException()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_129'>129</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_129'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>validateCount<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:validateCount_countGreaterOneOnScalar_throwsFixedFormatException()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_131'>131</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_131'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>validateCount<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testCountOneWithArrayTypeThrows()]</span></span> changed conditional boundary &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>validateCount<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:validateCount_validCountOnCollection_doesNotThrow()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_135'>135</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_135'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>validateCount<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:validateCount_countOneOnCollection_throwsFixedFormatException()]</span></span> negated conditional &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>validateCount<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:validateCount_validCountOnCollection_doesNotThrow()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_139'>139</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_139'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>validateCount<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testImportAnnotatedNestedClass()]</span></span> changed conditional boundary &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>validateCount<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:validateCount_countGreaterOneOnScalar_throwsFixedFormatException()]</span></span> negated conditional &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>validateCount<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:validateCount_countGreaterOneOnScalar_throwsFixedFormatException()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_147'>147</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_147'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>resolveElementType<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:resolveElementType_array_returnsComponentType()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_148'>148</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_148'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>resolveElementType<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:resolveElementType_array_returnsComponentType()]</span></span> replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::resolveElementType &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_151'>151</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_151'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>resolveElementType<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:resolveElementType_parameterizedList_returnsTypeArg()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_154'>154</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_154'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>resolveElementType<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:resolveElementType_parameterizedList_returnsTypeArg()]</span></span> negated conditional &rarr; KILLED</span>
+</div> <p class='SURVIVED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>resolveElementType<br/><b>Killed by : </b>none</span></span> changed conditional boundary &rarr; SURVIVED</span>
+<a title="Click to view covering tests" class="view-covered-by-tests" onClick="document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.RepeatingFieldSupport,-method=resolveElementType,-methodDesc=(Ljava/lang/reflect/Method;)Ljava/lang/Class;],-indexes=[41],-mutator=org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator]').style.display=(document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.RepeatingFieldSupport,-method=resolveElementType,-methodDesc=(Ljava/lang/reflect/Method;)Ljava/lang/Class;],-indexes=[41],-mutator=org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator]').style.display == 'block')?'none':'block';">Covering tests</a>
+<div class="covered-tests" id="MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.RepeatingFieldSupport,-method=resolveElementType,-methodDesc=(Ljava/lang/reflect/Method;)Ljava/lang/Class;],-indexes=[41],-mutator=org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator]" style="display:none;">Covered by tests:
+<ul>
+<li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:resolveElementType_parameterizedList_returnsTypeArg()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportNullListThrows()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportStringList()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportLinkedHashSet()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testLoadStringLinkedHashSet()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testLoadIntegerCollection()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportListShorterThanCountLenientLogsWarn()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testLoadStringList()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testRoundTripStringList()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testRoundTripLinkedHashSet()]</li> 
+</ul>
+</div></div> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>resolveElementType<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:resolveElementType_parameterizedList_returnsTypeArg()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_155'>155</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_155'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>resolveElementType<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:resolveElementType_parameterizedList_returnsTypeArg()]</span></span> replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::resolveElementType &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_164'>164</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_164'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_array_returnsCorrectArray()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_166'>166</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_166'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_array_returnsCorrectArray()]</span></span> negated conditional &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_array_returnsCorrectArray()]</span></span> changed conditional boundary &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_167'>167</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_167'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_array_returnsCorrectArray()]</span></span> removed call to java/lang/reflect/Array::set &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_169'>169</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_169'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_array_returnsCorrectArray()]</span></span> replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::assembleCollection &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_170'>170</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_170'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_linkedList_returnsLinkedList()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_171'>171</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_171'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_linkedList_returnsLinkedList()]</span></span> replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::assembleCollection &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_172'>172</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_172'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_set_returnsLinkedHashSet()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_173'>173</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_173'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_list_returnsArrayList()]</span></span> replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::assembleCollection &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_174'>174</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_174'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_sortedSet_returnsTreeSet()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_175'>175</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_175'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_sortedSet_returnsTreeSet()]</span></span> replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::assembleCollection &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_176'>176</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_176'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_set_returnsLinkedHashSet()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_177'>177</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_177'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_set_returnsLinkedHashSet()]</span></span> replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::assembleCollection &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_178'>178</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_178'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_unsupportedType_throwsFixedFormatException()]</span></span> negated conditional &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_unsupportedType_throwsFixedFormatException()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_179'>179</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_179'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>assembleCollection<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testLoadIntegerCollection()]</span></span> replaced return value with null for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::assembleCollection &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_187'>187</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_187'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>arrayToIterable<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_repeatingField_writesAllElements()]</span></span> changed conditional boundary &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>arrayToIterable<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_repeatingField_writesAllElements()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_190'>190</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_190'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>arrayToIterable<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_repeatingField_writesAllElements()]</span></span> replaced return value with Collections.emptyList for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::arrayToIterable &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@e21d73_194'>194</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@e21d73_194'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>fieldLabel<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_sizeMismatch_nonStrictMode_logsWarnAndExportsMin()]</span></span> replaced return value with &#34;&#34; for com/ancientprogramming/fixedformat4j/format/impl/RepeatingFieldSupport::fieldLabel &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+<li class='mutator'>EMPTY_RETURNS</li>
+<li class='mutator'>FALSE_RETURNS</li>
+<li class='mutator'>INCREMENTS</li>
+<li class='mutator'>INVERT_NEGS</li>
+<li class='mutator'>MATH</li>
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+<li class='mutator'>NULL_RETURNS</li>
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+<li class='mutator'>TRUE_RETURNS</li>
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_sizeMismatch_strictMode_throwsFixedFormatException()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_repeatingField_writesAllElements()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_sizeMismatch_nonStrictMode_logsWarnAndExportsMin()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportArrayLongerThanCountStrictThrows()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportArrayShorterThanCountStrictThrows()] (4 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportNullListThrows()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportIntegerArray()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportStringList()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportStringArray()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportLinkedHashSet()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportArrayLongerThanCountLenientLogsWarn()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportListShorterThanCountLenientLogsWarn()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportArrayShorterThanCountLenientLogsWarn()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testRoundTripStringArray()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testRoundTripIntegerArray()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testRoundTripStringList()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testRoundTripLinkedHashSet()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:resolveElementType_rawCollection_throwsFixedFormatException()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:validateCount_countGreaterOneOnScalar_throwsFixedFormatException()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:validateCount_countLessThanOne_throwsFixedFormatException()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:validateCount_countOneOnCollection_throwsFixedFormatException()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_unsupportedType_throwsFixedFormatException()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:export_nullCollection_throwsFixedFormatException()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testExportNullArrayThrows()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testCountManyWithScalarTypeThrows()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testCountOneWithArrayTypeThrows()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testCountZeroThrows()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testNegativeCountThrows()] (3 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:resolveElementType_parameterizedList_returnsTypeArg()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testLoadStringLinkedHashSet()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testLoadIntegerCollection()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testLoadStringList()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_set_returnsLinkedHashSet()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_list_returnsArrayList()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:read_repeatingField_parsesAllElements()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testLoadPartialRecord()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testLoadIntegerArray()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testLoadStringArray()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:validateCount_validCountOnCollection_doesNotThrow()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testImportAnnotatedNestedClass()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImplErrors.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImplErrors]/[method:load_unparsableData_throwsParseException()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testPlainFieldAnnotation_export()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testInheritedFieldAnnotation_export()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testRecordLengthPadsExportedString()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestIssue7.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestIssue7]/[method:testExportNestedRecords()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testImportAnnotatedInnerClass()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testExportAnnotatedNestedClass()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testExportAnnotatedInnerClass()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testExportIntoExistingString()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testParseFail()] (4 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testMixedAnnotations_load()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testPlainFieldAnnotation_load()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testConflict_fieldAnnotationWins()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testConflict_bothFieldAndGetterAnnotated_noExceptionThrown()] (4 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testNullValue_exportProducesPaddedField()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testExportMultibleFieldRecordObject()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestIssue7.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestIssue7]/[method:testLoadedNestedRecords()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testMixedAnnotations_export()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testInheritedFieldAnnotation_load()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestIssue9.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestIssue9]/[method:testLastColumnIsIgnored()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testRecordCustomPaddingChar()] (5 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateNullRoundTrip()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLoadMultibleFieldsRecord()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImplErrors.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImplErrors]/[method:load_unparsableData_parseExceptionContainsFailedText()] (6 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestIssue10.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestIssue10]/[method:testParseExceptionContainsDetails()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testMethodAnnotation_stillWorks()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatPattern_dateFieldParsedCorrectly()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testLombokLoad_allFieldsPopulated()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatBoolean_falseExportedAsN()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatDecimal_bigDecimalParsedCorrectly()] (3 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatDecimal_bigDecimalExportedCorrectly()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateTimeNoPatternAnnotationUsesIsoDefault()] (3 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatBoolean_trueParsedFromY()] (3 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testLombokExport_producesCorrectString()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateNoPatternAnnotationUsesIsoLocalDateDefault()] (4 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testIsPrefixedBooleanGetterRoundTrip()] (3 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateTimeRoundTrip()] (4 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testCountOneBackwardCompat()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatPattern_dateFieldExportedCorrectly()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateRoundTrip()] (5 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLoadRecord()] (5 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testExportNestedRecordObject()] (3 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testLombokRoundTrip_loadThenExportMatchesOriginal()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testExportRecordObject()] (8 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_array_returnsCorrectArray()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_sortedSet_returnsTreeSet()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:assembleCollection_linkedList_returnsLinkedList()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingFieldSupport]/[method:resolveElementType_array_returnsComponentType()] (0 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.17.1
+
+</body>
+</html>
