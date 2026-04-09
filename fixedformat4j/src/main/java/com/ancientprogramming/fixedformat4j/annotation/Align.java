@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Capable of pad or chop data in a given direction
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public enum Align {
@@ -29,6 +29,7 @@ public enum Align {
    * Pad or chop data to the left, so the text is aligned to the right
    */
   RIGHT {
+    /** {@inheritDoc} */
     public String apply(String data, int length, char paddingChar) {
       String result;
       if (data == null) {
@@ -42,12 +43,13 @@ public enum Align {
       }
       return result;
     }
+    /** {@inheritDoc} */
     public String remove(String data, char paddingChar) {
       String result = data;
       if (data == null) {
         result = "";
       }
-      while (result.startsWith("" + paddingChar)) {
+      while (result.startsWith(String.valueOf(paddingChar))) {
         result = result.substring(1, result.length());
       }
       return result;
@@ -58,6 +60,7 @@ public enum Align {
    * Pad or chop data to the right, so the text is aligned to the left
    */
   LEFT {
+    /** {@inheritDoc} */
     public String apply(String data, int length, char paddingChar) {
       String result;
       if (data == null) {
@@ -72,12 +75,13 @@ public enum Align {
       return result;
     }
 
+    /** {@inheritDoc} */
     public String remove(String data, char paddingChar) {
       String result = data;
       if (data == null) {
         result = "";
       }
-      while (result.endsWith("" + paddingChar)) {
+      while (result.endsWith(String.valueOf(paddingChar))) {
         result = result.substring(0, result.length()-1);
       }
       return result;

@@ -23,11 +23,12 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Formatter for {@link Boolean} data
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class BooleanFormatter extends AbstractFixedFormatter<Boolean> {
 
+  /** {@inheritDoc} */
   public Boolean asObject(String string, FormatInstructions instructions) throws FixedFormatException {
     Boolean result = false;
     if (!StringUtils.isEmpty(string)) {
@@ -36,12 +37,13 @@ public class BooleanFormatter extends AbstractFixedFormatter<Boolean> {
       } else if (instructions.getFixedFormatBooleanData().getFalseValue().equals(string)) {
         result = false;
       } else {
-        throw new FixedFormatException("Could not convert string[" + string + "] to boolean value according to booleanData[" + instructions.getFixedFormatBooleanData() + "]");
+        throw new FixedFormatException(String.format("Could not convert string[%s] to boolean value according to booleanData[%s]", string, instructions.getFixedFormatBooleanData()));
       }
     }
     return result;
   }
 
+  /** {@inheritDoc} */
   public String asString(Boolean obj, FormatInstructions instructions) {
     String result = instructions.getFixedFormatBooleanData().getFalseValue();
     if (obj != null) {

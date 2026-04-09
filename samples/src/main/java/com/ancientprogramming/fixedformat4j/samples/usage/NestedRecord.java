@@ -27,7 +27,7 @@ import java.util.Date;
 /**
  * A record containing a simple datatype as well as a nested record annotated datatype.
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.3.0
  */
 //START-SNIPPET: nestedrecord

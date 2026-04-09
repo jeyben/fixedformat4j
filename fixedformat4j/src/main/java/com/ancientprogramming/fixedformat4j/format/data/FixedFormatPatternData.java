@@ -21,7 +21,7 @@ import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern
 /**
  * Data object containing the exact same data as {@link FixedFormatPattern}
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class FixedFormatPatternData {
@@ -29,18 +29,26 @@ public class FixedFormatPatternData {
   private String pattern;
   public static final FixedFormatPatternData DEFAULT = new FixedFormatPatternData(DATE_PATTERN);
 
+  /**
+   * Creates a pattern data object with the given date/time pattern.
+   *
+   * @param pattern the date/time pattern string (e.g. {@code "yyyyMMdd"})
+   */
   public FixedFormatPatternData(String pattern) {
     this.pattern = pattern;
   }
 
+  /**
+   * Returns the date/time pattern string.
+   *
+   * @return the pattern (e.g. {@code "yyyyMMdd"})
+   */
   public String getPattern() {
     return pattern;
   }
 
 
   public String toString() {
-    return "FixedFormatPatternData{" +
-        "pattern='" + pattern + '\'' +
-        '}';
+    return String.format("FixedFormatPatternData{pattern='%s'}", pattern);
   }
 }

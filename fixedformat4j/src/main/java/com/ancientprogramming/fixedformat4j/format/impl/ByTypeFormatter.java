@@ -33,7 +33,7 @@ import java.util.Map;
  * {@link Character}, {@link Boolean}, {@link Double}, {@link Float} and {@link BigDecimal}
  *
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class ByTypeFormatter implements FixedFormatter<Object> {
@@ -62,23 +62,38 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
     KNOWN_FORMATTERS.put(BigDecimal.class,  BigDecimalFormatter.class);
   }
 
+  /**
+   * Creates a {@code ByTypeFormatter} bound to the given format context.
+   * The context's data type is used at runtime to select the appropriate typed formatter.
+   *
+   * @param context the format context describing the field's offset, data type, and formatter class
+   */
   public ByTypeFormatter(FormatContext<?> context) {
     this.context = context;
   }
 
-
+  /** {@inheritDoc} */
   @SuppressWarnings("unchecked")
   public Object parse(String value, FormatInstructions instructions) {
     FixedFormatter<Object> formatter = (FixedFormatter<Object>) actualFormatter(context.getDataType());
     return formatter.parse(value, instructions);
   }
 
+  /** {@inheritDoc} */
   @SuppressWarnings("unchecked")
   public String format(Object value, FormatInstructions instructions) {
     FixedFormatter<Object> formatter = (FixedFormatter<Object>) actualFormatter(context.getDataType());
     return formatter.format(value, instructions);
   }
 
+  /**
+   * Looks up and instantiates the typed formatter for the given {@code dataType}.
+   *
+   * @param dataType the Java type of the field value
+   * @return a formatter capable of handling {@code dataType}
+   * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if no formatter is
+   *         registered for {@code dataType} or the formatter cannot be instantiated
+   */
   public FixedFormatter<?> actualFormatter(final Class<?> dataType) {
     Class<? extends FixedFormatter<?>> formatterClass = KNOWN_FORMATTERS.get(dataType);
 
@@ -86,12 +101,12 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
       try {
         return formatterClass.getConstructor().newInstance();
       } catch (NoSuchMethodException e) {
-        throw new FixedFormatException("Could not create instance of[" + formatterClass.getName() + "] because no default constructor exists");
+        throw new FixedFormatException(String.format("Could not create instance of[%s] because no default constructor exists", formatterClass.getName()));
       } catch (Exception e) {
-        throw new FixedFormatException("Could not create instance of[" + formatterClass.getName() + "]", e);
+        throw new FixedFormatException(String.format("Could not create instance of[%s]", formatterClass.getName()), e);
       }
     } else {
-      throw new FixedFormatException(ByTypeFormatter.class.getName() + " cannot handle datatype[" + dataType.getName() + "]. Provide your own custom FixedFormatter for this datatype.");
+      throw new FixedFormatException(String.format("%s cannot handle datatype[%s]. Provide your own custom FixedFormatter for this datatype.", ByTypeFormatter.class.getName(), dataType.getName()));
     }
   }
 }

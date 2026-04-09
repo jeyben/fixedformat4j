@@ -20,11 +20,12 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 /**
  * Formatter for {@link Float} data
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class FloatFormatter extends AbstractDecimalFormatter<Float> {
   
+  /** {@inheritDoc} */
   public Float asObject(String string, FormatInstructions instructions) {
       String toConvert = getStringToConvert(string, instructions);
       return Float.parseFloat("".equals(toConvert) ? "0" : toConvert);

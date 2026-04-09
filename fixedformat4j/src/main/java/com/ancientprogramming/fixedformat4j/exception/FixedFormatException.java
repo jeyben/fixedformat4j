@@ -18,15 +18,26 @@ package com.ancientprogramming.fixedformat4j.exception;
 /**
  * Thrown when errors occur while loading or exporting data.
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class FixedFormatException extends RuntimeException {
 
+  /**
+   * Creates a new exception with the given detail message.
+   *
+   * @param s the detail message
+   */
   public FixedFormatException(String s) {
     super(s);
   }
 
+  /**
+   * Creates a new exception with the given detail message and cause.
+   *
+   * @param s         the detail message
+   * @param throwable the cause
+   */
   public FixedFormatException(String s, Throwable throwable) {
     super(s, throwable);
   }

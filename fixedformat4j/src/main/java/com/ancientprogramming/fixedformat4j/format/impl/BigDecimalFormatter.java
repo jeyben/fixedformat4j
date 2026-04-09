@@ -22,11 +22,12 @@ import java.math.BigDecimal;
 /**
  * Formatter for {@link BigDecimal} data
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class BigDecimalFormatter extends AbstractDecimalFormatter<BigDecimal> {
 
+    /** {@inheritDoc} */
     public BigDecimal asObject(String string, FormatInstructions instructions) {
       String toConvert = getStringToConvert(string, instructions);
       return new BigDecimal("".equals(toConvert) ? "0" : toConvert);

@@ -25,7 +25,7 @@ import java.util.Date;
 /**
  * A record containing some simple datatypes to show basic parsing and formatting.
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.2.0
  */
 //START-SNIPPET: basicrecord

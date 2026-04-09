@@ -21,15 +21,17 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 /**
  * Formatter for {@link String} data
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class StringFormatter extends AbstractFixedFormatter<String> {
 
+  /** {@inheritDoc} */
   public String asObject(String string, FormatInstructions instructions) {
     return string;
   }
 
+  /** {@inheritDoc} */
   public String asString(String string, FormatInstructions instructions) {
     String result = null;
     if (string != null) {

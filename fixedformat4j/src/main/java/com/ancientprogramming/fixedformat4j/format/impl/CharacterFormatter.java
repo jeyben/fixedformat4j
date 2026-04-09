@@ -24,24 +24,26 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Formatter for {@link Character} data
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class CharacterFormatter extends AbstractFixedFormatter<Character> {
 
   private static final Logger LOG = LoggerFactory.getLogger(CharacterFormatter.class);
 
+  /** {@inheritDoc} */
   public Character asObject(String string, FormatInstructions instructions) {
     Character result = null;
     if (!StringUtils.isEmpty(string)) {
       result = string.charAt(0);
       if (string.length() > 1) {
-        LOG.warn("found more than one character[" + string + "] after reading instructions from record. Will return first character[" + result + "]");
+        LOG.warn("found more than one character[{}] after reading instructions from record. Will return first character[{}]", string, result);
       }
     }
     return result;
   }
 
+  /** {@inheritDoc} */
   public String asString(Character obj, FormatInstructions instructions) {
     String result = "";
     if (obj != null) {

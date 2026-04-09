@@ -20,7 +20,7 @@ import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber.
 /**
  * Data object containing the exact same data as {@link com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber}
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.1.0
  */
 public class FixedFormatNumberData {
@@ -31,31 +31,48 @@ public class FixedFormatNumberData {
   private char positiveSign;
   private char negativeSign;
 
+  /**
+   * Creates a number data object.
+   *
+   * @param signing      the sign strategy controlling where the sign character appears
+   * @param positiveSign the character used to represent a positive number
+   * @param negativeSign the character used to represent a negative number
+   */
   public FixedFormatNumberData(Sign signing, char positiveSign, char negativeSign) {
     this.signing = signing;
     this.positiveSign = positiveSign;
     this.negativeSign = negativeSign;
   }
 
-  
+  /**
+   * Returns the sign strategy for this field.
+   *
+   * @return the {@link Sign} mode
+   */
   public Sign getSigning() {
     return signing;
   }
 
+  /**
+   * Returns the character used to represent a positive number.
+   *
+   * @return the positive sign character
+   */
   public Character getPositiveSign() {
     return positiveSign;
   }
 
+  /**
+   * Returns the character used to represent a negative number.
+   *
+   * @return the negative sign character
+   */
   public Character getNegativeSign() {
     return negativeSign;
   }
 
 
   public String toString() {
-    return "FixedFormatNumberData{" +
-        "signing=" + signing +
-        ", positiveSign='" + positiveSign + "'" +
-        ", negativeSign='" + negativeSign + "'" + 
-        '}';
+    return String.format("FixedFormatNumberData{signing=%s, positiveSign='%c', negativeSign='%c'}", signing, positiveSign, negativeSign);
   }
 }

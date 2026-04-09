@@ -21,15 +21,17 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 /**
  * Formatter for {@link Long} data
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class LongFormatter extends AbstractNumberFormatter<Long> {
 
+  /** {@inheritDoc} */
   public Long asObject(String string, FormatInstructions instructions) {
     return Long.parseLong(string);
   }
 
+  /** {@inheritDoc} */
   public String asString(Long obj, FormatInstructions instructions) {
     String result = null;
     if (obj != null) {

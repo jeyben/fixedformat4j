@@ -22,7 +22,7 @@ import com.ancientprogramming.fixedformat4j.samples.basic.BasicRecord;
 /**
  * Shows how to access nested record data
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.3.0
  */
 public class NestedRecordUsage {

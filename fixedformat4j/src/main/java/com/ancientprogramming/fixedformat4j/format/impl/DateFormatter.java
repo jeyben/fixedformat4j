@@ -29,11 +29,12 @@ import java.util.Date;
  * Formatter for {@link java.util.Date} data.
  * The formatting and parsing is perfomed by using an instance of the {@link SimpleDateFormat} class.
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class DateFormatter extends AbstractFixedFormatter<Date> {
 
+  /** {@inheritDoc} */
   public Date asObject(String string, FormatInstructions instructions) throws FixedFormatException {
     Date result = null;
 
@@ -41,12 +42,13 @@ public class DateFormatter extends AbstractFixedFormatter<Date> {
       try {
         result = getFormatter(instructions.getFixedFormatPatternData().getPattern()).parse(string);
       } catch (ParseException e) {
-        throw new FixedFormatException("Could not parse value[" + string + "] by pattern[" + instructions.getFixedFormatPatternData().getPattern() + "] to " + Date.class.getName());
+        throw new FixedFormatException(String.format("Could not parse value[%s] by pattern[%s] to %s", string, instructions.getFixedFormatPatternData().getPattern(), Date.class.getName()));
       }
     }
     return result;
   }
 
+  /** {@inheritDoc} */
   public String asString(Date date, FormatInstructions instructions) {
     String result = null;
     if (date != null) {

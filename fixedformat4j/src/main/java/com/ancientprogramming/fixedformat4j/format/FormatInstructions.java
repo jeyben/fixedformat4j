@@ -24,7 +24,7 @@ import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
 /**
  * Contains instructions on how to export and load fixed formatted data.
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class FormatInstructions {
@@ -37,6 +37,17 @@ public class FormatInstructions {
   private FixedFormatNumberData fixedFormatNumberData;
   private FixedFormatDecimalData fixedFormatDecimalData;
 
+  /**
+   * Creates a fully-populated set of format instructions.
+   *
+   * @param length                  the fixed width of the field in characters
+   * @param alignment               the alignment strategy used to pad and strip the field
+   * @param paddingChar             the character used for padding
+   * @param fixedFormatPatternData  date/time pattern configuration, or {@code null} if unused
+   * @param fixedFormatBooleanData  boolean value configuration, or {@code null} if unused
+   * @param fixedFormatNumberData   number sign configuration, or {@code null} if unused
+   * @param fixedFormatDecimalData  decimal precision configuration, or {@code null} if unused
+   */
   public FormatInstructions(int length, Align alignment, char paddingChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData) {
     this.length = length;
     this.alignment = alignment;
@@ -47,43 +58,71 @@ public class FormatInstructions {
     this.fixedFormatDecimalData = fixedFormatDecimalData;
   }
 
+  /**
+   * Returns the fixed character width of the field.
+   *
+   * @return the field length in characters
+   */
   public int getLength() {
     return length;
   }
 
+  /**
+   * Returns the alignment strategy used to pad and strip the field value.
+   *
+   * @return the {@link Align} constant for this field
+   */
   public Align getAlignment() {
     return alignment;
   }
 
+  /**
+   * Returns the character used to pad the field to its full length.
+   *
+   * @return the padding character
+   */
   public char getPaddingChar() {
     return paddingChar;
   }
 
+  /**
+   * Returns the date/time pattern configuration for this field.
+   *
+   * @return the {@link FixedFormatPatternData}, or {@code null} if no pattern annotation is present
+   */
   public FixedFormatPatternData getFixedFormatPatternData() {
     return fixedFormatPatternData;
   }
 
+  /**
+   * Returns the boolean value configuration for this field.
+   *
+   * @return the {@link FixedFormatBooleanData}, or {@code null} if no boolean annotation is present
+   */
   public FixedFormatBooleanData getFixedFormatBooleanData() {
     return fixedFormatBooleanData;
   }
 
+  /**
+   * Returns the decimal precision configuration for this field.
+   *
+   * @return the {@link FixedFormatDecimalData}, or {@code null} if no decimal annotation is present
+   */
   public FixedFormatDecimalData getFixedFormatDecimalData() {
     return fixedFormatDecimalData;
   }
 
+  /**
+   * Returns the number sign configuration for this field.
+   *
+   * @return the {@link FixedFormatNumberData}, or {@code null} if no number annotation is present
+   */
   public FixedFormatNumberData getFixedFormatNumberData() {
     return fixedFormatNumberData;
   }
 
   public String toString() {
-    return "FormatInstructions{" +
-        "length=" + length +
-        ", alignment=" + alignment +
-        ", paddingChar='" + paddingChar + "'" + 
-        ", fixedFormatPatternData=" + fixedFormatPatternData +
-        ", fixedFormatBooleanData=" + fixedFormatBooleanData +
-        ", fixedFormatNumberData=" + fixedFormatNumberData +
-        ", fixedFormatDecimalData=" + fixedFormatDecimalData +
-        '}';
+    return String.format("FormatInstructions{length=%d, alignment=%s, paddingChar='%c', fixedFormatPatternData=%s, fixedFormatBooleanData=%s, fixedFormatNumberData=%s, fixedFormatDecimalData=%s}",
+        length, alignment, paddingChar, fixedFormatPatternData, fixedFormatBooleanData, fixedFormatNumberData, fixedFormatDecimalData);
   }
 }

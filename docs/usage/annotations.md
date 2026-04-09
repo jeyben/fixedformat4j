@@ -28,6 +28,8 @@ When placed on a field, the manager derives the getter and setter by name conven
 | `align` | `Align` | no | `Align.LEFT` | How to align the field value when represented as a string. |
 | `paddingChar` | `char` | no | `' '` | The character to pad with when the length is longer than the field value. |
 | `formatter` | `Class<FixedFormatter>` | no | `ByTypeFormatter.class` | The formatter to use when reading and writing the field. |
+| `count` | `int` | no | `1` | Number of consecutive repetitions of this field. When greater than 1, the getter/setter must use an array or an ordered `Collection` (`List`, `Set`, `SortedSet`, etc.). Each repetition occupies `length` characters, starting at `offset + length * index`. |
+| `strictCount` | `boolean` | no | `true` | Only relevant when `count > 1`. If `true` (default), a size mismatch between the array/collection and `count` during export throws a `FixedFormatException`. If `false`, a warning is logged and export proceeds with `min(count, actualSize)` elements. |
 
 **Alignment values:**
 
@@ -38,9 +40,36 @@ When placed on a field, the manager derives the getter and setter by name conven
 
 Example: a 5-character field with value `"Hi"` is stored as `"Hi   "` with `LEFT` and `"   Hi"` with `RIGHT`.
 
+### Repeating fields
+
+When a fixed-format record contains multiple consecutive slots of the same type, use `count` instead of listing individual `@Field` annotations manually:
+
+```java
+// Three 3-character product codes at positions 1–3, 4–6, 7–9
+@Field(offset = 1, length = 3, count = 3)
+public String[] getProductCodes() { return productCodes; }
+
+// Same with a List
+@Field(offset = 1, length = 3, count = 3)
+public List<String> getProductCodes() { return productCodes; }
+
+// Lenient export: log a warning instead of throwing when sizes differ
+@Field(offset = 1, length = 3, count = 3, strictCount = false)
+public String[] getProductCodes() { return productCodes; }
+```
+
+Supported return types for `count > 1`: `T[]` (array), `List`, `LinkedList`, `Set` (loaded as `LinkedHashSet`), `SortedSet` (loaded as `TreeSet`), `Collection`.
+
 ## @Fields
 
-Used on getter methods or directly on fields when a single field maps to more than one position in a string.
+Used on getter methods or directly on fields when a single property maps to **multiple
+non-uniform positions** in the same record — for example, a date field stored at two
+different offsets in two different formats.
+
+> **Note:** `@Fields` is only needed when the field positions or formats differ between
+> entries. For consecutive slots of the **same** length and format (e.g. three 5-character
+> codes in a row), use `@Field(count = N)` on a single getter instead — it is simpler and
+> less error-prone.
 
 | Attribute | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|

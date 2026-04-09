@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
 /**
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.1.0
  */
 
@@ -37,9 +37,24 @@ public @interface FixedFormatNumber {
   public static final char DEFAULT_NEGATIVE_SIGN = '-';
 
 
+  /**
+   * The sign strategy controlling where the sign character is placed in the formatted field.
+   *
+   * @return the {@link Sign} mode; defaults to {@link Sign#NOSIGN}
+   */
   Sign sign() default Sign.NOSIGN;
 
+  /**
+   * The character used to represent a positive number when {@link #sign()} is active.
+   *
+   * @return the positive sign character; defaults to {@value #DEFAULT_POSITIVE_SIGN}
+   */
   char positiveSign() default DEFAULT_POSITIVE_SIGN;
 
+  /**
+   * The character used to represent a negative number when {@link #sign()} is active.
+   *
+   * @return the negative sign character; defaults to {@value #DEFAULT_NEGATIVE_SIGN}
+   */
   char negativeSign() default DEFAULT_NEGATIVE_SIGN;
 }

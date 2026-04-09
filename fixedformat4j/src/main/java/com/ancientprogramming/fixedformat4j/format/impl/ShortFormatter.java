@@ -20,15 +20,17 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 /**
  * Formatter for {@link Short} data
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.3.0
  */
 public class ShortFormatter extends AbstractNumberFormatter<Short> {
 
+  /** {@inheritDoc} */
   public Short asObject(String string, FormatInstructions instructions) {
     return Short.parseShort(string);
   }
 
+  /** {@inheritDoc} */
   public String asString(Short obj, FormatInstructions instructions) {
     String result = null;
     if (obj != null) {

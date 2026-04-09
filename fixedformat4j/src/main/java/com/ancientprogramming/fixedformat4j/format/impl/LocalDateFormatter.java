@@ -30,11 +30,12 @@ import java.time.format.DateTimeParseException;
  * The pattern is configured via {@link com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern}.
  * The default pattern is {@code yyyyMMdd}.
  *
- * @author Jacob von Eyben - https://eybenconsult.com
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.4.0
  */
 public class LocalDateFormatter extends AbstractFixedFormatter<LocalDate> {
 
+  /** {@inheritDoc} */
   public LocalDate asObject(String string, FormatInstructions instructions) throws FixedFormatException {
     if (StringUtils.isEmpty(string)) {
       return null;
@@ -43,10 +44,11 @@ public class LocalDateFormatter extends AbstractFixedFormatter<LocalDate> {
     try {
       return LocalDate.parse(string, DateTimeFormatter.ofPattern(pattern));
     } catch (DateTimeParseException e) {
-      throw new FixedFormatException("Could not parse value[" + string + "] by pattern[" + pattern + "] to " + LocalDate.class.getName());
+      throw new FixedFormatException(String.format("Could not parse value[%s] by pattern[%s] to %s", string, pattern, LocalDate.class.getName()));
     }
   }
 
+  /** {@inheritDoc} */
   public String asString(LocalDate date, FormatInstructions instructions) {
     if (date == null) {
       return null;
