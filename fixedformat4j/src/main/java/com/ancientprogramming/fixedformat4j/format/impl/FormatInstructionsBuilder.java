@@ -25,7 +25,7 @@ import static java.lang.String.format;
  * Builds {@link FormatInstructions} and {@link FormatContext} from field annotations.
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
- * @since 1.5.1
+ * @since 1.6.0
  */
 class FormatInstructionsBuilder {
 

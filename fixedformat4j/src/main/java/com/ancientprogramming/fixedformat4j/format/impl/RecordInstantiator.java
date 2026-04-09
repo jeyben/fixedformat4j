@@ -11,7 +11,7 @@ import static java.lang.String.format;
  * including support for static nested classes and non-static inner classes.
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
- * @since 1.5.1
+ * @since 1.6.0
  */
 class RecordInstantiator {
 

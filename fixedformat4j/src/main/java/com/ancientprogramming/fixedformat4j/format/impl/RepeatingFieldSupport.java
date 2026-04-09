@@ -32,7 +32,7 @@ import static java.lang.String.format;
  * Handles all {@code count > 1} (repeating) field logic for both reading and exporting.
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
- * @since 1.5.1
+ * @since 1.6.0
  */
 class RepeatingFieldSupport {
 

@@ -4,7 +4,7 @@ title: Changelog
 
 # Changelog
 
-## 1.5.1 (unreleased)
+## 1.6.0 (unreleased)
 
 ### New features
 
@@ -36,6 +36,24 @@ title: Changelog
 
   See [Repeating fields](usage/annotations#repeating-fields) in the annotation reference and
   [Example 7](examples#example-7--repeating-fields) for a full walkthrough.
+
+- **`LocalDateTime` support** — `java.time.LocalDateTime` is now a first-class field type handled
+  automatically by `ByTypeFormatter`. No custom formatter needed. `@FixedFormatPattern` is optional
+  — only specify it when your format differs from the default (`yyyy-MM-dd'T'HH:mm:ss`).
+
+  ```java
+  // Default pattern — no @FixedFormatPattern needed
+  @Field(offset = 1, length = 19)
+  public LocalDateTime getCreatedAt() { return createdAt; }
+
+  // Custom pattern — only required when overriding the default
+  @Field(offset = 1, length = 14)
+  @FixedFormatPattern("yyyyMMddHHmmss")
+  public LocalDateTime getCreatedAt() { return createdAt; }
+  ```
+
+  String `"2026-04-09T14:30:00"` parses to `LocalDateTime.of(2026, 4, 9, 14, 30, 0)`; exporting
+  writes `"2026-04-09T14:30:00"` back.
 
 ---
 

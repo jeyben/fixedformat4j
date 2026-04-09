@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
  * When it is on a Java field, they differ.
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
- * @since 1.5.1
+ * @since 1.6.0
  */
 class AnnotationTarget {
 

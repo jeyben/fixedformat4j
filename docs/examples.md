@@ -325,7 +325,7 @@ System.out.println(manager.export(emp));
 
 ## Example 7 — Repeating fields
 
-Some fixed-width formats pack several consecutive slots of the same type into a single record — for example, a shipment record that lists up to four package weights in a row. Before 1.5.1 this required a separate `@Field` for each slot. With `count` you declare it once.
+Some fixed-width formats pack several consecutive slots of the same type into a single record — for example, a shipment record that lists up to four package weights in a row. Before 1.6.0 this required a separate `@Field` for each slot. With `count` you declare it once.
 
 **Scenario:** each line in a freight file holds a shipment ID (6 chars) followed by up to four package weights in grams, each stored as a 6-character right-aligned zero-padded integer. Unused trailing slots are `"000000"`.
 

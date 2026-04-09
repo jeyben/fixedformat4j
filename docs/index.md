@@ -6,7 +6,7 @@ title: fixedformat4j
 
 Fixedformat4j is an easy to use, small and non-intrusive Java framework for working with flat fixed formatted text files. By annotating your code you can set up the offsets and format for your data when reading and writing to and from flat fixed format files.
 
-Fixedformat4j handles many built-in datatypes: `String`, `Character`/`char`, `Long`/`long`, `Integer`/`int`, `Short`/`short`, `Double`/`double`, `Float`/`float`, `Boolean`/`boolean`, `Date`, `LocalDate`, and `BigDecimal`.
+Fixedformat4j handles many built-in datatypes: `String`, `Character`/`char`, `Long`/`long`, `Integer`/`int`, `Short`/`short`, `Double`/`double`, `Float`/`float`, `Boolean`/`boolean`, `Date`, `LocalDate`, `LocalDateTime`, and `BigDecimal`.
 
 It is also straightforward to write and plug in your own formatters for custom datatypes.
 

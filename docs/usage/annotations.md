@@ -160,28 +160,54 @@ Configures pattern-based formatting for date fields.
 
 Supported field types and their underlying formatter:
 
-| Field type | Formatter class | Pattern syntax |
-|---|---|---|
-| `java.util.Date` | `DateFormatter` | `SimpleDateFormat` patterns |
-| `java.time.LocalDate` | `LocalDateFormatter` | `DateTimeFormatter` patterns |
+| Field type | Formatter class | Pattern syntax | Default pattern |
+|---|---|---|---|
+| `java.util.Date` | `DateFormatter` | `SimpleDateFormat` patterns | `yyyyMMdd` |
+| `java.time.LocalDate` | `LocalDateFormatter` | `DateTimeFormatter` patterns | `yyyy-MM-dd` |
+| `java.time.LocalDateTime` | `LocalDateTimeFormatter` | `DateTimeFormatter` patterns | `yyyy-MM-dd'T'HH:mm:ss` |
 
-Both types use the same pattern syntax (e.g. `yyyyMMdd`, `yyyy-MM-dd`, `ddMMyyyy`).
+All three types share the same `@FixedFormatPattern` annotation. The annotation is **optional** — omit it to use the default pattern shown above, and only add it when your format differs.
 
 **Example with `LocalDate`:**
 
 ```java
+// Default pattern (yyyy-MM-dd) — no annotation needed
+@Field(offset = 1, length = 10)
+public LocalDate getEventDate() { return eventDate; }
+
+// Custom pattern
 @Field(offset = 1, length = 8)
 @FixedFormatPattern("yyyyMMdd")
 public LocalDate getEventDate() { return eventDate; }
 ```
 
-String `"20260405"` parses to `LocalDate.of(2026, 4, 5)`; exporting writes `"20260405"` back.
+String `"2026-04-05"` parses to `LocalDate.of(2026, 4, 5)` with the default pattern.
+
+**Example with `LocalDateTime`:**
+
+```java
+// Default pattern (yyyy-MM-dd'T'HH:mm:ss) — no annotation needed
+@Field(offset = 1, length = 19)
+public LocalDateTime getCreatedAt() { return createdAt; }
+
+// Custom pattern
+@Field(offset = 1, length = 14)
+@FixedFormatPattern("yyyyMMddHHmmss")
+public LocalDateTime getCreatedAt() { return createdAt; }
+```
+
+String `"2026-04-09T14:30:00"` parses to `LocalDateTime.of(2026, 4, 9, 14, 30, 0)` with the default pattern.
 
 **Example with `Date`:**
 
 ```java
+// Default pattern (yyyyMMdd) — no annotation needed
 @Field(offset = 1, length = 8)
-@FixedFormatPattern("yyyyMMdd")
+public Date getHireDate() { return hireDate; }
+
+// Custom pattern
+@Field(offset = 1, length = 10)
+@FixedFormatPattern("yyyy-MM-dd")
 public Date getHireDate() { return hireDate; }
 ```
 
