@@ -86,12 +86,12 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
       try {
         return formatterClass.getConstructor().newInstance();
       } catch (NoSuchMethodException e) {
-        throw new FixedFormatException("Could not create instance of[" + formatterClass.getName() + "] because no default constructor exists");
+        throw new FixedFormatException(String.format("Could not create instance of[%s] because no default constructor exists", formatterClass.getName()));
       } catch (Exception e) {
-        throw new FixedFormatException("Could not create instance of[" + formatterClass.getName() + "]", e);
+        throw new FixedFormatException(String.format("Could not create instance of[%s]", formatterClass.getName()), e);
       }
     } else {
-      throw new FixedFormatException(ByTypeFormatter.class.getName() + " cannot handle datatype[" + dataType.getName() + "]. Provide your own custom FixedFormatter for this datatype.");
+      throw new FixedFormatException(String.format("%s cannot handle datatype[%s]. Provide your own custom FixedFormatter for this datatype.", ByTypeFormatter.class.getName(), dataType.getName()));
     }
   }
 }

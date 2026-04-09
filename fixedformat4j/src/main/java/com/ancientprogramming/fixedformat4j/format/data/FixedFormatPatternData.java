@@ -39,8 +39,6 @@ public class FixedFormatPatternData {
 
 
   public String toString() {
-    return "FixedFormatPatternData{" +
-        "pattern='" + pattern + '\'' +
-        '}';
+    return String.format("FixedFormatPatternData{pattern='%s'}", pattern);
   }
 }

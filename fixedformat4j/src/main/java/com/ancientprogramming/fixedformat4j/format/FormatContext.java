@@ -48,10 +48,6 @@ public class FormatContext<T> {
 
 
   public String toString() {
-    return "FormatContext{" +
-        "offset=" + offset +
-        ", dataType=" + dataType.getName() +
-        ", formatter=" + formatter.getName() +
-        '}';
+    return String.format("FormatContext{offset=%d, dataType=%s, formatter=%s}", offset, dataType.getName(), formatter.getName());
   }
 }

@@ -66,7 +66,7 @@ public class FixedFormatUtil {
       formatter = getFixedFormatterInstance(formatterClass, null, null);
     }
     if (formatter == null) {
-      throw new FixedFormatException("could not create instance of [" + formatterClass.getName() + "] because the class has no default constructor and no constructor with " + FormatContext.class.getName() + " as argument.");
+      throw new FixedFormatException(format("could not create instance of [%s] because the class has no default constructor and no constructor with %s as argument.", formatterClass.getName(), FormatContext.class.getName()));
     }
     return formatter;
   }

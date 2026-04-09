@@ -45,7 +45,9 @@ public class ParseException extends FixedFormatException {
    * @param cause the reason why the data couldn't be parsed
    */
   public ParseException(String completeText, String failedText, Class<?> annotatedClass, Method annotatedMethod, FormatContext<?> formatContext, FormatInstructions formatInstructions, Throwable cause) {
-    super("Failed to parse '" + failedText + "' at offset " + formatContext.getOffset() + " as " + formatContext.getDataType().getName() + " from '" + completeText + "'. Got format instructions from " + annotatedClass.getName() + "." + annotatedMethod.getName() + ". See details{" + formatContext.toString() + ", " +formatInstructions.toString() + "}", cause);
+    super(String.format("Failed to parse '%s' at offset %d as %s from '%s'. Got format instructions from %s.%s. See details{%s, %s}",
+        failedText, formatContext.getOffset(), formatContext.getDataType().getName(), completeText,
+        annotatedClass.getName(), annotatedMethod.getName(), formatContext, formatInstructions), cause);
      this.completeText = completeText;
     this.failedText = failedText;
     this.annotatedClass = annotatedClass;

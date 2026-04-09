@@ -197,7 +197,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       }
     }
     if (LOG.isDebugEnabled()) {
-      LOG.debug("the loaded data[" + loadedData + "]");
+      LOG.debug("the loaded data[{}]", loadedData);
     }
     return loadedData;
   }

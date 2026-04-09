@@ -47,9 +47,6 @@ public class FixedFormatBooleanData {
 
 
   public String toString() {
-    return "FixedFormatBooleanData{" +
-        "trueValue='" + trueValue + "'" +
-        ", falseValue='" + falseValue + "'" +
-        '}';
+    return String.format("FixedFormatBooleanData{trueValue='%s', falseValue='%s'}", trueValue, falseValue);
   }
 }

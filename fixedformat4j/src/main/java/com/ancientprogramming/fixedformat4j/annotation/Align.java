@@ -47,7 +47,7 @@ public enum Align {
       if (data == null) {
         result = "";
       }
-      while (result.startsWith("" + paddingChar)) {
+      while (result.startsWith(String.valueOf(paddingChar))) {
         result = result.substring(1, result.length());
       }
       return result;
@@ -77,7 +77,7 @@ public enum Align {
       if (data == null) {
         result = "";
       }
-      while (result.endsWith("" + paddingChar)) {
+      while (result.endsWith(String.valueOf(paddingChar))) {
         result = result.substring(0, result.length()-1);
       }
       return result;

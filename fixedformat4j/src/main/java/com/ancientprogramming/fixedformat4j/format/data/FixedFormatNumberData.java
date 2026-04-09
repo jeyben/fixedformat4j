@@ -52,10 +52,6 @@ public class FixedFormatNumberData {
 
 
   public String toString() {
-    return "FixedFormatNumberData{" +
-        "signing=" + signing +
-        ", positiveSign='" + positiveSign + "'" +
-        ", negativeSign='" + negativeSign + "'" + 
-        '}';
+    return String.format("FixedFormatNumberData{signing=%s, positiveSign='%c', negativeSign='%c'}", signing, positiveSign, negativeSign);
   }
 }

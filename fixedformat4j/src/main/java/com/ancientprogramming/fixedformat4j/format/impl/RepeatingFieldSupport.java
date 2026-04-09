@@ -26,6 +26,7 @@ import java.util.TreeSet;
 
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
+import static java.lang.String.format;
 
 /**
  * Handles all {@code count > 1} (repeating) field logic for both reading and exporting.
@@ -79,11 +80,11 @@ class RepeatingFieldSupport {
     try {
       value = target.getter.invoke(fixedFormatRecord);
     } catch (Exception e) {
-      throw new FixedFormatException("could not invoke " + fieldLabel(target.getter), e);
+      throw new FixedFormatException(format("could not invoke %s", fieldLabel(target.getter)), e);
     }
 
     if (value == null) {
-      throw new FixedFormatException("Cannot export null repeating field on " + fieldLabel(target.getter));
+      throw new FixedFormatException(format("Cannot export null repeating field on %s", fieldLabel(target.getter)));
     }
 
     int count = fieldAnno.count();
@@ -92,8 +93,7 @@ class RepeatingFieldSupport {
     if (actualSize != count) {
       if (fieldAnno.strictExportCount()) {
         throw new FixedFormatException(
-            "Repeating field " + fieldLabel(target.getter) + " has count=" + count
-            + " but collection size=" + actualSize);
+            format("Repeating field %s has count=%d but collection size=%d", fieldLabel(target.getter), count, actualSize));
       } else {
         LOG.warn("Repeating field {} has count={} but collection size={}. Exporting {} elements.",
             fieldLabel(target.getter), count, actualSize, Math.min(count, actualSize));
@@ -130,17 +130,15 @@ class RepeatingFieldSupport {
 
     if (count < 1) {
       throw new FixedFormatException(
-          "@Field count must be >= 1 on " + fieldLabel(method) + ", was: " + count);
+          format("@Field count must be >= 1 on %s, was: %d", fieldLabel(method), count));
     }
     if (count == 1 && isArrayOrCollection) {
       throw new FixedFormatException(
-          "@Field count=1 but return type is array/collection on " + fieldLabel(method)
-          + ". Use count > 1 for repeating fields.");
+          format("@Field count=1 but return type is array/collection on %s. Use count > 1 for repeating fields.", fieldLabel(method)));
     }
     if (count > 1 && !isArrayOrCollection) {
       throw new FixedFormatException(
-          "@Field count=" + count + " requires array or Collection return type on "
-          + fieldLabel(method) + ", found: " + returnType.getName());
+          format("@Field count=%d requires array or Collection return type on %s, found: %s", count, fieldLabel(method), returnType.getName()));
     }
   }
 
@@ -157,8 +155,7 @@ class RepeatingFieldSupport {
         return (Class<?>) typeArgs[0];
       }
     }
-    throw new FixedFormatException("Cannot determine element type for repeating field on " + fieldLabel(method)
-        + ". Ensure the collection is parameterized (e.g. List<String>, not List).");
+    throw new FixedFormatException(format("Cannot determine element type for repeating field on %s. Ensure the collection is parameterized (e.g. List<String>, not List).", fieldLabel(method)));
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
@@ -181,8 +178,7 @@ class RepeatingFieldSupport {
     } else if (Collection.class.isAssignableFrom(returnType) || Iterable.class.isAssignableFrom(returnType)) {
       return new ArrayList<>(elements);
     } else {
-      throw new FixedFormatException("Unsupported collection type " + returnType.getName()
-          + " on " + fieldLabel(getter) + ". Supported types: arrays, List, LinkedList, Set, SortedSet, Collection.");
+      throw new FixedFormatException(format("Unsupported collection type %s on %s. Supported types: arrays, List, LinkedList, Set, SortedSet, Collection.", returnType.getName(), fieldLabel(getter)));
     }
   }
 
@@ -195,6 +191,6 @@ class RepeatingFieldSupport {
   }
 
   private static String fieldLabel(Method method) {
-    return method.getDeclaringClass().getName() + "#" + method.getName() + "()";
+    return format("%s#%s()", method.getDeclaringClass().getName(), method.getName());
   }
 }

@@ -36,7 +36,7 @@ public class BooleanFormatter extends AbstractFixedFormatter<Boolean> {
       } else if (instructions.getFixedFormatBooleanData().getFalseValue().equals(string)) {
         result = false;
       } else {
-        throw new FixedFormatException("Could not convert string[" + string + "] to boolean value according to booleanData[" + instructions.getFixedFormatBooleanData() + "]");
+        throw new FixedFormatException(String.format("Could not convert string[%s] to boolean value according to booleanData[%s]", string, instructions.getFixedFormatBooleanData()));
       }
     }
     return result;

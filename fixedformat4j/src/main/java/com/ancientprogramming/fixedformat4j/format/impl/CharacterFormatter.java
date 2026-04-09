@@ -36,7 +36,7 @@ public class CharacterFormatter extends AbstractFixedFormatter<Character> {
     if (!StringUtils.isEmpty(string)) {
       result = string.charAt(0);
       if (string.length() > 1) {
-        LOG.warn("found more than one character[" + string + "] after reading instructions from record. Will return first character[" + result + "]");
+        LOG.warn("found more than one character[{}] after reading instructions from record. Will return first character[{}]", string, result);
       }
     }
     return result;

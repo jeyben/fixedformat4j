@@ -60,11 +60,7 @@ public class FixedFormatDecimalData {
   }
 
   public String toString() {
-    return "FixedFormatDecimalData{" +
-        "decimals=" + decimals +
-        ", useDecimalDelimiter=" + useDecimalDelimiter +
-        ", decimalDelimiter='" + decimalDelimiter + "'" + 
-        ", roundingMode='" + roundingMode + "'" + 
-        '}';
+    return String.format("FixedFormatDecimalData{decimals=%d, useDecimalDelimiter=%b, decimalDelimiter='%c', roundingMode='%s'}",
+        decimals, useDecimalDelimiter, decimalDelimiter, roundingMode);
   }
 }

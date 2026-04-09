@@ -76,14 +76,7 @@ public class FormatInstructions {
   }
 
   public String toString() {
-    return "FormatInstructions{" +
-        "length=" + length +
-        ", alignment=" + alignment +
-        ", paddingChar='" + paddingChar + "'" + 
-        ", fixedFormatPatternData=" + fixedFormatPatternData +
-        ", fixedFormatBooleanData=" + fixedFormatBooleanData +
-        ", fixedFormatNumberData=" + fixedFormatNumberData +
-        ", fixedFormatDecimalData=" + fixedFormatDecimalData +
-        '}';
+    return String.format("FormatInstructions{length=%d, alignment=%s, paddingChar='%c', fixedFormatPatternData=%s, fixedFormatBooleanData=%s, fixedFormatNumberData=%s, fixedFormatDecimalData=%s}",
+        length, alignment, paddingChar, fixedFormatPatternData, fixedFormatBooleanData, fixedFormatNumberData, fixedFormatDecimalData);
   }
 }
