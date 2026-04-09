@@ -127,6 +127,9 @@ Full documentation is available at **https://jeyben.github.io/fixedformat4j/**:
 - [FAQ](https://jeyben.github.io/fixedformat4j/faq)
 - [Changelog](https://jeyben.github.io/fixedformat4j/changelog)
 
+**Reports:**
+- [Mutation Report](https://jeyben.github.io/fixedformat4j/pit-reports/) — latest PIT mutation testing results (updated nightly)
+
 ## License
 
 Apache License 2.0 — see [LICENSE](LICENSE) for details.

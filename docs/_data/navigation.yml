@@ -17,3 +17,7 @@
   url: /faq
 - title: Changelog
   url: /changelog
+- title: Reports
+  children:
+    - title: Mutation Report
+      url: /pit-reports/
