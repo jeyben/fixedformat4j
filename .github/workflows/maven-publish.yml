@@ -63,6 +63,16 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: mvn -B deploy -pl fixedformat4j -DskipTests --no-transfer-progress -P release
 
+      - name: Upload release artifacts to GitHub
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ github.event.release.tag_name }} \
+            fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}.jar \
+            fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}-sources.jar \
+            fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}-javadoc.jar
+
       - name: Bump to next snapshot version
         run: |
           NEXT=$(echo $RELEASE_VERSION | awk -F. '{print $1"."$2"."$3+1"-SNAPSHOT"}')
