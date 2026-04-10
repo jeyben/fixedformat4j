@@ -16,7 +16,6 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
-import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,7 +32,12 @@ import java.time.format.DateTimeParseException;
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.4.0
  */
-public class LocalDateFormatter extends AbstractFixedFormatter<LocalDate> {
+public class LocalDateFormatter extends AbstractPatternFormatter<LocalDate> {
+
+  @Override
+  protected int formattedLengthForPattern(String pattern) {
+    return DateTimeFormatter.ofPattern(pattern).format(LocalDate.of(1970, 1, 1)).length();
+  }
 
   /** {@inheritDoc} */
   public LocalDate asObject(String string, FormatInstructions instructions) throws FixedFormatException {

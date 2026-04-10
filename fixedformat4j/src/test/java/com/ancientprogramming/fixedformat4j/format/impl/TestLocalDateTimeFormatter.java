@@ -134,4 +134,32 @@ public class TestLocalDateTimeFormatter {
         formatter.parse("2026-13-01T00:00:00", instructions(19, "yyyy-MM-dd'T'HH:mm:ss"))
     );
   }
+
+  // --- Issue 33: paddingChar appears inside date pattern value ---
+
+  @Test
+  public void leftAlignedZeroPaddingDoesNotStripZeroValuedTimeComponents() {
+    FormatInstructions instr = new FormatInstructions(20, Align.LEFT, '0', new FixedFormatPatternData("yyyyMMddHHmmss"), null, null, null);
+    assertEquals(LocalDateTime.of(2012, 9, 12, 11, 11, 0), formatter.parse("20120912111100000000", instr));
+  }
+
+  @Test
+  public void rightAlignedZeroPaddingRestoresLeadingZerosInDateComponents() {
+    FormatInstructions instr = new FormatInstructions(20, Align.RIGHT, '0', new FixedFormatPatternData("yyyyMMddHHmmss"), null, null, null);
+    assertEquals(LocalDateTime.of(2012, 1, 5, 0, 0, 0), formatter.parse("00000020120105000000", instr));
+  }
+
+  @Test
+  public void allZeroFieldWithZeroPaddingParsesToNull() {
+    FormatInstructions instr = new FormatInstructions(20, Align.LEFT, '0', new FixedFormatPatternData("yyyyMMddHHmmss"), null, null, null);
+    assertNull(formatter.parse("00000000000000000000", instr));
+  }
+
+  @Test
+  public void zeroPaddingRoundTrip() {
+    FormatInstructions instr = new FormatInstructions(20, Align.LEFT, '0', new FixedFormatPatternData("yyyyMMddHHmmss"), null, null, null);
+    LocalDateTime original = LocalDateTime.of(2012, 9, 12, 11, 11, 0);
+    String formatted = formatter.format(original, instr);
+    assertEquals(original, formatter.parse(formatted, instr));
+  }
 }

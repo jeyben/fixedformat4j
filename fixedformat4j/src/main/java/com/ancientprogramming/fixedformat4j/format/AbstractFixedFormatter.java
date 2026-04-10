@@ -44,7 +44,7 @@ public abstract class AbstractFixedFormatter<T> implements FixedFormatter<T> {
    * @param instructions the instructions containing the padding char
    * @return the remaining string value after padding chars was removed. The empty string if he <code>value</code> only contained adding chars.
    */
-  String getRemovePadding(String value, FormatInstructions instructions) {
+  protected String getRemovePadding(String value, FormatInstructions instructions) {
     return instructions.getAlignment().remove(value, instructions.getPaddingChar());
   }
 

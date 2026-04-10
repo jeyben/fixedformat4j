@@ -16,7 +16,6 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
-import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,7 +31,12 @@ import java.util.Date;
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
-public class DateFormatter extends AbstractFixedFormatter<Date> {
+public class DateFormatter extends AbstractPatternFormatter<Date> {
+
+  @Override
+  protected int formattedLengthForPattern(String pattern) {
+    return getFormatter(pattern).format(new Date(0)).length();
+  }
 
   /** {@inheritDoc} */
   public Date asObject(String string, FormatInstructions instructions) throws FixedFormatException {
