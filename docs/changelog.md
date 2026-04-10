@@ -4,7 +4,7 @@ title: Changelog
 
 # Changelog
 
-## 1.6.1 (unreleased)
+## 1.6.1 (2026-04-10)
 
 ### Bug fixes
 
