@@ -1,0 +1,55 @@
+name: PIT Mutation Report
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  pit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v5
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Build project
+        run: mvn -B install -DskipTests
+
+      - name: Run mutation tests
+        run: mvn -B -pl fixedformat4j pitest:mutationCoverage
+
+      - name: Publish PIT report to docs
+        run: |
+          TOTAL=$(grep -c '<mutation ' fixedformat4j/target/pit-reports/mutations.xml || true)
+          UNDETECTED=$(grep -c "<mutation detected='false' " fixedformat4j/target/pit-reports/mutations.xml || true)
+          if [ "$TOTAL" -gt 0 ]; then
+            SCORE=$(( (TOTAL - UNDETECTED) * 100 / TOTAL ))
+          else
+            SCORE=0
+          fi
+          mkdir -p docs/pit-reports
+          cp -r fixedformat4j/target/pit-reports/. docs/pit-reports/
+          echo "{\"score\":\"${SCORE}%\"}" > docs/mutation-score.json
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/pit-reports/ docs/mutation-score.json
+          git diff --staged --quiet || git commit -m "chore: update PIT mutation report"
+          git push
+
+      - name: Trigger pages deployment
+        run: gh workflow run pages.yml --ref master
+        env:
+          GH_TOKEN: ${{ github.token }}

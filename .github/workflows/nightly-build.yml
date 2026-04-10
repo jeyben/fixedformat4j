@@ -3,16 +3,12 @@ name: Nightly Build
 on:
   push:
     branches: ['**']
-    paths-ignore:
-      - 'docs/pit-reports/**'
-      - 'docs/mutation-score.json'
   schedule:
     - cron: '0 2 * * *'   # 02:00 UTC every day
   workflow_dispatch:
 
 permissions:
-  contents: write
-  actions: write
+  contents: read
 
 jobs:
   build:
@@ -32,30 +28,3 @@ jobs:
       - name: Build and test with Maven
         run: mvn -B verify
 
-      - name: Run mutation tests
-        run: mvn -B -pl fixedformat4j pitest:mutationCoverage
-
-      - name: Publish PIT report to docs (master only)
-        if: github.ref == 'refs/heads/master'
-        run: |
-          TOTAL=$(grep -c '<mutation ' fixedformat4j/target/pit-reports/mutations.xml || true)
-          KILLED=$(grep -c "status='KILLED'" fixedformat4j/target/pit-reports/mutations.xml || true)
-          if [ "$TOTAL" -gt 0 ]; then
-            SCORE=$(( KILLED * 100 / TOTAL ))
-          else
-            SCORE=0
-          fi
-          mkdir -p docs/pit-reports
-          cp -r fixedformat4j/target/pit-reports/. docs/pit-reports/
-          echo "{\"score\":\"${SCORE}%\"}" > docs/mutation-score.json
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/pit-reports/ docs/mutation-score.json
-          git diff --staged --quiet || git commit -m "chore: update PIT mutation report"
-          git push
-
-      - name: Trigger pages deployment
-        if: github.ref == 'refs/heads/master'
-        run: gh workflow run pages.yml --ref master
-        env:
-          GH_TOKEN: ${{ github.token }}
