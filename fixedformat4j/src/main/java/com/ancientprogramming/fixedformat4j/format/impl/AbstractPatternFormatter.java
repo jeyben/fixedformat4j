@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Base class for pattern-based date/time formatters.
  *
- * <p>Overrides {@link #getRemovePadding} to restore padding characters that belong
+ * <p>Overrides {@link #stripPadding} to restore padding characters that belong
  * to the date/time value rather than to the field padding. This is necessary when
  * {@code paddingChar} equals a character that can also appear within a formatted date
  * (e.g. {@code '0'} with a pattern like {@code yyyyMMddHHmmss} where seconds may be
@@ -42,8 +42,19 @@ public abstract class AbstractPatternFormatter<T> extends AbstractFixedFormatter
 
   private static final Map<Class<?>, Map<String, Integer>> PATTERN_LENGTH_CACHE = new ConcurrentHashMap<>();
 
+  /**
+   * Strips padding, then re-applies it when the padding character overlaps with
+   * characters that are significant in the date/time pattern.
+   *
+   * <p>For example, with padding {@code '0'} and pattern {@code yyyyMMddHHmmss},
+   * a field value of {@code "00"} (seconds) would otherwise be stripped to an empty
+   * string, making the date un-parseable. This override detects that case and
+   * restores the stripped characters before returning.
+   *
+   * <p>{@inheritDoc}
+   */
   @Override
-  protected String getRemovePadding(String value, FormatInstructions instructions) {
+  protected String stripPadding(String value, FormatInstructions instructions) {
     String stripped = instructions.getAlignment().remove(value, instructions.getPaddingChar());
     if (stripped.isEmpty()) {
       return stripped;
@@ -54,6 +65,16 @@ public abstract class AbstractPatternFormatter<T> extends AbstractFixedFormatter
       return instructions.getAlignment().apply(stripped, formattedLength, instructions.getPaddingChar());
     }
     return stripped;
+  }
+
+  /**
+   * @deprecated Use {@link #stripPadding} instead. This method will be removed in 1.7.0.
+   * @see AbstractFixedFormatter#getRemovePadding
+   */
+  @Deprecated
+  @Override
+  protected String getRemovePadding(String value, FormatInstructions instructions) {
+    return stripPadding(value, instructions);
   }
 
   protected final int formattedLengthForPattern(String pattern) {

@@ -4,6 +4,36 @@ title: Changelog
 
 # Changelog
 
+## 1.6.1 (unreleased)
+
+### Deprecations
+
+- **`AbstractFixedFormatter.getRemovePadding` deprecated** — The method has been renamed to
+  `stripPadding`, which better reflects its behaviour (it transforms a string, not returns a value).
+  The old name carried a misleading `get` prefix that implied a zero-argument accessor.
+
+  `getRemovePadding` remains callable and fully functional in 1.6.1; it now delegates to
+  `stripPadding`. **It will be removed in 1.7.0.**
+
+  **Migration:** rename any override of `getRemovePadding` to `stripPadding` — the signature is
+  identical:
+
+  ```java
+  // Before (1.6.0 and earlier)
+  @Override
+  protected String getRemovePadding(String value, FormatInstructions instructions) { … }
+
+  // After (1.6.1+)
+  @Override
+  protected String stripPadding(String value, FormatInstructions instructions) { … }
+  ```
+
+  **Call chain in 1.6.1:** `parse()` → `getRemovePadding()` → `stripPadding()`
+
+  **Call chain in 1.7.0:** `parse()` → `stripPadding()` (direct; `getRemovePadding` removed)
+
+---
+
 ## 1.6.0 (2026-04-09)
 
 ### New features
