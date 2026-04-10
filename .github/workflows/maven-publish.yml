@@ -40,6 +40,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Configure git signing
+        env:
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          GPG_KEY_ID=$(gpg --list-secret-keys --keyid-format LONG \
+            | grep '^sec' | head -1 | awk '{print $2}' | cut -d/ -f2)
+          echo "$MAVEN_GPG_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback \
+            --passphrase-fd 0 --sign --output /dev/null /dev/null 2>/dev/null || true
+          git config user.signingkey "$GPG_KEY_ID"
+          git config commit.gpgsign true
+          git config tag.gpgsign true
+          echo "GPG_KEY_ID=$GPG_KEY_ID" >> $GITHUB_ENV
+
       - name: Resolve release version
         run: |
           if [ -n "${{ inputs.version }}" ]; then
@@ -55,6 +68,16 @@ jobs:
           mvn -B versions:set -DnewVersion=$RELEASE_VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
           git add -A
           git commit -m "Release $RELEASE_VERSION"
+
+      - name: Create signed release tag
+        if: github.event_name == 'release'
+        env:
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          git tag -d "${{ github.event.release.tag_name }}" 2>/dev/null || true
+          git tag -s "${{ github.event.release.tag_name }}" \
+            -m "Release $RELEASE_VERSION"
+          git push --force origin "${{ github.event.release.tag_name }}"
 
       - name: Deploy to Maven Central
         env:
