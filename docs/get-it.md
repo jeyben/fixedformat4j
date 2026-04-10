@@ -4,7 +4,7 @@ title: Get fixedformat4j
 
 # Get the latest version of fixedformat4j
 
-fixedformat4j 1.5.0 is published to **Maven Central**.
+fixedformat4j 1.6.0 is published to **Maven Central**.
 
 ## Requirements
 
@@ -18,7 +18,7 @@ Maven Central is the default Maven repository — no extra `<repository>` config
 <dependency>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j</artifactId>
-  <version>1.5.0</version>
+  <version>1.6.0</version>
 </dependency>
 ```
 
@@ -26,14 +26,14 @@ The artifact is also browsable at [central.sonatype.com](https://central.sonatyp
 
 ## No internet access? Download manually
 
-Download `fixedformat4j-1.5.0.jar` directly from the [1.5.0 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_5_0) and install it into your local Maven repository:
+Download `fixedformat4j-1.6.0.jar` directly from the [1.6.0 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_6_0) and install it into your local Maven repository:
 
 ```bash
 mvn install:install-file \
-  -Dfile=fixedformat4j-1.5.0.jar \
+  -Dfile=fixedformat4j-1.6.0.jar \
   -DgroupId=com.ancientprogramming.fixedformat4j \
   -DartifactId=fixedformat4j \
-  -Dversion=1.5.0 \
+  -Dversion=1.6.0 \
   -Dpackaging=jar
 ```
 
