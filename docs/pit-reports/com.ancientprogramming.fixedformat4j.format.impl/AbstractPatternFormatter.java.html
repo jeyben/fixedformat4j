@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>AbstractPatternFormatter.java</h1>
+
+<table class="src">
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/*</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Copyright 2004 the original author or authors.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * you may not use this file except in compliance with the License.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * You may obtain a copy of the License at</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_8'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     http://www.apache.org/licenses/LICENSE-2.0</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_10'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Unless required by applicable law or agreed to in writing, software</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_11'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * distributed under the License is distributed on an &#34;AS IS&#34; BASIS,</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_12'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_13'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * See the License for the specific language governing permissions and</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_14'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * limitations under the License.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_15'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_16'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package com.ancientprogramming.fixedformat4j.format.impl;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_17'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_18'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_19'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import com.ancientprogramming.fixedformat4j.format.FormatInstructions;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_20'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_21'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Map;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_22'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.concurrent.ConcurrentHashMap;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_23'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_24'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/**</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_25'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Base class for pattern-based date/time formatters.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_26'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_27'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;p&#62;Overrides {@link #stripPadding} to restore padding characters that belong</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_28'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * to the date/time value rather than to the field padding. This is necessary when</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_29'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * {@code paddingChar} equals a character that can also appear within a formatted date</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_30'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * (e.g. {@code &#39;0&#39;} with a pattern like {@code yyyyMMddHHmmss} where seconds may be</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_31'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * {@code 00}).</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_32'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_33'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;p&#62;After stripping padding, if the result is shorter than the formatted output length</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_34'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * for the pattern, it is re-padded to that length so that the underlying date parser</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_35'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * receives a well-formed string.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_36'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_37'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @param &#60;T&#62; the date/time type handled by this formatter</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_38'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @author Jacob von Eyben - &#60;a href=&#34;https://eybenconsult.com&#34;&#62;https://eybenconsult.com&#60;/a&#62;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_39'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @since 1.6.1</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_40'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_41'/>
+41
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_41'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>public abstract class AbstractPatternFormatter&#60;T&#62; extends AbstractFixedFormatter&#60;T&#62; {</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_42'/>
+42
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_42'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_43'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  private static final Map&#60;Class&#60;?&#62;, Map&#60;String, Integer&#62;&#62; PATTERN_LENGTH_CACHE = new ConcurrentHashMap&#60;&#62;();</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_44'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_45'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_46'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Strips padding, then re-applies it when the padding character overlaps with</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_47'/>
+47
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_47'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * characters that are significant in the date/time pattern.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_48'/>
+48
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_48'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_49'/>
+49
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_49'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * &#60;p&#62;For example, with padding {@code &#39;0&#39;} and pattern {@code yyyyMMddHHmmss},</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_50'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * a field value of {@code &#34;00&#34;} (seconds) would otherwise be stripped to an empty</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_51'/>
+51
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_51'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * string, making the date un-parseable. This override detects that case and</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_52'/>
+52
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_52'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * restores the stripped characters before returning.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_53'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_54'/>
+54
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_54'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * &#60;p&#62;{@inheritDoc}</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_55'/>
+55
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_55'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_56'/>
+56
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_56'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_57'/>
+57
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_57'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  protected String stripPadding(String value, FormatInstructions instructions) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_58'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    String stripped = instructions.getAlignment().remove(value, instructions.getPaddingChar());</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_59'/>
+59
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_59'>1</a>
+<span>
+1. stripPadding : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (stripped.isEmpty()) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_60'/>
+60
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_60'>1</a>
+<span>
+1. stripPadding : replaced return value with &#34;&#34; for com/ancientprogramming/fixedformat4j/format/impl/AbstractPatternFormatter::stripPadding &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>      return stripped;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_61'/>
+61
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_61'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_62'/>
+62
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_62'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    String pattern = instructions.getFixedFormatPatternData().getPattern();</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_63'/>
+63
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_63'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    int formattedLength = formattedLengthForPattern(pattern);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_64'/>
+64
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_64'>2</a>
+<span>
+1. stripPadding : changed conditional boundary &rarr; SURVIVED<br/>
+2. stripPadding : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    if (stripped.length() &#60; formattedLength) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_65'/>
+65
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_65'>1</a>
+<span>
+1. stripPadding : replaced return value with &#34;&#34; for com/ancientprogramming/fixedformat4j/format/impl/AbstractPatternFormatter::stripPadding &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return instructions.getAlignment().apply(stripped, formattedLength, instructions.getPaddingChar());</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_66'/>
+66
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_66'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_67'/>
+67
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_67'>1</a>
+<span>
+1. stripPadding : replaced return value with &#34;&#34; for com/ancientprogramming/fixedformat4j/format/impl/AbstractPatternFormatter::stripPadding &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return stripped;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_68'/>
+68
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_68'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_69'/>
+69
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_69'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_70'/>
+70
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_70'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_71'/>
+71
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_71'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @deprecated Use {@link #stripPadding} instead. This method will be removed in 1.7.0.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_72'/>
+72
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_72'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @see AbstractFixedFormatter#getRemovePadding</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_73'/>
+73
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_73'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_74'/>
+74
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_74'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Deprecated</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_75'/>
+75
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_75'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_76'/>
+76
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_76'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  protected String getRemovePadding(String value, FormatInstructions instructions) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_77'/>
+77
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_77'>1</a>
+<span>
+1. getRemovePadding : replaced return value with &#34;&#34; for com/ancientprogramming/fixedformat4j/format/impl/AbstractPatternFormatter::getRemovePadding &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return stripPadding(value, instructions);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_78'/>
+78
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_78'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_79'/>
+79
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_79'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_80'/>
+80
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_80'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  protected final int formattedLengthForPattern(String pattern) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_81'/>
+81
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_81'>1</a>
+<span>
+1. formattedLengthForPattern : replaced int return with 0 for com/ancientprogramming/fixedformat4j/format/impl/AbstractPatternFormatter::formattedLengthForPattern &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return PATTERN_LENGTH_CACHE</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_82'/>
+82
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_82'>1</a>
+<span>
+1. lambda$formattedLengthForPattern$0 : replaced return value with Collections.emptyMap for com/ancientprogramming/fixedformat4j/format/impl/AbstractPatternFormatter::lambda$formattedLengthForPattern$0 &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        .computeIfAbsent(getClass(), k -&#62; new ConcurrentHashMap&#60;&#62;())</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_83'/>
+83
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_83'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        .computeIfAbsent(pattern, this::computeFormattedLengthForPattern);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_84'/>
+84
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_84'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_85'/>
+85
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_85'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_86'/>
+86
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_86'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_87'/>
+87
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_87'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Returns the number of characters that this formatter&#39;s pattern produces when applied</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_88'/>
+88
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_88'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * to any date/time value. Used to restore padding characters that are part of the</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_89'/>
+89
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_89'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * date/time value rather than field padding.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_90'/>
+90
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_90'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_91'/>
+91
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_91'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * &#60;p&#62;This method is called at most once per (formatter type, pattern) pair; results are</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_92'/>
+92
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_92'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * cached by {@link #formattedLengthForPattern}.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_93'/>
+93
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_93'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_94'/>
+94
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_94'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @param pattern the date/time pattern string</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_95'/>
+95
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_95'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @return the fixed character length of the formatted output</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_96'/>
+96
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_96'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_97'/>
+97
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_97'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  protected abstract int computeFormattedLengthForPattern(String pattern);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@21fa19e4_98'/>
+98
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_98'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@21fa19e4_59'>59</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_59'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripPadding<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:testNullInputParseReturnsNull()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@21fa19e4_60'>60</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_60'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripPadding<br/><b>Killed by : </b>none</span></span> replaced return value with &#34;&#34; for com/ancientprogramming/fixedformat4j/format/impl/AbstractPatternFormatter::stripPadding &rarr; SURVIVED</span>
+<a title="Click to view covering tests" class="view-covered-by-tests" onClick="document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.AbstractPatternFormatter,-method=stripPadding,-methodDesc=(Ljava/lang/String;Lcom/ancientprogramming/fixedformat4j/format/FormatInstructions;)Ljava/lang/String;],-indexes=[18],-mutator=org.pitest.mutationtest.engine.gregor.mutators.returns.EmptyObjectReturnValsMutator]').style.display=(document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.AbstractPatternFormatter,-method=stripPadding,-methodDesc=(Ljava/lang/String;Lcom/ancientprogramming/fixedformat4j/format/FormatInstructions;)Ljava/lang/String;],-indexes=[18],-mutator=org.pitest.mutationtest.engine.gregor.mutators.returns.EmptyObjectReturnValsMutator]').style.display == 'block')?'none':'block';">Covering tests</a>
+<div class="covered-tests" id="MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.AbstractPatternFormatter,-method=stripPadding,-methodDesc=(Ljava/lang/String;Lcom/ancientprogramming/fixedformat4j/format/FormatInstructions;)Ljava/lang/String;],-indexes=[18],-mutator=org.pitest.mutationtest.engine.gregor.mutators.returns.EmptyObjectReturnValsMutator]" style="display:none;">Covered by tests:
+<ul>
+<li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:testNullInputParseReturnsNull()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testAllSpaceInputParsesToNull()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:allZeroFieldWithZeroPaddingParsesToNull()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:allZeroFieldWithZeroPaddingParsesToNull()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:allZeroFieldWithZeroPaddingParsesToNull()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testAllSpaceInputParsesToNull()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:testParse()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateNullRoundTrip()]</li> 
+</ul>
+</div></div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@21fa19e4_64'>64</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_64'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripPadding<br/><b>Killed by : </b>none</span></span> changed conditional boundary &rarr; SURVIVED</span>
+<a title="Click to view covering tests" class="view-covered-by-tests" onClick="document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.AbstractPatternFormatter,-method=stripPadding,-methodDesc=(Ljava/lang/String;Lcom/ancientprogramming/fixedformat4j/format/FormatInstructions;)Ljava/lang/String;],-indexes=[37],-mutator=org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator]').style.display=(document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.AbstractPatternFormatter,-method=stripPadding,-methodDesc=(Ljava/lang/String;Lcom/ancientprogramming/fixedformat4j/format/FormatInstructions;)Ljava/lang/String;],-indexes=[37],-mutator=org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator]').style.display == 'block')?'none':'block';">Covering tests</a>
+<div class="covered-tests" id="MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.AbstractPatternFormatter,-method=stripPadding,-methodDesc=(Ljava/lang/String;Lcom/ancientprogramming/fixedformat4j/format/FormatInstructions;)Ljava/lang/String;],-indexes=[37],-mutator=org.pitest.mutationtest.engine.gregor.mutators.ConditionalsBoundaryMutator]" style="display:none;">Covered by tests:
+<ul>
+<li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testParseDefaultPattern()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:rightAlignedZeroPaddingRestoresLeadingZerosInDateComponents()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testEndOfDay()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testMidnight()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testRightAlignedPaddingStrippedBeforeParse()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testRightAlignedPaddingStrippedBeforeParse()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testEndOfYear()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testFirstDayOfYear()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testParseIsoPattern()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testParseWithSpaceSeparator()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testLeapDayDateTime()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testParseWithDashSeparator()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testParseCompactPattern()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:rightAlignedZeroPaddingRestoresLeadingZerosInDateComponents()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testLeapDay()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:rightAlignedZeroPaddingDoesNotStripLeadingZeroInDateComponents()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testInvalidMonthThrowsFixedFormatException()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:leftAlignedZeroPaddingDoesNotStripZeroValuedTimeComponents()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testInvalidDateStringThrowsFixedFormatException()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:zeroPaddingRoundTrip()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testInvalidMonthThrowsFixedFormatException()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:fieldLengthEqualToPatternLengthIsUnchanged()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:leftAlignedZeroPaddingDoesNotStripZeroValuedTimeComponents()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testRoundTrip()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:zeroPaddingRoundTrip()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:testParse()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:leftAlignedZeroPaddingDoesNotStripZeroValuedMonthOrDay()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:zeroPaddingRoundTrip()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testParseAlternativePattern()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToLocalDateFormatter()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testRoundTrip()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testInvalidDateStringThrowsFixedFormatException()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToDateFormatter()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:testAlternativePattern()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToLocalDateTimeFormatter()]</li> <li>com.ancientprogramming.fixedformat4j.issues.TestIssue33.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestIssue33]/[method:dateWithZeroValuedComponentsAndZeroPaddingParsesCorrectly()]</li> <li>com.ancientprogramming.fixedformat4j.issues.TestIssue10.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestIssue10]/[method:testParseExceptionContainsDetails()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLoadMultibleFieldsRecord()]</li> <li>com.ancientprogramming.fixedformat4j.issues.TestIssue33.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestIssue33]/[method:exportedDateRoundTripsCorrectly()]</li> <li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatDecimal_bigDecimalParsedCorrectly()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateTimeNoPatternAnnotationUsesIsoDefault()]</li> <li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatPattern_dateFieldParsedCorrectly()]</li> <li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testLombokLoad_allFieldsPopulated()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateTimeRoundTrip()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:parseIsThreadSafe()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateNoPatternAnnotationUsesIsoLocalDateDefault()]</li> <li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatBoolean_trueParsedFromY()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testCountOneBackwardCompat()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateRoundTrip()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLoadRecord()]</li> <li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testLombokRoundTrip_loadThenExportMatchesOriginal()]</li> 
+</ul>
+</div></div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>stripPadding<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:leftAlignedZeroPaddingDoesNotStripZeroValuedTimeComponents()]</span></span> negated conditional &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@21fa19e4_65'>65</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_65'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripPadding<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:leftAlignedZeroPaddingDoesNotStripZeroValuedTimeComponents()]</span></span> replaced return value with &#34;&#34; for com/ancientprogramming/fixedformat4j/format/impl/AbstractPatternFormatter::stripPadding &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@21fa19e4_67'>67</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_67'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripPadding<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testParseDefaultPattern()]</span></span> replaced return value with &#34;&#34; for com/ancientprogramming/fixedformat4j/format/impl/AbstractPatternFormatter::stripPadding &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@21fa19e4_77'>77</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_77'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getRemovePadding<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testParseDefaultPattern()]</span></span> replaced return value with &#34;&#34; for com/ancientprogramming/fixedformat4j/format/impl/AbstractPatternFormatter::getRemovePadding &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@21fa19e4_81'>81</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_81'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>formattedLengthForPattern<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:leftAlignedZeroPaddingDoesNotStripZeroValuedTimeComponents()]</span></span> replaced int return with 0 for com/ancientprogramming/fixedformat4j/format/impl/AbstractPatternFormatter::formattedLengthForPattern &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@21fa19e4_82'>82</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@21fa19e4_82'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>lambda$formattedLengthForPattern$0<br/><b>Killed by : </b>none</span></span> replaced return value with Collections.emptyMap for com/ancientprogramming/fixedformat4j/format/impl/AbstractPatternFormatter::lambda$formattedLengthForPattern$0 &rarr; SURVIVED</span>
+<a title="Click to view covering tests" class="view-covered-by-tests" onClick="document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.AbstractPatternFormatter,-method=lambda$formattedLengthForPattern$0,-methodDesc=(Ljava/lang/Class;)Ljava/util/Map;],-indexes=[6],-mutator=org.pitest.mutationtest.engine.gregor.mutators.returns.EmptyObjectReturnValsMutator]').style.display=(document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.AbstractPatternFormatter,-method=lambda$formattedLengthForPattern$0,-methodDesc=(Ljava/lang/Class;)Ljava/util/Map;],-indexes=[6],-mutator=org.pitest.mutationtest.engine.gregor.mutators.returns.EmptyObjectReturnValsMutator]').style.display == 'block')?'none':'block';">Covering tests</a>
+<div class="covered-tests" id="MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.format.impl.AbstractPatternFormatter,-method=lambda$formattedLengthForPattern$0,-methodDesc=(Ljava/lang/Class;)Ljava/util/Map;],-indexes=[6],-mutator=org.pitest.mutationtest.engine.gregor.mutators.returns.EmptyObjectReturnValsMutator]" style="display:none;">Covered by tests:
+<ul>
+<li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToLocalDateFormatter()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToDateFormatter()]</li> <li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToLocalDateTimeFormatter()]</li> 
+</ul>
+</div></div> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+<li class='mutator'>EMPTY_RETURNS</li>
+<li class='mutator'>FALSE_RETURNS</li>
+<li class='mutator'>INCREMENTS</li>
+<li class='mutator'>INVERT_NEGS</li>
+<li class='mutator'>MATH</li>
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+<li class='mutator'>NULL_RETURNS</li>
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+<li class='mutator'>TRUE_RETURNS</li>
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testParseDefaultPattern()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:rightAlignedZeroPaddingRestoresLeadingZerosInDateComponents()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testEndOfDay()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testMidnight()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testRightAlignedPaddingStrippedBeforeParse()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testRightAlignedPaddingStrippedBeforeParse()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testEndOfYear()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testFirstDayOfYear()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testParseIsoPattern()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testParseWithSpaceSeparator()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testLeapDayDateTime()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testParseWithDashSeparator()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testParseCompactPattern()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:rightAlignedZeroPaddingRestoresLeadingZerosInDateComponents()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testLeapDay()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:rightAlignedZeroPaddingDoesNotStripLeadingZeroInDateComponents()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testInvalidMonthThrowsFixedFormatException()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:leftAlignedZeroPaddingDoesNotStripZeroValuedTimeComponents()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testInvalidDateStringThrowsFixedFormatException()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:zeroPaddingRoundTrip()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testInvalidMonthThrowsFixedFormatException()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:fieldLengthEqualToPatternLengthIsUnchanged()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:leftAlignedZeroPaddingDoesNotStripZeroValuedTimeComponents()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testRoundTrip()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:zeroPaddingRoundTrip()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:testParse()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:leftAlignedZeroPaddingDoesNotStripZeroValuedMonthOrDay()] (3 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:zeroPaddingRoundTrip()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testParseAlternativePattern()] (4 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToLocalDateFormatter()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testRoundTrip()] (3 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testInvalidDateStringThrowsFixedFormatException()] (5 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToDateFormatter()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:testAlternativePattern()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestByTypeFormatter]/[method:testDispatchesToLocalDateTimeFormatter()] (4 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestIssue33.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestIssue33]/[method:dateWithZeroValuedComponentsAndZeroPaddingParsesCorrectly()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestIssue10.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestIssue10]/[method:testParseExceptionContainsDetails()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLoadMultibleFieldsRecord()] (2 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestIssue33.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestIssue33]/[method:exportedDateRoundTripsCorrectly()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatDecimal_bigDecimalParsedCorrectly()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateTimeNoPatternAnnotationUsesIsoDefault()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatPattern_dateFieldParsedCorrectly()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testLombokLoad_allFieldsPopulated()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateTimeRoundTrip()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:parseIsThreadSafe()] (36 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateNoPatternAnnotationUsesIsoLocalDateDefault()] (4 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testFixedFormatBoolean_trueParsedFromY()] (5 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestRepeatingField]/[method:testCountOneBackwardCompat()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateRoundTrip()] (5 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLoadRecord()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.issues.TestLombokFieldAnnotations]/[method:testLombokRoundTrip_loadThenExportMatchesOriginal()] (4 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:testNullInputParseReturnsNull()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:testAllSpaceInputParsesToNull()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:allZeroFieldWithZeroPaddingParsesToNull()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestDateFormatter]/[method:allZeroFieldWithZeroPaddingParsesToNull()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateFormatter]/[method:allZeroFieldWithZeroPaddingParsesToNull()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestLocalDateTimeFormatter]/[method:testAllSpaceInputParsesToNull()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.format.impl.TestFixedFormatManagerImpl]/[method:testLocalDateNullRoundTrip()] (0 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.17.1
+
+</body>
+</html>
