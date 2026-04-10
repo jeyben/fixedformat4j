@@ -34,7 +34,7 @@ import java.util.Date;
 public class DateFormatter extends AbstractPatternFormatter<Date> {
 
   @Override
-  protected int formattedLengthForPattern(String pattern) {
+  protected int computeFormattedLengthForPattern(String pattern) {
     return getFormatter(pattern).format(new Date(0)).length();
   }
 

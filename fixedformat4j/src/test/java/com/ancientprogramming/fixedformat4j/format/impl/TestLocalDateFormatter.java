@@ -23,6 +23,13 @@ import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -167,5 +174,31 @@ public class TestLocalDateFormatter {
     LocalDate original = LocalDate.of(2024, 1, 1);
     String formatted = formatter.format(original, instr);
     assertEquals(original, formatter.parse(formatted, instr));
+  }
+
+  // --- Concurrency ---
+
+  @Test
+  void parseIsThreadSafe() throws Exception {
+    int threadCount = 20;
+    FormatInstructions instr = instructions(8, "yyyyMMdd");
+    LocalDate expected = LocalDate.of(1970, 1, 1);
+
+    CyclicBarrier barrier = new CyclicBarrier(threadCount);
+    ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+    List<Future<LocalDate>> futures = new ArrayList<>();
+
+    for (int i = 0; i < threadCount; i++) {
+      futures.add(executor.submit(() -> {
+        barrier.await();
+        return (LocalDate) formatter.parse("19700101", instr);
+      }));
+    }
+
+    executor.shutdown();
+    assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
+    for (Future<LocalDate> future : futures) {
+      assertEquals(expected, future.get());
+    }
   }
 }

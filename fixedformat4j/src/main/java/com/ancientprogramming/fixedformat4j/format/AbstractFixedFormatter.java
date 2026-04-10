@@ -32,7 +32,6 @@ public abstract class AbstractFixedFormatter<T> implements FixedFormatter<T> {
   public T parse(String value, FormatInstructions instructions) {
     T result = null;
     if (value != null) {
-      instructions.getFixedFormatNumberData();
       result = asObject(getRemovePadding(value, instructions), instructions);
     }
     return result;

@@ -18,6 +18,9 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Base class for pattern-based date/time formatters.
  *
@@ -37,6 +40,8 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
  */
 public abstract class AbstractPatternFormatter<T> extends AbstractFixedFormatter<T> {
 
+  private static final Map<Class<?>, Map<String, Integer>> PATTERN_LENGTH_CACHE = new ConcurrentHashMap<>();
+
   @Override
   protected String getRemovePadding(String value, FormatInstructions instructions) {
     String stripped = instructions.getAlignment().remove(value, instructions.getPaddingChar());
@@ -51,13 +56,22 @@ public abstract class AbstractPatternFormatter<T> extends AbstractFixedFormatter
     return stripped;
   }
 
+  protected final int formattedLengthForPattern(String pattern) {
+    return PATTERN_LENGTH_CACHE
+        .computeIfAbsent(getClass(), k -> new ConcurrentHashMap<>())
+        .computeIfAbsent(pattern, this::computeFormattedLengthForPattern);
+  }
+
   /**
    * Returns the number of characters that this formatter's pattern produces when applied
    * to any date/time value. Used to restore padding characters that are part of the
    * date/time value rather than field padding.
    *
+   * <p>This method is called at most once per (formatter type, pattern) pair; results are
+   * cached by {@link #formattedLengthForPattern}.
+   *
    * @param pattern the date/time pattern string
    * @return the fixed character length of the formatted output
    */
-  protected abstract int formattedLengthForPattern(String pattern);
+  protected abstract int computeFormattedLengthForPattern(String pattern);
 }

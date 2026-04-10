@@ -35,7 +35,7 @@ import java.time.format.DateTimeParseException;
 public class LocalDateTimeFormatter extends AbstractPatternFormatter<LocalDateTime> {
 
   @Override
-  protected int formattedLengthForPattern(String pattern) {
+  protected int computeFormattedLengthForPattern(String pattern) {
     return DateTimeFormatter.ofPattern(pattern).format(LocalDateTime.of(1970, 1, 1, 0, 0, 0)).length();
   }
 
