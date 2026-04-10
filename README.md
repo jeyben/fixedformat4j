@@ -2,9 +2,15 @@
 
 [![Nightly Build](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml/badge.svg?branch=master)](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.ancientprogramming.fixedformat4j/fixedformat4j)](https://central.sonatype.com/artifact/com.ancientprogramming.fixedformat4j/fixedformat4j)
-[![PIT test score](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjeyben.github.io%2Ffixedformat4j%2Fmutation-score.json&query=%24.score&label=PIT%20test%20score&color=brightgreen)](https://jeyben.github.io/fixedformat4j/pit-reports/)
+[![Mutation Coverage](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjeyben.github.io%2Ffixedformat4j%2Fmutation-score.json&query=%24.mutationCoverage&label=Mutation%20Coverage&color=brightgreen)](https://jeyben.github.io/fixedformat4j/pit-reports/)
 
 A small, non-intrusive Java library for reading and writing fixed-width flat-file records using annotations.
+
+## Quality
+
+[![Line Coverage](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjeyben.github.io%2Ffixedformat4j%2Fmutation-score.json&query=%24.lineCoverage&label=Line%20Coverage&color=blue)](https://jeyben.github.io/fixedformat4j/pit-reports/)
+[![Mutation Coverage](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjeyben.github.io%2Ffixedformat4j%2Fmutation-score.json&query=%24.mutationCoverage&label=Mutation%20Coverage&color=brightgreen)](https://jeyben.github.io/fixedformat4j/pit-reports/)
+[![Test Strength](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjeyben.github.io%2Ffixedformat4j%2Fmutation-score.json&query=%24.testStrength&label=Test%20Strength&color=brightgreen)](https://jeyben.github.io/fixedformat4j/pit-reports/)
 
 ## Why fixedformat4j?
 
@@ -128,7 +134,7 @@ Full documentation is available at **https://jeyben.github.io/fixedformat4j/**:
 - [Changelog](https://jeyben.github.io/fixedformat4j/changelog)
 
 **Reports:**
-- [Mutation Report](https://jeyben.github.io/fixedformat4j/pit-reports/) — latest PIT mutation testing results (updated nightly)
+- [Mutation Report](https://jeyben.github.io/fixedformat4j/pit-reports/) — latest PIT mutation testing results (updated on release)
 
 ## License
 

@@ -33,16 +33,13 @@ jobs:
 
       - name: Publish PIT report to docs
         run: |
-          TOTAL=$(grep -c '<mutation ' fixedformat4j/target/pit-reports/mutations.xml || true)
-          UNDETECTED=$(grep -c "<mutation detected='false' " fixedformat4j/target/pit-reports/mutations.xml || true)
-          if [ "$TOTAL" -gt 0 ]; then
-            SCORE=$(( (TOTAL - UNDETECTED) * 100 / TOTAL ))
-          else
-            SCORE=0
-          fi
+          STATS=$(awk '/<tbody>/,/<\/tbody>/' fixedformat4j/target/pit-reports/index.html | grep -o '[0-9]*%')
+          LINE_COV=$(echo "$STATS" | sed -n '1p')
+          MUT_COV=$(echo "$STATS"  | sed -n '2p')
+          TEST_STR=$(echo "$STATS" | sed -n '3p')
           mkdir -p docs/pit-reports
           cp -r fixedformat4j/target/pit-reports/. docs/pit-reports/
-          echo "{\"score\":\"${SCORE}%\"}" > docs/mutation-score.json
+          echo "{\"lineCoverage\":\"${LINE_COV}\",\"mutationCoverage\":\"${MUT_COV}\",\"testStrength\":\"${TEST_STR}\"}" > docs/mutation-score.json
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/pit-reports/ docs/mutation-score.json
