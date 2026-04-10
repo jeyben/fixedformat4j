@@ -15,16 +15,31 @@ A small, non-intrusive Java library for reading and writing fixed-width flat-fil
 Fixed-width files are common in banking, payroll, government, and legacy system integration. fixedformat4j lets you describe your record layout once — as annotations on a plain Java class — and then load and export records without writing any parsing or formatting code yourself.
 
 - **Annotation-driven** — declare field offsets, lengths, alignment, and padding in one place
-- **Rich type support** — `String`, `Integer`, `Long`, `Short`, `Double`, `Float`, `BigDecimal`, `Boolean`, `Character`, `Date`, `LocalDate`
+- **Rich type support** — `String`, `Integer`, `Long`, `Short`, `Double`, `Float`, `BigDecimal`, `Boolean`, `Character`, `Date`, `LocalDate`, `LocalDateTime`
 - **Signed numbers** — handles `'-1000'` and `'1000-'` both as negative values
 - **Implicit decimals** — store `BigDecimal` without a decimal point in the file
 - **Nested records** — embed one `@Record` class inside another
 - **Extensible** — plug in your own formatter for any custom type
 
-## What's new in 1.5.0
+## What's new in 1.6.0
 
-- **Field-level `@Field` and `@Fields` annotations** — place `@Field` directly on a Java field instead of its getter. The manager derives the getter/setter by naming convention, so this works with plain POJOs and with Lombok (`@Getter`/`@Setter`) to eliminate boilerplate. See [Example 6](https://jeyben.github.io/fixedformat4j/examples#example-6--field-annotations-and-lombok) for details.
-- **Maven Central distribution** — the library is now published to Maven Central; no GitHub account or personal access token required.
+- **`LocalDateTime` support** — `LocalDateTime` is now a built-in type in `ByTypeFormatter`, with a type-specific default pattern (`yyyyMMddHHmmss`). Eager pattern validation raises a clear error at load/export time if the `@FixedFormatPattern` value is invalid.
+- **Repeating fields via `@Field(count)`** — a single `@Field` annotation can now map a list of repeated same-format fields by setting `count`; pair with `strictCount` to enforce exact list size on export.
+- **PIT mutation testing** — the project now runs PIT (PITest) mutation testing on every release; live results are published to the [Mutation Report](https://jeyben.github.io/fixedformat4j/pit-reports/) page and surfaced as quality badges on this README.
+- **Internal refactoring** — `FixedFormatManagerImpl` was decomposed into focused collaborators; all production classes now carry complete Javadoc.
+
+## Journey since 1.4.0
+
+After many years of inactivity, fixedformat4j was revived with the 1.4.0 release. Here is a summary of everything that has improved since then:
+
+- **`LocalDate` and `LocalDateTime` support** — both are now built-in types in `ByTypeFormatter` with type-specific default patterns and eager pattern validation.
+- **Repeating fields via `@Field(count)`** — map a list of same-format fields with a single annotation; optional `strictCount` enforces list size on export.
+- **Field-level `@Field` / `@Fields` annotations** — place annotations directly on a Java field instead of its getter; works with plain POJOs and Lombok (`@Getter`/`@Setter`).
+- **Maven Central distribution** — no GitHub account or personal access token required; standard `<dependency>` block just works.
+- **Negative decimal fix** — parsing trailing-sign negatives with implicit decimals (e.g. `000000001-`) no longer throws `NumberFormatException`.
+- **Modernised build** — Java 11, SLF4J, commons-lang3, JUnit 5 with comprehensive test coverage.
+- **PIT mutation testing** — live quality badges and a published mutation report on every release.
+- **New documentation site** — full Markdown docs at [jeyben.github.io/fixedformat4j](https://jeyben.github.io/fixedformat4j/) (Quick Start, Annotations reference, Examples, FAQ, Changelog).
 
 ## Quick start
 
@@ -36,7 +51,7 @@ fixedformat4j is published to **Maven Central**. No repository configuration or 
 <dependency>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j</artifactId>
-  <version>1.5.0</version>
+  <version>1.6.0</version>
 </dependency>
 ```
 
@@ -47,14 +62,14 @@ See [Get It](https://jeyben.github.io/fixedformat4j/get-it) for full setup instr
 <details>
 <summary>No GitHub account? Download manually</summary>
 
-Download `fixedformat4j-1.5.0.jar` from the [1.5.0 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_5_0), then install it into your local Maven repository:
+Download `fixedformat4j-1.6.0.jar` from the [1.6.0 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_6_0), then install it into your local Maven repository:
 
 ```bash
 mvn install:install-file \
-  -Dfile=fixedformat4j-1.5.0.jar \
+  -Dfile=fixedformat4j-1.6.0.jar \
   -DgroupId=com.ancientprogramming.fixedformat4j \
   -DartifactId=fixedformat4j \
-  -Dversion=1.5.0 \
+  -Dversion=1.6.0 \
   -Dpackaging=jar
 ```
 
