@@ -19,7 +19,7 @@ Add fixedformat4j to your `pom.xml`:
 <dependency>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j</artifactId>
-  <version>1.5.0</version>
+  <version>1.6.1</version>
 </dependency>
 ```
 
