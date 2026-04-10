@@ -2,6 +2,9 @@
 
 [![Nightly Build](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml/badge.svg?branch=master)](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.ancientprogramming.fixedformat4j/fixedformat4j)](https://central.sonatype.com/artifact/com.ancientprogramming.fixedformat4j/fixedformat4j)
+
+**[Documentation](https://jeyben.github.io/fixedformat4j/)** — [Quick Start](https://jeyben.github.io/fixedformat4j/quickstart) · [Annotations](https://jeyben.github.io/fixedformat4j/usage/annotations) · [Examples](https://jeyben.github.io/fixedformat4j/examples) · [Changelog](https://jeyben.github.io/fixedformat4j/changelog)
+
 A small, non-intrusive Java library for reading and writing fixed-width flat-file records using annotations.
 
 ## Quality
