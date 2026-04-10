@@ -6,6 +6,19 @@ title: Changelog
 
 ## 1.6.1 (unreleased)
 
+### Bug fixes
+
+- **`DateFormatter` (and `LocalDateFormatter` / `LocalDateTimeFormatter`) no longer over-strips
+  padding characters** ([#33](https://github.com/jeyben/fixedformat4j/issues/33)) — When the
+  configured `paddingChar` happened to be a character that also appears in the formatted date
+  string (e.g. `paddingChar = '0'` with a time value whose seconds component is `00`), the
+  previous `stripPadding` implementation removed those characters from the parsed string, leaving
+  it too short and causing a `ParseException`. The fix introduces `AbstractPatternFormatter`,
+  which overrides `stripPadding` to remove only leading/trailing padding characters rather than
+  all occurrences of the character.
+
+---
+
 ### Deprecations
 
 - **`AbstractFixedFormatter.getRemovePadding` deprecated** — The method has been renamed to
