@@ -17,9 +17,10 @@ package com.ancientprogramming.fixedformat4j.format;
 
 import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
-import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
+import com.ancientprogramming.fixedformat4j.format.data.FixedFormatEnumData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
+import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 
 /**
  * Contains instructions on how to export and load fixed formatted data.
@@ -36,9 +37,11 @@ public class FormatInstructions {
   private FixedFormatBooleanData fixedFormatBooleanData;
   private FixedFormatNumberData fixedFormatNumberData;
   private FixedFormatDecimalData fixedFormatDecimalData;
+  private FixedFormatEnumData fixedFormatEnumData;
 
   /**
    * Creates a fully-populated set of format instructions.
+   * Delegates to the 8-argument constructor with {@link FixedFormatEnumData#DEFAULT}.
    *
    * @param length                  the fixed width of the field in characters
    * @param alignment               the alignment strategy used to pad and strip the field
@@ -49,6 +52,22 @@ public class FormatInstructions {
    * @param fixedFormatDecimalData  decimal precision configuration, or {@code null} if unused
    */
   public FormatInstructions(int length, Align alignment, char paddingChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData) {
+    this(length, alignment, paddingChar, fixedFormatPatternData, fixedFormatBooleanData, fixedFormatNumberData, fixedFormatDecimalData, FixedFormatEnumData.DEFAULT);
+  }
+
+  /**
+   * Creates a fully-populated set of format instructions including enum configuration.
+   *
+   * @param length                  the fixed width of the field in characters
+   * @param alignment               the alignment strategy used to pad and strip the field
+   * @param paddingChar             the character used for padding
+   * @param fixedFormatPatternData  date/time pattern configuration, or {@code null} if unused
+   * @param fixedFormatBooleanData  boolean value configuration, or {@code null} if unused
+   * @param fixedFormatNumberData   number sign configuration, or {@code null} if unused
+   * @param fixedFormatDecimalData  decimal precision configuration, or {@code null} if unused
+   * @param fixedFormatEnumData     enum serialization configuration, or {@code null} if unused
+   */
+  public FormatInstructions(int length, Align alignment, char paddingChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData, FixedFormatEnumData fixedFormatEnumData) {
     this.length = length;
     this.alignment = alignment;
     this.paddingChar = paddingChar;
@@ -56,6 +75,7 @@ public class FormatInstructions {
     this.fixedFormatBooleanData = fixedFormatBooleanData;
     this.fixedFormatNumberData = fixedFormatNumberData;
     this.fixedFormatDecimalData = fixedFormatDecimalData;
+    this.fixedFormatEnumData = fixedFormatEnumData;
   }
 
   /**
@@ -121,8 +141,17 @@ public class FormatInstructions {
     return fixedFormatNumberData;
   }
 
+  /**
+   * Returns the enum serialization configuration for this field.
+   *
+   * @return the {@link FixedFormatEnumData}, never {@code null} (defaults to {@link FixedFormatEnumData#DEFAULT})
+   */
+  public FixedFormatEnumData getFixedFormatEnumData() {
+    return fixedFormatEnumData;
+  }
+
   public String toString() {
-    return String.format("FormatInstructions{length=%d, alignment=%s, paddingChar='%c', fixedFormatPatternData=%s, fixedFormatBooleanData=%s, fixedFormatNumberData=%s, fixedFormatDecimalData=%s}",
-        length, alignment, paddingChar, fixedFormatPatternData, fixedFormatBooleanData, fixedFormatNumberData, fixedFormatDecimalData);
+    return String.format("FormatInstructions{length=%d, alignment=%s, paddingChar='%c', fixedFormatPatternData=%s, fixedFormatBooleanData=%s, fixedFormatNumberData=%s, fixedFormatDecimalData=%s, fixedFormatEnumData=%s}",
+        length, alignment, paddingChar, fixedFormatPatternData, fixedFormatBooleanData, fixedFormatNumberData, fixedFormatDecimalData, fixedFormatEnumData);
   }
 }

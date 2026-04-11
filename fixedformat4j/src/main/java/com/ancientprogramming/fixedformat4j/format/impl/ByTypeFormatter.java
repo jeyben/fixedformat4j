@@ -98,6 +98,10 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
    *         registered for {@code dataType} or the formatter cannot be instantiated
    */
   public FixedFormatter<?> actualFormatter(final Class<?> dataType) {
+    if (dataType != null && dataType.isEnum()) {
+      return new EnumFormatter(context);
+    }
+
     Class<? extends FixedFormatter<?>> formatterClass = KNOWN_FORMATTERS.get(dataType);
 
     if (formatterClass != null) {
