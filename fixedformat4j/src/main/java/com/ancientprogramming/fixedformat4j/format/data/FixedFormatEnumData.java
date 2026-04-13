@@ -48,6 +48,7 @@ public class FixedFormatEnumData {
     return enumFormat;
   }
 
+  @Override
   public String toString() {
     return String.format("FixedFormatEnumData{enumFormat=%s}", enumFormat);
   }

@@ -97,6 +97,15 @@ public class TestIssue67EnumSupport {
     public void setPriority(Priority priority) { this.priority = priority; }
   }
 
+  @Record(length = 5)
+  public static class TooShortRecord {
+    private TooLongForField value;
+
+    @Field(offset = 1, length = 5)
+    public TooLongForField getValue() { return value; }
+    public void setValue(TooLongForField v) { this.value = v; }
+  }
+
   // -------------------------------------------------------------------------
   // LITERAL (default) tests
   // -------------------------------------------------------------------------
@@ -128,6 +137,15 @@ public class TestIssue67EnumSupport {
     String exported = manager.export(record);
     LiteralDefaultRecord loaded = manager.load(LiteralDefaultRecord.class, exported);
     assertEquals(Status.INACTIVE, loaded.getStatus());
+  }
+
+  @Test
+  public void nullEnumFieldRoundTrip() {
+    LiteralDefaultRecord record = new LiteralDefaultRecord();
+    record.setStatus(null);
+    String exported = manager.export(record);
+    LiteralDefaultRecord loaded = manager.load(LiteralDefaultRecord.class, exported);
+    assertNull(loaded.getStatus(), "null enum should round-trip as null");
   }
 
   // -------------------------------------------------------------------------
@@ -166,15 +184,6 @@ public class TestIssue67EnumSupport {
     TwoFieldRecord loaded = manager.load(TwoFieldRecord.class, exported);
     assertEquals(Status.ACTIVE, loaded.getStatus());
     assertEquals(Priority.HIGH, loaded.getPriority());
-  }
-
-  @Record(length = 5)
-  public static class TooShortRecord {
-    private TooLongForField value;
-
-    @Field(offset = 1, length = 5)
-    public TooLongForField getValue() { return value; }
-    public void setValue(TooLongForField v) { this.value = v; }
   }
 
   // -------------------------------------------------------------------------

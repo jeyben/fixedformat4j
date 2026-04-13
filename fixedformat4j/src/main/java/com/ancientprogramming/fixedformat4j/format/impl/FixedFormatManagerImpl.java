@@ -54,6 +54,17 @@ import static java.lang.String.format;
 public class FixedFormatManagerImpl implements FixedFormatManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(FixedFormatManagerImpl.class);
+  /**
+   * JVM-level cache of record classes whose enum-field lengths have already been validated.
+   * Validation is performed at most once per class (on the first {@code load} or {@code export}
+   * call) and then skipped for subsequent calls.
+   * <p>
+   * <strong>Note:</strong> this set is never cleared. In multi-classloader environments
+   * (e.g. application servers with hot-reload, OSGi containers) old {@link Class} references
+   * may be retained here after their classloader is discarded, preventing garbage collection.
+   * In such environments consider using a {@link java.lang.ref.WeakReference}-based map instead.
+   * </p>
+   */
   private static final Set<Class<?>> VALIDATED_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
   private final AnnotationScanner annotationScanner = new AnnotationScanner();

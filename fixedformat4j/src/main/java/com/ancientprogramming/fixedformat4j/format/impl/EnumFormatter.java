@@ -32,7 +32,6 @@ import com.ancientprogramming.fixedformat4j.format.data.FixedFormatEnumData;
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.7.0
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
 public class EnumFormatter extends AbstractFixedFormatter<Enum> {
 
   private final FormatContext<?> context;
@@ -48,6 +47,7 @@ public class EnumFormatter extends AbstractFixedFormatter<Enum> {
 
   /** {@inheritDoc} */
   @Override
+  @SuppressWarnings({"unchecked", "rawtypes"})
   public Enum asObject(String value, FormatInstructions instructions) {
     if (value == null || value.isEmpty()) {
       return null;
