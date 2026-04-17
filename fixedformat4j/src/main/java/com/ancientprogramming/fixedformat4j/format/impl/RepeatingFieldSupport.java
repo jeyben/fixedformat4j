@@ -78,8 +78,8 @@ class RepeatingFieldSupport {
 
     Object value;
     try {
-      value = target.getter.invoke(fixedFormatRecord);
-    } catch (Exception e) {
+      value = target.getterHandle.invoke(fixedFormatRecord);
+    } catch (Throwable e) {
       throw new FixedFormatException(format("could not invoke %s", fieldLabel(target.getter)), e);
     }
 

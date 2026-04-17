@@ -1,5 +1,7 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
@@ -16,10 +18,16 @@ class AnnotationTarget {
 
   final Method getter;
   final AnnotatedElement annotationSource;
+  final MethodHandle getterHandle;
 
   private AnnotationTarget(Method getter, AnnotatedElement annotationSource) {
     this.getter = getter;
     this.annotationSource = annotationSource;
+    try {
+      this.getterHandle = MethodHandles.lookup().unreflect(getter);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException("Cannot create MethodHandle for " + getter, e);
+    }
   }
 
   /** Annotation is on the getter — getter serves as both invoker and annotation source. */

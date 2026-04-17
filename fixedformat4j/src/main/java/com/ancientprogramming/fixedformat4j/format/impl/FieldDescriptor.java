@@ -5,6 +5,7 @@ import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatContext;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
 /**
@@ -23,6 +24,7 @@ class FieldDescriptor {
 
   final AnnotationTarget target;
   final Method setter;
+  final MethodHandle setterHandle;
   final Field fieldAnnotation;
   final Class<?> datatype;
   final FormatContext<?> context;
@@ -41,6 +43,7 @@ class FieldDescriptor {
   FieldDescriptor(
       AnnotationTarget target,
       Method setter,
+      MethodHandle setterHandle,
       Field fieldAnnotation,
       Class<?> datatype,
       FormatContext<?> context,
@@ -51,6 +54,7 @@ class FieldDescriptor {
       boolean isLoadField) {
     this.target = target;
     this.setter = setter;
+    this.setterHandle = setterHandle;
     this.fieldAnnotation = fieldAnnotation;
     this.datatype = datatype;
     this.context = context;
