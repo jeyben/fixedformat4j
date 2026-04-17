@@ -130,6 +130,9 @@
             <outputFormat>HTML</outputFormat>
             <outputFormat>XML</outputFormat>
           </outputFormats>
+          <mutators>
+            <mutator>ALL</mutator>
+          </mutators>
           <timestampedReports>false</timestampedReports>
         </configuration>
         <dependencies>
