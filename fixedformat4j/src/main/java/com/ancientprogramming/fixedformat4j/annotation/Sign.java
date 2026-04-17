@@ -54,22 +54,23 @@ public enum Sign {
   PREPEND {
     /** {@inheritDoc} */
     public String apply(String value, FormatInstructions instructions) {
-      String sign = StringUtils.substring(value, 0, 1);
-      if ("-".equals(sign)) {
-        value = StringUtils.substring(value, 1);
+      String sign;
+      if (value != null && !value.isEmpty() && value.charAt(0) == '-') {
+        sign = "-";
+        value = value.substring(1);
       } else {
         sign = "+";
       }
       String result = instructions.getAlignment().apply(value, instructions.getLength(), instructions.getPaddingChar());
-      return sign + StringUtils.substring(result, 1);
+      return sign + result.substring(1);
     }
 
     /** {@inheritDoc} */
     public String remove(String value, FormatInstructions instructions) {
-      String sign = StringUtils.substring(value, 0, 1);
-      String valueWithoutSign = StringUtils.substring(value, 1);
+      String sign = (value == null || value.isEmpty()) ? "" : String.valueOf(value.charAt(0));
+      String valueWithoutSign = (value == null || value.isEmpty()) ? "" : value.substring(1);
       String result = instructions.getAlignment().remove(valueWithoutSign, instructions.getPaddingChar());
-      if (removeSign(instructions, sign, result)) {
+      if (!sign.isEmpty() && removeSign(instructions, sign, result)) {
         sign = "";
       }
 
@@ -86,22 +87,23 @@ public enum Sign {
   APPEND {
     /** {@inheritDoc} */
     public String apply(String value, FormatInstructions instructions) {
-      String sign = StringUtils.substring(value, 0, 1);
-      if ("-".equals(sign)) {
-        value = StringUtils.substring(value, 1);
+      String sign;
+      if (value != null && !value.isEmpty() && value.charAt(0) == '-') {
+        sign = "-";
+        value = value.substring(1);
       } else {
         sign = "+";
       }
       String result = instructions.getAlignment().apply(value, instructions.getLength(), instructions.getPaddingChar());
-      return StringUtils.substring(result, 1) + sign;
+      return result.substring(1) + sign;
 
     }
     /** {@inheritDoc} */
     public String remove(String value, FormatInstructions instructions) {
-      String sign = StringUtils.substring(value, value.length()-1);
-      String valueWithoutSign = StringUtils.substring(value, 0, value.length()-1);
+      String sign = (value == null || value.isEmpty()) ? "" : String.valueOf(value.charAt(value.length() - 1));
+      String valueWithoutSign = (value == null || value.isEmpty()) ? "" : value.substring(0, value.length() - 1);
       String result = instructions.getAlignment().remove(valueWithoutSign, instructions.getPaddingChar());
-      if (removeSign(instructions, sign, result)) {
+      if (!sign.isEmpty() && removeSign(instructions, sign, result)) {
         sign = "";
       }
       if (StringUtils.isEmpty(result)) {
