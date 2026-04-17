@@ -24,9 +24,9 @@ package com.ancientprogramming.fixedformat4j.format;
  */
 public class FormatContext<T> {
 
-  private int offset;
-  private Class<T> dataType;
-  private Class<? extends FixedFormatter<T>> formatter;
+  private final int offset;
+  private final Class<T> dataType;
+  private final Class<? extends FixedFormatter<T>> formatter;
 
   /**
    * Creates a new format context.
