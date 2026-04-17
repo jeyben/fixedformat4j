@@ -3,6 +3,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatEnum;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
@@ -10,6 +11,7 @@ import com.ancientprogramming.fixedformat4j.format.FormatContext;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
+import com.ancientprogramming.fixedformat4j.format.data.FixedFormatEnumData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 
@@ -34,7 +36,8 @@ class FormatInstructionsBuilder {
     FixedFormatBooleanData booleanData = booleanData(annotationSource.getAnnotation(FixedFormatBoolean.class));
     FixedFormatNumberData numberData = numberData(annotationSource.getAnnotation(FixedFormatNumber.class));
     FixedFormatDecimalData decimalData = decimalData(annotationSource.getAnnotation(FixedFormatDecimal.class));
-    return new FormatInstructions(fieldAnno.length(), fieldAnno.align(), fieldAnno.paddingChar(), patternData, booleanData, numberData, decimalData);
+    FixedFormatEnumData enumData = enumData(annotationSource.getAnnotation(FixedFormatEnum.class));
+    return new FormatInstructions(fieldAnno.length(), fieldAnno.align(), fieldAnno.paddingChar(), patternData, booleanData, numberData, decimalData, enumData);
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
@@ -86,5 +89,12 @@ class FormatInstructionsBuilder {
       return new FixedFormatDecimalData(annotation.decimals(), annotation.useDecimalDelimiter(), annotation.decimalDelimiter(), RoundingMode.valueOf(annotation.roundingMode()));
     }
     return FixedFormatDecimalData.DEFAULT;
+  }
+
+  private FixedFormatEnumData enumData(FixedFormatEnum annotation) {
+    if (annotation != null) {
+      return new FixedFormatEnumData(annotation.value());
+    }
+    return FixedFormatEnumData.DEFAULT;
   }
 }

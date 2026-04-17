@@ -91,6 +91,7 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
 
   /**
    * Looks up and instantiates the typed formatter for the given {@code dataType}.
+   * Enum types are detected dynamically and routed to {@link EnumFormatter}.
    *
    * @param dataType the Java type of the field value
    * @return a formatter capable of handling {@code dataType}
@@ -98,6 +99,10 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
    *         registered for {@code dataType} or the formatter cannot be instantiated
    */
   public FixedFormatter<?> actualFormatter(final Class<?> dataType) {
+    if (dataType != null && dataType.isEnum()) {
+      return new EnumFormatter(context);
+    }
+
     Class<? extends FixedFormatter<?>> formatterClass = KNOWN_FORMATTERS.get(dataType);
 
     if (formatterClass != null) {
