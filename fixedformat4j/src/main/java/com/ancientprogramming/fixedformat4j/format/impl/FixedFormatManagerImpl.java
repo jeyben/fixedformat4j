@@ -195,15 +195,12 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     if (!datatype.isEnum()) {
       return;
     }
-
-    Enum[] constants = (Enum[]) datatype.getEnumConstants();
+    Enum<?>[] constants = (Enum<?>[]) datatype.getEnumConstants();
     if (constants == null || constants.length == 0) {
       return;
     }
-
     FixedFormatEnum enumAnnotation = target.annotationSource.getAnnotation(FixedFormatEnum.class);
     EnumFormat enumFormat = (enumAnnotation != null) ? enumAnnotation.value() : EnumFormat.LITERAL;
-
     int maxLength;
     if (enumFormat == EnumFormat.NUMERIC) {
       maxLength = String.valueOf(constants.length - 1).length();
@@ -213,7 +210,6 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
           .max()
           .orElse(0);
     }
-
     if (maxLength > fieldAnnotation.length()) {
       throw new FixedFormatException(format(
           "Enum [%s] has values with max length %d, which exceeds @Field length %d on %s.%s()",

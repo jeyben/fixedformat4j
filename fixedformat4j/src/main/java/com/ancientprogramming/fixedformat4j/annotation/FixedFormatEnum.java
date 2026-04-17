@@ -21,11 +21,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Supplementary annotation to control how an enum field is serialized in a fixed-width record.
- * Place this annotation on a getter method alongside {@link Field} to override the default
- * {@link EnumFormat#LITERAL} serialization.
+ * Supplementary annotation for enum fields that controls whether the enum is serialized as its
+ * name ({@link EnumFormat#LITERAL}) or its ordinal ({@link EnumFormat#NUMERIC}).
  *
- * <p>If this annotation is omitted, the enum field defaults to {@link EnumFormat#LITERAL}.
+ * <p>When omitted, enum fields default to {@link EnumFormat#LITERAL}.
+ *
+ * <p>Example:
+ * <pre>
+ *   &#64;Field(offset = 1, length = 10)
+ *   &#64;FixedFormatEnum(EnumFormat.NUMERIC)
+ *   public Status getStatus() { ... }
+ * </pre>
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.7.0
@@ -35,9 +41,9 @@ import java.lang.annotation.Target;
 public @interface FixedFormatEnum {
 
   /**
-   * The serialization format for the enum field.
+   * The serialization format. Defaults to {@link EnumFormat#LITERAL}.
    *
-   * @return the {@link EnumFormat} to use; defaults to {@link EnumFormat#LITERAL}
+   * @return the enum format to use for this field
    */
   EnumFormat value() default EnumFormat.LITERAL;
 }

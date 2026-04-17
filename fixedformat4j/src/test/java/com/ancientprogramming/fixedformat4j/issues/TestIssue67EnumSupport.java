@@ -15,6 +15,7 @@
  */
 package com.ancientprogramming.fixedformat4j.issues;
 
+import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.annotation.EnumFormat;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatEnum;
@@ -27,7 +28,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Regression tests for Issue 67 - Support for Enums.
+ * Regression tests for Issue 67 — enum support in fixed-format records.
+ *
+ * <p>Includes tests for non-space padding characters to verify that
+ * {@code EnumFormatter} relies on the base-class {@code stripPadding()} mechanism
+ * (which uses the field's actual {@code paddingChar}) rather than calling
+ * {@code String.trim()} (which only strips spaces).
  */
 public class TestIssue67EnumSupport {
 
@@ -37,17 +43,11 @@ public class TestIssue67EnumSupport {
   // Test enums
   // -------------------------------------------------------------------------
 
-  public enum Status {
-    ACTIVE, PENDING, INACTIVE
-  }
+  enum Status { ACTIVE, INACTIVE, PENDING }
 
-  public enum Priority {
-    LOW, MEDIUM, HIGH
-  }
+  enum Priority { LOW, MEDIUM, HIGH }
 
-  public enum TooLongForField {
-    VERY_LONG_ENUM_VALUE_NAME
-  }
+  enum TooLongForField { VERY_LONG_ENUM_VALUE_NAME }
 
   // -------------------------------------------------------------------------
   // Test records
@@ -95,6 +95,43 @@ public class TestIssue67EnumSupport {
     @FixedFormatEnum(EnumFormat.NUMERIC)
     public Priority getPriority() { return priority; }
     public void setPriority(Priority priority) { this.priority = priority; }
+  }
+
+  @Record(length = 20)
+  public static class StarPaddingLeftAlignRecord {
+    private Status status;
+
+    @Field(offset = 1, length = 10, paddingChar = '*', align = Align.LEFT)
+    public Status getStatus() { return status; }
+    public void setStatus(Status status) { this.status = status; }
+  }
+
+  @Record(length = 20)
+  public static class StarPaddingRightAlignRecord {
+    private Status status;
+
+    @Field(offset = 1, length = 10, paddingChar = '*', align = Align.RIGHT)
+    public Status getStatus() { return status; }
+    public void setStatus(Status status) { this.status = status; }
+  }
+
+  @Record(length = 20)
+  public static class ZeroPaddingNumericRecord {
+    private Priority priority;
+
+    @Field(offset = 1, length = 3, paddingChar = '0', align = Align.RIGHT)
+    @FixedFormatEnum(EnumFormat.NUMERIC)
+    public Priority getPriority() { return priority; }
+    public void setPriority(Priority priority) { this.priority = priority; }
+  }
+
+  @Record(length = 10)
+  public static class TooShortFieldRecord {
+    private Status status;
+
+    @Field(offset = 1, length = 3)
+    public Status getStatus() { return status; }
+    public void setStatus(Status status) { this.status = status; }
   }
 
   @Record(length = 5)
@@ -187,6 +224,107 @@ public class TestIssue67EnumSupport {
   }
 
   // -------------------------------------------------------------------------
+  // Non-space paddingChar: '*', LEFT-aligned (padding appended on the right)
+  //
+  // AbstractFixedFormatter.parse() calls stripPadding() which uses
+  // Align.LEFT.remove(value, '*') — strips trailing '*' chars — before
+  // passing the clean value to asObject(). This is why asObject() must NOT
+  // call value.trim() (only strips spaces).
+  // -------------------------------------------------------------------------
+
+  @Test
+  public void starPadding_leftAlign_export() {
+    StarPaddingLeftAlignRecord record = new StarPaddingLeftAlignRecord();
+    record.setStatus(Status.ACTIVE);
+    String exported = manager.export(record);
+    assertEquals("ACTIVE****", exported.substring(0, 10), "LEFT-aligned with '*' padding should be right-padded");
+  }
+
+  @Test
+  public void starPadding_leftAlign_load() {
+    StarPaddingLeftAlignRecord record = manager.load(StarPaddingLeftAlignRecord.class, "ACTIVE****          ");
+    assertEquals(Status.ACTIVE, record.getStatus());
+  }
+
+  @Test
+  public void starPadding_leftAlign_roundTrip_active() {
+    StarPaddingLeftAlignRecord orig = new StarPaddingLeftAlignRecord();
+    orig.setStatus(Status.ACTIVE);
+    String exported = manager.export(orig);
+    StarPaddingLeftAlignRecord loaded = manager.load(StarPaddingLeftAlignRecord.class, exported);
+    assertEquals(Status.ACTIVE, loaded.getStatus());
+  }
+
+  @Test
+  public void starPadding_leftAlign_roundTrip_inactive() {
+    StarPaddingLeftAlignRecord orig = new StarPaddingLeftAlignRecord();
+    orig.setStatus(Status.INACTIVE);
+    String exported = manager.export(orig);
+    StarPaddingLeftAlignRecord loaded = manager.load(StarPaddingLeftAlignRecord.class, exported);
+    assertEquals(Status.INACTIVE, loaded.getStatus());
+  }
+
+  // -------------------------------------------------------------------------
+  // Non-space paddingChar: '*', RIGHT-aligned (padding prepended on the left)
+  // -------------------------------------------------------------------------
+
+  @Test
+  public void starPadding_rightAlign_export() {
+    StarPaddingRightAlignRecord record = new StarPaddingRightAlignRecord();
+    record.setStatus(Status.ACTIVE);
+    String exported = manager.export(record);
+    assertEquals("****ACTIVE", exported.substring(0, 10), "RIGHT-aligned with '*' padding should be left-padded");
+  }
+
+  @Test
+  public void starPadding_rightAlign_load() {
+    StarPaddingRightAlignRecord record = manager.load(StarPaddingRightAlignRecord.class, "****ACTIVE          ");
+    assertEquals(Status.ACTIVE, record.getStatus());
+  }
+
+  @Test
+  public void starPadding_rightAlign_roundTrip_pending() {
+    StarPaddingRightAlignRecord orig = new StarPaddingRightAlignRecord();
+    orig.setStatus(Status.PENDING);
+    String exported = manager.export(orig);
+    StarPaddingRightAlignRecord loaded = manager.load(StarPaddingRightAlignRecord.class, exported);
+    assertEquals(Status.PENDING, loaded.getStatus());
+  }
+
+  // -------------------------------------------------------------------------
+  // Non-space paddingChar: '0', NUMERIC mode, RIGHT-aligned (leading zeros)
+  // -------------------------------------------------------------------------
+
+  @Test
+  public void zeroPadding_numeric_rightAlign_export_high() {
+    ZeroPaddingNumericRecord record = new ZeroPaddingNumericRecord();
+    record.setPriority(Priority.HIGH);  // ordinal 2
+    String exported = manager.export(record);
+    assertEquals("002", exported.substring(0, 3), "HIGH (ordinal 2) should be exported as '002'");
+  }
+
+  @Test
+  public void zeroPadding_numeric_rightAlign_load_medium() {
+    ZeroPaddingNumericRecord record = manager.load(ZeroPaddingNumericRecord.class, "001                ");
+    assertEquals(Priority.MEDIUM, record.getPriority());
+  }
+
+  @Test
+  public void zeroPadding_numeric_rightAlign_load_high() {
+    ZeroPaddingNumericRecord record = manager.load(ZeroPaddingNumericRecord.class, "002                ");
+    assertEquals(Priority.HIGH, record.getPriority());
+  }
+
+  @Test
+  public void zeroPadding_numeric_rightAlign_roundTrip_high() {
+    ZeroPaddingNumericRecord orig = new ZeroPaddingNumericRecord();
+    orig.setPriority(Priority.HIGH);
+    String exported = manager.export(orig);
+    ZeroPaddingNumericRecord loaded = manager.load(ZeroPaddingNumericRecord.class, exported);
+    assertEquals(Priority.HIGH, loaded.getPriority());
+  }
+
+  // -------------------------------------------------------------------------
   // Validation tests
   // -------------------------------------------------------------------------
 
@@ -194,6 +332,13 @@ public class TestIssue67EnumSupport {
   public void enumNameExceedsFieldLengthThrowsOnLoad() {
     assertThrows(FixedFormatException.class, () ->
         manager.load(TooShortRecord.class, "     "));
+  }
+
+  @Test
+  public void validation_enumNameTooLongForField_throwsException() {
+    FixedFormatException ex = assertThrows(FixedFormatException.class,
+        () -> manager.load(TooShortFieldRecord.class, "ACT"));
+    assertTrue(ex.getMessage().contains("max length"), "exception should mention max length: " + ex.getMessage());
   }
 
   @Test
@@ -212,5 +357,14 @@ public class TestIssue67EnumSupport {
   public void invalidOrdinalNonNumericThrowsOnParse() {
     assertThrows(Exception.class, () ->
         manager.load(NumericRecord.class, "X         "));
+  }
+
+  @Test
+  public void invalidOrdinal_throwsFixedFormatException() {
+    FixedFormatException ex = assertThrows(FixedFormatException.class,
+        () -> manager.load(NumericRecord.class, "99"));
+    assertNotNull(ex.getCause(), "cause should be present");
+    assertTrue(ex.getCause().getMessage().contains("out of range"),
+        "cause should mention out of range: " + ex.getCause().getMessage());
   }
 }

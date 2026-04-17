@@ -16,10 +16,9 @@
 package com.ancientprogramming.fixedformat4j.format.data;
 
 import com.ancientprogramming.fixedformat4j.annotation.EnumFormat;
-import com.ancientprogramming.fixedformat4j.annotation.FixedFormatEnum;
 
 /**
- * Data object containing the same data as {@link FixedFormatEnum}.
+ * Immutable data object mirroring the {@code @FixedFormatEnum} annotation values.
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.7.0
@@ -31,18 +30,18 @@ public class FixedFormatEnumData {
   private final EnumFormat enumFormat;
 
   /**
-   * Creates an enum data object with the given serialization format.
+   * Creates an enum data holder with the given format mode.
    *
-   * @param enumFormat the format to use for serializing enum values
+   * @param enumFormat the serialization format for the enum field
    */
   public FixedFormatEnumData(EnumFormat enumFormat) {
     this.enumFormat = enumFormat;
   }
 
   /**
-   * Returns the serialization format for enum values.
+   * Returns the serialization format.
    *
-   * @return the {@link EnumFormat}
+   * @return the {@link EnumFormat} for this field
    */
   public EnumFormat getEnumFormat() {
     return enumFormat;

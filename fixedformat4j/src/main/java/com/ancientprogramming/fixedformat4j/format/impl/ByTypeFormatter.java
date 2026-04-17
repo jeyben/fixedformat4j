@@ -93,6 +93,7 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
 
   /**
    * Looks up and instantiates the typed formatter for the given {@code dataType}.
+   * Enum types are detected dynamically and routed to {@link EnumFormatter}.
    *
    * @param dataType the Java type of the field value
    * @return a formatter capable of handling {@code dataType}

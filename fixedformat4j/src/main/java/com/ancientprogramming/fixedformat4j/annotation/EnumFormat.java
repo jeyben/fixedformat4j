@@ -16,21 +16,22 @@
 package com.ancientprogramming.fixedformat4j.annotation;
 
 /**
- * Defines how an enum field is serialized in a fixed-width record.
+ * Defines how an enum field is serialized to/from a fixed-width string.
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.7.0
  */
 public enum EnumFormat {
+
   /**
-   * Serialize using {@link Enum#name()} and deserialize using {@link Enum#valueOf(Class, String)}.
-   * This is the default.
+   * Serializes using {@link Enum#name()} and deserializes using {@link Enum#valueOf(Class, String)}.
+   * This is the default when no {@code @FixedFormatEnum} annotation is present.
    */
   LITERAL,
 
   /**
-   * Serialize using {@link Enum#ordinal()} as an integer string and deserialize using the
-   * enum constants array index.
+   * Serializes using {@link Enum#ordinal()} and deserializes by index lookup into
+   * {@link Class#getEnumConstants()}.
    */
   NUMERIC
 }

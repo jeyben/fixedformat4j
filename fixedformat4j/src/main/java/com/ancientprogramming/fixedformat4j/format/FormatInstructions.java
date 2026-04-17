@@ -40,8 +40,7 @@ public class FormatInstructions {
   private FixedFormatEnumData fixedFormatEnumData;
 
   /**
-   * Creates a fully-populated set of format instructions.
-   * Delegates to the 8-argument constructor with {@link FixedFormatEnumData#DEFAULT}.
+   * Creates format instructions with enum data defaulting to {@link FixedFormatEnumData#DEFAULT}.
    *
    * @param length                  the fixed width of the field in characters
    * @param alignment               the alignment strategy used to pad and strip the field
@@ -142,9 +141,9 @@ public class FormatInstructions {
   }
 
   /**
-   * Returns the enum serialization configuration for this field.
+   * Returns the enum format configuration for this field.
    *
-   * @return the {@link FixedFormatEnumData}, never {@code null} (defaults to {@link FixedFormatEnumData#DEFAULT})
+   * @return the {@link FixedFormatEnumData}; never {@code null}
    */
   public FixedFormatEnumData getFixedFormatEnumData() {
     return fixedFormatEnumData;
