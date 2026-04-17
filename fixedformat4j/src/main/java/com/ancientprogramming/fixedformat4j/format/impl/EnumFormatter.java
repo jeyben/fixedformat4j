@@ -21,7 +21,6 @@ import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatContext;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatEnumData;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Formatter for Java enum types.
@@ -64,7 +63,7 @@ public class EnumFormatter extends AbstractFixedFormatter<Enum> {
   @SuppressWarnings({"unchecked", "rawtypes"})
   @Override
   public Enum asObject(String value, FormatInstructions instructions) {
-    if (StringUtils.isEmpty(value)) {
+    if (value == null || value.isEmpty()) {
       return null;
     }
     Class<? extends Enum> enumClass = (Class<? extends Enum>) context.getDataType();
@@ -97,7 +96,7 @@ public class EnumFormatter extends AbstractFixedFormatter<Enum> {
   @Override
   public String asString(Enum value, FormatInstructions instructions) {
     if (value == null) {
-      return null;
+      return "";
     }
     return enumFormat(instructions) == EnumFormat.NUMERIC
         ? String.valueOf(value.ordinal())

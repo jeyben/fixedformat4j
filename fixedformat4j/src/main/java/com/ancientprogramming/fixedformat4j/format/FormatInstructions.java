@@ -40,8 +40,7 @@ public class FormatInstructions {
   private FixedFormatEnumData fixedFormatEnumData;
 
   /**
-   * Creates a fully-populated set of format instructions (backward-compatible overload).
-   * Enum data defaults to {@link FixedFormatEnumData#DEFAULT}.
+   * Creates format instructions with enum data defaulting to {@link FixedFormatEnumData#DEFAULT}.
    *
    * @param length                  the fixed width of the field in characters
    * @param alignment               the alignment strategy used to pad and strip the field
@@ -56,7 +55,7 @@ public class FormatInstructions {
   }
 
   /**
-   * Creates a fully-populated set of format instructions.
+   * Creates a fully-populated set of format instructions including enum configuration.
    *
    * @param length                  the fixed width of the field in characters
    * @param alignment               the alignment strategy used to pad and strip the field
@@ -65,7 +64,7 @@ public class FormatInstructions {
    * @param fixedFormatBooleanData  boolean value configuration, or {@code null} if unused
    * @param fixedFormatNumberData   number sign configuration, or {@code null} if unused
    * @param fixedFormatDecimalData  decimal precision configuration, or {@code null} if unused
-   * @param fixedFormatEnumData     enum format configuration, or {@code null} to use default
+   * @param fixedFormatEnumData     enum serialization configuration, or {@code null} if unused
    */
   public FormatInstructions(int length, Align alignment, char paddingChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData, FixedFormatEnumData fixedFormatEnumData) {
     this.length = length;

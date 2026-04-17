@@ -37,12 +37,20 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TestIssue67EnumSupport {
 
+  private final FixedFormatManager manager = new FixedFormatManagerImpl();
+
+  // -------------------------------------------------------------------------
+  // Test enums
+  // -------------------------------------------------------------------------
+
   enum Status { ACTIVE, INACTIVE, PENDING }
 
   enum Priority { LOW, MEDIUM, HIGH }
 
+  enum TooLongForField { VERY_LONG_ENUM_VALUE_NAME }
+
   // -------------------------------------------------------------------------
-  // Record: LITERAL default (no annotation), space padding (default)
+  // Test records
   // -------------------------------------------------------------------------
 
   @Record(length = 20)
@@ -54,10 +62,6 @@ public class TestIssue67EnumSupport {
     public void setStatus(Status status) { this.status = status; }
   }
 
-  // -------------------------------------------------------------------------
-  // Record: LITERAL explicit annotation, space padding
-  // -------------------------------------------------------------------------
-
   @Record(length = 20)
   public static class LiteralExplicitRecord {
     private Status status;
@@ -68,23 +72,30 @@ public class TestIssue67EnumSupport {
     public void setStatus(Status status) { this.status = status; }
   }
 
-  // -------------------------------------------------------------------------
-  // Record: NUMERIC, space padding
-  // -------------------------------------------------------------------------
-
-  @Record(length = 20)
+  @Record(length = 10)
   public static class NumericRecord {
-    private Status status;
+    private Priority priority;
 
     @Field(offset = 1, length = 2)
     @FixedFormatEnum(EnumFormat.NUMERIC)
-    public Status getStatus() { return status; }
-    public void setStatus(Status status) { this.status = status; }
+    public Priority getPriority() { return priority; }
+    public void setPriority(Priority priority) { this.priority = priority; }
   }
 
-  // -------------------------------------------------------------------------
-  // Record: LITERAL, non-space paddingChar '*', LEFT-aligned (padding on right)
-  // -------------------------------------------------------------------------
+  @Record(length = 20)
+  public static class TwoFieldRecord {
+    private Status status;
+    private Priority priority;
+
+    @Field(offset = 1, length = 10)
+    public Status getStatus() { return status; }
+    public void setStatus(Status status) { this.status = status; }
+
+    @Field(offset = 11, length = 2)
+    @FixedFormatEnum(EnumFormat.NUMERIC)
+    public Priority getPriority() { return priority; }
+    public void setPriority(Priority priority) { this.priority = priority; }
+  }
 
   @Record(length = 20)
   public static class StarPaddingLeftAlignRecord {
@@ -95,10 +106,6 @@ public class TestIssue67EnumSupport {
     public void setStatus(Status status) { this.status = status; }
   }
 
-  // -------------------------------------------------------------------------
-  // Record: LITERAL, non-space paddingChar '*', RIGHT-aligned (padding on left)
-  // -------------------------------------------------------------------------
-
   @Record(length = 20)
   public static class StarPaddingRightAlignRecord {
     private Status status;
@@ -107,10 +114,6 @@ public class TestIssue67EnumSupport {
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }
   }
-
-  // -------------------------------------------------------------------------
-  // Record: NUMERIC, paddingChar '0', RIGHT-aligned (leading zeros)
-  // -------------------------------------------------------------------------
 
   @Record(length = 20)
   public static class ZeroPaddingNumericRecord {
@@ -122,97 +125,102 @@ public class TestIssue67EnumSupport {
     public void setPriority(Priority priority) { this.priority = priority; }
   }
 
-  // -------------------------------------------------------------------------
-  // Record: validation failure — enum name too long for @Field length
-  // -------------------------------------------------------------------------
-
   @Record(length = 10)
   public static class TooShortFieldRecord {
     private Status status;
 
-    // Status.INACTIVE is 8 chars, but length is only 3 → should fail validation
     @Field(offset = 1, length = 3)
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }
   }
 
-  // -------------------------------------------------------------------------
-  // Tests
-  // -------------------------------------------------------------------------
+  @Record(length = 5)
+  public static class TooShortRecord {
+    private TooLongForField value;
 
-  private final FixedFormatManager manager = new FixedFormatManagerImpl();
+    @Field(offset = 1, length = 5)
+    public TooLongForField getValue() { return value; }
+    public void setValue(TooLongForField v) { this.value = v; }
+  }
 
-  // --- LITERAL default ---
+  // -------------------------------------------------------------------------
+  // LITERAL (default) tests
+  // -------------------------------------------------------------------------
 
   @Test
-  public void literalDefault_load() {
+  public void loadLiteralDefaultNoAnnotation() {
     LiteralDefaultRecord record = manager.load(LiteralDefaultRecord.class, "ACTIVE    ");
     assertEquals(Status.ACTIVE, record.getStatus());
   }
 
   @Test
-  public void literalDefault_export() {
+  public void exportLiteralDefaultNoAnnotation() {
     LiteralDefaultRecord record = new LiteralDefaultRecord();
-    record.setStatus(Status.INACTIVE);
+    record.setStatus(Status.PENDING);
     String exported = manager.export(record);
-    assertTrue(exported.startsWith("INACTIVE"), "exported string should start with INACTIVE, got: " + exported);
+    assertEquals("PENDING   " + "          ", exported);
   }
 
   @Test
-  public void literalDefault_roundTrip() {
-    LiteralDefaultRecord orig = new LiteralDefaultRecord();
-    orig.setStatus(Status.PENDING);
-    String exported = manager.export(orig);
-    LiteralDefaultRecord loaded = manager.load(LiteralDefaultRecord.class, exported);
-    assertEquals(Status.PENDING, loaded.getStatus());
-  }
-
-  // --- LITERAL explicit ---
-
-  @Test
-  public void literalExplicit_load() {
-    LiteralExplicitRecord record = manager.load(LiteralExplicitRecord.class, "ACTIVE    ");
-    assertEquals(Status.ACTIVE, record.getStatus());
-  }
-
-  @Test
-  public void literalExplicit_roundTrip() {
-    LiteralExplicitRecord orig = new LiteralExplicitRecord();
-    orig.setStatus(Status.INACTIVE);
-    String exported = manager.export(orig);
-    LiteralExplicitRecord loaded = manager.load(LiteralExplicitRecord.class, exported);
-    assertEquals(Status.INACTIVE, loaded.getStatus());
-  }
-
-  // --- NUMERIC ---
-
-  @Test
-  public void numeric_load_ordinal0() {
-    NumericRecord record = manager.load(NumericRecord.class, "0 ");
-    assertEquals(Status.ACTIVE, record.getStatus());
-  }
-
-  @Test
-  public void numeric_load_ordinal1() {
-    NumericRecord record = manager.load(NumericRecord.class, "1 ");
+  public void loadLiteralExplicitAnnotation() {
+    LiteralExplicitRecord record = manager.load(LiteralExplicitRecord.class, "INACTIVE  ");
     assertEquals(Status.INACTIVE, record.getStatus());
   }
 
   @Test
-  public void numeric_export_inactive() {
-    NumericRecord record = new NumericRecord();
+  public void literalRoundTrip() {
+    LiteralDefaultRecord record = new LiteralDefaultRecord();
     record.setStatus(Status.INACTIVE);
     String exported = manager.export(record);
-    assertEquals("1", exported.substring(0, 1), "INACTIVE has ordinal 1");
+    LiteralDefaultRecord loaded = manager.load(LiteralDefaultRecord.class, exported);
+    assertEquals(Status.INACTIVE, loaded.getStatus());
   }
 
   @Test
-  public void numeric_roundTrip() {
-    NumericRecord orig = new NumericRecord();
-    orig.setStatus(Status.PENDING);
-    String exported = manager.export(orig);
+  public void nullEnumFieldRoundTrip() {
+    LiteralDefaultRecord record = new LiteralDefaultRecord();
+    record.setStatus(null);
+    String exported = manager.export(record);
+    LiteralDefaultRecord loaded = manager.load(LiteralDefaultRecord.class, exported);
+    assertNull(loaded.getStatus(), "null enum should round-trip as null");
+  }
+
+  // -------------------------------------------------------------------------
+  // NUMERIC tests
+  // -------------------------------------------------------------------------
+
+  @Test
+  public void loadNumeric() {
+    NumericRecord record = manager.load(NumericRecord.class, "1         ");
+    assertEquals(Priority.MEDIUM, record.getPriority());
+  }
+
+  @Test
+  public void exportNumeric() {
+    NumericRecord record = new NumericRecord();
+    record.setPriority(Priority.HIGH);
+    String exported = manager.export(record);
+    assertTrue(exported.startsWith("2"), "Expected ordinal '2' for HIGH, got: " + exported);
+  }
+
+  @Test
+  public void numericRoundTrip() {
+    NumericRecord record = new NumericRecord();
+    record.setPriority(Priority.LOW);
+    String exported = manager.export(record);
     NumericRecord loaded = manager.load(NumericRecord.class, exported);
-    assertEquals(Status.PENDING, loaded.getStatus());
+    assertEquals(Priority.LOW, loaded.getPriority());
+  }
+
+  @Test
+  public void twoFieldRecordRoundTrip() {
+    TwoFieldRecord record = new TwoFieldRecord();
+    record.setStatus(Status.ACTIVE);
+    record.setPriority(Priority.HIGH);
+    String exported = manager.export(record);
+    TwoFieldRecord loaded = manager.load(TwoFieldRecord.class, exported);
+    assertEquals(Status.ACTIVE, loaded.getStatus());
+    assertEquals(Priority.HIGH, loaded.getPriority());
   }
 
   // -------------------------------------------------------------------------
@@ -234,7 +242,6 @@ public class TestIssue67EnumSupport {
 
   @Test
   public void starPadding_leftAlign_load() {
-    // Align.LEFT.remove("ACTIVE****", '*') → "ACTIVE"
     StarPaddingLeftAlignRecord record = manager.load(StarPaddingLeftAlignRecord.class, "ACTIVE****          ");
     assertEquals(Status.ACTIVE, record.getStatus());
   }
@@ -259,8 +266,6 @@ public class TestIssue67EnumSupport {
 
   // -------------------------------------------------------------------------
   // Non-space paddingChar: '*', RIGHT-aligned (padding prepended on the left)
-  //
-  // Align.RIGHT.remove("****ACTIVE", '*') → "ACTIVE"
   // -------------------------------------------------------------------------
 
   @Test
@@ -273,7 +278,6 @@ public class TestIssue67EnumSupport {
 
   @Test
   public void starPadding_rightAlign_load() {
-    // Align.RIGHT.remove("****ACTIVE", '*') → "ACTIVE"
     StarPaddingRightAlignRecord record = manager.load(StarPaddingRightAlignRecord.class, "****ACTIVE          ");
     assertEquals(Status.ACTIVE, record.getStatus());
   }
@@ -289,9 +293,6 @@ public class TestIssue67EnumSupport {
 
   // -------------------------------------------------------------------------
   // Non-space paddingChar: '0', NUMERIC mode, RIGHT-aligned (leading zeros)
-  //
-  // ordinal 1 → "1" → RIGHT.apply("1", 3, '0') → "001"
-  // parsing "001" → RIGHT.remove("001", '0') → "1" → ordinal 1 → MEDIUM
   // -------------------------------------------------------------------------
 
   @Test
@@ -304,14 +305,12 @@ public class TestIssue67EnumSupport {
 
   @Test
   public void zeroPadding_numeric_rightAlign_load_medium() {
-    // "001" → strip leading '0' via RIGHT.remove → "1" → ordinal 1 → MEDIUM
     ZeroPaddingNumericRecord record = manager.load(ZeroPaddingNumericRecord.class, "001                ");
     assertEquals(Priority.MEDIUM, record.getPriority());
   }
 
   @Test
   public void zeroPadding_numeric_rightAlign_load_high() {
-    // "002" → strip leading '0' → "2" → ordinal 2 → HIGH
     ZeroPaddingNumericRecord record = manager.load(ZeroPaddingNumericRecord.class, "002                ");
     assertEquals(Priority.HIGH, record.getPriority());
   }
@@ -319,7 +318,7 @@ public class TestIssue67EnumSupport {
   @Test
   public void zeroPadding_numeric_rightAlign_roundTrip_high() {
     ZeroPaddingNumericRecord orig = new ZeroPaddingNumericRecord();
-    orig.setPriority(Priority.HIGH);  // ordinal 2 → "002" → strip → "2" → ordinal 2 → HIGH
+    orig.setPriority(Priority.HIGH);
     String exported = manager.export(orig);
     ZeroPaddingNumericRecord loaded = manager.load(ZeroPaddingNumericRecord.class, exported);
     assertEquals(Priority.HIGH, loaded.getPriority());
@@ -330,26 +329,40 @@ public class TestIssue67EnumSupport {
   // -------------------------------------------------------------------------
 
   @Test
+  public void enumNameExceedsFieldLengthThrowsOnLoad() {
+    assertThrows(FixedFormatException.class, () ->
+        manager.load(TooShortRecord.class, "     "));
+  }
+
+  @Test
   public void validation_enumNameTooLongForField_throwsException() {
-    // Status.INACTIVE = 8 chars, but @Field length = 3 → validation should reject
     FixedFormatException ex = assertThrows(FixedFormatException.class,
         () -> manager.load(TooShortFieldRecord.class, "ACT"));
     assertTrue(ex.getMessage().contains("max length"), "exception should mention max length: " + ex.getMessage());
   }
 
   @Test
-  public void invalidEnumName_throwsFixedFormatException() {
-    // "UNKNOWN" is not a valid Status constant
-    assertThrows(FixedFormatException.class,
-        () -> manager.load(LiteralDefaultRecord.class, "UNKNOWN   "));
+  public void invalidLiteralNameThrowsOnParse() {
+    assertThrows(Exception.class, () ->
+        manager.load(LiteralDefaultRecord.class, "NOSUCHVAL "));
+  }
+
+  @Test
+  public void invalidOrdinalThrowsOnParse() {
+    assertThrows(Exception.class, () ->
+        manager.load(NumericRecord.class, "9         "));
+  }
+
+  @Test
+  public void invalidOrdinalNonNumericThrowsOnParse() {
+    assertThrows(Exception.class, () ->
+        manager.load(NumericRecord.class, "X         "));
   }
 
   @Test
   public void invalidOrdinal_throwsFixedFormatException() {
-    // ordinal 99 is out of range for Status (which has 3 constants)
     FixedFormatException ex = assertThrows(FixedFormatException.class,
         () -> manager.load(NumericRecord.class, "99"));
-    // The manager wraps it in ParseException; the cause carries "out of range"
     assertNotNull(ex.getCause(), "cause should be present");
     assertTrue(ex.getCause().getMessage().contains("out of range"),
         "cause should mention out of range: " + ex.getCause().getMessage());

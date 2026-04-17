@@ -31,8 +31,10 @@ import java.util.Map;
 /**
  * Formatter capable of formatting a bunch of known java standard library classes. So far:
  * {@link String}, {@link Integer}, {@link Short}, {@link Long}, {@link Date}, {@link LocalDate},
- * {@link java.time.LocalDateTime}, {@link Character}, {@link Boolean}, {@link Double}, {@link Float}
- * and {@link BigDecimal}
+ * {@link java.time.LocalDateTime}, {@link Character}, {@link Boolean}, {@link Double}, {@link Float},
+ * {@link BigDecimal}, and all {@link Enum} subtypes (handled automatically via
+ * {@link EnumFormatter}; use {@link com.ancientprogramming.fixedformat4j.annotation.FixedFormatEnum}
+ * to switch between LITERAL and NUMERIC serialization).
  *
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
