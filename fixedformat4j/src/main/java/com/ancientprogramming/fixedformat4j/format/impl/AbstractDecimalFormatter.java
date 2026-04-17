@@ -65,8 +65,9 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
     rawString = rawString.replaceAll("\\" + groupingSeparator, "");
     boolean useDecimalDelimiter = instructions.getFixedFormatDecimalData().isUseDecimalDelimiter();
 
-    String beforeDelimiter = rawString.substring(0, rawString.indexOf(decimalSeparator));
-    String afterDelimiter = rawString.substring(rawString.indexOf(decimalSeparator)+1, rawString.length());
+    int separatorIdx = rawString.indexOf(decimalSeparator);
+    String beforeDelimiter = rawString.substring(0, separatorIdx);
+    String afterDelimiter = rawString.substring(separatorIdx + 1);
     if (LOG.isDebugEnabled()) {
       LOG.debug("beforeDelimiter[{}], afterDelimiter[{}]", beforeDelimiter, afterDelimiter);
     }
@@ -103,9 +104,8 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
     if (decimals > 0 && !theZeroString) {
       //ensuring the string to convert is at least as long as the decimals length
       toConvert = StringUtils.leftPad(toConvert, decimals, "0");
-      String beforeDelimiter = toConvert.substring(0, toConvert.length()-decimals);
-      String afterDelimiter = toConvert.substring(toConvert.length()-decimals);
-      toConvert = beforeDelimiter + '.' + afterDelimiter;
+      int pivot = toConvert.length() - decimals;
+      toConvert = toConvert.substring(0, pivot) + '.' + toConvert.substring(pivot);
     }
     if (applyNegativeSign) {
       toConvert = "-".concat(toConvert);

@@ -45,14 +45,14 @@ public enum Align {
     }
     /** {@inheritDoc} */
     public String remove(String data, char paddingChar) {
-      String result = data;
       if (data == null) {
-        result = "";
+        return "";
       }
-      while (result.startsWith(String.valueOf(paddingChar))) {
-        result = result.substring(1, result.length());
+      int start = 0;
+      while (start < data.length() && data.charAt(start) == paddingChar) {
+        start++;
       }
-      return result;
+      return data.substring(start);
     }},
 
 
@@ -77,14 +77,14 @@ public enum Align {
 
     /** {@inheritDoc} */
     public String remove(String data, char paddingChar) {
-      String result = data;
       if (data == null) {
-        result = "";
+        return "";
       }
-      while (result.endsWith(String.valueOf(paddingChar))) {
-        result = result.substring(0, result.length()-1);
+      int end = data.length();
+      while (end > 0 && data.charAt(end - 1) == paddingChar) {
+        end--;
       }
-      return result;
+      return data.substring(0, end);
     }};
 
   /**
