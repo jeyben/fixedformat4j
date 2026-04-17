@@ -17,7 +17,6 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.EnumFormat;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
-import com.ancientprogramming.fixedformat4j.annotation.Fields;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatEnum;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
@@ -32,8 +31,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,7 +39,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
-import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
 import static java.lang.String.format;
 
 /**
@@ -54,6 +50,7 @@ import static java.lang.String.format;
 public class FixedFormatManagerImpl implements FixedFormatManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(FixedFormatManagerImpl.class);
+
   /**
    * JVM-level cache of record classes whose enum-field lengths have already been validated.
    * Validation is performed at most once per class (on the first {@code load} or {@code export}
@@ -67,8 +64,6 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
    */
   private static final Set<Class<?>> VALIDATED_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-  private final AnnotationScanner annotationScanner = new AnnotationScanner();
-  private final FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
   private final RecordInstantiator recordInstantiator = new RecordInstantiator();
   private final RepeatingFieldSupport repeatingFieldSupport = new RepeatingFieldSupport();
 
@@ -76,53 +71,45 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
    * {@inheritDoc}
    */
   public <T> T load(Class<T> fixedFormatRecordClass, String data) {
-    HashMap<String, Object> foundData = new HashMap<String, Object>();
-    HashMap<String, Class<?>> methodClass = new HashMap<String, Class<?>>();
     getAndAssertRecordAnnotation(fixedFormatRecordClass);
     validatePatterns(fixedFormatRecordClass);
 
     T instance = recordInstantiator.instantiate(fixedFormatRecordClass);
 
-    for (AnnotationTarget target : annotationScanner.scan(fixedFormatRecordClass)) {
-      String methodName = annotationScanner.stripMethodPrefix(target.getter.getName());
-      Field fieldAnnotation = target.annotationSource.getAnnotation(Field.class);
-      Fields fieldsAnnotation = target.annotationSource.getAnnotation(Fields.class);
-      if (fieldAnnotation != null) {
-        readFieldData(fixedFormatRecordClass, data, foundData, methodClass, target, methodName, fieldAnnotation);
-      } else if (fieldsAnnotation != null) {
-        if (fieldsAnnotation.value() == null || fieldsAnnotation.value().length == 0) {
-          throw new FixedFormatException(format("%s annotation must contain minimum one %s annotation", Fields.class.getName(), Field.class.getName()));
-        }
-        readFieldData(fixedFormatRecordClass, data, foundData, methodClass, target, methodName, fieldsAnnotation.value()[0]);
-      }
-    }
+    for (FieldDescriptor desc : ClassMetadataCache.INSTANCE.get(fixedFormatRecordClass)) {
+      if (!desc.isLoadField) continue;
 
-    Set<String> keys = foundData.keySet();
-    for (String key : keys) {
-      String setterMethodName = "set" + key;
-      Object foundDataObj = foundData.get(key);
-      if (foundDataObj != null) {
-        Class<?> datatype = methodClass.get(key);
-        Method method;
-        try {
-          method = fixedFormatRecordClass.getMethod(setterMethodName, datatype);
-        } catch (NoSuchMethodException e) {
-          throw new FixedFormatException(format("setter method named %s.%s(%s) does not exist", fixedFormatRecordClass.getName(), setterMethodName, datatype));
+      Object value;
+      if (desc.isRepeating) {
+        value = repeatingFieldSupport.read(fixedFormatRecordClass, data, desc.target.getter, desc.target.annotationSource, desc.fieldAnnotation);
+      } else {
+        String dataToParse = fetchData(data, desc.formatInstructions, desc.context);
+        if (desc.isNestedRecord) {
+          value = load(desc.datatype, dataToParse);
+        } else {
+          try {
+            value = desc.formatter.parse(dataToParse, desc.formatInstructions);
+          } catch (RuntimeException e) {
+            throw new ParseException(data, dataToParse, fixedFormatRecordClass, desc.target.getter, desc.context, desc.formatInstructions, e);
+          }
         }
+      }
+
+      if (value != null && desc.setter != null) {
         try {
-          method.invoke(instance, foundData.get(key));
+          desc.setter.invoke(instance, value);
         } catch (Exception e) {
-          throw new FixedFormatException(format("could not invoke method %s.%s(%s)", fixedFormatRecordClass.getName(), setterMethodName, datatype), e);
+          throw new FixedFormatException(
+              format("could not invoke method %s.%s(%s)", fixedFormatRecordClass.getName(), desc.setter.getName(), desc.datatype), e);
         }
       }
-    }
-    return instance;
-  }
 
-  private <T> void readFieldData(Class<T> fixedFormatRecordClass, String data, HashMap<String, Object> foundData, HashMap<String, Class<?>> methodClass, AnnotationTarget target, String methodName, Field fieldAnnotation) {
-    Object loadedData = readDataAccordingFieldAnnotation(fixedFormatRecordClass, data, target.getter, target.annotationSource, fieldAnnotation);
-    foundData.put(methodName, loadedData);
-    methodClass.put(methodName, target.getter.getReturnType());
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("the loaded data[{}]", value);
+      }
+    }
+
+    return instance;
   }
 
   /**
@@ -134,20 +121,36 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     validatePatterns(fixedFormatRecord.getClass());
 
     HashMap<Integer, String> foundData = new HashMap<Integer, String>();
-    for (AnnotationTarget target : annotationScanner.scan(fixedFormatRecord.getClass())) {
-      Field fieldAnnotation = target.annotationSource.getAnnotation(Field.class);
-      Fields fieldsAnnotation = target.annotationSource.getAnnotation(Fields.class);
-      if (fieldAnnotation != null) {
-        if (fieldAnnotation.count() > 1) {
-          repeatingFieldSupport.export(fixedFormatRecord, target, fieldAnnotation, foundData);
-        } else {
-          foundData.put(fieldAnnotation.offset(), exportDataAccordingFieldAnnotation(fixedFormatRecord, target, fieldAnnotation));
-        }
-      } else if (fieldsAnnotation != null) {
-        for (Field field : fieldsAnnotation.value()) {
-          foundData.put(field.offset(), exportDataAccordingFieldAnnotation(fixedFormatRecord, target, field));
-        }
+
+    for (FieldDescriptor desc : ClassMetadataCache.INSTANCE.get(fixedFormatRecord.getClass())) {
+      if (desc.isRepeating) {
+        repeatingFieldSupport.export(fixedFormatRecord, desc.target, desc.fieldAnnotation, foundData);
+        continue;
       }
+
+      Object valueObject;
+      try {
+        valueObject = desc.target.getter.invoke(fixedFormatRecord);
+      } catch (Exception e) {
+        throw new FixedFormatException(
+            format("could not invoke method %s.%s(%s)", fixedFormatRecord.getClass().getName(), desc.target.getter.getName(), desc.datatype), e);
+      }
+
+      String formatted;
+      if (valueObject != null && valueObject.getClass().getAnnotation(Record.class) != null) {
+        formatted = export(valueObject);
+      } else if (desc.isNestedRecord) {
+        throw new FixedFormatException(
+            format("cannot export null value for nested @Record field %s.%s()",
+                fixedFormatRecord.getClass().getName(), desc.target.getter.getName()));
+      } else {
+        formatted = ((FixedFormatter<Object>) desc.formatter).format(valueObject, desc.formatInstructions);
+      }
+
+      if (LOG.isDebugEnabled()) {
+        LOG.debug(format("exported %s ", formatted));
+      }
+      foundData.put(desc.fieldAnnotation.offset(), formatted);
     }
 
     for (Integer offset : foundData.keySet()) {
@@ -173,24 +176,16 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     if (VALIDATED_CLASSES.contains(recordClass)) {
       return;
     }
-    for (AnnotationTarget target : annotationScanner.scan(recordClass)) {
-      Field fieldAnnotation = target.annotationSource.getAnnotation(Field.class);
-      Fields fieldsAnnotation = target.annotationSource.getAnnotation(Fields.class);
-      if (fieldAnnotation != null) {
-        validateFieldPattern(target, fieldAnnotation);
-        validateEnumFieldLength(target, fieldAnnotation);
-      } else if (fieldsAnnotation != null) {
-        for (Field field : fieldsAnnotation.value()) {
-          validateFieldPattern(target, field);
-          validateEnumFieldLength(target, field);
-        }
-      }
+    for (FieldDescriptor desc : ClassMetadataCache.INSTANCE.get(recordClass)) {
+      validateFieldPattern(desc.target, desc.fieldAnnotation);
+      validateEnumFieldLength(desc.target, desc.fieldAnnotation);
     }
     VALIDATED_CLASSES.add(recordClass);
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
   private void validateEnumFieldLength(AnnotationTarget target, Field fieldAnnotation) {
+    FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
     Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
     if (!datatype.isEnum()) {
       return;
@@ -219,6 +214,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   private void validateFieldPattern(AnnotationTarget target, Field fieldAnnotation) {
+    FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
     Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
     FixedFormatPattern patternAnnotation = target.annotationSource.getAnnotation(FixedFormatPattern.class);
     String pattern;
@@ -254,65 +250,38 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return recordAnno;
   }
 
+  /**
+   * Reads a single non-repeating field from {@code data} and returns the parsed value.
+   * Protected for backward-compatibility with subclasses; the main load path uses the
+   * {@link ClassMetadataCache} directly.
+   *
+   * @deprecated Internal use only. Will be made private in a future release.
+   */
+  @Deprecated
   @SuppressWarnings({"unchecked"})
-  protected <T> Object readDataAccordingFieldAnnotation(Class<T> clazz, String data, Method getter, AnnotatedElement annotationSource, Field fieldAnno) throws ParseException {
+  protected <T> Object readDataAccordingFieldAnnotation(Class<T> clazz, String data, Method getter, java.lang.reflect.AnnotatedElement annotationSource, Field fieldAnno) throws ParseException {
     repeatingFieldSupport.validateCount(getter, fieldAnno);
 
     if (fieldAnno.count() > 1) {
       return repeatingFieldSupport.read(clazz, data, getter, annotationSource, fieldAnno);
     }
 
+    FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
     Class<?> datatype = instructionsBuilder.datatype(getter, fieldAnno);
-
     FormatContext<?> context = instructionsBuilder.context(datatype, fieldAnno);
-    FixedFormatter<?> formatter = getFixedFormatterInstance(context.getFormatter(), context);
+    FixedFormatter<?> formatter = com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance(context.getFormatter(), context);
     FormatInstructions formatdata = instructionsBuilder.build(annotationSource, fieldAnno, datatype);
 
     String dataToParse = fetchData(data, formatdata, context);
 
-    Object loadedData;
-
-    Annotation recordAnno = datatype.getAnnotation(Record.class);
+    java.lang.annotation.Annotation recordAnno = datatype.getAnnotation(Record.class);
     if (recordAnno != null) {
-      loadedData = load(datatype, dataToParse);
-    } else {
-      try {
-        loadedData = formatter.parse(dataToParse, formatdata);
-      } catch (RuntimeException e) {
-        throw new ParseException(data, dataToParse, clazz, getter, context, formatdata, e);
-      }
+      return load(datatype, dataToParse);
     }
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("the loaded data[{}]", loadedData);
-    }
-    return loadedData;
-  }
-
-  @SuppressWarnings({"unchecked"})
-  private <T> String exportDataAccordingFieldAnnotation(T fixedFormatRecord, AnnotationTarget target, Field fieldAnno) {
-    repeatingFieldSupport.validateCount(target.getter, fieldAnno);
-
-    Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnno);
-
-    FormatContext<?> context = instructionsBuilder.context(datatype, fieldAnno);
-    FixedFormatter<?> formatter = getFixedFormatterInstance(context.getFormatter(), context);
-    FormatInstructions formatdata = instructionsBuilder.build(target.annotationSource, fieldAnno, datatype);
-    Object valueObject;
     try {
-      valueObject = target.getter.invoke(fixedFormatRecord);
-    } catch (Exception e) {
-      throw new FixedFormatException(format("could not invoke method %s.%s(%s)", fixedFormatRecord.getClass().getName(), target.getter.getName(), datatype), e);
+      return formatter.parse(dataToParse, formatdata);
+    } catch (RuntimeException e) {
+      throw new ParseException(data, dataToParse, clazz, getter, context, formatdata, e);
     }
-
-    String result;
-    if (valueObject != null && valueObject.getClass().getAnnotation(Record.class) != null) {
-      result = export(valueObject);
-    } else {
-      result = ((FixedFormatter<Object>) formatter).format(valueObject, formatdata);
-    }
-    if (LOG.isDebugEnabled()) {
-      LOG.debug(format("exported %s ", result));
-    }
-    return result;
   }
 }
