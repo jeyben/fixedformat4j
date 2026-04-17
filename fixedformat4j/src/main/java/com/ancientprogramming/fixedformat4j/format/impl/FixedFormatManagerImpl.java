@@ -15,8 +15,10 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
+import com.ancientprogramming.fixedformat4j.annotation.EnumFormat;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.Fields;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatEnum;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
@@ -51,6 +54,17 @@ import static java.lang.String.format;
 public class FixedFormatManagerImpl implements FixedFormatManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(FixedFormatManagerImpl.class);
+  /**
+   * JVM-level cache of record classes whose enum-field lengths have already been validated.
+   * Validation is performed at most once per class (on the first {@code load} or {@code export}
+   * call) and then skipped for subsequent calls.
+   * <p>
+   * <strong>Note:</strong> this set is never cleared. In multi-classloader environments
+   * (e.g. application servers with hot-reload, OSGi containers) old {@link Class} references
+   * may be retained here after their classloader is discarded, preventing garbage collection.
+   * In such environments consider using a {@link java.lang.ref.WeakReference}-based map instead.
+   * </p>
+   */
   private static final Set<Class<?>> VALIDATED_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
   private final AnnotationScanner annotationScanner = new AnnotationScanner();
@@ -164,13 +178,48 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       Fields fieldsAnnotation = target.annotationSource.getAnnotation(Fields.class);
       if (fieldAnnotation != null) {
         validateFieldPattern(target, fieldAnnotation);
+        validateEnumFieldLength(target, fieldAnnotation);
       } else if (fieldsAnnotation != null) {
         for (Field field : fieldsAnnotation.value()) {
           validateFieldPattern(target, field);
+          validateEnumFieldLength(target, field);
         }
       }
     }
     VALIDATED_CLASSES.add(recordClass);
+  }
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private void validateEnumFieldLength(AnnotationTarget target, Field fieldAnnotation) {
+    Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
+    if (!datatype.isEnum()) {
+      return;
+    }
+
+    Enum[] constants = (Enum[]) datatype.getEnumConstants();
+    if (constants == null || constants.length == 0) {
+      return;
+    }
+
+    FixedFormatEnum enumAnnotation = target.annotationSource.getAnnotation(FixedFormatEnum.class);
+    EnumFormat enumFormat = (enumAnnotation != null) ? enumAnnotation.value() : EnumFormat.LITERAL;
+
+    int maxLength;
+    if (enumFormat == EnumFormat.NUMERIC) {
+      maxLength = String.valueOf(constants.length - 1).length();
+    } else {
+      maxLength = Arrays.stream(constants)
+          .mapToInt(e -> e.name().length())
+          .max()
+          .orElse(0);
+    }
+
+    if (maxLength > fieldAnnotation.length()) {
+      throw new FixedFormatException(format(
+          "Enum [%s] has values with max length %d, which exceeds @Field length %d on %s.%s()",
+          datatype.getName(), maxLength, fieldAnnotation.length(),
+          target.getter.getDeclaringClass().getName(), target.getter.getName()));
+    }
   }
 
   private void validateFieldPattern(AnnotationTarget target, Field fieldAnnotation) {
