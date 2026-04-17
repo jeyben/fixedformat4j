@@ -7,6 +7,8 @@ import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatContext;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,9 +91,10 @@ class ClassMetadataCache {
         : getFixedFormatterInstance(context.getFormatter(), context);
 
     Method setter = resolveSetter(clazz, target.getter, datatype, scanner);
+    MethodHandle setterHandle = toHandle(setter);
 
-    return new FieldDescriptor(target, setter, fieldAnnotation, datatype, context, formatInstructions,
-        formatter, isRepeating, isNestedRecord, isLoadField);
+    return new FieldDescriptor(target, setter, setterHandle, fieldAnnotation, datatype, context,
+        formatInstructions, formatter, isRepeating, isNestedRecord, isLoadField);
   }
 
   private Method resolveSetter(Class<?> clazz, Method getter, Class<?> datatype, AnnotationScanner scanner) {
@@ -100,6 +103,15 @@ class ClassMetadataCache {
       return clazz.getMethod(setterName, datatype);
     } catch (NoSuchMethodException e) {
       return null;
+    }
+  }
+
+  private MethodHandle toHandle(Method method) {
+    if (method == null) return null;
+    try {
+      return MethodHandles.lookup().unreflect(method);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException("Cannot create MethodHandle for " + method, e);
     }
   }
 }

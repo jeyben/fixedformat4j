@@ -31,7 +31,9 @@ class TestClassMetadataCache {
     for (FieldDescriptor d : cache.get(MyRecord.class)) {
       String name = d.target.getter.getName();
       assertNotNull(d.target, name + ": target");
+      assertNotNull(d.target.getterHandle, name + ": getterHandle");
       assertNotNull(d.setter, name + ": setter");
+      assertNotNull(d.setterHandle, name + ": setterHandle");
       assertNotNull(d.fieldAnnotation, name + ": fieldAnnotation");
       assertNotNull(d.datatype, name + ": datatype");
       assertNotNull(d.context, name + ": context");

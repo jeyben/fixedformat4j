@@ -95,10 +95,10 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
         }
       }
 
-      if (value != null && desc.setter != null) {
+      if (value != null && desc.setterHandle != null) {
         try {
-          desc.setter.invoke(instance, value);
-        } catch (Exception e) {
+          desc.setterHandle.invoke(instance, value);
+        } catch (Throwable e) {
           throw new FixedFormatException(
               format("could not invoke method %s.%s(%s)", fixedFormatRecordClass.getName(), desc.setter.getName(), desc.datatype), e);
         }
@@ -130,8 +130,8 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
       Object valueObject;
       try {
-        valueObject = desc.target.getter.invoke(fixedFormatRecord);
-      } catch (Exception e) {
+        valueObject = desc.target.getterHandle.invoke(fixedFormatRecord);
+      } catch (Throwable e) {
         throw new FixedFormatException(
             format("could not invoke method %s.%s(%s)", fixedFormatRecord.getClass().getName(), desc.target.getter.getName(), desc.datatype), e);
       }
