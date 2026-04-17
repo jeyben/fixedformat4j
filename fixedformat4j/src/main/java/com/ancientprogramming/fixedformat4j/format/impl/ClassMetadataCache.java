@@ -23,6 +23,11 @@ import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFix
  * {@link FieldDescriptor} per effective {@code @Field}. Subsequent calls return the same
  * immutable list without re-scanning.
  *
+ * <p>Thread safety: {@code computeIfAbsent} guarantees that {@link #build} runs at most once per
+ * class key. Helper objects ({@link AnnotationScanner}, {@link FormatInstructionsBuilder},
+ * {@link RepeatingFieldSupport}) are created as local variables inside {@code build} so that
+ * concurrent builds of different classes never share mutable state.
+ *
  * <p><strong>Note:</strong> this cache is never cleared. In multi-classloader environments
  * (e.g. application servers with hot-reload, OSGi containers) old {@link Class} references may
  * be retained here after their classloader is discarded, preventing garbage collection.
@@ -36,25 +41,26 @@ class ClassMetadataCache {
   static final ClassMetadataCache INSTANCE = new ClassMetadataCache();
 
   private final Map<Class<?>, List<FieldDescriptor>> cache = new ConcurrentHashMap<>();
-  private final AnnotationScanner scanner = new AnnotationScanner();
-  private final FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
-  private final RepeatingFieldSupport repeatingFieldSupport = new RepeatingFieldSupport();
 
   List<FieldDescriptor> get(Class<?> clazz) {
     return cache.computeIfAbsent(clazz, this::build);
   }
 
   private List<FieldDescriptor> build(Class<?> clazz) {
+    AnnotationScanner scanner = new AnnotationScanner();
+    FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
+    RepeatingFieldSupport repeatingFieldSupport = new RepeatingFieldSupport();
+
     List<FieldDescriptor> result = new ArrayList<>();
     for (AnnotationTarget target : scanner.scan(clazz)) {
       Field fieldAnnotation = target.annotationSource.getAnnotation(Field.class);
       Fields fieldsAnnotation = target.annotationSource.getAnnotation(Fields.class);
       if (fieldAnnotation != null) {
-        result.add(buildDescriptor(clazz, target, fieldAnnotation, true));
+        result.add(buildDescriptor(clazz, target, fieldAnnotation, true, scanner, instructionsBuilder, repeatingFieldSupport));
       } else if (fieldsAnnotation != null) {
         Field[] fields = fieldsAnnotation.value();
         for (int i = 0; i < fields.length; i++) {
-          result.add(buildDescriptor(clazz, target, fields[i], i == 0));
+          result.add(buildDescriptor(clazz, target, fields[i], i == 0, scanner, instructionsBuilder, repeatingFieldSupport));
         }
       }
     }
@@ -62,7 +68,15 @@ class ClassMetadataCache {
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
-  private FieldDescriptor buildDescriptor(Class<?> clazz, AnnotationTarget target, Field fieldAnnotation, boolean isLoadField) {
+  private FieldDescriptor buildDescriptor(
+      Class<?> clazz,
+      AnnotationTarget target,
+      Field fieldAnnotation,
+      boolean isLoadField,
+      AnnotationScanner scanner,
+      FormatInstructionsBuilder instructionsBuilder,
+      RepeatingFieldSupport repeatingFieldSupport) {
+
     Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
     repeatingFieldSupport.validateCount(target.getter, fieldAnnotation);
     boolean isRepeating = fieldAnnotation.count() > 1;
@@ -74,13 +88,13 @@ class ClassMetadataCache {
     FixedFormatter<?> formatter = (isRepeating || isNestedRecord) ? null
         : getFixedFormatterInstance(context.getFormatter(), context);
 
-    Method setter = resolveSetter(clazz, target.getter, datatype);
+    Method setter = resolveSetter(clazz, target.getter, datatype, scanner);
 
     return new FieldDescriptor(target, setter, fieldAnnotation, datatype, context, formatInstructions,
         formatter, isRepeating, isNestedRecord, isLoadField);
   }
 
-  private Method resolveSetter(Class<?> clazz, Method getter, Class<?> datatype) {
+  private Method resolveSetter(Class<?> clazz, Method getter, Class<?> datatype, AnnotationScanner scanner) {
     String setterName = "set" + scanner.stripMethodPrefix(getter.getName());
     try {
       return clazz.getMethod(setterName, datatype);
