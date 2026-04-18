@@ -57,9 +57,10 @@ jobs:
           git checkout "$RELEASE_TAG"
           mvn -B versions:set -DnewVersion=$VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
           cp fixedformat4j/pom.xml artifacts/fixedformat4j-$VERSION.pom
+          CLASSPATH=$(mvn -B dependency:build-classpath -pl fixedformat4j -Dmdep.outputFile=/dev/stdout -q --no-transfer-progress 2>/dev/null | tail -1)
           find fixedformat4j/src/main/java -name "*.java" > sources.txt
           mkdir -p javadoc-out
-          javadoc -encoding ISO-8859-1 -Xdoclint:none -d javadoc-out @sources.txt
+          javadoc -encoding ISO-8859-1 -Xdoclint:none -classpath "$CLASSPATH" -d javadoc-out @sources.txt
           jar cf artifacts/fixedformat4j-$VERSION-javadoc.jar -C javadoc-out .
 
       - name: Generate MD5 and SHA1 checksums
