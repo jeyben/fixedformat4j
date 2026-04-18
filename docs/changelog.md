@@ -4,6 +4,17 @@ title: Changelog
 
 # Changelog
 
+## Unreleased
+
+### Bug fixes
+
+- **Null nested `@Record` field now exports as padding instead of throwing** ([#45](https://github.com/jeyben/fixedformat4j/issues/45)) —
+  Exporting a parent record whose nested `@Record` field is `null` previously threw a
+  `FixedFormatException`. It now outputs the field's `paddingChar` repeated for the declared
+  `@Field` length, consistent with how all other formatters handle `null` values.
+
+---
+
 ## 1.7.0 (2026-04-18)
 
 ### Breaking changes

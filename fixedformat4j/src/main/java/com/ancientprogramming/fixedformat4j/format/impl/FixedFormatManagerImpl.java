@@ -140,9 +140,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       if (valueObject != null && valueObject.getClass().getAnnotation(Record.class) != null) {
         formatted = export(valueObject);
       } else if (desc.isNestedRecord) {
-        throw new FixedFormatException(
-            format("cannot export null value for nested @Record field %s.%s()",
-                fixedFormatRecord.getClass().getName(), desc.target.getter.getName()));
+        formatted = StringUtils.repeat(String.valueOf(desc.fieldAnnotation.paddingChar()), desc.fieldAnnotation.length());
       } else {
         formatted = ((FixedFormatter<Object>) desc.formatter).format(valueObject, desc.formatInstructions);
       }
