@@ -57,7 +57,7 @@ jobs:
           git checkout "$RELEASE_TAG"
           mvn -B versions:set -DnewVersion=$VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
           cp fixedformat4j/pom.xml artifacts/fixedformat4j-$VERSION.pom
-          mvn -B javadoc:jar -pl fixedformat4j --no-transfer-progress
+          mvn -B javadoc:jar -pl fixedformat4j --no-transfer-progress -Dencoding=ISO-8859-1
           cp fixedformat4j/target/fixedformat4j-$VERSION-javadoc.jar artifacts/
 
       - name: Generate MD5 and SHA1 checksums
