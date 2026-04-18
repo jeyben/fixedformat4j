@@ -37,7 +37,7 @@ class FormatInstructionsBuilder {
     FixedFormatNumberData numberData = numberData(annotationSource.getAnnotation(FixedFormatNumber.class));
     FixedFormatDecimalData decimalData = decimalData(annotationSource.getAnnotation(FixedFormatDecimal.class));
     FixedFormatEnumData enumData = enumData(annotationSource.getAnnotation(FixedFormatEnum.class));
-    return new FormatInstructions(fieldAnno.length(), fieldAnno.align(), fieldAnno.paddingChar(), patternData, booleanData, numberData, decimalData, enumData);
+    return new FormatInstructions(fieldAnno.length(), fieldAnno.align(), fieldAnno.paddingChar(), fieldAnno.nullChar(), patternData, booleanData, numberData, decimalData, enumData);
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})

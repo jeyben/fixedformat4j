@@ -33,6 +33,7 @@ public class FormatInstructions {
   private int length;
   private Align alignment;
   private char paddingChar;
+  private char nullChar;
   private FixedFormatPatternData fixedFormatPatternData;
   private FixedFormatBooleanData fixedFormatBooleanData;
   private FixedFormatNumberData fixedFormatNumberData;
@@ -40,7 +41,8 @@ public class FormatInstructions {
   private FixedFormatEnumData fixedFormatEnumData;
 
   /**
-   * Creates format instructions with enum data defaulting to {@link FixedFormatEnumData#DEFAULT}.
+   * Creates format instructions with enum data defaulting to {@link FixedFormatEnumData#DEFAULT}
+   * and null-char detection disabled ({@code nullChar == paddingChar}).
    *
    * @param length                  the fixed width of the field in characters
    * @param alignment               the alignment strategy used to pad and strip the field
@@ -51,11 +53,12 @@ public class FormatInstructions {
    * @param fixedFormatDecimalData  decimal precision configuration, or {@code null} if unused
    */
   public FormatInstructions(int length, Align alignment, char paddingChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData) {
-    this(length, alignment, paddingChar, fixedFormatPatternData, fixedFormatBooleanData, fixedFormatNumberData, fixedFormatDecimalData, FixedFormatEnumData.DEFAULT);
+    this(length, alignment, paddingChar, paddingChar, fixedFormatPatternData, fixedFormatBooleanData, fixedFormatNumberData, fixedFormatDecimalData, FixedFormatEnumData.DEFAULT);
   }
 
   /**
-   * Creates a fully-populated set of format instructions including enum configuration.
+   * Creates a fully-populated set of format instructions including enum configuration, with
+   * null-char detection disabled ({@code nullChar == paddingChar}).
    *
    * @param length                  the fixed width of the field in characters
    * @param alignment               the alignment strategy used to pad and strip the field
@@ -67,9 +70,30 @@ public class FormatInstructions {
    * @param fixedFormatEnumData     enum serialization configuration, or {@code null} if unused
    */
   public FormatInstructions(int length, Align alignment, char paddingChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData, FixedFormatEnumData fixedFormatEnumData) {
+    this(length, alignment, paddingChar, paddingChar, fixedFormatPatternData, fixedFormatBooleanData, fixedFormatNumberData, fixedFormatDecimalData, fixedFormatEnumData);
+  }
+
+  /**
+   * Creates a fully-populated set of format instructions including a {@code nullChar} sentinel
+   * used to represent a {@code null} field value on load and export. When
+   * {@code nullChar == paddingChar} the detection is disabled and existing behavior is preserved.
+   *
+   * @param length                  the fixed width of the field in characters
+   * @param alignment               the alignment strategy used to pad and strip the field
+   * @param paddingChar             the character used for padding
+   * @param nullChar                the sentinel character signalling a {@code null} field
+   * @param fixedFormatPatternData  date/time pattern configuration, or {@code null} if unused
+   * @param fixedFormatBooleanData  boolean value configuration, or {@code null} if unused
+   * @param fixedFormatNumberData   number sign configuration, or {@code null} if unused
+   * @param fixedFormatDecimalData  decimal precision configuration, or {@code null} if unused
+   * @param fixedFormatEnumData     enum serialization configuration, or {@code null} if unused
+   * @since 1.7.1
+   */
+  public FormatInstructions(int length, Align alignment, char paddingChar, char nullChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData, FixedFormatEnumData fixedFormatEnumData) {
     this.length = length;
     this.alignment = alignment;
     this.paddingChar = paddingChar;
+    this.nullChar = nullChar;
     this.fixedFormatPatternData = fixedFormatPatternData;
     this.fixedFormatBooleanData = fixedFormatBooleanData;
     this.fixedFormatNumberData = fixedFormatNumberData;
@@ -102,6 +126,18 @@ public class FormatInstructions {
    */
   public char getPaddingChar() {
     return paddingChar;
+  }
+
+  /**
+   * Returns the sentinel character that signals a {@code null} field value. When it equals
+   * {@link #getPaddingChar()} the null-char detection is disabled and existing behavior is
+   * preserved.
+   *
+   * @return the null sentinel character
+   * @since 1.7.1
+   */
+  public char getNullChar() {
+    return nullChar;
   }
 
   /**
@@ -150,7 +186,7 @@ public class FormatInstructions {
   }
 
   public String toString() {
-    return String.format("FormatInstructions{length=%d, alignment=%s, paddingChar='%c', fixedFormatPatternData=%s, fixedFormatBooleanData=%s, fixedFormatNumberData=%s, fixedFormatDecimalData=%s, fixedFormatEnumData=%s}",
-        length, alignment, paddingChar, fixedFormatPatternData, fixedFormatBooleanData, fixedFormatNumberData, fixedFormatDecimalData, fixedFormatEnumData);
+    return String.format("FormatInstructions{length=%d, alignment=%s, paddingChar='%c', nullChar='%c', fixedFormatPatternData=%s, fixedFormatBooleanData=%s, fixedFormatNumberData=%s, fixedFormatDecimalData=%s, fixedFormatEnumData=%s}",
+        length, alignment, paddingChar, nullChar, fixedFormatPatternData, fixedFormatBooleanData, fixedFormatNumberData, fixedFormatDecimalData, fixedFormatEnumData);
   }
 }

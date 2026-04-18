@@ -6,6 +6,30 @@ title: Changelog
 
 ## Unreleased
 
+### New features
+
+- **Opt-in `nullChar` attribute on `@Field` to represent null values** ([#29](https://github.com/jeyben/fixedformat4j/issues/29)) —
+  Adds a `nullChar` attribute to the `@Field` annotation that lets callers distinguish a
+  genuinely-absent field from a zero or empty value.
+
+  **Activation rule:** null-aware handling is enabled only when `nullChar` differs from
+  `paddingChar`. The default value (`'\0'`) is a sentinel that can never appear in a regular
+  fixed-width payload, so all existing records retain their pre-1.7.1 behaviour unchanged.
+
+  - **On load** — if every character in the field slice equals `nullChar`, the setter is not
+    invoked and the field stays `null` (primitive fields keep their JVM default).
+  - **On export** — if the getter returns `null`, the field is emitted as `length` copies of
+    `nullChar`, bypassing the formatter entirely.
+
+  Not applicable to repeating fields (`count > 1`).
+
+  ```java
+  // Null and zero are now distinguishable:
+  // "     " (spaces) → null   "00042" → 42
+  @Field(offset = 1, length = 5, align = Align.RIGHT, paddingChar = '0', nullChar = ' ')
+  public Integer getAmount() { … }
+  ```
+
 ### Bug fixes
 
 - **Null nested `@Record` field now exports as padding instead of throwing** ([#45](https://github.com/jeyben/fixedformat4j/issues/45)) —

@@ -34,6 +34,15 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Field {
 
   /**
+   * Sentinel value for {@link #nullChar()} meaning "not configured". When {@code nullChar()}
+   * equals this value, null-aware load/export is disabled and behavior is identical to
+   * pre-1.7.2 releases.
+   *
+   * @since 1.7.1
+   */
+  char UNSET_NULL_CHAR = '\0';
+
+  /**
    * A one based offset to insert data at in a record.
    * @return the offset as an int
    */
@@ -55,6 +64,26 @@ public @interface Field {
    * @return the padding character
    */
   char paddingChar() default ' ';
+
+  /**
+   * Opt-in sentinel used to represent a {@code null} value in the fixed-width field.
+   * <p>
+   * Activation rule: null-aware handling fires only when {@code nullChar() != paddingChar()}.
+   * When active:
+   * <ul>
+   *   <li>On load, a slice whose characters all equal {@code nullChar} yields {@code null}
+   *       (the setter is not invoked, so primitive fields keep their JVM default).</li>
+   *   <li>On export, a {@code null} getter value is emitted as {@code length} copies of
+   *       {@code nullChar}, bypassing the formatter entirely.</li>
+   * </ul>
+   * The default value {@code '\0'} is a sentinel that can never appear in a regular
+   * fixed-width payload, so existing records (which do not set this attribute) retain
+   * their pre-existing behavior. Not applicable to repeating fields ({@code count > 1}).
+   *
+   * @return the character that denotes a null field; defaults to {@link #UNSET_NULL_CHAR} (inactive)
+   * @since 1.7.1
+   */
+  char nullChar() default UNSET_NULL_CHAR;
 
   /**
    * The formatter class to use for this field.
