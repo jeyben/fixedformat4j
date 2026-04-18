@@ -182,6 +182,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     for (FieldDescriptor desc : ClassMetadataCache.INSTANCE.get(recordClass)) {
       validateFieldPattern(desc.target, desc.fieldAnnotation);
       validateEnumFieldLength(desc.target, desc.fieldAnnotation);
+      validateFieldNullChar(desc.target, desc.fieldAnnotation);
     }
     VALIDATED_CLASSES.add(recordClass);
   }
@@ -213,6 +214,26 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
           "Enum [%s] has values with max length %d, which exceeds @Field length %d on %s.%s()",
           datatype.getName(), maxLength, fieldAnnotation.length(),
           target.getter.getDeclaringClass().getName(), target.getter.getName()));
+    }
+  }
+
+  private void validateFieldNullChar(AnnotationTarget target, Field fieldAnnotation) {
+    if (fieldAnnotation.nullChar() == Field.UNSET_NULL_CHAR) return;
+
+    Class<?> typeToCheck;
+    if (fieldAnnotation.count() > 1) {
+      typeToCheck = repeatingFieldSupport.resolveElementType(target.getter);
+    } else {
+      FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
+      typeToCheck = instructionsBuilder.datatype(target.getter, fieldAnnotation);
+    }
+
+    if (typeToCheck.isPrimitive()) {
+      throw new FixedFormatException(format(
+          "@Field nullChar is not supported on primitive type %s on %s.%s()",
+          typeToCheck.getName(),
+          target.getter.getDeclaringClass().getName(),
+          target.getter.getName()));
     }
   }
 
