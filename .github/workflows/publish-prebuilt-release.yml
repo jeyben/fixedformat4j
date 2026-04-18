@@ -50,10 +50,20 @@ jobs:
           gh release download "$RELEASE_TAG" --pattern "fixedformat4j-*.jar" --dir artifacts
           ls -la artifacts/
 
-      - name: Prepare POM with correct version
+      - name: Prepare POM and generate javadoc
         run: |
           mvn -B versions:set -DnewVersion=$VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
           cp fixedformat4j/pom.xml artifacts/fixedformat4j-$VERSION.pom
+          mvn -B javadoc:jar -pl fixedformat4j --no-transfer-progress
+          cp fixedformat4j/target/fixedformat4j-$VERSION-javadoc.jar artifacts/
+
+      - name: Generate MD5 and SHA1 checksums
+        run: |
+          cd artifacts
+          for f in *.jar *.pom; do
+            md5sum  "$f" | awk '{print $1}' > "$f.md5"
+            sha1sum "$f" | awk '{print $1}' > "$f.sha1"
+          done
 
       - name: GPG sign all artifacts
         env:
@@ -69,16 +79,22 @@ jobs:
         run: |
           GROUP_PATH="com/ancientprogramming/fixedformat4j/fixedformat4j/$VERSION"
           mkdir -p "bundle/$GROUP_PATH"
-          cp artifacts/fixedformat4j-$VERSION.jar             "bundle/$GROUP_PATH/"
-          cp artifacts/fixedformat4j-$VERSION-sources.jar     "bundle/$GROUP_PATH/"
-          cp artifacts/fixedformat4j-$VERSION.pom             "bundle/$GROUP_PATH/"
-          cp artifacts/fixedformat4j-$VERSION.jar.asc         "bundle/$GROUP_PATH/"
-          cp artifacts/fixedformat4j-$VERSION-sources.jar.asc "bundle/$GROUP_PATH/"
-          cp artifacts/fixedformat4j-$VERSION.pom.asc         "bundle/$GROUP_PATH/"
-          if [ -f "artifacts/fixedformat4j-$VERSION-javadoc.jar" ]; then
-            cp artifacts/fixedformat4j-$VERSION-javadoc.jar     "bundle/$GROUP_PATH/"
-            cp artifacts/fixedformat4j-$VERSION-javadoc.jar.asc "bundle/$GROUP_PATH/"
-          fi
+          cp artifacts/fixedformat4j-$VERSION.jar              "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION.jar.md5          "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION.jar.sha1         "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION.jar.asc          "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION-sources.jar      "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION-sources.jar.md5  "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION-sources.jar.sha1 "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION-sources.jar.asc  "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION-javadoc.jar      "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION-javadoc.jar.md5  "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION-javadoc.jar.sha1 "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION-javadoc.jar.asc  "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION.pom              "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION.pom.md5          "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION.pom.sha1         "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION.pom.asc          "bundle/$GROUP_PATH/"
           cd bundle && zip -r ../bundle.zip .
 
       - name: Upload to Maven Central
