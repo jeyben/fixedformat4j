@@ -17,7 +17,8 @@ title: Changelog
   fixed-width payload, so all existing records retain their pre-1.7.1 behaviour unchanged.
 
   - **On load** — if every character in the field slice equals `nullChar`, the setter is not
-    invoked and the field stays `null` (primitive fields keep their JVM default).
+    invoked and the field stays `null`. Configuring `nullChar` on a primitive-typed field
+    throws `FixedFormatException` at validation time.
   - **On export** — if the getter returns `null`, the field is emitted as `length` copies of
     `nullChar`, bypassing the formatter entirely.
 

@@ -77,7 +77,9 @@ public @interface Field {
    * When active:
    * <ul>
    *   <li>On load, a slice whose characters all equal {@code nullChar} yields {@code null}
-   *       (the setter is not invoked, so primitive fields keep their JVM default).</li>
+   *       (the setter is not invoked). Configuring {@code nullChar} on a primitive-typed
+   *       field throws {@link com.ancientprogramming.fixedformat4j.exception.FixedFormatException}
+   *       at validation time.</li>
    *   <li>On export, a {@code null} getter value is emitted as {@code length} copies of
    *       {@code nullChar}, bypassing the formatter entirely.</li>
    * </ul>

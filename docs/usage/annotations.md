@@ -76,7 +76,7 @@ public Integer getAmount() { return amount; }
 public void setAmount(Integer amount) { this.amount = amount; }
 ```
 
-- **On load** — if every character in the field slice equals `nullChar`, the setter is not invoked and the field stays `null` (primitive fields keep their JVM default).
+- **On load** — if every character in the field slice equals `nullChar`, the setter is not invoked and the field stays `null`. Configuring `nullChar` on a primitive-typed field throws `FixedFormatException` at validation time.
 - **On export** — if the getter returns `null`, the field is emitted as `nullChar` × `length`, bypassing the formatter entirely.
 
 For repeating fields (`count > 1`) the check is applied **per element**: each slot is evaluated independently, so a collection can hold a mix of `null` and non-null values. Primitive array element types (e.g. `int[]`) cannot hold `null` and are unaffected.

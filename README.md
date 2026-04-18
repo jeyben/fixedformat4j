@@ -13,6 +13,23 @@ A small, non-intrusive Java library for reading and writing fixed-width flat-fil
 [![Mutation Coverage](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjeyben.github.io%2Ffixedformat4j%2Fmutation-score.json&query=%24.mutationCoverage&label=Mutation%20Coverage&color=brightgreen)](https://jeyben.github.io/fixedformat4j/pit-reports/)
 [![Test Strength](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjeyben.github.io%2Ffixedformat4j%2Fmutation-score.json&query=%24.testStrength&label=Test%20Strength&color=brightgreen)](https://jeyben.github.io/fixedformat4j/pit-reports/)
 
+## Why fixedformat4j?
+
+Fixed-width files are common in banking, payroll, government, and legacy system integration. Consider a typical payroll line from a daily settlement file:
+
+```
+EMP004232SMITH               0000185000CR20260418003
+```
+
+That single line encodes: employee ID (`00423`), department code (`2`), name (`SMITH               `), net pay in implied cents (`0000185000` = $1,850.00), direction (`CR`), pay date (`20260418`), region code (`003`). fixedformat4j lets you describe that layout once — as annotations on a plain Java class — and then load and export records without writing any parsing or formatting code yourself.
+
+- **Annotation-driven** — declare field offsets, lengths, alignment, and padding in one place
+- **Rich type support** — `String`, `Integer`, `Long`, `Short`, `Double`, `Float`, `BigDecimal`, `Boolean`, `Character`, `Date`, `LocalDate`, `LocalDateTime`
+- **Signed numbers** — handles `'-1000'` and `'1000-'` both as negative values
+- **Implicit decimals** — store `BigDecimal` without a decimal point in the file
+- **Nested records** — embed one `@Record` class inside another
+- **Extensible** — plug in your own formatter for any custom type
+
 ## Benchmarks
 
 JMH microbenchmarks compare `load()` and `export()` performance across releases. Charts are published at [jeyben.github.io/fixedformat4j/benchmarks](https://jeyben.github.io/fixedformat4j/benchmarks).
@@ -26,24 +43,16 @@ To run benchmarks locally (requires Java 11 and `1.6.1` on Maven Central):
 
 Results are written to `docs/assets/benchmarks/` as JMH JSON.
 
-## Why fixedformat4j?
+## What's new in 1.7.1
 
-Fixed-width files are common in banking, payroll, government, and legacy system integration. fixedformat4j lets you describe your record layout once — as annotations on a plain Java class — and then load and export records without writing any parsing or formatting code yourself.
-
-- **Annotation-driven** — declare field offsets, lengths, alignment, and padding in one place
-- **Rich type support** — `String`, `Integer`, `Long`, `Short`, `Double`, `Float`, `BigDecimal`, `Boolean`, `Character`, `Date`, `LocalDate`, `LocalDateTime`
-- **Signed numbers** — handles `'-1000'` and `'1000-'` both as negative values
-- **Implicit decimals** — store `BigDecimal` without a decimal point in the file
-- **Nested records** — embed one `@Record` class inside another
-- **Extensible** — plug in your own formatter for any custom type
+- **`nullChar` on `@Field`** — distinguish a genuinely-absent field from zero or empty. A slice filled with `nullChar` loads as `null`; a `null` value exports as `length × nullChar`. Works per-element for repeating fields. Configuring `nullChar` on a primitive field is rejected at startup.
+- **Record-level default alignment** — set `@Record(align = Align.RIGHT)` once instead of repeating `align=` on every field.
 
 ## What's new in 1.7.0
 
-- **`AbstractFixedFormatter.getRemovePadding` removed** — deprecated in 1.6.1. Rename any override to `stripPadding`; the signature is identical.
-- **Enum support via `@FixedFormatEnum`** ([#67](https://github.com/jeyben/fixedformat4j/issues/67)) — map any `enum` field with `LITERAL` (name) or `NUMERIC` (ordinal) serialisation.
-- **Field metadata caching** ([#77](https://github.com/jeyben/fixedformat4j/issues/77)) — annotation scanning per class is now done once and cached, eliminating repeated reflection overhead.
-- **MethodHandle dispatch** ([#75](https://github.com/jeyben/fixedformat4j/issues/75)) — getter/setter invocation switched from `Method.invoke()` to `MethodHandle` for lower per-call cost.
-- **Reduced string allocations** ([#76](https://github.com/jeyben/fixedformat4j/issues/76)) — padding and sign handling rewritten to minimise intermediate `String` creation.
+- **Enum support via `@FixedFormatEnum`** — map any `enum` with `LITERAL` (name) or `NUMERIC` (ordinal) serialisation.
+- **Field metadata caching and `MethodHandle` dispatch** — annotation scanning done once per class; getter/setter calls via `MethodHandle` for lower overhead.
+- **`AbstractFixedFormatter.getRemovePadding` removed** — rename any override to `stripPadding` (breaking change).
 
 See the [Changelog](https://jeyben.github.io/fixedformat4j/changelog) for full details.
 
@@ -71,7 +80,7 @@ fixedformat4j is published to **Maven Central**. No repository configuration or 
 <dependency>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j</artifactId>
-  <version>1.7.0</version>
+  <version>1.7.1</version>
 </dependency>
 ```
 
@@ -82,14 +91,14 @@ See [Get It](https://jeyben.github.io/fixedformat4j/get-it) for full setup instr
 <details>
 <summary>No GitHub account? Download manually</summary>
 
-Download `fixedformat4j-1.7.0.jar` from the [1.7.0 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_7_0), then install it into your local Maven repository:
+Download `fixedformat4j-1.7.1.jar` from the [1.7.1 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_7_1), then install it into your local Maven repository:
 
 ```bash
 mvn install:install-file \
-  -Dfile=fixedformat4j-1.7.0.jar \
+  -Dfile=fixedformat4j-1.7.1.jar \
   -DgroupId=com.ancientprogramming.fixedformat4j \
   -DartifactId=fixedformat4j \
-  -Dversion=1.7.0 \
+  -Dversion=1.7.1 \
   -Dpackaging=jar
 ```
 
