@@ -71,7 +71,7 @@ fixedformat4j is published to **Maven Central**. No repository configuration or 
 <dependency>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j</artifactId>
-  <version>1.6.1</version>
+  <version>1.7.0</version>
 </dependency>
 ```
 
@@ -82,14 +82,14 @@ See [Get It](https://jeyben.github.io/fixedformat4j/get-it) for full setup instr
 <details>
 <summary>No GitHub account? Download manually</summary>
 
-Download `fixedformat4j-1.6.1.jar` from the [1.6.1 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_6_1), then install it into your local Maven repository:
+Download `fixedformat4j-1.7.0.jar` from the [1.7.0 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_7_0), then install it into your local Maven repository:
 
 ```bash
 mvn install:install-file \
-  -Dfile=fixedformat4j-1.6.1.jar \
+  -Dfile=fixedformat4j-1.7.0.jar \
   -DgroupId=com.ancientprogramming.fixedformat4j \
   -DartifactId=fixedformat4j \
-  -Dversion=1.6.1 \
+  -Dversion=1.7.0 \
   -Dpackaging=jar
 ```
 
