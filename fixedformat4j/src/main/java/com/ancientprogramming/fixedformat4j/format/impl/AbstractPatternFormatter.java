@@ -67,16 +67,6 @@ public abstract class AbstractPatternFormatter<T> extends AbstractFixedFormatter
     return stripped;
   }
 
-  /**
-   * @deprecated Use {@link #stripPadding} instead. This method will be removed in 1.7.0.
-   * @see AbstractFixedFormatter#getRemovePadding
-   */
-  @Deprecated
-  @Override
-  protected String getRemovePadding(String value, FormatInstructions instructions) {
-    return stripPadding(value, instructions);
-  }
-
   protected final int formattedLengthForPattern(String pattern) {
     return PATTERN_LENGTH_CACHE
         .computeIfAbsent(getClass(), k -> new ConcurrentHashMap<>())

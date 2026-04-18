@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
  * runtime recurses into {@code FixedFormatManagerImpl}.
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
- * @since 1.7.1
+ * @since 1.7.0
  */
 class FieldDescriptor {
 

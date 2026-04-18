@@ -36,7 +36,7 @@ import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFix
  * In such environments consider using a {@link java.lang.ref.WeakReference}-based map instead.
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
- * @since 1.7.1
+ * @since 1.7.0
  */
 class ClassMetadataCache {
 

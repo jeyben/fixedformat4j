@@ -37,10 +37,13 @@ Fixed-width files are common in banking, payroll, government, and legacy system 
 - **Nested records** — embed one `@Record` class inside another
 - **Extensible** — plug in your own formatter for any custom type
 
-## What's new in 1.6.1
+## What's new in 1.7.0
 
-- **Date padding bug fixed** — `DateFormatter`, `LocalDateFormatter`, and `LocalDateTimeFormatter` no longer strip padding characters that appear inside the formatted date string (e.g. `paddingChar='0'` with seconds `00`), preventing `ParseException` on valid dates ([#33](https://github.com/jeyben/fixedformat4j/issues/33)).
-- **`AbstractFixedFormatter.getRemovePadding` deprecated** — renamed to `stripPadding`; the old name still works in 1.6.1 but will be removed in 1.7.0.
+- **`AbstractFixedFormatter.getRemovePadding` removed** — deprecated in 1.6.1. Rename any override to `stripPadding`; the signature is identical.
+- **Enum support via `@FixedFormatEnum`** ([#67](https://github.com/jeyben/fixedformat4j/issues/67)) — map any `enum` field with `LITERAL` (name) or `NUMERIC` (ordinal) serialisation.
+- **Field metadata caching** ([#77](https://github.com/jeyben/fixedformat4j/issues/77)) — annotation scanning per class is now done once and cached, eliminating repeated reflection overhead.
+- **MethodHandle dispatch** ([#75](https://github.com/jeyben/fixedformat4j/issues/75)) — getter/setter invocation switched from `Method.invoke()` to `MethodHandle` for lower per-call cost.
+- **Reduced string allocations** ([#76](https://github.com/jeyben/fixedformat4j/issues/76)) — padding and sign handling rewritten to minimise intermediate `String` creation.
 
 See the [Changelog](https://jeyben.github.io/fixedformat4j/changelog) for full details.
 

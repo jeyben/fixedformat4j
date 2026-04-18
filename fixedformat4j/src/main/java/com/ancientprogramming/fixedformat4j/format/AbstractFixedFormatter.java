@@ -32,7 +32,7 @@ public abstract class AbstractFixedFormatter<T> implements FixedFormatter<T> {
   public T parse(String value, FormatInstructions instructions) {
     T result = null;
     if (value != null) {
-      result = asObject(getRemovePadding(value, instructions), instructions);
+      result = asObject(stripPadding(value, instructions), instructions);
     }
     return result;
   }
@@ -41,13 +41,7 @@ public abstract class AbstractFixedFormatter<T> implements FixedFormatter<T> {
    * Strips padding characters from {@code value} before it is passed to {@link #asObject}.
    *
    * <p>This is the extension point for subclasses that need to customise pre-parse
-   * padding removal. Override this method — not {@link #getRemovePadding} — in new code.
-   *
-   * <p><strong>Call chain (since 1.6.1):</strong>
-   * {@link #parse} &rarr; {@link #getRemovePadding} &rarr; {@code stripPadding}
-   *
-   * <p>In version 1.7.0 {@link #getRemovePadding} will be removed and {@link #parse}
-   * will call {@code stripPadding} directly.
+   * padding removal.
    *
    * @param value        the raw field string extracted from the fixed-width record
    * @param instructions formatting metadata (alignment, padding character, length, &hellip;)
@@ -55,24 +49,6 @@ public abstract class AbstractFixedFormatter<T> implements FixedFormatter<T> {
    */
   protected String stripPadding(String value, FormatInstructions instructions) {
     return instructions.getAlignment().remove(value, instructions.getPaddingChar());
-  }
-
-  /**
-   * @deprecated Use {@link #stripPadding} instead. This method will be removed in 1.7.0.
-   *
-   * <p>Kept for binary compatibility: {@link #parse} still calls this method so that
-   * subclasses which overrode {@code getRemovePadding} in earlier versions continue to
-   * have their logic applied without any code changes.
-   *
-   * <p><strong>Migration:</strong> rename your override from {@code getRemovePadding}
-   * to {@code stripPadding} — the signature is identical.
-   *
-   * <p><strong>Call chain (since 1.6.1):</strong>
-   * {@link #parse} &rarr; {@code getRemovePadding} &rarr; {@link #stripPadding}
-   */
-  @Deprecated
-  protected String getRemovePadding(String value, FormatInstructions instructions) {
-    return stripPadding(value, instructions);
   }
 
   /**

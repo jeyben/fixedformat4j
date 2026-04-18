@@ -4,6 +4,67 @@ title: Changelog
 
 # Changelog
 
+## 1.7.0 (2026-04-18)
+
+### Breaking changes
+
+- **`AbstractFixedFormatter.getRemovePadding` removed** — deprecated in 1.6.1 and now deleted.
+  Rename any override to `stripPadding`; the signature is identical. The call chain is now
+  `parse()` → `stripPadding()` directly.
+
+  ```java
+  // Before (1.6.x)
+  @Override
+  protected String getRemovePadding(String value, FormatInstructions instructions) { … }
+
+  // After (1.7.0+)
+  @Override
+  protected String stripPadding(String value, FormatInstructions instructions) { … }
+  ```
+
+---
+
+### New features
+
+- **Enum support via `@FixedFormatEnum`** ([#67](https://github.com/jeyben/fixedformat4j/issues/67)) —
+  Annotate any getter that returns an `enum` type with `@FixedFormatEnum` to control how the value
+  is serialised in the fixed-width record. Two modes are available through the `EnumFormat` enum:
+
+  - `LITERAL` (default) — stores and reads the enum constant name (`Enum.name()` / `valueOf()`).
+  - `NUMERIC` — stores and reads the ordinal as a zero-padded integer (`Enum.ordinal()` / index lookup).
+
+  ```java
+  public enum Status { ACTIVE, INACTIVE }
+
+  // LITERAL (default): stores "ACTIVE" / "INACTIVE"
+  @Field(offset = 1, length = 8)
+  @FixedFormatEnum
+  public Status getStatus() { … }
+
+  // NUMERIC: stores "0" / "1"
+  @Field(offset = 1, length = 1)
+  @FixedFormatEnum(EnumFormat.NUMERIC)
+  public Status getStatus() { … }
+  ```
+
+---
+
+### Performance improvements
+
+- **Field metadata caching** ([#77](https://github.com/jeyben/fixedformat4j/issues/77)) —
+  `ClassMetadataCache` precomputes and caches all field descriptors per annotated class on first
+  use, eliminating repeated annotation scanning on every `load()` / `export()` call. The cache is
+  process-wide and thread-safe.
+
+- **MethodHandle dispatch** ([#75](https://github.com/jeyben/fixedformat4j/issues/75)) —
+  Getter and setter invocation now uses `MethodHandle` instead of `Method.invoke()`, reducing
+  per-call overhead after JIT warmup.
+
+- **Reduced string allocations** ([#76](https://github.com/jeyben/fixedformat4j/issues/76)) —
+  Padding and sign handling rewritten to minimise intermediate `String` object creation per field.
+
+---
+
 ## 1.6.1 (2026-04-10)
 
 ### Bug fixes
