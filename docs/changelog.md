@@ -4,7 +4,7 @@ title: Changelog
 
 # Changelog
 
-## Unreleased
+## 1.7.1 (2026-04-18)
 
 ### New features
 
@@ -21,7 +21,7 @@ title: Changelog
   - **On export** — if the getter returns `null`, the field is emitted as `length` copies of
     `nullChar`, bypassing the formatter entirely.
 
-  Not applicable to repeating fields (`count > 1`).
+  For repeating fields (`count > 1`) the check is applied **per element**: each slot is evaluated independently. Primitive array element types (e.g. `int[]`) cannot hold `null` and are unaffected.
 
   ```java
   // Null and zero are now distinguishable:

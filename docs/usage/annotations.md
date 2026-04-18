@@ -31,7 +31,7 @@ When placed on a field, the manager derives the getter and setter by name conven
 | `formatter` | `Class<FixedFormatter>` | no | `ByTypeFormatter.class` | The formatter to use when reading and writing the field. |
 | `count` | `int` | no | `1` | Number of consecutive repetitions of this field. When greater than 1, the getter/setter must use an array or an ordered `Collection` (`List`, `Set`, `SortedSet`, etc.). Each repetition occupies `length` characters, starting at `offset + length * index`. |
 | `strictCount` | `boolean` | no | `true` | Only relevant when `count > 1`. If `true` (default), a size mismatch between the array/collection and `count` during export throws a `FixedFormatException`. If `false`, a warning is logged and export proceeds with `min(count, actualSize)` elements. |
-| `nullChar` | `char` | no | `'\0'` | Sentinel character that represents a null value. Null-aware handling is enabled only when `nullChar` differs from `paddingChar`. On load: if every character in the field slice equals `nullChar`, the setter is not invoked and the field remains `null`. On export: if the getter returns `null`, the field is emitted as `nullChar` repeated `length` times, bypassing the formatter. Not applicable when `count > 1`. |
+| `nullChar` | `char` | no | `'\0'` | Sentinel character that represents a null value. Null-aware handling is enabled only when `nullChar` differs from `paddingChar`. On load: if every character in the field slice equals `nullChar`, the setter is not invoked and the field remains `null`. On export: if the getter returns `null`, the field is emitted as `nullChar` repeated `length` times, bypassing the formatter. For repeating fields (`count > 1`) the check is applied per element. |
 
 **Alignment values:**
 
@@ -79,7 +79,7 @@ public void setAmount(Integer amount) { this.amount = amount; }
 - **On load** — if every character in the field slice equals `nullChar`, the setter is not invoked and the field stays `null` (primitive fields keep their JVM default).
 - **On export** — if the getter returns `null`, the field is emitted as `nullChar` × `length`, bypassing the formatter entirely.
 
-`nullChar` is not supported for repeating fields (`count > 1`).
+For repeating fields (`count > 1`) the check is applied **per element**: each slot is evaluated independently, so a collection can hold a mix of `null` and non-null values. Primitive array element types (e.g. `int[]`) cannot hold `null` and are unaffected.
 
 ## @Fields
 

@@ -513,5 +513,5 @@ System.out.println(manager.export(r1));
 // "ACC0301500"
 ```
 
-`nullChar` is not applied to repeating fields (`count > 1`).
+For repeating fields (`count > 1`) the check is applied **per element**: each slot is evaluated independently, so a collection can hold a mix of `null` and non-null values. Primitive array element types (e.g. `int[]`) cannot hold `null` and are unaffected.
 

@@ -83,7 +83,11 @@ public @interface Field {
    * </ul>
    * The default value {@code '\0'} is a sentinel that can never appear in a regular
    * fixed-width payload, so existing records (which do not set this attribute) retain
-   * their pre-existing behavior. Not applicable to repeating fields ({@code count > 1}).
+   * their pre-existing behavior.
+   * <p>
+   * For repeating fields ({@code count > 1}), the check is applied <em>per element</em>:
+   * each element slot is evaluated independently. Primitive array element types (e.g.
+   * {@code int[]}) cannot represent {@code null} and are unaffected by this attribute.
    *
    * @return the character that denotes a null field; defaults to {@link #UNSET_NULL_CHAR} (inactive)
    * @since 1.7.1

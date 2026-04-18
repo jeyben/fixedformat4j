@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.ancientprogramming.fixedformat4j.annotation.Field.UNSET_NULL_CHAR;
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
 import static java.lang.String.format;
 
@@ -87,7 +86,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
         String dataToParse = fetchData(data, desc.formatInstructions, desc.context);
         if (desc.isNestedRecord) {
           value = load(desc.datatype, dataToParse);
-        } else if (isNullSlice(dataToParse, desc.formatInstructions)) {
+        } else if (NullCharSupport.isNullSlice(dataToParse, desc.formatInstructions)) {
           value = null;
         } else {
           try {
@@ -144,7 +143,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
         formatted = export(valueObject);
       } else if (desc.isNestedRecord) {
         formatted = StringUtils.repeat(String.valueOf(desc.fieldAnnotation.paddingChar()), desc.fieldAnnotation.length());
-      } else if (valueObject == null && isNullCharActive(desc.formatInstructions)) {
+      } else if (valueObject == null && NullCharSupport.isNullCharActive(desc.formatInstructions)) {
         formatted = StringUtils.repeat(String.valueOf(desc.formatInstructions.getNullChar()), desc.formatInstructions.getLength());
       } else {
         formatted = ((FixedFormatter<Object>) desc.formatter).format(valueObject, desc.formatInstructions);
@@ -231,36 +230,6 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       pattern = FixedFormatPatternData.DEFAULT.getPattern();
     }
     PatternValidator.validate(datatype, pattern);
-  }
-
-  /**
-   * Returns {@code true} when {@code @Field.nullChar()} is explicitly configured (non-sentinel)
-   * and differs from {@code @Field.paddingChar()}. Null-aware load/export only fires when this
-   * returns {@code true}, keeping behavior unchanged for fields that do not opt in. The sentinel
-   * {@link Field#UNSET_NULL_CHAR} marks "not configured" — it is the annotation default and is
-   * never interpreted as a real null character, regardless of {@code paddingChar}.
-   */
-  private static boolean isNullCharActive(FormatInstructions instructions) {
-    char nullChar = instructions.getNullChar();
-    return nullChar != UNSET_NULL_CHAR && nullChar != instructions.getPaddingChar();
-  }
-
-  /**
-   * Returns {@code true} when the raw slice consists entirely of the configured
-   * {@code nullChar}. Requires the null-char feature to be active; an empty slice
-   * is never treated as null (length-0 fields are not a legal use case).
-   */
-  private static boolean isNullSlice(String slice, FormatInstructions instructions) {
-    if (!isNullCharActive(instructions) || slice == null || slice.isEmpty()) {
-      return false;
-    }
-    char nullChar = instructions.getNullChar();
-    for (int i = 0; i < slice.length(); i++) {
-      if (slice.charAt(i) != nullChar) {
-        return false;
-      }
-    }
-    return true;
   }
 
   private void appendData(StringBuffer result, Character paddingChar, Integer offset, String data) {

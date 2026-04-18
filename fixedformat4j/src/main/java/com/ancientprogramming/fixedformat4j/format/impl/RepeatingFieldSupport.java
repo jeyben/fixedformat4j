@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.StringUtils;
+
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
 import static java.lang.String.format;
@@ -58,6 +60,10 @@ class RepeatingFieldSupport {
       int elementOffset = fieldAnno.offset() + fieldAnno.length() * i;
       FormatContext elementContext = new FormatContext(elementOffset, elementType, fieldAnno.formatter());
       String dataToParse = fetchData(data, formatdata, elementContext);
+      if (!elementType.isPrimitive() && NullCharSupport.isNullSlice(dataToParse, formatdata)) {
+        elements.add(null);
+        continue;
+      }
       try {
         elements.add(formatter.parse(dataToParse, formatdata));
       } catch (RuntimeException e) {
@@ -112,7 +118,11 @@ class RepeatingFieldSupport {
     for (Object element : iterable) {
       if (i >= exportCount) break;
       int elementOffset = fieldAnno.offset() + fieldAnno.length() * i;
-      foundData.put(elementOffset, formatter.format(element, formatdata));
+      if (element == null && NullCharSupport.isNullCharActive(formatdata)) {
+        foundData.put(elementOffset, StringUtils.repeat(String.valueOf(formatdata.getNullChar()), fieldAnno.length()));
+      } else {
+        foundData.put(elementOffset, formatter.format(element, formatdata));
+      }
       i++;
     }
   }
