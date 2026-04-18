@@ -1,0 +1,93 @@
+name: Publish Pre-Built Release to Maven Central
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version to publish (e.g. 1.7.0)'
+        required: true
+      tag:
+        description: 'GitHub release tag (e.g. 1_7_0) — leave blank to auto-derive from version'
+        required: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v5
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          server-id: central
+          server-username: MAVEN_CENTRAL_USERNAME
+          server-password: MAVEN_CENTRAL_TOKEN
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Resolve tag and version
+        run: |
+          VERSION="${{ inputs.version }}"
+          if [ -n "${{ inputs.tag }}" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG=$(echo "$VERSION" | tr '.' '_')
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
+
+      - name: Download release artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p artifacts
+          gh release download "$RELEASE_TAG" --pattern "fixedformat4j-*.jar" --dir artifacts
+          ls -la artifacts/
+
+      - name: Prepare POM with correct version
+        run: |
+          mvn -B versions:set -DnewVersion=$VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
+          cp fixedformat4j/pom.xml artifacts/fixedformat4j-$VERSION.pom
+
+      - name: GPG sign all artifacts
+        env:
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          cd artifacts
+          for f in *.jar *.pom; do
+            echo "$MAVEN_GPG_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback \
+              --passphrase-fd 0 --armor --detach-sign "$f"
+          done
+
+      - name: Build Maven Central bundle
+        run: |
+          GROUP_PATH="com/ancientprogramming/fixedformat4j/fixedformat4j/$VERSION"
+          mkdir -p "bundle/$GROUP_PATH"
+          cp artifacts/fixedformat4j-$VERSION.jar             "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION-sources.jar     "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION.pom             "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION.jar.asc         "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION-sources.jar.asc "bundle/$GROUP_PATH/"
+          cp artifacts/fixedformat4j-$VERSION.pom.asc         "bundle/$GROUP_PATH/"
+          if [ -f "artifacts/fixedformat4j-$VERSION-javadoc.jar" ]; then
+            cp artifacts/fixedformat4j-$VERSION-javadoc.jar     "bundle/$GROUP_PATH/"
+            cp artifacts/fixedformat4j-$VERSION-javadoc.jar.asc "bundle/$GROUP_PATH/"
+          fi
+          cd bundle && zip -r ../bundle.zip .
+
+      - name: Upload to Maven Central
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+        run: |
+          BEARER=$(echo -n "$MAVEN_CENTRAL_USERNAME:$MAVEN_CENTRAL_TOKEN" | base64 -w 0)
+          curl --fail-with-body -X POST \
+            -H "Authorization: Bearer $BEARER" \
+            -F "bundle=@bundle.zip" \
+            "https://central.sonatype.com/api/v1/publisher/upload?publishingType=AUTOMATIC"
