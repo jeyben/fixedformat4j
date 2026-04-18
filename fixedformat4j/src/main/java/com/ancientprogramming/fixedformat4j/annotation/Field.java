@@ -36,7 +36,7 @@ public @interface Field {
   /**
    * Sentinel value for {@link #nullChar()} meaning "not configured". When {@code nullChar()}
    * equals this value, null-aware load/export is disabled and behavior is identical to
-   * pre-1.7.2 releases.
+   * pre-1.7.1 releases.
    *
    * @since 1.7.1
    */
