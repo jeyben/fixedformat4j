@@ -393,3 +393,125 @@ System.out.println(manager.export(record));
 
 With `strictCount = true` (the default), passing a list of the wrong size throws a `FixedFormatException` at export time.
 
+---
+
+## Example 8 — Record-level default alignment
+
+When most or all fields in a record share the same alignment, declare it once on `@Record` instead of repeating `align` on every `@Field`. Individual fields can still override it.
+
+```java
+// Before 1.7.1 — alignment repeated on every field
+@Record(length = 22)
+public class InvoiceRecord {
+
+  private Integer invoiceId;
+  private Integer amountCents;
+  private String  currency;
+
+  @Field(offset = 1, length = 8, align = Align.RIGHT, paddingChar = '0')
+  public Integer getInvoiceId() { return invoiceId; }
+  public void setInvoiceId(Integer invoiceId) { this.invoiceId = invoiceId; }
+
+  @Field(offset = 9, length = 10, align = Align.RIGHT, paddingChar = '0')
+  public Integer getAmountCents() { return amountCents; }
+  public void setAmountCents(Integer amountCents) { this.amountCents = amountCents; }
+
+  // This text field overrides with LEFT
+  @Field(offset = 19, length = 3, align = Align.LEFT)
+  public String getCurrency() { return currency; }
+  public void setCurrency(String currency) { this.currency = currency; }
+}
+```
+
+```java
+// After 1.7.1 — alignment declared once at record level
+@Record(length = 22, align = Align.RIGHT)
+public class InvoiceRecord {
+
+  private Integer invoiceId;
+  private Integer amountCents;
+  private String  currency;
+
+  @Field(offset = 1, length = 8, paddingChar = '0')
+  public Integer getInvoiceId() { return invoiceId; }
+  public void setInvoiceId(Integer invoiceId) { this.invoiceId = invoiceId; }
+
+  @Field(offset = 9, length = 10, paddingChar = '0')
+  public Integer getAmountCents() { return amountCents; }
+  public void setAmountCents(Integer amountCents) { this.amountCents = amountCents; }
+
+  // Field-level align overrides the record default
+  @Field(offset = 19, length = 3, align = Align.LEFT)
+  public String getCurrency() { return currency; }
+  public void setCurrency(String currency) { this.currency = currency; }
+}
+```
+
+```java
+FixedFormatManager manager = new FixedFormatManagerImpl();
+
+InvoiceRecord record = new InvoiceRecord();
+record.setInvoiceId(42);
+record.setAmountCents(9999);
+record.setCurrency("USD");
+
+System.out.println(manager.export(record));
+// "000000420000009999USD"
+
+InvoiceRecord loaded = manager.load(InvoiceRecord.class, "000000420000009999USD");
+System.out.println(loaded.getInvoiceId());    // 42
+System.out.println(loaded.getAmountCents());  // 9999
+System.out.println(loaded.getCurrency());     // "USD"
+```
+
+---
+
+## Example 9 — Nullable fields with `nullChar`
+
+By default a fixed-width field has no notion of null — all-spaces loads as an empty string or zero. The `nullChar` attribute on `@Field` opts a single field into null-aware handling.
+
+**Scenario:** an account record stores an optional credit limit. An all-spaces field means "no limit set" (`null`); `"00000"` means a limit of zero.
+
+```java
+@Record(length = 15)
+public class AccountRecord {
+
+  private String  accountId;
+  private Integer creditLimit; // null = no limit configured
+
+  @Field(offset = 1, length = 5)
+  public String getAccountId() { return accountId; }
+  public void setAccountId(String accountId) { this.accountId = accountId; }
+
+  // spaces → null, "00000" → 0, "01000" → 1000
+  @Field(offset = 6, length = 5, align = Align.RIGHT, paddingChar = '0', nullChar = ' ')
+  public Integer getCreditLimit() { return creditLimit; }
+  public void setCreditLimit(Integer creditLimit) { this.creditLimit = creditLimit; }
+}
+```
+
+```java
+FixedFormatManager manager = new FixedFormatManagerImpl();
+
+// All-spaces in the credit-limit slot → null
+AccountRecord r1 = manager.load(AccountRecord.class, "ACC01     ");
+System.out.println(r1.getCreditLimit()); // null
+
+// Zero-padded value → 0 (not null)
+AccountRecord r2 = manager.load(AccountRecord.class, "ACC0200000");
+System.out.println(r2.getCreditLimit()); // 0
+
+// Export null → five spaces
+r1.setAccountId("ACC03");
+r1.setCreditLimit(null);
+System.out.println(manager.export(r1));
+// "ACC03     "
+
+// Export a value normally
+r1.setCreditLimit(1500);
+System.out.println(manager.export(r1));
+// "ACC0301500"
+```
+
+`nullChar` is not applied to repeating fields (`count > 1`).
+
