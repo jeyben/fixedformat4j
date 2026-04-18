@@ -27,6 +27,15 @@ for V in "${VERSIONS[@]}"; do
     LABEL="$V"
   fi
 
+  if [[ "$V" != "master" ]]; then
+    if ! mvn dependency:get \
+         -Dartifact="com.ancientprogramming.fixedformat4j:fixedformat4j:${TARGET_VERSION}" \
+         -q >/dev/null 2>&1; then
+      echo "Skipping ${LABEL}: fixedformat4j:${TARGET_VERSION} not found in Maven Central." >&2
+      continue
+    fi
+  fi
+
   SHA="$(git rev-parse --short HEAD)"
   mvn -f benchmarks/pom.xml clean package -Dbenchmark.target.version="$TARGET_VERSION" -q
   java -jar benchmarks/target/benchmarks.jar \
