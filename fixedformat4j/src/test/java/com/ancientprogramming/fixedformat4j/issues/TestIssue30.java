@@ -22,7 +22,11 @@ import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
 import org.junit.jupiter.api.Test;
 
+import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Verifies Issue 30 — record-level default alignment via {@link Record#align()}.
@@ -152,6 +156,41 @@ public class TestIssue30 {
     @Field(offset = 6, length = 5, align = Align.LEFT)
     public String getLabel() { return label; }
     public void setLabel(String label) { this.label = label; }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Validation: Align.INHERIT is rejected on @Record
+  // ---------------------------------------------------------------------------
+
+  @Test
+  public void load_recordAlignInherit_throwsFixedFormatException() {
+    FixedFormatException ex = assertThrows(FixedFormatException.class,
+        () -> manager.load(InheritAlignRecord30.class, "hello"));
+    assertTrue(ex.getMessage().contains("InheritAlignRecord30"),
+        "Exception message should contain the class name");
+  }
+
+  @Test
+  public void export_recordAlignInherit_throwsFixedFormatException() {
+    InheritAlignRecord30 record = new InheritAlignRecord30();
+    record.setValue("hello");
+    FixedFormatException ex = assertThrows(FixedFormatException.class,
+        () -> manager.export(record));
+    assertTrue(ex.getMessage().contains("InheritAlignRecord30"),
+        "Exception message should contain the class name");
+  }
+
+  /**
+   * Misconfigured record — {@code Align.INHERIT} is not valid at record level.
+   */
+  @Record(length = 5, align = Align.INHERIT)
+  public static class InheritAlignRecord30 {
+
+    private String value;
+
+    @Field(offset = 1, length = 5)
+    public String getValue() { return value; }
+    public void setValue(String value) { this.value = value; }
   }
 
   /**
