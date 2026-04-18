@@ -3,7 +3,7 @@
 [![Nightly Build](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml/badge.svg?branch=master)](https://github.com/jeyben/fixedformat4j/actions/workflows/nightly-build.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.ancientprogramming.fixedformat4j/fixedformat4j)](https://central.sonatype.com/artifact/com.ancientprogramming.fixedformat4j/fixedformat4j)
 
-**[Documentation](https://jeyben.github.io/fixedformat4j/)** — [Quick Start](https://jeyben.github.io/fixedformat4j/quickstart) · [Annotations](https://jeyben.github.io/fixedformat4j/usage/annotations) · [Examples](https://jeyben.github.io/fixedformat4j/examples) · [Changelog](https://jeyben.github.io/fixedformat4j/changelog)
+**[Documentation](https://jeyben.github.io/fixedformat4j/)** — [Quick Start](https://jeyben.github.io/fixedformat4j/quickstart) · [Annotations](https://jeyben.github.io/fixedformat4j/usage/annotations) · [Examples](https://jeyben.github.io/fixedformat4j/examples) · [Changelog](https://jeyben.github.io/fixedformat4j/changelog) · [Benchmarks](https://jeyben.github.io/fixedformat4j/benchmarks)
 
 A small, non-intrusive Java library for reading and writing fixed-width flat-file records using annotations.
 
@@ -12,6 +12,19 @@ A small, non-intrusive Java library for reading and writing fixed-width flat-fil
 [![Line Coverage](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjeyben.github.io%2Ffixedformat4j%2Fmutation-score.json&query=%24.lineCoverage&label=Line%20Coverage&color=blue)](https://jeyben.github.io/fixedformat4j/pit-reports/)
 [![Mutation Coverage](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjeyben.github.io%2Ffixedformat4j%2Fmutation-score.json&query=%24.mutationCoverage&label=Mutation%20Coverage&color=brightgreen)](https://jeyben.github.io/fixedformat4j/pit-reports/)
 [![Test Strength](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjeyben.github.io%2Ffixedformat4j%2Fmutation-score.json&query=%24.testStrength&label=Test%20Strength&color=brightgreen)](https://jeyben.github.io/fixedformat4j/pit-reports/)
+
+## Benchmarks
+
+JMH microbenchmarks compare `load()` and `export()` performance across releases. Charts are published at [jeyben.github.io/fixedformat4j/benchmarks](https://jeyben.github.io/fixedformat4j/benchmarks).
+
+To run benchmarks locally (requires Java 11 and `1.6.1` on Maven Central):
+
+```bash
+./benchmarks/run.sh                     # 1.6.1 vs master (default)
+./benchmarks/run.sh 1.6.1 1.6.0 master # explicit version list
+```
+
+Results are written to `docs/assets/benchmarks/` as JMH JSON.
 
 ## Why fixedformat4j?
 

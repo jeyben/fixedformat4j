@@ -21,3 +21,5 @@
   children:
     - title: Mutation Report
       url: /pit-reports/
+    - title: Benchmarks
+      url: /benchmarks

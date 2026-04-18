@@ -2,3 +2,5 @@
 *.class
 target
 .idea
+benchmarks/target/
+benchmarks/dependency-reduced-pom.xml
