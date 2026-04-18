@@ -30,6 +30,11 @@ jobs:
           distribution: temurin
           java-version: 11
 
+      - name: Clean benchmark data
+        run: |
+          rm -rf docs/assets/benchmarks/
+          mkdir -p docs/assets/benchmarks/
+
       - name: Run benchmarks
         run: |
           chmod +x benchmarks/run.sh
