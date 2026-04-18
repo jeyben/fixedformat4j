@@ -303,7 +303,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     Class<?> datatype = instructionsBuilder.datatype(getter, fieldAnno);
     FormatContext<?> context = instructionsBuilder.context(datatype, fieldAnno);
     FixedFormatter<?> formatter = com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance(context.getFormatter(), context);
-    FormatInstructions formatdata = instructionsBuilder.build(annotationSource, fieldAnno, datatype);
+    FormatInstructions formatdata = instructionsBuilder.build(annotationSource, fieldAnno, datatype, getter.getDeclaringClass());
 
     String dataToParse = fetchData(data, formatdata, context);
 

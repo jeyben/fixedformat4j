@@ -55,9 +55,14 @@ public @interface Field {
   int length();
 
   /**
-   * @return The direction of the padding. Defaults to {@link Align#LEFT}.
+   * The direction of the padding for this field. Defaults to {@link Align#INHERIT}, which means
+   * the alignment is inherited from {@link Record#align()} on the enclosing record class.
+   * Specify an explicit value to override the record-level default for this field only.
+   *
+   * @return the field alignment, or {@link Align#INHERIT} to defer to the record default
+   * @since 1.7.1 default changed from {@link Align#LEFT} to {@link Align#INHERIT}
    */
-  Align align() default Align.LEFT;
+  Align align() default Align.INHERIT;
 
   /**
    * The character to pad with if the length is longer than the formatted data

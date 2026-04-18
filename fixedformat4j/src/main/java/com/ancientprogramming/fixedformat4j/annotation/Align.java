@@ -26,6 +26,22 @@ import org.apache.commons.lang3.StringUtils;
 public enum Align {
 
   /**
+   * Sentinel value meaning "inherit alignment from the enclosing {@link Record#align()}.
+   * This value is resolved by the framework before any formatter runs and must never be
+   * passed to {@link #apply} or {@link #remove}.
+   *
+   * @since 1.7.1
+   */
+  INHERIT {
+    public String apply(String data, int length, char paddingChar) {
+      throw new UnsupportedOperationException("Align.INHERIT must be resolved to LEFT or RIGHT before use");
+    }
+    public String remove(String data, char paddingChar) {
+      throw new UnsupportedOperationException("Align.INHERIT must be resolved to LEFT or RIGHT before use");
+    }
+  },
+
+  /**
    * Pad or chop data to the left, so the text is aligned to the right
    */
   RIGHT {

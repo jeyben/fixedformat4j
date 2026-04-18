@@ -42,4 +42,15 @@ public @interface Record {
    * @return the char to pad with if the record is set to a fixed length;
    */
   char paddingChar() default ' ';
+
+  /**
+   * Default alignment applied to all fields in this record. Individual fields may override this
+   * by setting {@link Field#align()} to any value other than {@link Align#INHERIT}.
+   * Defaults to {@link Align#LEFT} to preserve pre-1.7.1 behaviour for records that do not
+   * set this attribute.
+   *
+   * @return the record-level default alignment
+   * @since 1.7.1
+   */
+  Align align() default Align.LEFT;
 }

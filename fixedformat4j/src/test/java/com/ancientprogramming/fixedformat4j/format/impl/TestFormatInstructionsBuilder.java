@@ -1,5 +1,6 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
+import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal;
@@ -29,7 +30,7 @@ public class TestFormatInstructionsBuilder {
   void build_defaultAnnotations_returnsDefaultData() throws Exception {
     Method getter = SimpleRecord.class.getMethod("getValue");
     Field fieldAnno = getter.getAnnotation(Field.class);
-    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType());
+    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType(), SimpleRecord.class);
     assertSame(FixedFormatPatternData.DEFAULT, instructions.getFixedFormatPatternData());
     assertSame(FixedFormatBooleanData.DEFAULT, instructions.getFixedFormatBooleanData());
     assertSame(FixedFormatNumberData.DEFAULT, instructions.getFixedFormatNumberData());
@@ -40,7 +41,7 @@ public class TestFormatInstructionsBuilder {
   void build_withFixedFormatPattern_capturesPattern() throws Exception {
     Method getter = PatternRecord.class.getMethod("getValue");
     Field fieldAnno = getter.getAnnotation(Field.class);
-    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType());
+    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType(), PatternRecord.class);
     assertEquals("yyyyMMdd", instructions.getFixedFormatPatternData().getPattern());
   }
 
@@ -48,7 +49,7 @@ public class TestFormatInstructionsBuilder {
   void build_withFixedFormatBoolean_capturesTrueFalseValues() throws Exception {
     Method getter = BoolRecord.class.getMethod("getValue");
     Field fieldAnno = getter.getAnnotation(Field.class);
-    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType());
+    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType(), BoolRecord.class);
     assertEquals("Y", instructions.getFixedFormatBooleanData().getTrueValue());
     assertEquals("N", instructions.getFixedFormatBooleanData().getFalseValue());
   }
@@ -57,7 +58,7 @@ public class TestFormatInstructionsBuilder {
   void build_withFixedFormatNumber_capturesSignConfig() throws Exception {
     Method getter = NumberRecord.class.getMethod("getValue");
     Field fieldAnno = getter.getAnnotation(Field.class);
-    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType());
+    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType(), NumberRecord.class);
     assertEquals(Sign.PREPEND, instructions.getFixedFormatNumberData().getSigning());
   }
 
@@ -65,8 +66,32 @@ public class TestFormatInstructionsBuilder {
   void build_withFixedFormatDecimal_capturesDecimals() throws Exception {
     Method getter = DecimalRecord.class.getMethod("getValue");
     Field fieldAnno = getter.getAnnotation(Field.class);
-    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType());
+    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType(), DecimalRecord.class);
     assertEquals(2, instructions.getFixedFormatDecimalData().getDecimals());
+  }
+
+  @Test
+  void build_inheritAlign_resolvesFromRecordAnnotation() throws Exception {
+    Method getter = RightAlignRecord.class.getMethod("getValue");
+    Field fieldAnno = getter.getAnnotation(Field.class);
+    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType(), RightAlignRecord.class);
+    assertEquals(Align.RIGHT, instructions.getAlignment());
+  }
+
+  @Test
+  void build_explicitFieldAlign_overridesRecordDefault() throws Exception {
+    Method getter = OverrideAlignRecord.class.getMethod("getValue");
+    Field fieldAnno = getter.getAnnotation(Field.class);
+    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType(), OverrideAlignRecord.class);
+    assertEquals(Align.LEFT, instructions.getAlignment());
+  }
+
+  @Test
+  void build_inheritAlignWithNoRecordAnnotation_defaultsToLeft() throws Exception {
+    Method getter = SimpleRecord.class.getMethod("getValue");
+    Field fieldAnno = getter.getAnnotation(Field.class);
+    FormatInstructions instructions = builder.build(getter, fieldAnno, getter.getReturnType(), SimpleRecord.class);
+    assertEquals(Align.LEFT, instructions.getAlignment());
   }
 
   @Test
@@ -137,5 +162,19 @@ public class TestFormatInstructionsBuilder {
   static class NonGetterRecord {
     @Field(offset = 1, length = 5)
     public String fetch() { return null; }
+  }
+
+  @Record(align = Align.RIGHT)
+  static class RightAlignRecord {
+    @Field(offset = 1, length = 5)
+    public String getValue() { return null; }
+    public void setValue(String v) {}
+  }
+
+  @Record(align = Align.RIGHT)
+  static class OverrideAlignRecord {
+    @Field(offset = 1, length = 5, align = Align.LEFT)
+    public String getValue() { return null; }
+    public void setValue(String v) {}
   }
 }

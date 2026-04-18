@@ -30,6 +30,34 @@ title: Changelog
   public Integer getAmount() { … }
   ```
 
+- **Record-level default alignment via `@Record(align = …)`** ([#30](https://github.com/jeyben/fixedformat4j/issues/30)) —
+  Adds an `align` attribute to the `@Record` annotation that sets a default alignment for all
+  fields in the record. Individual fields may still override it with an explicit `@Field(align = …)`.
+  Existing records are unaffected: the attribute defaults to `Align.LEFT`, matching the
+  previous per-field default.
+
+  ```java
+  // Before — alignment repeated on every field
+  @Record(length = 20)
+  public class MyRecord {
+    @Field(offset = 1, length = 10, align = Align.RIGHT, paddingChar = '0')
+    public Integer getField1() { … }
+
+    @Field(offset = 11, length = 10, align = Align.RIGHT, paddingChar = '0')
+    public Integer getField2() { … }
+  }
+
+  // After — alignment declared once at record level
+  @Record(length = 20, align = Align.RIGHT)
+  public class MyRecord {
+    @Field(offset = 1, length = 10, paddingChar = '0')
+    public Integer getField1() { … }
+
+    @Field(offset = 11, length = 10, paddingChar = '0')
+    public Integer getField2() { … }
+  }
+  ```
+
 ### Bug fixes
 
 - **Null nested `@Record` field now exports as padding instead of throwing** ([#45](https://github.com/jeyben/fixedformat4j/issues/45)) —

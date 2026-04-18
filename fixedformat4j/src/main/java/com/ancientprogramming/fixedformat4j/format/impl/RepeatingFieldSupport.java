@@ -48,7 +48,7 @@ class RepeatingFieldSupport {
   Object read(Class<?> clazz, String data, Method getter, AnnotatedElement annotationSource, Field fieldAnno) {
     int count = fieldAnno.count();
     Class<?> elementType = resolveElementType(getter);
-    FormatInstructions formatdata = instructionsBuilder.build(annotationSource, fieldAnno, elementType);
+    FormatInstructions formatdata = instructionsBuilder.build(annotationSource, fieldAnno, elementType, getter.getDeclaringClass());
 
     FormatContext protoContext = new FormatContext(fieldAnno.offset(), elementType, fieldAnno.formatter());
     FixedFormatter<Object> formatter = (FixedFormatter<Object>) getFixedFormatterInstance(protoContext.getFormatter(), protoContext);
@@ -102,7 +102,7 @@ class RepeatingFieldSupport {
 
     int exportCount = Math.min(count, actualSize);
     Class<?> elementType = resolveElementType(target.getter);
-    FormatInstructions formatdata = instructionsBuilder.build(target.annotationSource, fieldAnno, elementType);
+    FormatInstructions formatdata = instructionsBuilder.build(target.annotationSource, fieldAnno, elementType, target.getter.getDeclaringClass());
     FormatContext protoContext = new FormatContext(fieldAnno.offset(), elementType, fieldAnno.formatter());
     FixedFormatter<Object> formatter = (FixedFormatter<Object>) getFixedFormatterInstance(protoContext.getFormatter(), protoContext);
 

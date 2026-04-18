@@ -86,7 +86,7 @@ class ClassMetadataCache {
     boolean isNestedRecord = !isRepeating && !hasCustomFormatter && datatype.getAnnotation(Record.class) != null;
 
     FormatContext<?> context = isRepeating ? null : instructionsBuilder.context(datatype, fieldAnnotation);
-    FormatInstructions formatInstructions = isRepeating ? null : instructionsBuilder.build(target.annotationSource, fieldAnnotation, datatype);
+    FormatInstructions formatInstructions = isRepeating ? null : instructionsBuilder.build(target.annotationSource, fieldAnnotation, datatype, clazz);
     FixedFormatter<?> formatter = (isRepeating || isNestedRecord) ? null
         : getFixedFormatterInstance(context.getFormatter(), context);
 

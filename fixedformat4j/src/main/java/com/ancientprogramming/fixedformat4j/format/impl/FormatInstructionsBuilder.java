@@ -1,11 +1,13 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
+import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatEnum;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
+import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FormatContext;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
@@ -31,13 +33,22 @@ import static java.lang.String.format;
  */
 class FormatInstructionsBuilder {
 
-  FormatInstructions build(AnnotatedElement annotationSource, Field fieldAnno, Class<?> datatype) {
+  FormatInstructions build(AnnotatedElement annotationSource, Field fieldAnno, Class<?> datatype, Class<?> declaringClass) {
     FixedFormatPatternData patternData = patternData(annotationSource.getAnnotation(FixedFormatPattern.class), datatype);
     FixedFormatBooleanData booleanData = booleanData(annotationSource.getAnnotation(FixedFormatBoolean.class));
     FixedFormatNumberData numberData = numberData(annotationSource.getAnnotation(FixedFormatNumber.class));
     FixedFormatDecimalData decimalData = decimalData(annotationSource.getAnnotation(FixedFormatDecimal.class));
     FixedFormatEnumData enumData = enumData(annotationSource.getAnnotation(FixedFormatEnum.class));
-    return new FormatInstructions(fieldAnno.length(), fieldAnno.align(), fieldAnno.paddingChar(), fieldAnno.nullChar(), patternData, booleanData, numberData, decimalData, enumData);
+    Align resolvedAlign = resolveAlign(fieldAnno.align(), declaringClass);
+    return new FormatInstructions(fieldAnno.length(), resolvedAlign, fieldAnno.paddingChar(), fieldAnno.nullChar(), patternData, booleanData, numberData, decimalData, enumData);
+  }
+
+  private Align resolveAlign(Align fieldAlign, Class<?> declaringClass) {
+    if (fieldAlign != Align.INHERIT) {
+      return fieldAlign;
+    }
+    Record recordAnno = declaringClass.getAnnotation(Record.class);
+    return (recordAnno != null) ? recordAnno.align() : Align.LEFT;
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
