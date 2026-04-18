@@ -1,8 +1,6 @@
 name: PIT Mutation Report
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
 
 permissions:
