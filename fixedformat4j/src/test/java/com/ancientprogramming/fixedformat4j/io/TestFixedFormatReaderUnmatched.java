@@ -1,0 +1,62 @@
+package com.ancientprogramming.fixedformat4j.io;
+
+import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
+import org.junit.jupiter.api.Test;
+
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class TestFixedFormatReaderUnmatched {
+
+  @Test
+  void throwsOnUnmatchedLineWhenStrategyIsThrow() {
+    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
+        .unmatchedLineStrategy(UnmatchedLineStrategy.THROW)
+        .build();
+
+    FixedFormatException ex = assertThrows(FixedFormatException.class, () -> {
+      try (Stream<TenCharRecord> stream = reader.readAsStream(new StringReader("BBBBBBBBBB"))) {
+        stream.collect(Collectors.toList());
+      }
+    });
+    assertTrue(ex.getMessage().contains("1"), "Should contain line number: " + ex.getMessage());
+    assertTrue(ex.getMessage().contains("BBBBBBBBBB"), "Should contain raw line: " + ex.getMessage());
+  }
+
+  @Test
+  void forwardsUnmatchedLineToHandler() {
+    List<String> captured = new ArrayList<>();
+    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
+        .unmatchedLineStrategy(UnmatchedLineStrategy.FORWARD_TO_HANDLER)
+        .unmatchedLineHandler((lineNumber, line) -> captured.add(lineNumber + ":" + line))
+        .build();
+
+    try (Stream<TenCharRecord> stream = reader.readAsStream(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"))) {
+      stream.collect(Collectors.toList());
+    }
+    assertEquals(1, captured.size());
+    assertEquals("2:BBBBBBBBBB", captured.get(0));
+  }
+
+  @Test
+  void handlerNotInvokedForMatchedLines() {
+    List<String> captured = new ArrayList<>();
+    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+        .unmatchedLineStrategy(UnmatchedLineStrategy.FORWARD_TO_HANDLER)
+        .unmatchedLineHandler((lineNumber, line) -> captured.add(line))
+        .build();
+
+    try (Stream<TenCharRecord> stream = reader.readAsStream(new StringReader("AAAAAAAAAA"))) {
+      stream.collect(Collectors.toList());
+    }
+    assertTrue(captured.isEmpty());
+  }
+}
