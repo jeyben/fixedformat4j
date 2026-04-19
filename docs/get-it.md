@@ -4,7 +4,7 @@ title: Get fixedformat4j
 
 # Get the latest version of fixedformat4j
 
-fixedformat4j 1.6.0 is published to **Maven Central**.
+fixedformat4j 1.7.1 is published to **Maven Central**.
 
 ## Requirements
 
@@ -12,34 +12,45 @@ fixedformat4j 1.6.0 is published to **Maven Central**.
 
 ## Add the dependency
 
-Maven Central is the default Maven repository — no extra `<repository>` configuration or authentication is needed. Simply add the dependency to your `pom.xml`:
+Maven Central is the default repository for all three build tools below — no extra repository configuration or authentication is needed.
+
+The artifact is also browsable at [central.sonatype.com](https://central.sonatype.com/artifact/com.ancientprogramming.fixedformat4j/fixedformat4j).
+
+### Maven
+
+Add to your `pom.xml`:
 
 ```xml
 <dependency>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j</artifactId>
-  <version>1.6.0</version>
+  <version>1.7.1</version>
 </dependency>
 ```
 
-The artifact is also browsable at [central.sonatype.com](https://central.sonatype.com/artifact/com.ancientprogramming.fixedformat4j/fixedformat4j).
+### Gradle
 
-## No internet access? Download manually
+Groovy DSL (`build.gradle`):
 
-Download `fixedformat4j-1.6.0.jar` directly from the [1.6.0 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_6_0) and install it into your local Maven repository:
-
-```bash
-mvn install:install-file \
-  -Dfile=fixedformat4j-1.6.0.jar \
-  -DgroupId=com.ancientprogramming.fixedformat4j \
-  -DartifactId=fixedformat4j \
-  -Dversion=1.6.0 \
-  -Dpackaging=jar
+```groovy
+implementation 'com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1'
 ```
 
-After that the standard `<dependency>` block above works as-is — no `<repository>` entry needed.
+Kotlin DSL (`build.gradle.kts`):
 
-If you want to share the artifact across a team, deploy it to a private Nexus or Artifactory instance using `mvn deploy:deploy-file` with the same coordinates and your repository URL.
+```kotlin
+implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1")
+```
+
+### Ivy
+
+Add to your `ivy.xml` dependencies block:
+
+```xml
+<dependency org="com.ancientprogramming.fixedformat4j"
+            name="fixedformat4j"
+            rev="1.7.1"/>
+```
 
 ## Logging
 

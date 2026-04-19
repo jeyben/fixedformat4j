@@ -74,7 +74,9 @@ After many years of inactivity, fixedformat4j was revived with the 1.4.0 release
 
 ### 1. Add the dependency
 
-fixedformat4j is published to **Maven Central**. No repository configuration or authentication is needed — just add the dependency to your `pom.xml`:
+fixedformat4j is published to **Maven Central**. No repository configuration or authentication is needed.
+
+**Maven**
 
 ```xml
 <dependency>
@@ -84,27 +86,29 @@ fixedformat4j is published to **Maven Central**. No repository configuration or 
 </dependency>
 ```
 
+**Gradle (Groovy DSL)**
+
+```groovy
+implementation 'com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1'
+```
+
+**Gradle (Kotlin DSL)**
+
+```kotlin
+implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1")
+```
+
+**Ivy**
+
+```xml
+<dependency org="com.ancientprogramming.fixedformat4j"
+            name="fixedformat4j"
+            rev="1.7.1"/>
+```
+
 Requires **Java 11 or later**. If you want log output, add an [SLF4J binding](https://www.slf4j.org/manual.html#swapping) such as `logback-classic`; without one the library still works, just silently.
 
 See [Get It](https://jeyben.github.io/fixedformat4j/get-it) for full setup instructions.
-
-<details>
-<summary>No GitHub account? Download manually</summary>
-
-Download `fixedformat4j-1.7.1.jar` from the [1.7.1 release page](https://github.com/jeyben/fixedformat4j/releases/tag/1_7_1), then install it into your local Maven repository:
-
-```bash
-mvn install:install-file \
-  -Dfile=fixedformat4j-1.7.1.jar \
-  -DgroupId=com.ancientprogramming.fixedformat4j \
-  -DartifactId=fixedformat4j \
-  -Dversion=1.7.1 \
-  -Dpackaging=jar
-```
-
-After that the standard `<dependency>` block works as-is. To deploy to a private Nexus or Artifactory instance instead, see [Get It](https://jeyben.github.io/fixedformat4j/get-it).
-
-</details>
 
 ### 2. Annotate your record class
 

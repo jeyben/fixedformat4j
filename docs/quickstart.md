@@ -9,21 +9,43 @@ This guide takes you from zero to a working fixed-format record in four steps.
 ## Prerequisites
 
 - Java 11 or later
-- Maven (or Gradle — adapt the dependency coordinates accordingly)
+- Maven, Gradle, or Ivy
 
 ## Step 1 — Add the dependency
 
-Add fixedformat4j to your `pom.xml`:
+The latest version is always available on [Maven Central](https://search.maven.org/artifact/com.ancientprogramming.fixedformat4j/fixedformat4j).
+
+#### Maven
 
 ```xml
 <dependency>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j</artifactId>
-  <version>1.6.1</version>
+  <version>1.7.1</version>
 </dependency>
 ```
 
-The latest version is always available on [Maven Central](https://search.maven.org/artifact/com.ancientprogramming.fixedformat4j/fixedformat4j).
+#### Gradle
+
+Groovy DSL (`build.gradle`):
+
+```groovy
+implementation 'com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1'
+```
+
+Kotlin DSL (`build.gradle.kts`):
+
+```kotlin
+implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1")
+```
+
+#### Ivy
+
+```xml
+<dependency org="com.ancientprogramming.fixedformat4j"
+            name="fixedformat4j"
+            rev="1.7.1"/>
+```
 
 ## Step 2 — Annotate your record class
 
