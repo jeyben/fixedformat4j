@@ -403,10 +403,12 @@ public class FixedFormatReader<T> {
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
   public Map<Class<? extends T>, List<T>> readAsMap(File file, Charset charset) {
-    try {
-      return readAsMap(new InputStreamReader(new FileInputStream(file), charset));
+    try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file), charset)) {
+      return readAsMap(reader);
     } catch (FileNotFoundException e) {
       throw new FixedFormatIOException("File not found: " + file, e);
+    } catch (IOException e) {
+      throw new FixedFormatIOException("IO error reading file: " + file, e);
     }
   }
 
@@ -432,8 +434,8 @@ public class FixedFormatReader<T> {
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
   public Map<Class<? extends T>, List<T>> readAsMap(Path path, Charset charset) {
-    try {
-      return readAsMap(new InputStreamReader(Files.newInputStream(path), charset));
+    try (InputStreamReader reader = new InputStreamReader(Files.newInputStream(path), charset)) {
+      return readAsMap(reader);
     } catch (IOException e) {
       throw new FixedFormatIOException("Cannot open path: " + path, e);
     }
