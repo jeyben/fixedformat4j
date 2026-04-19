@@ -91,10 +91,10 @@ class TestFixedFormatReaderStream {
   }
 
   @Test
-  void lineFilterPreventsMatchingOnFilteredLines() {
+  void includeLinesPreventsMatchingOnExcludedLines() {
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
-        .lineFilter(line -> !line.startsWith("#"))
+        .includeLines(line -> !line.startsWith("#"))
         .build();
 
     List<TenCharRecord> results;

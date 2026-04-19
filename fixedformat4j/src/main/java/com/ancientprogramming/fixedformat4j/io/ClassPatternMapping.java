@@ -29,7 +29,7 @@ import com.ancientprogramming.fixedformat4j.annotation.Record;
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
  */
-public class ClassPatternMapping<T> {
+class ClassPatternMapping<T> {
 
   private final Class<T> recordClass;
   private final FixedFormatMatchPattern pattern;

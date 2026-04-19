@@ -224,12 +224,11 @@ FixedFormatReader.<EmployeeRecord>builder()
 
 ## Pre-match filtering
 
-Use `lineFilter` to exclude lines before pattern matching. Lines that do not satisfy the predicate are silently skipped and do **not** trigger the unmatched-line strategy:
+Use `includeLines` to select which lines reach pattern matching. Lines for which the predicate returns `false` are silently skipped and do **not** trigger the unmatched-line strategy:
 
 ```java
 FixedFormatReader.<EmployeeRecord>builder()
     .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern(".*"))
-    // Skip blank lines and comment lines starting with '#'
-    .lineFilter(line -> !line.isBlank() && !line.startsWith("#"))
+    .includeLines(line -> !line.isBlank() && !line.startsWith("#"))
     .build();
 ```

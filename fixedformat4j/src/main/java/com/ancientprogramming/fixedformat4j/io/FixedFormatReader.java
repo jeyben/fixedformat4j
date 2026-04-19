@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -87,7 +86,7 @@ public class FixedFormatReader<T> {
   private final UnmatchedLineHandler unmatchedLineHandler;
   private final ParseErrorStrategy parseErrorStrategy;
   private final ParseErrorHandler parseErrorHandler;
-  private final Predicate<String> lineFilter;
+  private final Predicate<String> lineIncludeFilter;
   private final FixedFormatManager manager;
 
   private FixedFormatReader(Builder<T> builder) {
@@ -97,7 +96,7 @@ public class FixedFormatReader<T> {
     this.unmatchedLineHandler = builder.unmatchedLineHandler;
     this.parseErrorStrategy = builder.parseErrorStrategy;
     this.parseErrorHandler = builder.parseErrorHandler;
-    this.lineFilter = builder.lineFilter;
+    this.lineIncludeFilter = builder.lineIncludeFilter;
     this.manager = builder.manager;
   }
 
@@ -123,7 +122,7 @@ public class FixedFormatReader<T> {
     BufferedReader buffered = reader instanceof BufferedReader
         ? (BufferedReader) reader
         : new BufferedReader(reader);
-    AtomicLong lineCounter = new AtomicLong(0);
+    long[] lineCounter = {0L};
 
     Spliterator<T> spliterator = new Spliterators.AbstractSpliterator<T>(Long.MAX_VALUE, Spliterator.ORDERED) {
       @Override
@@ -132,25 +131,12 @@ public class FixedFormatReader<T> {
         try {
           line = buffered.readLine();
         } catch (IOException e) {
-          throw new FixedFormatIOException("IO error reading line " + (lineCounter.get() + 1), e);
+          throw new FixedFormatIOException("IO error reading line " + (lineCounter[0] + 1), e);
         }
         if (line == null) {
           return false;
         }
-        long lineNumber = lineCounter.incrementAndGet();
-
-        if (!lineFilter.test(line)) {
-          return true;
-        }
-
-        List<ClassPatternMapping<? extends T>> matched = findMatches(line);
-
-        if (matched.isEmpty()) {
-          handleUnmatched(lineNumber, line);
-          return true;
-        }
-
-        emitMatches(matched, line, lineNumber, action);
+        processLine(line, ++lineCounter[0], (clazz, record) -> action.accept(record));
         return true;
       }
     };
@@ -473,33 +459,15 @@ public class FixedFormatReader<T> {
     BufferedReader buffered = reader instanceof BufferedReader
         ? (BufferedReader) reader
         : new BufferedReader(reader);
-    AtomicLong lineCounter = new AtomicLong(0);
+    long[] lineCounter = {0L};
 
     try {
       String line;
       while ((line = buffered.readLine()) != null) {
-        long lineNumber = lineCounter.incrementAndGet();
-
-        if (!lineFilter.test(line)) {
-          continue;
-        }
-
-        List<ClassPatternMapping<? extends T>> matched = findMatches(line);
-
-        if (matched.isEmpty()) {
-          handleUnmatched(lineNumber, line);
-          continue;
-        }
-
-        for (ClassPatternMapping<? extends T> mapping : resolveMatches(matched, lineNumber)) {
-          T record = parseRecord(mapping, line, lineNumber);
-          if (record != null) {
-            callback.accept(mapping.getRecordClass(), record);
-          }
-        }
+        processLine(line, ++lineCounter[0], callback);
       }
     } catch (IOException e) {
-      throw new FixedFormatIOException("IO error reading line " + (lineCounter.get() + 1), e);
+      throw new FixedFormatIOException("IO error reading line " + (lineCounter[0] + 1), e);
     }
   }
 
@@ -582,39 +550,136 @@ public class FixedFormatReader<T> {
     }
   }
 
+  /**
+   * Reads all records from {@code inputStream} using UTF-8 encoding and invokes
+   * {@code callback} once per record, passing both the matched class and the record instance.
+   *
+   * @param inputStream the source stream
+   * @param callback    invoked with the matched {@link Class} and the parsed record instance
+   * @throws FixedFormatIOException if an IO error occurs while reading
+   */
+  public void readWithCallback(InputStream inputStream, BiConsumer<Class<? extends T>, T> callback) {
+    readWithCallback(inputStream, StandardCharsets.UTF_8, callback);
+  }
+
+  /**
+   * Reads all records from {@code inputStream} using the given charset and invokes
+   * {@code callback} once per record, passing both the matched class and the record instance.
+   *
+   * @param inputStream the source stream
+   * @param charset     the character encoding to apply
+   * @param callback    invoked with the matched {@link Class} and the parsed record instance
+   * @throws FixedFormatIOException if an IO error occurs while reading
+   */
+  public void readWithCallback(InputStream inputStream, Charset charset,
+      BiConsumer<Class<? extends T>, T> callback) {
+    readWithCallback(new InputStreamReader(inputStream, charset), callback);
+  }
+
+  /**
+   * Reads all records from {@code file} using UTF-8 encoding and invokes {@code callback}
+   * once per record, passing both the matched class and the record instance.
+   *
+   * @param file     the file to read
+   * @param callback invoked with the matched {@link Class} and the parsed record instance
+   * @throws FixedFormatIOException if the file is not found or an IO error occurs
+   */
+  public void readWithCallback(File file, BiConsumer<Class<? extends T>, T> callback) {
+    readWithCallback(file, StandardCharsets.UTF_8, callback);
+  }
+
+  /**
+   * Reads all records from {@code file} using the given charset and invokes {@code callback}
+   * once per record, passing both the matched class and the record instance.
+   *
+   * @param file     the file to read
+   * @param charset  the character encoding to apply
+   * @param callback invoked with the matched {@link Class} and the parsed record instance
+   * @throws FixedFormatIOException if the file is not found or an IO error occurs
+   */
+  public void readWithCallback(File file, Charset charset,
+      BiConsumer<Class<? extends T>, T> callback) {
+    try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file), charset)) {
+      readWithCallback(reader, callback);
+    } catch (FileNotFoundException e) {
+      throw new FixedFormatIOException("File not found: " + file, e);
+    } catch (IOException e) {
+      throw new FixedFormatIOException("IO error reading file: " + file, e);
+    }
+  }
+
+  /**
+   * Reads all records from {@code path} using UTF-8 encoding and invokes {@code callback}
+   * once per record, passing both the matched class and the record instance.
+   *
+   * @param path     the path to read
+   * @param callback invoked with the matched {@link Class} and the parsed record instance
+   * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
+   */
+  public void readWithCallback(Path path, BiConsumer<Class<? extends T>, T> callback) {
+    readWithCallback(path, StandardCharsets.UTF_8, callback);
+  }
+
+  /**
+   * Reads all records from {@code path} using the given charset and invokes {@code callback}
+   * once per record, passing both the matched class and the record instance.
+   *
+   * @param path     the path to read
+   * @param charset  the character encoding to apply
+   * @param callback invoked with the matched {@link Class} and the parsed record instance
+   * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
+   */
+  public void readWithCallback(Path path, Charset charset,
+      BiConsumer<Class<? extends T>, T> callback) {
+    try (InputStreamReader reader = new InputStreamReader(Files.newInputStream(path), charset)) {
+      readWithCallback(reader, callback);
+    } catch (IOException e) {
+      throw new FixedFormatIOException("Cannot open path: " + path, e);
+    }
+  }
+
   // --- internal helpers ---
 
   private List<ClassPatternMapping<? extends T>> findMatches(String line) {
-    List<ClassPatternMapping<? extends T>> matched = new ArrayList<>();
-    for (ClassPatternMapping<? extends T> mapping : mappings) {
-      if (mapping.getPattern().matches(line)) {
-        matched.add(mapping);
-        if (multiMatchStrategy == MultiMatchStrategy.FIRST_MATCH) {
-          break;
-        }
-      }
-    }
-    return matched;
+    return mappings.stream()
+        .filter(m -> m.getPattern().matches(line))
+        .collect(Collectors.toList());
   }
 
   private List<ClassPatternMapping<? extends T>> resolveMatches(
       List<ClassPatternMapping<? extends T>> matched, long lineNumber) {
-    if (multiMatchStrategy == MultiMatchStrategy.THROW_ON_AMBIGUITY && matched.size() > 1) {
-      String classes = matched.stream()
-          .map(m -> m.getRecordClass().getSimpleName())
-          .collect(Collectors.joining(", "));
-      throw new FixedFormatException(
-          "Line " + lineNumber + " matched multiple patterns: " + classes);
+    switch (multiMatchStrategy) {
+      case FIRST_MATCH:
+        return matched.isEmpty() ? matched : matched.subList(0, 1);
+      case THROW_ON_AMBIGUITY:
+        if (matched.size() > 1) {
+          String classes = matched.stream()
+              .map(m -> m.getRecordClass().getSimpleName())
+              .collect(Collectors.joining(", "));
+          throw new FixedFormatException(
+              "Line " + lineNumber + " matched multiple patterns: " + classes);
+        }
+        return matched;
+      case ALL_MATCHES:
+        return matched;
+      default:
+        throw new IllegalStateException("Unhandled MultiMatchStrategy: " + multiMatchStrategy);
     }
-    return matched;
   }
 
-  private void emitMatches(List<ClassPatternMapping<? extends T>> matched, String line,
-      long lineNumber, Consumer<? super T> action) {
+  private void processLine(String line, long lineNumber, BiConsumer<Class<? extends T>, T> emit) {
+    if (!lineIncludeFilter.test(line)) {
+      return;
+    }
+    List<ClassPatternMapping<? extends T>> matched = findMatches(line);
+    if (matched.isEmpty()) {
+      handleUnmatched(lineNumber, line);
+      return;
+    }
     for (ClassPatternMapping<? extends T> mapping : resolveMatches(matched, lineNumber)) {
       T record = parseRecord(mapping, line, lineNumber);
       if (record != null) {
-        action.accept(record);
+        emit.accept(mapping.getRecordClass(), record);
       }
     }
   }
@@ -640,7 +705,7 @@ public class FixedFormatReader<T> {
         parseErrorHandler.handle(lineNumber, line, wrapped);
         return null;
       default:
-        throw wrapped;
+        throw new IllegalStateException("Unhandled ParseErrorStrategy: " + parseErrorStrategy);
     }
   }
 
@@ -654,6 +719,8 @@ public class FixedFormatReader<T> {
       case FORWARD_TO_HANDLER:
         unmatchedLineHandler.handle(lineNumber, line);
         break;
+      default:
+        throw new IllegalStateException("Unhandled UnmatchedLineStrategy: " + unmatchedLineStrategy);
     }
   }
 
@@ -683,14 +750,14 @@ public class FixedFormatReader<T> {
     private UnmatchedLineHandler unmatchedLineHandler;
     private ParseErrorStrategy parseErrorStrategy = ParseErrorStrategy.THROW;
     private ParseErrorHandler parseErrorHandler;
-    private Predicate<String> lineFilter = line -> true;
+    private Predicate<String> lineIncludeFilter = line -> true;
     private FixedFormatManager manager = new FixedFormatManagerImpl();
 
     /**
-     * Registers a mapping from a {@code @Record}-annotated class to a line-match pattern.
+     * Registers a mapping that routes lines matching {@code pattern} to {@code clazz}.
      * Mappings are evaluated in registration order.
      *
-     * @param clazz   the record class to instantiate when {@code pattern} matches
+     * @param clazz   the {@code @Record}-annotated class to instantiate when {@code pattern} matches
      * @param pattern the pattern that decides which lines are parsed as {@code clazz}
      * @return this builder
      * @throws IllegalArgumentException if {@code clazz} is not annotated with {@code @Record}
@@ -763,23 +830,24 @@ public class FixedFormatReader<T> {
     }
 
     /**
-     * Registers a pre-match line filter. Lines that do <em>not</em> satisfy the predicate
-     * are skipped entirely before pattern matching, bypassing the
+     * Registers a pre-match line inclusion predicate. Lines for which the predicate returns
+     * {@code false} are skipped entirely before pattern matching, bypassing the
      * {@link UnmatchedLineStrategy}.
      *
-     * <p>The default filter accepts every line.</p>
+     * <p>Defaults to accepting every line.</p>
      *
-     * @param filter a predicate that returns {@code true} for lines that should be processed
+     * @param predicate returns {@code true} for lines that should be processed
      * @return this builder
      */
-    public Builder<T> lineFilter(Predicate<String> filter) {
-      this.lineFilter = filter;
+    public Builder<T> includeLines(Predicate<String> predicate) {
+      this.lineIncludeFilter = predicate;
       return this;
     }
 
     /**
      * Overrides the {@link FixedFormatManager} used to parse each line into a record object.
-     * Primarily useful for testing. Defaults to {@link FixedFormatManagerImpl}.
+     * Use to inject a custom manager — for example to add metrics, caching, or
+     * field-level transformation. Defaults to {@link FixedFormatManagerImpl}.
      *
      * @param manager the manager to use; must not be {@code null}
      * @return this builder
