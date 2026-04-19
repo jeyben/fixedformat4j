@@ -17,6 +17,8 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 
+import java.util.Objects;
+
 /**
  * Immutable pair of a {@link FixedFormatMatchPattern} and the
  * {@link com.ancientprogramming.fixedformat4j.annotation.Record}-annotated class to
@@ -43,6 +45,12 @@ class ClassPatternMapping<T> {
    * @throws IllegalArgumentException if {@code recordClass} is not annotated with {@code @Record}
    */
   public ClassPatternMapping(Class<T> recordClass, FixedFormatMatchPattern pattern) {
+    if (recordClass == null) {
+      throw new IllegalArgumentException("recordClass must not be null");
+    }
+    if (pattern == null) {
+      throw new IllegalArgumentException("pattern must not be null");
+    }
     if (recordClass.getAnnotation(Record.class) == null) {
       throw new IllegalArgumentException(
           recordClass.getSimpleName() + " is not annotated with @Record");

@@ -2,7 +2,11 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
+import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import org.junit.jupiter.api.Test;
+
+import java.io.StringReader;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,6 +58,31 @@ class TestFixedFormatReaderBuilder {
             .build()
     );
     assertTrue(ex.getMessage().contains("parseErrorHandler"));
+  }
+
+  @Test
+  void throwsIllegalArgumentWhenAddMappingClassIsNull() {
+    assertThrows(IllegalArgumentException.class, () ->
+        FixedFormatReader.builder().addMapping(null, anyPattern)
+    );
+  }
+
+  @Test
+  void throwsIllegalArgumentWhenAddMappingPatternIsNull() {
+    assertThrows(IllegalArgumentException.class, () ->
+        FixedFormatReader.<SampleRecord>builder().addMapping(SampleRecord.class, null)
+    );
+  }
+
+  @Test
+  void defaultManagerParsesRecordsWithoutExplicitManagerCall() {
+    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+        .addMapping(TenCharRecord.class, anyPattern)
+        .manager(FixedFormatManager.defaultManager())
+        .build();
+    List<TenCharRecord> results = reader.readAsList(new StringReader("hello     "));
+    assertEquals(1, results.size());
+    assertEquals("hello", results.get(0).getValue());
   }
 
   @Test

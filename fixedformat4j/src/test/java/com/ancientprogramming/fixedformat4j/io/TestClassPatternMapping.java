@@ -41,4 +41,16 @@ class TestClassPatternMapping {
     );
     assertTrue(ex.getMessage().contains("NotARecord"));
   }
+
+  @Test
+  void throwsIllegalArgumentWhenClassIsNull() {
+    assertThrows(IllegalArgumentException.class,
+        () -> new ClassPatternMapping<>(null, anyPattern));
+  }
+
+  @Test
+  void throwsIllegalArgumentWhenPatternIsNull() {
+    assertThrows(IllegalArgumentException.class,
+        () -> new ClassPatternMapping<>(ValidRecord.class, null));
+  }
 }

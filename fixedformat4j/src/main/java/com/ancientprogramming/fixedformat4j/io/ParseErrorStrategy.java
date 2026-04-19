@@ -15,6 +15,10 @@
  */
 package com.ancientprogramming.fixedformat4j.io;
 
+import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Controls what happens when a matched line fails to parse into a record object.
  *
@@ -29,13 +33,31 @@ public enum ParseErrorStrategy {
    * Rethrow the exception immediately (fail-fast). The line number is included in the
    * wrapped exception message.
    */
-  THROW,
+  THROW {
+    @Override
+    public <T> T handle(FixedFormatException wrapped, String line, long lineNumber,
+        ParseErrorHandler handler) {
+      throw wrapped;
+    }
+  },
 
   /**
    * Skip the line and log details (line number, raw content, exception message) at WARN
    * level via SLF4J. Processing continues with the next line.
+   *
+   * <p><strong>Note:</strong> logging only occurs if an SLF4J binding is present on the
+   * classpath at runtime. If no binding is configured, the warning is silently discarded.
+   * When guaranteed error visibility is required, prefer {@link #FORWARD_TO_HANDLER}.</p>
    */
-  SKIP_AND_LOG,
+  SKIP_AND_LOG {
+    @Override
+    public <T> T handle(FixedFormatException wrapped, String line, long lineNumber,
+        ParseErrorHandler handler) {
+      LOG.warn("Skipping line {}: {} — {}", lineNumber, line, wrapped.getCause() != null
+          ? wrapped.getCause().getMessage() : wrapped.getMessage());
+      return null;
+    }
+  },
 
   /**
    * Delegate to a registered {@link ParseErrorHandler}. The handler must be provided
@@ -43,5 +65,28 @@ public enum ParseErrorStrategy {
    * calling {@link FixedFormatReader.Builder#build()}, otherwise building the reader throws
    * {@link IllegalStateException}.
    */
-  FORWARD_TO_HANDLER
+  FORWARD_TO_HANDLER {
+    @Override
+    public <T> T handle(FixedFormatException wrapped, String line, long lineNumber,
+        ParseErrorHandler handler) {
+      handler.handle(lineNumber, line, wrapped);
+      return null;
+    }
+  };
+
+  private static final Logger LOG = LoggerFactory.getLogger(ParseErrorStrategy.class);
+
+  /**
+   * Applies this strategy when a matched line fails to parse.
+   *
+   * @param wrapped    the exception wrapping the original parse failure, with line number
+   * @param line       the raw line content
+   * @param lineNumber the 1-based line number
+   * @param handler    the registered handler; may be {@code null} unless this strategy
+   *                   is {@link #FORWARD_TO_HANDLER}
+   * @param <T>        the record type (always returns {@code null} for non-THROW strategies)
+   * @return {@code null} for skip/handler strategies; never returns for {@link #THROW}
+   */
+  public abstract <T> T handle(FixedFormatException wrapped, String line, long lineNumber,
+      ParseErrorHandler handler);
 }

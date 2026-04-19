@@ -73,6 +73,17 @@ class TestFixedFormatReaderCallback {
   }
 
   @Test
+  void consumerCallbackWorksWithInputStreamAndExplicitCharset() {
+    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+        .build();
+    InputStream is = new ByteArrayInputStream("hello     \nworld     ".getBytes(StandardCharsets.ISO_8859_1));
+    List<String> values = new ArrayList<>();
+    reader.readWithCallback(is, StandardCharsets.ISO_8859_1, r -> values.add(r.getValue()));
+    assertEquals(List.of("hello", "world"), values);
+  }
+
+  @Test
   void biConsumerCallbackWorksWithInputStream() {
     InputStream is = new ByteArrayInputStream("AAAAAAAAAA\nBBBBBBBBBB".getBytes(StandardCharsets.UTF_8));
     List<String> captured = new ArrayList<>();

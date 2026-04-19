@@ -15,6 +15,8 @@
  */
 package com.ancientprogramming.fixedformat4j.io;
 
+import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
+
 /**
  * Controls what happens when no {@link ClassPatternMapping} pattern matches a line.
  *
@@ -29,13 +31,21 @@ public enum UnmatchedLineStrategy {
    * Silently ignore the line. Useful for header, footer, or comment lines that are
    * expected to be present but do not represent data records.
    */
-  SKIP,
+  SKIP {
+    @Override
+    public void handle(long lineNumber, String line, UnmatchedLineHandler handler) {}
+  },
 
   /**
    * Throw {@link com.ancientprogramming.fixedformat4j.exception.FixedFormatException} with
    * the line number and raw content included in the exception message.
    */
-  THROW,
+  THROW {
+    @Override
+    public void handle(long lineNumber, String line, UnmatchedLineHandler handler) {
+      throw new FixedFormatException("No pattern matched line " + lineNumber + ": " + line);
+    }
+  },
 
   /**
    * Delegate to a registered {@link UnmatchedLineHandler}. The handler must be provided
@@ -43,5 +53,20 @@ public enum UnmatchedLineStrategy {
    * calling {@link FixedFormatReader.Builder#build()}, otherwise building the reader throws
    * {@link IllegalStateException}.
    */
-  FORWARD_TO_HANDLER
+  FORWARD_TO_HANDLER {
+    @Override
+    public void handle(long lineNumber, String line, UnmatchedLineHandler handler) {
+      handler.handle(lineNumber, line);
+    }
+  };
+
+  /**
+   * Applies this strategy when a line matches no registered pattern.
+   *
+   * @param lineNumber the 1-based line number
+   * @param line       the raw line content
+   * @param handler    the registered handler; may be {@code null} unless this strategy
+   *                   is {@link #FORWARD_TO_HANDLER}
+   */
+  public abstract void handle(long lineNumber, String line, UnmatchedLineHandler handler);
 }

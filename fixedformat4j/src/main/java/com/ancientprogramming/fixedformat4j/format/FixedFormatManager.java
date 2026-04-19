@@ -16,6 +16,7 @@
 package com.ancientprogramming.fixedformat4j.format;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
+import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
 
 /**
  * Interface used to interact with fixed format annotations.
@@ -26,6 +27,20 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
  * @since 1.0.0
  */
 public interface FixedFormatManager {
+
+  /**
+   * Returns a new instance of the default {@link FixedFormatManager} implementation.
+   *
+   * <p>Use this factory when you need to supply a manager to a collaborator (such as
+   * {@link com.ancientprogramming.fixedformat4j.io.FixedFormatReader.Builder#manager}) without
+   * taking a direct compile-time dependency on the implementation class.</p>
+   *
+   * @return a new {@link FixedFormatManagerImpl}; never {@code null}
+   * @since 1.8.0
+   */
+  static FixedFormatManager defaultManager() {
+    return new FixedFormatManagerImpl();
+  }
 
   /**
    * Create an instance of the fixedFormatClass and load the data string into the object according to the annotations.

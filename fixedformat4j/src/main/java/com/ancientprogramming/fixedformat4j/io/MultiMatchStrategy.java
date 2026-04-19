@@ -15,6 +15,11 @@
  */
 package com.ancientprogramming.fixedformat4j.io;
 
+import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Controls what happens when more than one {@link ClassPatternMapping} matches the same line.
  *
@@ -29,18 +34,54 @@ public enum MultiMatchStrategy {
    * Use the first matching mapping in registration order and ignore the rest.
    * This is the default strategy.
    */
-  FIRST_MATCH,
+  FIRST_MATCH {
+    @Override
+    public <T> List<ClassPatternMapping<? extends T>> resolve(
+        List<ClassPatternMapping<? extends T>> matched, long lineNumber) {
+      return matched.isEmpty() ? matched : matched.subList(0, 1);
+    }
+  },
 
   /**
    * Throw {@link com.ancientprogramming.fixedformat4j.exception.FixedFormatException} if more
    * than one pattern matches, including the line number and all matching class names in the
    * exception message.
    */
-  THROW_ON_AMBIGUITY,
+  THROW_ON_AMBIGUITY {
+    @Override
+    public <T> List<ClassPatternMapping<? extends T>> resolve(
+        List<ClassPatternMapping<? extends T>> matched, long lineNumber) {
+      if (matched.size() > 1) {
+        String classes = matched.stream()
+            .map(m -> m.getRecordClass().getSimpleName())
+            .collect(Collectors.joining(", "));
+        throw new FixedFormatException(
+            "Line " + lineNumber + " matched multiple patterns: " + classes);
+      }
+      return matched;
+    }
+  },
 
   /**
    * Load the line once per matching mapping and emit one record object per match,
    * in registration order.
    */
-  ALL_MATCHES
+  ALL_MATCHES {
+    @Override
+    public <T> List<ClassPatternMapping<? extends T>> resolve(
+        List<ClassPatternMapping<? extends T>> matched, long lineNumber) {
+      return matched;
+    }
+  };
+
+  /**
+   * Resolves which mappings should be used to parse a line that matched more than one pattern.
+   *
+   * @param matched    all mappings whose pattern matched the line
+   * @param lineNumber the 1-based line number
+   * @param <T>        the common record supertype
+   * @return the subset of mappings to use for parsing; never {@code null}
+   */
+  public abstract <T> List<ClassPatternMapping<? extends T>> resolve(
+      List<ClassPatternMapping<? extends T>> matched, long lineNumber);
 }
