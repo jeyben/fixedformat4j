@@ -114,7 +114,7 @@ public class Invoice {
 - Blank slice `"    "` → setter skipped → `repairHours` stays at `0`.
 - Non-blank slice `"0042"` → setter invoked → `repairHours = 42`.
 
-The key activation rule: `nullChar` must differ from `paddingChar`. In the example above the field is zero-padded and nulls are encoded as spaces.
+The key activation rule: `nullChar` must be explicitly set (anything other than the default `'\0'` sentinel). Since 1.7.2, setting `nullChar == paddingChar` also works and enables the "blank-is-null" convention — useful when you do not have a distinct sentinel character available (e.g. all-spaces dates, all-zeros numerics).
 
 **For primitive types (`int`, `long`, `double`, etc.) — use a lenient formatter subclass:**
 

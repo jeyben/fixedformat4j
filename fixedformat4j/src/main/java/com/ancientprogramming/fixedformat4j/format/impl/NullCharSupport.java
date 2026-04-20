@@ -16,13 +16,14 @@ final class NullCharSupport {
   private NullCharSupport() {}
 
   /**
-   * Returns {@code true} when {@code @Field.nullChar()} is explicitly configured (non-sentinel)
-   * and differs from {@code @Field.paddingChar()}. The sentinel {@link com.ancientprogramming.fixedformat4j.annotation.Field#UNSET_NULL_CHAR}
-   * marks "not configured" and is never treated as a real null character.
+   * Returns {@code true} when {@code @Field.nullChar()} is explicitly configured (non-sentinel).
+   * The sentinel {@link com.ancientprogramming.fixedformat4j.annotation.Field#UNSET_NULL_CHAR}
+   * marks "not configured" and is never treated as a real null character. Setting
+   * {@code nullChar} equal to {@code paddingChar} activates the "blank-is-null" convention
+   * (Issue 84).
    */
   static boolean isNullCharActive(FormatInstructions instructions) {
-    char nullChar = instructions.getNullChar();
-    return nullChar != UNSET_NULL_CHAR && nullChar != instructions.getPaddingChar();
+    return instructions.getNullChar() != UNSET_NULL_CHAR;
   }
 
   /**
