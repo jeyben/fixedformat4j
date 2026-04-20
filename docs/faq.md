@@ -46,6 +46,52 @@ To instruct the manager to use your custom formatter, set the `formatter` attrib
 
 See [Example 5 — Custom formatter](examples#example-5--custom-formatter) for a complete working implementation.
 
+## Can I change how padding is stripped on read?
+
+Yes. The default behaviour — strip `paddingChar` from the alignment side — is defined in `AbstractFixedFormatter.stripPadding`. Override it in a formatter subclass when you need different semantics, then wire it in with `@Field(formatter = ...)`.
+
+**Preserve the raw value (no stripping):**
+
+```java
+public class RawStringFormatter extends StringFormatter {
+  @Override
+  protected String stripPadding(String value, FormatInstructions instructions) {
+    return value;
+  }
+}
+```
+
+Use when leading or trailing characters are meaningful — e.g. a formatted identifier where the padding is part of the value. Round-trip export is preserved because no information is dropped.
+
+**Strip padding from both ends:**
+
+```java
+public class BothSidesStringFormatter extends StringFormatter {
+  @Override
+  protected String stripPadding(String value, FormatInstructions instructions) {
+    char pad = instructions.getPaddingChar();
+    return Align.LEFT.remove(Align.RIGHT.remove(value, pad), pad);
+  }
+}
+```
+
+Use when a producer pads inconsistently. Note: export re-pads on the alignment side only, so round-trip is **not** preserved — opposite-side padding is permanently dropped on read.
+
+**Strip all whitespace (including embedded):**
+
+```java
+public class AllWhitespaceStringFormatter extends StringFormatter {
+  @Override
+  protected String stripPadding(String value, FormatInstructions instructions) {
+    return value.replaceAll("\\s+", "");
+  }
+}
+```
+
+Use when the source field contains internal whitespace that should be discarded. Round-trip is lossy.
+
+> **Scope note:** `stripPadding` is the extension point for `String`, `Character`, `Boolean`, and enum fields. Numeric formatters (`AbstractNumberFormatter`) and date/time formatters (`AbstractPatternFormatter`) override `parse` / `stripPadding` with their own sign-aware and pattern-aware logic, so a custom padding strategy for those types must extend the corresponding concrete formatter and override the relevant method directly.
+
 ## How do I handle records with different layouts in the same file?
 
 Define a separate `@Record`-annotated class for each layout. When reading the file line by line, inspect a discriminator field (such as a record-type code in a known column) and call `manager.load(...)` with the matching class:
