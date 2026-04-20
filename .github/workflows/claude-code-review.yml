@@ -40,11 +40,6 @@ jobs:
           plugins: 'code-review@claude-code-plugins'
           prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
           allowed_bots: 'claude'
-          # Temporarily enabled to surface the names of the tools the code-review plugin
-          # tries to call (currently 3 permission denials per run that silently produce
-          # no inline comments on the PR). Once the required tools are known and added
-          # to the allow-list, this can be turned back off.
-          show_full_output: true
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
 
