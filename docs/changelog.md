@@ -4,7 +4,7 @@ title: Changelog
 
 # Changelog
 
-## 1.7.2 (unreleased)
+## 1.7.2 (2026-04-20)
 
 ### Behaviour changes
 
