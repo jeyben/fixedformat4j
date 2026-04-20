@@ -5,7 +5,7 @@
 
 **[Documentation](https://jeyben.github.io/fixedformat4j/)** — [Quick Start](https://jeyben.github.io/fixedformat4j/quickstart) · [Annotations](https://jeyben.github.io/fixedformat4j/usage/annotations) · [Examples](https://jeyben.github.io/fixedformat4j/examples) · [Changelog](https://jeyben.github.io/fixedformat4j/changelog) · [Benchmarks](https://jeyben.github.io/fixedformat4j/benchmarks)
 
-A lightweight, non-intrusive Java library for reading and writing fixed-width flat-file records using annotations. Significantly performance optimised in 1.7.x — between 1.6× and 13.8× faster across load and export operations depending on the size and types of records, measured by JMH microbenchmarks.
+A lightweight, non-intrusive Java library for reading and writing fixed-width flat-file records using annotations. **Dramatically faster since 1.7.0** — field metadata caching and `MethodHandle` dispatch deliver 1.6× to 13.8× throughput gains over earlier releases, depending on record size and field types, verified by JMH microbenchmarks.
 
 ## Quality
 
