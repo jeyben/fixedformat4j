@@ -47,7 +47,7 @@ class TestFixedFormatReaderParseError {
 
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
-        .parseErrorStrategy(ParseErrorStrategy.SKIP_AND_LOG)
+        .parseErrorStrategy(ParseErrorStrategy.skipAndLog())
         .manager(countingManager)
         .build();
 
@@ -59,14 +59,13 @@ class TestFixedFormatReaderParseError {
   }
 
   @Test
-  void forwardsParseErrorToHandlerWithLineNumberAndCause() {
+  void customLambdaStrategyReceivesLineNumberLineAndCause() {
     List<String> captured = new ArrayList<>();
 
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
-        .parseErrorStrategy(ParseErrorStrategy.FORWARD_TO_HANDLER)
-        .parseErrorHandler((lineNumber, line, cause) ->
-            captured.add(lineNumber + ":" + line + ":" + cause.getMessage()))
+        .parseErrorStrategy((wrapped, line, lineNumber) ->
+            captured.add(lineNumber + ":" + line + ":" + wrapped.getMessage()))
         .manager(failOnSecondCall())
         .build();
 
@@ -79,13 +78,12 @@ class TestFixedFormatReaderParseError {
   }
 
   @Test
-  void parseErrorHandlerDoesNotEmitRecord() {
+  void customLambdaStrategyDoesNotEmitRecordForFailedLine() {
     List<TenCharRecord> results = new ArrayList<>();
 
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
-        .parseErrorStrategy(ParseErrorStrategy.FORWARD_TO_HANDLER)
-        .parseErrorHandler((lineNumber, line, cause) -> {})
+        .parseErrorStrategy((wrapped, line, lineNumber) -> {})
         .manager(failOnSecondCall())
         .build();
 

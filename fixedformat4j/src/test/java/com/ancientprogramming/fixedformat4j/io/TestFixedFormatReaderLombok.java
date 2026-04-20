@@ -81,12 +81,11 @@ class TestFixedFormatReaderLombok {
   }
 
   @Test
-  void unmatchedLineForwardedToHandler() {
+  void unmatchedLineForwardedToLambdaStrategy() {
     List<String> captured = new ArrayList<>();
     FixedFormatReader<LombokRecord> reader = FixedFormatReader.<LombokRecord>builder()
         .addMapping(LombokRecord.class, new RegexFixedFormatMatchPattern("^Jacob"))
-        .unmatchedLineStrategy(UnmatchedLineStrategy.FORWARD_TO_HANDLER)
-        .unmatchedLineHandler((lineNumber, line) -> captured.add(lineNumber + ":" + line))
+        .unmatchedLineStrategy((lineNumber, line) -> captured.add(lineNumber + ":" + line))
         .build();
 
     String input = TEST_DATA + "\nOther     0000119990101N0000000001";

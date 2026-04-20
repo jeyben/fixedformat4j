@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class TestFixedFormatReaderUnmatched {
 
   @Test
-  void throwsOnUnmatchedLineWhenStrategyIsThrow() {
+  void throwsOnUnmatchedLineWhenStrategyIsThrowException() {
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
-        .unmatchedLineStrategy(UnmatchedLineStrategy.THROW)
+        .unmatchedLineStrategy(UnmatchedLineStrategy.throwException())
         .build();
 
     FixedFormatException ex = assertThrows(FixedFormatException.class, () -> {
@@ -30,12 +30,11 @@ class TestFixedFormatReaderUnmatched {
   }
 
   @Test
-  void forwardsUnmatchedLineToHandler() {
+  void customLambdaStrategyReceivesLineNumberAndContent() {
     List<String> captured = new ArrayList<>();
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
-        .unmatchedLineStrategy(UnmatchedLineStrategy.FORWARD_TO_HANDLER)
-        .unmatchedLineHandler((lineNumber, line) -> captured.add(lineNumber + ":" + line))
+        .unmatchedLineStrategy((lineNumber, line) -> captured.add(lineNumber + ":" + line))
         .build();
 
     try (Stream<TenCharRecord> stream = reader.readAsStream(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"))) {
@@ -46,12 +45,11 @@ class TestFixedFormatReaderUnmatched {
   }
 
   @Test
-  void handlerNotInvokedForMatchedLines() {
+  void strategyNotInvokedForMatchedLines() {
     List<String> captured = new ArrayList<>();
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
-        .unmatchedLineStrategy(UnmatchedLineStrategy.FORWARD_TO_HANDLER)
-        .unmatchedLineHandler((lineNumber, line) -> captured.add(line))
+        .unmatchedLineStrategy((lineNumber, line) -> captured.add(line))
         .build();
 
     try (Stream<TenCharRecord> stream = reader.readAsStream(new StringReader("AAAAAAAAAA"))) {

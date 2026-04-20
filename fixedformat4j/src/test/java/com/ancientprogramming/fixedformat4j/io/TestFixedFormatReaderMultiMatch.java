@@ -22,7 +22,7 @@ class TestFixedFormatReaderMultiMatch {
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
-        .multiMatchStrategy(MultiMatchStrategy.FIRST_MATCH)
+        .multiMatchStrategy(MultiMatchStrategy.firstMatch())
         .build();
 
     List<TenCharRecord> results;
@@ -37,7 +37,7 @@ class TestFixedFormatReaderMultiMatch {
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
-        .multiMatchStrategy(MultiMatchStrategy.THROW_ON_AMBIGUITY)
+        .multiMatchStrategy(MultiMatchStrategy.throwOnAmbiguity())
         .build();
 
     FixedFormatException ex = assertThrows(FixedFormatException.class, () -> {
@@ -54,7 +54,7 @@ class TestFixedFormatReaderMultiMatch {
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^B"))
-        .multiMatchStrategy(MultiMatchStrategy.THROW_ON_AMBIGUITY)
+        .multiMatchStrategy(MultiMatchStrategy.throwOnAmbiguity())
         .build();
 
     List<TenCharRecord> results;
@@ -69,7 +69,7 @@ class TestFixedFormatReaderMultiMatch {
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
-        .multiMatchStrategy(MultiMatchStrategy.ALL_MATCHES)
+        .multiMatchStrategy(MultiMatchStrategy.allMatches())
         .build();
 
     List<TenCharRecord> results;

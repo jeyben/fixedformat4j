@@ -18,6 +18,7 @@ package com.ancientprogramming.fixedformat4j.io;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatIOException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
+import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -78,20 +79,16 @@ public class FixedFormatReader<T> {
   private final List<ClassPatternMapping<? extends T>> mappings;
   private final MultiMatchStrategy multiMatchStrategy;
   private final UnmatchedLineStrategy unmatchedLineStrategy;
-  private final UnmatchedLineHandler unmatchedLineHandler;
   private final ParseErrorStrategy parseErrorStrategy;
-  private final ParseErrorHandler parseErrorHandler;
-  private final Predicate<String> lineIncludeFilter;
+  private final Predicate<String> lineFilter;
   private final FixedFormatManager manager;
 
   private FixedFormatReader(Builder<T> builder) {
     this.mappings = List.copyOf(builder.mappings);
     this.multiMatchStrategy = builder.multiMatchStrategy;
     this.unmatchedLineStrategy = builder.unmatchedLineStrategy;
-    this.unmatchedLineHandler = builder.unmatchedLineHandler;
     this.parseErrorStrategy = builder.parseErrorStrategy;
-    this.parseErrorHandler = builder.parseErrorHandler;
-    this.lineIncludeFilter = builder.lineIncludeFilter;
+    this.lineFilter = builder.lineFilter;
     this.manager = builder.manager;
   }
 
@@ -173,7 +170,7 @@ public class FixedFormatReader<T> {
    * @return a lazily-evaluated, ordered, sequential stream of parsed records
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
-  public Stream<T> readAsStream(File file) throws FixedFormatIOException {
+  public Stream<T> readAsStream(File file) {
     return readAsStream(file, StandardCharsets.UTF_8);
   }
 
@@ -185,7 +182,7 @@ public class FixedFormatReader<T> {
    * @return a lazily-evaluated, ordered, sequential stream of parsed records
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
-  public Stream<T> readAsStream(File file, Charset charset) throws FixedFormatIOException {
+  public Stream<T> readAsStream(File file, Charset charset) {
     try {
       return readAsStream(new InputStreamReader(new FileInputStream(file), charset));
     } catch (FileNotFoundException e) {
@@ -200,7 +197,7 @@ public class FixedFormatReader<T> {
    * @return a lazily-evaluated, ordered, sequential stream of parsed records
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
-  public Stream<T> readAsStream(Path path) throws FixedFormatIOException {
+  public Stream<T> readAsStream(Path path) {
     return readAsStream(path, StandardCharsets.UTF_8);
   }
 
@@ -212,7 +209,7 @@ public class FixedFormatReader<T> {
    * @return a lazily-evaluated, ordered, sequential stream of parsed records
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
-  public Stream<T> readAsStream(Path path, Charset charset) throws FixedFormatIOException {
+  public Stream<T> readAsStream(Path path, Charset charset) {
     try {
       return readAsStream(new InputStreamReader(Files.newInputStream(path), charset));
     } catch (IOException e) {
@@ -434,9 +431,7 @@ public class FixedFormatReader<T> {
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void readWithCallback(Reader reader, Consumer<T> callback) {
-    try (Stream<T> stream = readAsStream(reader)) {
-      stream.forEach(callback);
-    }
+    readWithCallback(reader, (clazz, record) -> callback.accept(record));
   }
 
   /**
@@ -645,12 +640,12 @@ public class FixedFormatReader<T> {
   }
 
   private void processLine(String line, long lineNumber, BiConsumer<Class<? extends T>, T> emit) {
-    if (!lineIncludeFilter.test(line)) {
+    if (!lineFilter.test(line)) {
       return;
     }
     List<ClassPatternMapping<? extends T>> matched = findMatches(line);
     if (matched.isEmpty()) {
-      unmatchedLineStrategy.handle(lineNumber, line, unmatchedLineHandler);
+      unmatchedLineStrategy.handle(lineNumber, line);
       return;
     }
     for (ClassPatternMapping<? extends T> mapping : multiMatchStrategy.resolve(matched, lineNumber)) {
@@ -667,7 +662,8 @@ public class FixedFormatReader<T> {
     } catch (FixedFormatException e) {
       FixedFormatException wrapped = new FixedFormatException(
           "Parse error on line " + lineNumber + ": " + e.getMessage(), e);
-      return parseErrorStrategy.handle(wrapped, line, lineNumber, parseErrorHandler);
+      parseErrorStrategy.handle(wrapped, line, lineNumber);
+      return null;
     }
   }
 
@@ -685,20 +681,17 @@ public class FixedFormatReader<T> {
    * Fluent builder for {@link FixedFormatReader}.
    *
    * <p>At minimum, one mapping must be added via {@link #addMapping} before calling
-   * {@link #build()}. Strategy-specific handlers must be registered before {@code build()}
-   * when the corresponding strategy is set to {@code FORWARD_TO_HANDLER}.</p>
+   * {@link #build()}.</p>
    *
    * @param <T> the common supertype of all record classes registered with this builder
    */
   public static class Builder<T> {
     private final List<ClassPatternMapping<? extends T>> mappings = new ArrayList<>();
-    private MultiMatchStrategy multiMatchStrategy = MultiMatchStrategy.FIRST_MATCH;
-    private UnmatchedLineStrategy unmatchedLineStrategy = UnmatchedLineStrategy.SKIP;
-    private UnmatchedLineHandler unmatchedLineHandler;
-    private ParseErrorStrategy parseErrorStrategy = ParseErrorStrategy.THROW;
-    private ParseErrorHandler parseErrorHandler;
-    private Predicate<String> lineIncludeFilter = line -> true;
-    private FixedFormatManager manager = FixedFormatManager.defaultManager();
+    private MultiMatchStrategy multiMatchStrategy = MultiMatchStrategy.firstMatch();
+    private UnmatchedLineStrategy unmatchedLineStrategy = UnmatchedLineStrategy.skip();
+    private ParseErrorStrategy parseErrorStrategy = ParseErrorStrategy.throwException();
+    private Predicate<String> lineFilter = line -> true;
+    private FixedFormatManager manager = FixedFormatManagerImpl.create();
 
     /**
      * Registers a mapping that routes lines matching {@code pattern} to {@code clazz}.
@@ -716,7 +709,7 @@ public class FixedFormatReader<T> {
 
     /**
      * Sets the strategy applied when more than one pattern matches a line.
-     * Defaults to {@link MultiMatchStrategy#FIRST_MATCH}.
+     * Defaults to {@link MultiMatchStrategy#firstMatch()}.
      *
      * @param strategy the multi-match strategy to use; must not be {@code null}
      * @return this builder
@@ -728,7 +721,13 @@ public class FixedFormatReader<T> {
 
     /**
      * Sets the strategy applied when no pattern matches a line.
-     * Defaults to {@link UnmatchedLineStrategy#SKIP}.
+     * Defaults to {@link UnmatchedLineStrategy#skip()}.
+     *
+     * <p>Pass a lambda to define custom handling:</p>
+     * <pre>{@code
+     * .unmatchedLineStrategy((lineNumber, line) ->
+     *     System.err.println("Unmatched line " + lineNumber + ": " + line))
+     * }</pre>
      *
      * @param strategy the unmatched-line strategy to use; must not be {@code null}
      * @return this builder
@@ -739,40 +738,20 @@ public class FixedFormatReader<T> {
     }
 
     /**
-     * Registers the handler invoked when {@link UnmatchedLineStrategy#FORWARD_TO_HANDLER}
-     * is active and a line matches no pattern. Must be set before calling {@link #build()}
-     * when the strategy is {@code FORWARD_TO_HANDLER}.
-     *
-     * @param handler the handler to invoke; must not be {@code null}
-     * @return this builder
-     */
-    public Builder<T> unmatchedLineHandler(UnmatchedLineHandler handler) {
-      this.unmatchedLineHandler = handler;
-      return this;
-    }
-
-    /**
      * Sets the strategy applied when a matched line fails to parse.
-     * Defaults to {@link ParseErrorStrategy#THROW}.
+     * Defaults to {@link ParseErrorStrategy#throwException()}.
+     *
+     * <p>Pass a lambda to define custom handling (throw to abort, return to skip):</p>
+     * <pre>{@code
+     * .parseErrorStrategy((wrapped, line, lineNumber) ->
+     *     errors.add("Line " + lineNumber + ": " + wrapped.getMessage()))
+     * }</pre>
      *
      * @param strategy the parse-error strategy to use; must not be {@code null}
      * @return this builder
      */
     public Builder<T> parseErrorStrategy(ParseErrorStrategy strategy) {
       this.parseErrorStrategy = strategy;
-      return this;
-    }
-
-    /**
-     * Registers the handler invoked when {@link ParseErrorStrategy#FORWARD_TO_HANDLER}
-     * is active and a line fails to parse. Must be set before calling {@link #build()}
-     * when the strategy is {@code FORWARD_TO_HANDLER}.
-     *
-     * @param handler the handler to invoke; must not be {@code null}
-     * @return this builder
-     */
-    public Builder<T> parseErrorHandler(ParseErrorHandler handler) {
-      this.parseErrorHandler = handler;
       return this;
     }
 
@@ -787,14 +766,14 @@ public class FixedFormatReader<T> {
      * @return this builder
      */
     public Builder<T> includeLines(Predicate<String> predicate) {
-      this.lineIncludeFilter = predicate;
+      this.lineFilter = predicate;
       return this;
     }
 
     /**
      * Overrides the {@link FixedFormatManager} used to parse each line into a record object.
      * Use to inject a custom manager — for example to add metrics, caching, or
-     * field-level transformation. Defaults to {@link FixedFormatManager#defaultManager()}.
+     * field-level transformation. Defaults to a new {@code FixedFormatManagerImpl}.
      *
      * @param manager the manager to use; must not be {@code null}
      * @return this builder
@@ -809,18 +788,10 @@ public class FixedFormatReader<T> {
      *
      * @return a new reader instance
      * @throws IllegalArgumentException if no mappings have been added
-     * @throws IllegalStateException    if a {@code FORWARD_TO_HANDLER} strategy is active
-     *                                  but the corresponding handler has not been registered
      */
     public FixedFormatReader<T> build() {
       if (mappings.isEmpty()) {
         throw new IllegalArgumentException("At least one mapping must be provided");
-      }
-      if (unmatchedLineStrategy == UnmatchedLineStrategy.FORWARD_TO_HANDLER && unmatchedLineHandler == null) {
-        throw new IllegalStateException("unmatchedLineHandler must be set when strategy is FORWARD_TO_HANDLER");
-      }
-      if (parseErrorStrategy == ParseErrorStrategy.FORWARD_TO_HANDLER && parseErrorHandler == null) {
-        throw new IllegalStateException("parseErrorHandler must be set when strategy is FORWARD_TO_HANDLER");
       }
       return new FixedFormatReader<>(this);
     }

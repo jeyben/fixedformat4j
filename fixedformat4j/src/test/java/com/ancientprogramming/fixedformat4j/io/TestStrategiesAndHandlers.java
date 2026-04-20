@@ -38,7 +38,7 @@ class TestStrategiesAndHandlers {
     FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
         .addMapping(TenCharRecord.class, ANY)
         .addMapping(FiveCharRecord.class, ANY)
-        .multiMatchStrategy(MultiMatchStrategy.FIRST_MATCH)
+        .multiMatchStrategy(MultiMatchStrategy.firstMatch())
         .build();
 
     List<Class<?>> classes = new ArrayList<>();
@@ -53,7 +53,7 @@ class TestStrategiesAndHandlers {
     FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
         .addMapping(TenCharRecord.class, ANY)
         .addMapping(FiveCharRecord.class, ANY)
-        .multiMatchStrategy(MultiMatchStrategy.THROW_ON_AMBIGUITY)
+        .multiMatchStrategy(MultiMatchStrategy.throwOnAmbiguity())
         .build();
 
     assertThrows(FixedFormatException.class, () ->
@@ -65,7 +65,7 @@ class TestStrategiesAndHandlers {
     FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
         .addMapping(TenCharRecord.class, ANY)
         .addMapping(FiveCharRecord.class, ANY)
-        .multiMatchStrategy(MultiMatchStrategy.ALL_MATCHES)
+        .multiMatchStrategy(MultiMatchStrategy.allMatches())
         .build();
 
     List<Class<?>> classes = new ArrayList<>();
@@ -75,10 +75,33 @@ class TestStrategiesAndHandlers {
   }
 
   @Test
+  void multiMatchCustomStrategyIsHonoured() {
+    MultiMatchStrategy lastMatch = new MultiMatchStrategy() {
+      @Override
+      public <T> List<ClassPatternMapping<? extends T>> resolve(
+          List<ClassPatternMapping<? extends T>> matched, long lineNumber) {
+        return matched.isEmpty() ? matched : matched.subList(matched.size() - 1, matched.size());
+      }
+    };
+
+    FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
+        .addMapping(TenCharRecord.class, ANY)
+        .addMapping(FiveCharRecord.class, ANY)
+        .multiMatchStrategy(lastMatch)
+        .build();
+
+    List<Class<?>> classes = new ArrayList<>();
+    reader.readWithCallback(new StringReader("AAAAA"), (clazz, r) -> classes.add(clazz));
+
+    assertEquals(1, classes.size());
+    assertEquals(FiveCharRecord.class, classes.get(0));
+  }
+
+  @Test
   void unmatchedSkipDoesNotEmitRecordOrThrow() {
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
-        .unmatchedLineStrategy(UnmatchedLineStrategy.SKIP)
+        .unmatchedLineStrategy(UnmatchedLineStrategy.skip())
         .build();
 
     List<TenCharRecord> results = reader.readAsList(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
@@ -86,10 +109,10 @@ class TestStrategiesAndHandlers {
   }
 
   @Test
-  void unmatchedThrowThrowsOnUnmatchedLine() {
+  void unmatchedThrowExceptionThrowsOnUnmatchedLine() {
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
-        .unmatchedLineStrategy(UnmatchedLineStrategy.THROW)
+        .unmatchedLineStrategy(UnmatchedLineStrategy.throwException())
         .build();
 
     assertThrows(FixedFormatException.class, () ->
@@ -97,13 +120,12 @@ class TestStrategiesAndHandlers {
   }
 
   @Test
-  void unmatchedForwardToHandlerInvokesHandlerWithLineNumberAndContent() {
+  void unmatchedCustomLambdaInvokesWithLineNumberAndContent() {
     List<String> captured = new ArrayList<>();
 
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
-        .unmatchedLineStrategy(UnmatchedLineStrategy.FORWARD_TO_HANDLER)
-        .unmatchedLineHandler((lineNumber, line) -> captured.add(lineNumber + ":" + line))
+        .unmatchedLineStrategy((lineNumber, line) -> captured.add(lineNumber + ":" + line))
         .build();
 
     reader.readAsList(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
@@ -116,7 +138,7 @@ class TestStrategiesAndHandlers {
   void parseErrorSkipAndLogSkipsBadLineAndContinues() {
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, ANY)
-        .parseErrorStrategy(ParseErrorStrategy.SKIP_AND_LOG)
+        .parseErrorStrategy(ParseErrorStrategy.skipAndLog())
         .manager(failOnLine(2))
         .build();
 
@@ -127,13 +149,12 @@ class TestStrategiesAndHandlers {
   }
 
   @Test
-  void parseErrorForwardToHandlerInvokesHandlerAndDoesNotEmitRecord() {
+  void parseErrorCustomLambdaInvokesHandlerAndDoesNotEmitRecord() {
     List<String> captured = new ArrayList<>();
 
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, ANY)
-        .parseErrorStrategy(ParseErrorStrategy.FORWARD_TO_HANDLER)
-        .parseErrorHandler((lineNumber, line, cause) -> captured.add(lineNumber + ":" + line))
+        .parseErrorStrategy((wrapped, line, lineNumber) -> captured.add(lineNumber + ":" + line))
         .manager(failOnLine(2))
         .build();
 
@@ -146,19 +167,14 @@ class TestStrategiesAndHandlers {
   }
 
   @Test
-  void unmatchedLineHandlerAcceptsLambda() {
-    List<String> captured = new ArrayList<>();
-    UnmatchedLineHandler handler = (lineNumber, line) -> captured.add(lineNumber + ":" + line);
-    handler.handle(3L, "unmatched line");
-    assertEquals("3:unmatched line", captured.get(0));
-  }
+  void parseErrorCustomLambdaCanRethrowToAbortProcessing() {
+    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+        .addMapping(TenCharRecord.class, ANY)
+        .parseErrorStrategy((wrapped, line, lineNumber) -> { throw wrapped; })
+        .manager(failOnLine(2))
+        .build();
 
-  @Test
-  void parseErrorHandlerAcceptsLambda() {
-    List<String> captured = new ArrayList<>();
-    ParseErrorHandler handler = (lineNumber, line, cause) ->
-        captured.add(lineNumber + ":" + line + ":" + cause.getMessage());
-    handler.handle(7L, "bad line", new FixedFormatException("parse failed"));
-    assertEquals("7:bad line:parse failed", captured.get(0));
+    assertThrows(FixedFormatException.class, () ->
+        reader.readAsList(new StringReader(THREE_LINES)));
   }
 }

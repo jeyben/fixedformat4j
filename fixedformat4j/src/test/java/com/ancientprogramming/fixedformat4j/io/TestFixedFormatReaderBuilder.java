@@ -2,7 +2,7 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
-import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
+import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
 import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
@@ -39,28 +39,6 @@ class TestFixedFormatReaderBuilder {
   }
 
   @Test
-  void throwsWhenUnmatchedHandlerStrategySetWithoutHandler() {
-    IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
-        FixedFormatReader.<SampleRecord>builder()
-            .addMapping(SampleRecord.class, anyPattern)
-            .unmatchedLineStrategy(UnmatchedLineStrategy.FORWARD_TO_HANDLER)
-            .build()
-    );
-    assertTrue(ex.getMessage().contains("unmatchedLineHandler"));
-  }
-
-  @Test
-  void throwsWhenParseErrorHandlerStrategySetWithoutHandler() {
-    IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
-        FixedFormatReader.<SampleRecord>builder()
-            .addMapping(SampleRecord.class, anyPattern)
-            .parseErrorStrategy(ParseErrorStrategy.FORWARD_TO_HANDLER)
-            .build()
-    );
-    assertTrue(ex.getMessage().contains("parseErrorHandler"));
-  }
-
-  @Test
   void throwsIllegalArgumentWhenAddMappingClassIsNull() {
     assertThrows(IllegalArgumentException.class, () ->
         FixedFormatReader.builder().addMapping(null, anyPattern)
@@ -78,7 +56,7 @@ class TestFixedFormatReaderBuilder {
   void defaultManagerParsesRecordsWithoutExplicitManagerCall() {
     FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
         .addMapping(TenCharRecord.class, anyPattern)
-        .manager(FixedFormatManager.defaultManager())
+        .manager(FixedFormatManagerImpl.create())
         .build();
     List<TenCharRecord> results = reader.readAsList(new StringReader("hello     "));
     assertEquals(1, results.size());
@@ -89,8 +67,26 @@ class TestFixedFormatReaderBuilder {
   void builderIsFluentReturningItself() {
     FixedFormatReader.Builder<SampleRecord> builder = FixedFormatReader.builder();
     assertSame(builder, builder.addMapping(SampleRecord.class, anyPattern));
-    assertSame(builder, builder.multiMatchStrategy(MultiMatchStrategy.FIRST_MATCH));
-    assertSame(builder, builder.unmatchedLineStrategy(UnmatchedLineStrategy.SKIP));
-    assertSame(builder, builder.parseErrorStrategy(ParseErrorStrategy.THROW));
+    assertSame(builder, builder.multiMatchStrategy(MultiMatchStrategy.firstMatch()));
+    assertSame(builder, builder.unmatchedLineStrategy(UnmatchedLineStrategy.skip()));
+    assertSame(builder, builder.parseErrorStrategy(ParseErrorStrategy.throwException()));
+  }
+
+  @Test
+  void unmatchedLambdaStrategyIsAcceptedByBuilder() {
+    FixedFormatReader<SampleRecord> reader = FixedFormatReader.<SampleRecord>builder()
+        .addMapping(SampleRecord.class, anyPattern)
+        .unmatchedLineStrategy((lineNumber, line) -> {})
+        .build();
+    assertNotNull(reader);
+  }
+
+  @Test
+  void parseErrorLambdaStrategyIsAcceptedByBuilder() {
+    FixedFormatReader<SampleRecord> reader = FixedFormatReader.<SampleRecord>builder()
+        .addMapping(SampleRecord.class, anyPattern)
+        .parseErrorStrategy((wrapped, line, lineNumber) -> {})
+        .build();
+    assertNotNull(reader);
   }
 }

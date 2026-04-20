@@ -53,6 +53,16 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   private static final Logger LOG = LoggerFactory.getLogger(FixedFormatManagerImpl.class);
 
   /**
+   * Returns a new instance of this implementation as a {@link FixedFormatManager}.
+   *
+   * @return a new {@code FixedFormatManagerImpl}; never {@code null}
+   * @since 1.8.0
+   */
+  public static FixedFormatManager create() {
+    return new FixedFormatManagerImpl();
+  }
+
+  /**
    * JVM-level cache of record classes whose enum-field lengths have already been validated.
    * Validation is performed at most once per class (on the first {@code load} or {@code export}
    * call) and then skipped for subsequent calls.

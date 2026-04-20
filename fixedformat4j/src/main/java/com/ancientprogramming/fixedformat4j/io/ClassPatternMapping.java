@@ -17,7 +17,6 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 
-import java.util.Objects;
 
 /**
  * Immutable pair of a {@link FixedFormatMatchPattern} and the
@@ -31,7 +30,7 @@ import java.util.Objects;
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
  */
-class ClassPatternMapping<T> {
+public class ClassPatternMapping<T> {
 
   private final Class<T> recordClass;
   private final FixedFormatMatchPattern pattern;

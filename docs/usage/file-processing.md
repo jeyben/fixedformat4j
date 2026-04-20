@@ -170,55 +170,66 @@ reader.readWithCallback(new File("data.txt"), (clazz, record) -> {
 
 ## Strategies
 
+All three strategy types are interfaces. The built-in behaviours are available as static factory methods. Pass a lambda for custom logic.
+
 ### Multi-match — when more than one pattern matches
 
-| Strategy | Behaviour |
+| Factory method | Behaviour |
 |---|---|
-| `FIRST_MATCH` *(default)* | Use the first matching mapping in registration order; ignore the rest. |
-| `THROW_ON_AMBIGUITY` | Throw `FixedFormatException` listing the line number and all matching class names. |
-| `ALL_MATCHES` | Emit one record per matching mapping, in registration order. |
+| `MultiMatchStrategy.firstMatch()` *(default)* | Use the first matching mapping in registration order; ignore the rest. |
+| `MultiMatchStrategy.throwOnAmbiguity()` | Throw `FixedFormatException` listing the line number and all matching class names. |
+| `MultiMatchStrategy.allMatches()` | Emit one record per matching mapping, in registration order. |
 
 ```java
 FixedFormatReader.<Object>builder()
     .addMapping(TypeARecord.class, patternA)
     .addMapping(TypeBRecord.class, patternB)
-    .multiMatchStrategy(MultiMatchStrategy.THROW_ON_AMBIGUITY)
+    .multiMatchStrategy(MultiMatchStrategy.throwOnAmbiguity())
     .build();
+```
+
+Implement `MultiMatchStrategy` directly for custom resolution logic:
+
+```java
+.multiMatchStrategy((matched, lineNumber) ->
+    matched.stream()
+        .filter(m -> m.getRecordClass() == PreferredRecord.class)
+        .collect(Collectors.toList()))
 ```
 
 ### Unmatched lines — when no pattern matches
 
-| Strategy | Behaviour |
+| Factory method | Behaviour |
 |---|---|
-| `SKIP` *(default)* | Silently ignore the line. Useful for header, footer, or comment lines. |
-| `THROW` | Throw `FixedFormatException` with the line number and raw content. |
-| `FORWARD_TO_HANDLER` | Invoke the registered `UnmatchedLineHandler`. |
+| `UnmatchedLineStrategy.skip()` *(default)* | Silently ignore the line. Useful for header, footer, or comment lines. |
+| `UnmatchedLineStrategy.throwException()` | Throw `FixedFormatException` with the line number and raw content. |
+| Lambda | Invoke any custom logic; throw to abort, return to continue. |
 
 ```java
 FixedFormatReader.<EmployeeRecord>builder()
     .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern("^EMP"))
-    .unmatchedLineStrategy(UnmatchedLineStrategy.FORWARD_TO_HANDLER)
-    .unmatchedLineHandler((lineNumber, line) ->
+    .unmatchedLineStrategy((lineNumber, line) ->
         System.err.println("Unmatched line " + lineNumber + ": " + line))
     .build();
 ```
 
 ### Parse errors — when a matched line fails to parse
 
-| Strategy | Behaviour |
+| Factory method | Behaviour |
 |---|---|
-| `THROW` *(default)* | Rethrow immediately. The wrapped exception includes the line number. |
-| `SKIP_AND_LOG` | Skip the line and log details at WARN level via SLF4J. |
-| `FORWARD_TO_HANDLER` | Invoke the registered `ParseErrorHandler`. |
+| `ParseErrorStrategy.throwException()` *(default)* | Rethrow immediately. The wrapped exception includes the line number. |
+| `ParseErrorStrategy.skipAndLog()` | Skip the line and log details at WARN level via SLF4J. |
+| Lambda | Invoke any custom logic; throw to abort, return to skip the record. |
 
 ```java
 FixedFormatReader.<EmployeeRecord>builder()
     .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern(".*"))
-    .parseErrorStrategy(ParseErrorStrategy.FORWARD_TO_HANDLER)
-    .parseErrorHandler((lineNumber, line, cause) ->
-        System.err.println("Parse error on line " + lineNumber + ": " + cause.getMessage()))
+    .parseErrorStrategy((wrapped, line, lineNumber) ->
+        System.err.println("Parse error on line " + lineNumber + ": " + wrapped.getMessage()))
     .build();
 ```
+
+**Note:** `ParseErrorStrategy.skipAndLog()` only logs if an SLF4J binding is present at runtime. For guaranteed error visibility, use a custom lambda that writes to your preferred output.
 
 ---
 
