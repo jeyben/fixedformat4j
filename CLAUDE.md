@@ -87,3 +87,43 @@ All workflows must use Node.js 24 compatible actions (Node.js 20 is removed from
 - `@Field` annotations go on **getter** methods (`get*` or `is*`); the manager derives the setter name by reflection.
 - The default formatter (`ByTypeFormatter`) is chosen automatically from the getter's return type; specify `formatter=` on `@Field` only when overriding.
 - Tests live in `fixedformat4j/src/test/java/` and use JUnit 5 (Jupiter). Issue-specific regression tests are under `issues/` sub-package.
+
+## Framework-breaking changes — consider twice
+
+This is a public library. Any change that alters observable behavior for consumers must be treated as a breaking-change candidate and handled with extra care. This section applies **both when implementing and when reviewing PRs** — the `/code-review` workflow should use the list below as an explicit checklist and flag every item it finds.
+
+**What counts as framework-breaking:**
+- Annotation surface — adding / removing / renaming attributes on `@Field`, `@Record`, `@Fields`, `@FixedFormatNumber`, `@FixedFormatDecimal`, `@FixedFormatBoolean`, `@FixedFormatPattern`, or changing their default values.
+- Public interfaces — `FixedFormatManager`, `FixedFormatter<T>` method signatures or contracts.
+- Extension points — protected methods on `AbstractFixedFormatter`, `AbstractNumberFormatter`, `AbstractDecimalFormatter`, `AbstractPatternFormatter` that user formatters subclass.
+- Activation gates — conditions under which optional behavior fires (e.g. `NullCharSupport.isNullCharActive`), even when the code change is one line.
+- Parse / export semantics — anything that changes the output for a given input: null handling, padding, sign handling, rounding, round-trip fidelity.
+- Exception types or validation messages at documented boundaries.
+
+**When implementing such a change:**
+
+1. **Pause and flag it.** Stop before editing. Surface the change explicitly and request confirmation, even if TDD is green. A passing suite proves the new behavior is correct for the new rule — not that no consumer depended on the old rule.
+
+2. **Write the breaking-change checklist** into the plan and PR description:
+   - **What breaks** — a concrete input/output pair that changes (e.g. `"     "` on `@Field(nullChar=' ', paddingChar=' ')` loaded `0` before, loads `null` after).
+   - **Who's affected** — annotation consumers, formatter subclassers, on-disk records serialized by prior versions.
+   - **Round-trip impact** — does `load(export(x)) == x` still hold for existing records?
+   - **Migration / deprecation path** — is the old behavior reachable via an opt-out? Is a major-version bump warranted? What does the changelog entry say?
+
+**When reviewing a PR:**
+
+- Walk the "What counts as framework-breaking" list and post an inline comment on any diff hunk that touches one of those surfaces.
+- If the checklist is missing from the PR description and the diff qualifies, call that out as a blocker.
+- Treat one-line changes with the same scrutiny as large diffs — small diff, large blast radius.
+
+## Design — SOLID principles
+
+When designing a new class, interface, or refactoring an existing one, explicitly apply SOLID and call out where a proposal bends or breaks each principle.
+
+- **SRP (Single Responsibility)** — one reason to change per class. Watch for formatters that mix parsing, validation, and error reporting; lift responsibilities apart when a second reason to change appears.
+- **OCP (Open / Closed)** — prefer extension over modification for public types. A new `@Field` attribute or a new `FixedFormatter<T>` subclass should not force edits to unrelated formatters.
+- **LSP (Liskov Substitution)** — subclasses of `AbstractFixedFormatter`, `AbstractNumberFormatter`, `AbstractDecimalFormatter`, `AbstractPatternFormatter` must preserve the superclass contract. Do not narrow return types, throw unexpected exceptions, or change null semantics in an override.
+- **ISP (Interface Segregation)** — `FixedFormatManager` and `FixedFormatter<T>` exist as narrow interfaces for a reason. Do not widen them speculatively; add a second interface if a new capability applies only to some implementations.
+- **DIP (Dependency Inversion)** — depend on the `FixedFormatter<T>` / `FixedFormatManager` abstractions, not on concrete classes. `ByTypeFormatter` is the canonical indirection site.
+
+During plan-mode design, name which principles the proposal upholds and which it consciously trades off. During PR review, flag diffs that silently violate any of the five.
