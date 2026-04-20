@@ -31,7 +31,7 @@ When placed on a field, the manager derives the getter and setter by name conven
 | `formatter` | `Class<FixedFormatter>` | no | `ByTypeFormatter.class` | The formatter to use when reading and writing the field. |
 | `count` | `int` | no | `1` | Number of consecutive repetitions of this field. When greater than 1, the getter/setter must use an array or an ordered `Collection` (`List`, `Set`, `SortedSet`, etc.). Each repetition occupies `length` characters, starting at `offset + length * index`. |
 | `strictCount` | `boolean` | no | `true` | Only relevant when `count > 1`. If `true` (default), a size mismatch between the array/collection and `count` during export throws a `FixedFormatException`. If `false`, a warning is logged and export proceeds with `min(count, actualSize)` elements. |
-| `nullChar` | `char` | no | `'\0'` | Sentinel character that represents a null value. Null-aware handling is enabled only when `nullChar` differs from `paddingChar`. On load: if every character in the field slice equals `nullChar`, the setter is not invoked and the field remains `null`. On export: if the getter returns `null`, the field is emitted as `nullChar` repeated `length` times, bypassing the formatter. For repeating fields (`count > 1`) the check is applied per element. |
+| `nullChar` | `char` | no | `'\0'` | Sentinel character that represents a null value. Null-aware handling is enabled whenever `nullChar` is explicitly set (i.e. differs from the default `'\0'`). On load: if every character in the field slice equals `nullChar`, the setter is not invoked and the field remains `null`. On export: if the getter returns `null`, the field is emitted as `nullChar` repeated `length` times, bypassing the formatter. Setting `nullChar == paddingChar` (since 1.7.2) enables the "blank-is-null" convention — an all-padding slice loads as `null`. For repeating fields (`count > 1`) the check is applied per element. |
 
 **Alignment values:**
 
@@ -67,10 +67,10 @@ Supported return types for `count > 1`: `T[]` (array), `List`, `LinkedList`, `Se
 
 By default a fixed-width field has no concept of null — an all-spaces field loads as an empty string or zero, not `null`. The `nullChar` attribute opts a single field into null-aware handling by designating a sentinel character.
 
-**Activation rule:** null-aware handling is enabled only when `nullChar` differs from `paddingChar`. The built-in default (`'\0'`) can never appear in a real fixed-width payload, so all existing fields retain their pre-1.7.1 behaviour unless you explicitly set `nullChar`.
+**Activation rule:** null-aware handling is enabled whenever `nullChar` is explicitly set (i.e. differs from the default sentinel `'\0'`, which can never appear in a real fixed-width payload). Existing fields that do not set `nullChar` retain their pre-1.7.1 behaviour.
 
 ```java
-// "     " (five spaces) → null   "00042" → 42
+// Distinct sentinel: "     " (five spaces) → null   "00042" → 42
 @Field(offset = 1, length = 5, align = Align.RIGHT, paddingChar = '0', nullChar = ' ')
 public Integer getAmount() { return amount; }
 public void setAmount(Integer amount) { this.amount = amount; }
@@ -80,6 +80,18 @@ public void setAmount(Integer amount) { this.amount = amount; }
 - **On export** — if the getter returns `null`, the field is emitted as `nullChar` × `length`, bypassing the formatter entirely.
 
 For repeating fields (`count > 1`) the check is applied **per element**: each slot is evaluated independently, so a collection can hold a mix of `null` and non-null values. Primitive array element types (e.g. `int[]`) cannot hold `null` and are unaffected.
+
+**Blank-is-null** (since 1.7.2): setting `nullChar == paddingChar` activates the "fully-padded slice means null" convention — typical for all-spaces dates and all-zeros numerics where a distinct sentinel character is not available.
+
+```java
+// All spaces → null, otherwise a value
+@Field(offset = 1, length = 8, paddingChar = ' ', nullChar = ' ')
+public Date getInvoiceDate() { return invoiceDate; }
+
+// All zeros → null, otherwise a zero-padded integer
+@Field(offset = 9, length = 5, align = Align.RIGHT, paddingChar = '0', nullChar = '0')
+public Integer getQuantity() { return quantity; }
+```
 
 ## @Fields
 

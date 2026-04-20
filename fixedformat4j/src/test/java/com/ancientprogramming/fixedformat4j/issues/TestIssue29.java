@@ -33,11 +33,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  * Verifies Issue 29 - distinguish "no data" from zero/empty via an opt-in
  * {@code nullChar} attribute on {@link Field}.
  *
- * <p>When {@code nullChar} is set to a character different from {@code paddingChar},
- * the manager treats a field fully filled with {@code nullChar} as {@code null} on
- * load, and serializes {@code null} values as {@code length × nullChar} on export.
- * When {@code nullChar == paddingChar} (the default case), detection is disabled
- * and existing behavior is preserved.
+ * <p>Whenever {@code nullChar} is explicitly set (i.e. differs from the
+ * {@code UNSET_NULL_CHAR} sentinel), the manager treats a field fully filled with
+ * {@code nullChar} as {@code null} on load, and serializes {@code null} values as
+ * {@code length × nullChar} on export. This includes the {@code nullChar == paddingChar}
+ * "blank-is-null" configuration (see Issue 84).
  *
  * @since 1.7.1
  */
@@ -231,10 +231,11 @@ public class TestIssue29 {
   }
 
   @Test
-  public void nullCharEqualsPaddingChar_detectionDisabled() {
-    // When explicitly set equal, detection must stay off.
+  public void nullCharEqualsPaddingChar_detectionActive() {
+    // Issue 84: when nullChar is explicitly set, detection is active even when
+    // nullChar equals paddingChar — this is the idiomatic "blank-is-null" configuration.
     SameCharRecord29 loaded = manager.load(SameCharRecord29.class, "     ");
-    assertEquals(Integer.valueOf(0), loaded.getIntegerData());
+    assertNull(loaded.getIntegerData());
   }
 
   // ---------------------------------------------------------------------------

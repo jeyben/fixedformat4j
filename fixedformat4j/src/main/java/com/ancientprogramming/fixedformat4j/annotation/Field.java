@@ -73,8 +73,11 @@ public @interface Field {
   /**
    * Opt-in sentinel used to represent a {@code null} value in the fixed-width field.
    * <p>
-   * Activation rule: null-aware handling fires only when {@code nullChar() != paddingChar()}.
-   * When active:
+   * Activation rule: null-aware handling fires whenever {@code nullChar()} differs from
+   * the {@link #UNSET_NULL_CHAR} sentinel. Configuring {@code nullChar() == paddingChar()}
+   * is supported since 1.7.2 and enables the idiomatic "blank-is-null" convention &mdash;
+   * e.g. an all-spaces date or an all-zeros numeric loads as {@code null} and exports
+   * back to the same fully-padded form. When active:
    * <ul>
    *   <li>On load, a slice whose characters all equal {@code nullChar} yields {@code null}
    *       (the setter is not invoked). Configuring {@code nullChar} on a primitive-typed
