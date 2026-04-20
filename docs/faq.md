@@ -92,6 +92,48 @@ Use when the source field contains internal whitespace that should be discarded.
 
 > **Scope note:** `stripPadding` is the extension point for `String`, `Character`, `Boolean`, and enum fields. Numeric formatters (`AbstractNumberFormatter`) and date/time formatters (`AbstractPatternFormatter`) override `parse` / `stripPadding` with their own sign-aware and pattern-aware logic, so a custom padding strategy for those types must extend the corresponding concrete formatter and override the relevant method directly.
 
+## How do I parse blank fields as a default value instead of throwing?
+
+Numeric formatters call `Integer.parseInt` / `Long.parseLong` / `BigDecimal`'s constructor on the stripped slice, so a blank numeric slice throws `NumberFormatException` by default. Two approaches cover the "blank = default" convention without a custom annotation attribute.
+
+**For reference types (`Integer`, `Long`, `BigDecimal`, `Date`, etc.) — use a POJO field default plus `nullChar`:**
+
+When `nullChar` activates on a blank slice, the manager sets the computed value to `null` and **skips the setter entirely**, so whatever the POJO initialised the field with is preserved.
+
+```java
+@Record(length = 20)
+public class Invoice {
+  private Integer repairHours = 0; // default when the slice is all nullChar
+
+  @Field(offset = 1, length = 4, paddingChar = '0', nullChar = ' ', align = Align.RIGHT)
+  public Integer getRepairHours() { return repairHours; }
+  public void setRepairHours(Integer h) { this.repairHours = h; }
+}
+```
+
+- Blank slice `"    "` → setter skipped → `repairHours` stays at `0`.
+- Non-blank slice `"0042"` → setter invoked → `repairHours = 42`.
+
+The key activation rule: `nullChar` must differ from `paddingChar`. In the example above the field is zero-padded and nulls are encoded as spaces.
+
+**For primitive types (`int`, `long`, `double`, etc.) — use a lenient formatter subclass:**
+
+Primitives cannot be set to `null`, so `@Field(nullChar = ...)` is rejected at validation time. Override `asObject` on the built-in formatter and substitute your default when the input is empty:
+
+```java
+public class LenientIntegerFormatter extends IntegerFormatter {
+  @Override
+  public Integer asObject(String string, FormatInstructions fi) {
+    return string.isEmpty() ? 0 : super.asObject(string, fi);
+  }
+}
+
+@Field(offset = 1, length = 4, paddingChar = '0', formatter = LenientIntegerFormatter.class)
+public int getRepairHours() { return repairHours; }
+```
+
+The same pattern applies to `LongFormatter`, `ShortFormatter`, `DoubleFormatter`, `FloatFormatter`, and `BigDecimalFormatter`.
+
 ## How do I handle records with different layouts in the same file?
 
 Define a separate `@Record`-annotated class for each layout. When reading the file line by line, inspect a discriminator field (such as a record-type code in a known column) and call `manager.load(...)` with the matching class:
