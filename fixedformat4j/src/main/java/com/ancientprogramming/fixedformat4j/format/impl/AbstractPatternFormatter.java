@@ -18,7 +18,6 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -40,7 +39,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class AbstractPatternFormatter<T> extends AbstractFixedFormatter<T> {
 
-  private static final Map<Class<?>, Map<String, Integer>> PATTERN_LENGTH_CACHE = new ConcurrentHashMap<>();
+  // Keyed by formatter Class; values are collected when the formatter class's classloader is GC'd.
+  private static final ClassValue<ConcurrentHashMap<String, Integer>> PATTERN_LENGTH_CACHE =
+      new ClassValue<ConcurrentHashMap<String, Integer>>() {
+        @Override
+        protected ConcurrentHashMap<String, Integer> computeValue(Class<?> type) {
+          return new ConcurrentHashMap<>();
+        }
+      };
 
   /**
    * Strips padding, then re-applies it when the padding character overlaps with
@@ -68,8 +74,7 @@ public abstract class AbstractPatternFormatter<T> extends AbstractFixedFormatter
   }
 
   protected final int formattedLengthForPattern(String pattern) {
-    return PATTERN_LENGTH_CACHE
-        .computeIfAbsent(getClass(), k -> new ConcurrentHashMap<>())
+    return PATTERN_LENGTH_CACHE.get(getClass())
         .computeIfAbsent(pattern, this::computeFormattedLengthForPattern);
   }
 
