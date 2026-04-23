@@ -72,6 +72,37 @@ class FixedFormatLineProcessor {
     }
   }
 
+  /**
+   * Variant used by {@link FixedFormatReader#readAsRows} for round-trip support.
+   *
+   * <p>Unlike the single-callback overload, this variant:</p>
+   * <ul>
+   *   <li>Calls {@code unmatchedCallback} instead of the configured {@link UnmatchedLineStrategy}
+   *       so that all unmatched lines are captured as {@link UnmatchedRow} entries.</li>
+   *   <li>Calls {@code unmatchedCallback} also for lines rejected by the line filter, so
+   *       no line is silently dropped and the original file can be reconstructed exactly.</li>
+   * </ul>
+   */
+  void processLine(String line, long lineNumber,
+                   BiConsumer<Class<?>, Object> matchedCallback,
+                   Consumer<String> unmatchedCallback) {
+    if (!lineFilter.test(line)) {
+      unmatchedCallback.accept(line);
+      return;
+    }
+    List<ClassPatternMapping<?>> matched = findMatches(line);
+    if (matched.isEmpty()) {
+      unmatchedCallback.accept(line);
+      return;
+    }
+    for (ClassPatternMapping<?> mapping : multiMatchStrategy.resolve(matched, lineNumber)) {
+      Object record = parseRecord(mapping, line, lineNumber);
+      if (record != null) {
+        matchedCallback.accept(mapping.getRecordClass(), record);
+      }
+    }
+  }
+
   // Wildcard capture: ClassPatternMapping<?> → ClassPatternMapping<R>, enabling type-safe load.
   private <R> Object parseRecord(ClassPatternMapping<R> mapping, String line, long lineNumber) {
     try {

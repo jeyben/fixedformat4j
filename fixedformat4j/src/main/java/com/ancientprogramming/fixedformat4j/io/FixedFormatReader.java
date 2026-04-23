@@ -314,6 +314,142 @@ public class FixedFormatReader {
     }
   }
 
+  // --- readAsRows ---
+
+  /**
+   * Eagerly reads all lines from {@code reader} and returns an ordered {@link List} of
+   * {@link Row} entries that preserves the exact line order of the source.
+   *
+   * <p>Each line becomes either a {@link ParsedRow} (when it matched a registered pattern
+   * and was successfully parsed) or an {@link UnmatchedRow} (when it did not match any
+   * pattern, or was rejected by the line filter). No line is ever silently dropped.</p>
+   *
+   * <p><strong>Note:</strong> the configured {@link UnmatchedLineStrategy} is ignored;
+   * all unmatched lines are captured as {@link UnmatchedRow} entries regardless of the
+   * strategy. The multi-match, parse-error, and line-filter settings still apply.</p>
+   *
+   * <p>Typical round-trip usage:</p>
+   * <pre>{@code
+   * List<Row> rows = reader.readAsRows(new File("data.txt"));
+   *
+   * rows.stream()
+   *     .filter(r -> r instanceof ParsedRow && ((ParsedRow<?>) r).isOf(DetailRecord.class))
+   *     .map(r -> (ParsedRow<DetailRecord>) r)
+   *     .forEach(pr -> pr.getRecord().setAmount(pr.getRecord().getAmount() * 2));
+   *
+   * new FixedFormatWriter(manager).write(rows, new File("data-updated.txt"));
+   * }</pre>
+   *
+   * @param reader the source of lines
+   * @return an ordered, mutable list of {@link Row} entries; never {@code null}
+   * @throws FixedFormatIOException if an IO error occurs while reading
+   */
+  public List<Row> readAsRows(Reader reader) {
+    List<Row> rows = new ArrayList<>();
+    BufferedReader buffered = toBuffered(reader);
+    long[] lineCounter = {0L};
+    try (buffered) {
+      String line;
+      while ((line = buffered.readLine()) != null) {
+        processor.processLine(line, ++lineCounter[0],
+            (clazz, record) -> rows.add(toParsedRow(clazz, record)),
+            raw -> rows.add(new UnmatchedRow(raw)));
+      }
+    } catch (IOException e) {
+      throw new FixedFormatIOException("IO error reading line " + (lineCounter[0] + 1), e);
+    }
+    return rows;
+  }
+
+  /**
+   * Eagerly reads all lines from {@code inputStream} using UTF-8 encoding and returns
+   * an ordered list of {@link Row} entries.
+   *
+   * @param inputStream the source stream
+   * @return an ordered, mutable list of {@link Row} entries; never {@code null}
+   * @throws FixedFormatIOException if an IO error occurs while reading
+   */
+  public List<Row> readAsRows(InputStream inputStream) {
+    return readAsRows(inputStream, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Eagerly reads all lines from {@code inputStream} using the given charset and returns
+   * an ordered list of {@link Row} entries.
+   *
+   * @param inputStream the source stream
+   * @param charset     the character encoding to apply
+   * @return an ordered, mutable list of {@link Row} entries; never {@code null}
+   * @throws FixedFormatIOException if an IO error occurs while reading
+   */
+  public List<Row> readAsRows(InputStream inputStream, Charset charset) {
+    try (InputStreamReader r = new InputStreamReader(inputStream, charset)) {
+      return readAsRows(r);
+    } catch (IOException e) {
+      throw new FixedFormatIOException("IO error reading input stream", e);
+    }
+  }
+
+  /**
+   * Eagerly reads all lines from {@code file} using UTF-8 encoding and returns
+   * an ordered list of {@link Row} entries.
+   *
+   * @param file the file to read
+   * @return an ordered, mutable list of {@link Row} entries; never {@code null}
+   * @throws FixedFormatIOException if the file is not found or an IO error occurs
+   */
+  public List<Row> readAsRows(File file) {
+    return readAsRows(file, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Eagerly reads all lines from {@code file} using the given charset and returns
+   * an ordered list of {@link Row} entries.
+   *
+   * @param file    the file to read
+   * @param charset the character encoding to apply
+   * @return an ordered, mutable list of {@link Row} entries; never {@code null}
+   * @throws FixedFormatIOException if the file is not found or an IO error occurs
+   */
+  public List<Row> readAsRows(File file, Charset charset) {
+    try (InputStreamReader r = new InputStreamReader(new FileInputStream(file), charset)) {
+      return readAsRows(r);
+    } catch (FileNotFoundException e) {
+      throw new FixedFormatIOException("File not found: " + file, e);
+    } catch (IOException e) {
+      throw new FixedFormatIOException("IO error reading file: " + file, e);
+    }
+  }
+
+  /**
+   * Eagerly reads all lines from {@code path} using UTF-8 encoding and returns
+   * an ordered list of {@link Row} entries.
+   *
+   * @param path the path to read
+   * @return an ordered, mutable list of {@link Row} entries; never {@code null}
+   * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
+   */
+  public List<Row> readAsRows(Path path) {
+    return readAsRows(path, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Eagerly reads all lines from {@code path} using the given charset and returns
+   * an ordered list of {@link Row} entries.
+   *
+   * @param path    the path to read
+   * @param charset the character encoding to apply
+   * @return an ordered, mutable list of {@link Row} entries; never {@code null}
+   * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
+   */
+  public List<Row> readAsRows(Path path, Charset charset) {
+    try (InputStreamReader r = new InputStreamReader(Files.newInputStream(path), charset)) {
+      return readAsRows(r);
+    } catch (IOException e) {
+      throw new FixedFormatIOException("Cannot open path: " + path, e);
+    }
+  }
+
   // --- readAsTypedResult ---
 
   /**
@@ -749,5 +885,11 @@ public class FixedFormatReader {
 
   private static BufferedReader toBuffered(Reader reader) {
     return reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader);
+  }
+
+  // Safe: record was produced by manager.load(clazz, line), so it is an instance of clazz.
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private static <T> ParsedRow<T> toParsedRow(Class<?> clazz, Object record) {
+    return new ParsedRow(clazz, record);
   }
 }
