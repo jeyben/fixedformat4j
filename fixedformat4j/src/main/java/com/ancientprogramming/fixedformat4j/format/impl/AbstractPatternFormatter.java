@@ -18,7 +18,6 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -34,13 +33,25 @@ import java.util.concurrent.ConcurrentHashMap;
  * for the pattern, it is re-padded to that length so that the underlying date parser
  * receives a well-formed string.
  *
+ * <p>The formatted length for each pattern is computed once per (formatter subclass, pattern)
+ * pair and cached in a {@link ClassValue}-backed map. Values are automatically eligible for GC
+ * when the formatter's defining classloader is collected, preventing classloader leaks in
+ * hot-reload and multi-classloader environments.
+ *
  * @param <T> the date/time type handled by this formatter
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.6.1
  */
 public abstract class AbstractPatternFormatter<T> extends AbstractFixedFormatter<T> {
 
-  private static final Map<Class<?>, Map<String, Integer>> PATTERN_LENGTH_CACHE = new ConcurrentHashMap<>();
+  // Keyed by formatter Class; values are collected when the formatter class's classloader is GC'd.
+  private static final ClassValue<ConcurrentHashMap<String, Integer>> PATTERN_LENGTH_CACHE =
+      new ClassValue<ConcurrentHashMap<String, Integer>>() {
+        @Override
+        protected ConcurrentHashMap<String, Integer> computeValue(Class<?> type) {
+          return new ConcurrentHashMap<>();
+        }
+      };
 
   /**
    * Strips padding, then re-applies it when the padding character overlaps with
@@ -68,8 +79,7 @@ public abstract class AbstractPatternFormatter<T> extends AbstractFixedFormatter
   }
 
   protected final int formattedLengthForPattern(String pattern) {
-    return PATTERN_LENGTH_CACHE
-        .computeIfAbsent(getClass(), k -> new ConcurrentHashMap<>())
+    return PATTERN_LENGTH_CACHE.get(getClass())
         .computeIfAbsent(pattern, this::computeFormattedLengthForPattern);
   }
 

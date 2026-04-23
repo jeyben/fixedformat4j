@@ -34,10 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
 import static java.lang.String.format;
@@ -63,17 +60,23 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   /**
-   * JVM-level cache of record classes whose enum-field lengths have already been validated.
-   * Validation is performed at most once per class (on the first {@code load} or {@code export}
-   * call) and then skipped for subsequent calls.
-   * <p>
-   * <strong>Note:</strong> this set is never cleared. In multi-classloader environments
-   * (e.g. application servers with hot-reload, OSGi containers) old {@link Class} references
-   * may be retained here after their classloader is discarded, preventing garbage collection.
-   * In such environments consider using a {@link java.lang.ref.WeakReference}-based map instead.
-   * </p>
+   * Tracks which record classes have already been validated. The sentinel value is stored inside
+   * each {@link Class} object via {@link ClassValue}, so it is automatically GC'd when the
+   * defining classloader becomes unreachable — preventing classloader leaks in hot-reload and
+   * multi-classloader environments. {@link ClassValue#computeValue} is invoked at most once per
+   * class, ensuring validation runs exactly once per class per JVM lifetime.
    */
-  private static final Set<Class<?>> VALIDATED_CLASSES = Collections.newSetFromMap(new ConcurrentHashMap<>());
+  private static final ClassValue<Boolean> VALIDATED_CLASSES = new ClassValue<Boolean>() {
+    @Override
+    protected Boolean computeValue(Class<?> clazz) {
+      for (FieldDescriptor desc : ClassMetadataCache.INSTANCE.get(clazz)) {
+        doValidateFieldPattern(desc.target, desc.fieldAnnotation);
+        doValidateEnumFieldLength(desc.target, desc.fieldAnnotation);
+        doValidateFieldNullChar(desc.target, desc.fieldAnnotation);
+      }
+      return Boolean.TRUE;
+    }
+  };
 
   private final RecordInstantiator recordInstantiator = new RecordInstantiator();
   private final RepeatingFieldSupport repeatingFieldSupport = new RepeatingFieldSupport();
@@ -186,19 +189,11 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   private void validatePatterns(Class<?> recordClass) {
-    if (VALIDATED_CLASSES.contains(recordClass)) {
-      return;
-    }
-    for (FieldDescriptor desc : ClassMetadataCache.INSTANCE.get(recordClass)) {
-      validateFieldPattern(desc.target, desc.fieldAnnotation);
-      validateEnumFieldLength(desc.target, desc.fieldAnnotation);
-      validateFieldNullChar(desc.target, desc.fieldAnnotation);
-    }
-    VALIDATED_CLASSES.add(recordClass);
+    VALIDATED_CLASSES.get(recordClass);
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
-  private void validateEnumFieldLength(AnnotationTarget target, Field fieldAnnotation) {
+  private static void doValidateEnumFieldLength(AnnotationTarget target, Field fieldAnnotation) {
     FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
     Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
     if (!datatype.isEnum()) {
@@ -227,12 +222,12 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     }
   }
 
-  private void validateFieldNullChar(AnnotationTarget target, Field fieldAnnotation) {
+  private static void doValidateFieldNullChar(AnnotationTarget target, Field fieldAnnotation) {
     if (fieldAnnotation.nullChar() == Field.UNSET_NULL_CHAR) return;
 
     Class<?> typeToCheck;
     if (fieldAnnotation.count() > 1) {
-      typeToCheck = repeatingFieldSupport.resolveElementType(target.getter);
+      typeToCheck = new RepeatingFieldSupport().resolveElementType(target.getter);
     } else {
       FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
       typeToCheck = instructionsBuilder.datatype(target.getter, fieldAnnotation);
@@ -247,7 +242,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     }
   }
 
-  private void validateFieldPattern(AnnotationTarget target, Field fieldAnnotation) {
+  private static void doValidateFieldPattern(AnnotationTarget target, Field fieldAnnotation) {
     FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
     Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
     FixedFormatPattern patternAnnotation = target.annotationSource.getAnnotation(FixedFormatPattern.class);

@@ -4,6 +4,54 @@ title: Changelog
 
 # Changelog
 
+## [Unreleased] — 1.8.0
+
+### Bug fixes
+
+- **Classloader leak prevention via `ClassValue`** ([#89](https://github.com/jeyben/fixedformat4j/issues/89)) —
+  The three JVM-level caches (`ClassMetadataCache`, `FixedFormatManagerImpl.VALIDATED_CLASSES`, and
+  `AbstractPatternFormatter.PATTERN_LENGTH_CACHE`) were backed by static
+  `ConcurrentHashMap<Class<?>, …>` instances. A `ConcurrentHashMap` holds **strong references** to
+  its keys, so a `Class` used as a key can never be garbage-collected — even after all application
+  references to it are gone. In multi-classloader environments (OSGi, servlet containers, Spring
+  Boot DevTools, Jakarta EE) this causes the child `ClassLoader` that defined the record class to
+  be retained indefinitely, leaking all classes it loaded.
+
+  All three caches are now backed by `ClassValue<T>`. Computed values are stored inside the
+  `Class` object itself; when the record class's defining `ClassLoader` becomes unreachable the
+  cached metadata is collected with it — no external map, no leak.
+
+  **No API or behaviour change.** Existing annotated record classes, custom formatters, and
+  serialized fixed-width data are unaffected.
+
+---
+
+## 1.7.2 (2026-04-20)
+
+### Behaviour changes
+
+- **`@Field(nullChar = …)` now activates when `nullChar == paddingChar`** ([#84](https://github.com/jeyben/fixedformat4j/issues/84)) —
+  The activation gate for null-aware handling is relaxed so that setting `nullChar` equal to
+  `paddingChar` is a supported, idiomatic configuration — the "blank-is-null" convention.
+  Previously this combination was documented as a no-op; it now enables the same load and
+  export semantics as the distinct-sentinel configuration.
+
+  Typical uses:
+
+  ```java
+  // All spaces means null (e.g. optional date)
+  @Field(offset = 1, length = 8, paddingChar = ' ', nullChar = ' ')
+  public Date getInvoiceDate() { … }
+
+  // All zeros means null (e.g. optional numeric with zero-padding)
+  @Field(offset = 9, length = 5, align = Align.RIGHT, paddingChar = '0', nullChar = '0')
+  public Integer getQuantity() { … }
+  ```
+
+  **Migration:** the prior `nullChar != paddingChar` activation rule is removed from the
+  javadoc. Records that intentionally set `nullChar == paddingChar` to get no-op behaviour
+  (none known) should omit `nullChar` instead.
+
 ## 1.7.1 (2026-04-18)
 
 ### New features

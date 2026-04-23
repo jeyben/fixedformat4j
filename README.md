@@ -5,7 +5,7 @@
 
 **[Documentation](https://jeyben.github.io/fixedformat4j/)** — [Quick Start](https://jeyben.github.io/fixedformat4j/quickstart) · [Annotations](https://jeyben.github.io/fixedformat4j/usage/annotations) · [Examples](https://jeyben.github.io/fixedformat4j/examples) · [Changelog](https://jeyben.github.io/fixedformat4j/changelog) · [Benchmarks](https://jeyben.github.io/fixedformat4j/benchmarks)
 
-A small, non-intrusive Java library for reading and writing fixed-width flat-file records using annotations.
+A lightweight, non-intrusive Java library for reading and writing fixed-width flat-file records using annotations. **Dramatically faster since 1.7.0** — field metadata caching and `MethodHandle` dispatch deliver 1.6× to 13.8× throughput gains over earlier releases, depending on record size and field types, verified by JMH microbenchmarks.
 
 ## Quality
 
@@ -30,18 +30,9 @@ That single line encodes: employee ID (`00423`), department code (`2`), name (`S
 - **Nested records** — embed one `@Record` class inside another
 - **Extensible** — plug in your own formatter for any custom type
 
-## Benchmarks
+## What's new in 1.7.2
 
-JMH microbenchmarks compare `load()` and `export()` performance across releases. Charts are published at [jeyben.github.io/fixedformat4j/benchmarks](https://jeyben.github.io/fixedformat4j/benchmarks).
-
-To run benchmarks locally (requires Java 11 and `1.6.1` on Maven Central):
-
-```bash
-./benchmarks/run.sh                     # 1.6.1 vs master (default)
-./benchmarks/run.sh 1.6.1 1.6.0 master # explicit version list
-```
-
-Results are written to `docs/assets/benchmarks/` as JMH JSON.
+- **`nullChar` activates when equal to `paddingChar`** — setting `nullChar = ' '` on a space-padded field (or `nullChar = '0'` on a zero-padded field) now enables the "blank-is-null" convention. A fully-padded slice loads as `null`; a `null` value exports as a fully-padded field. Previously this combination was a no-op.
 
 ## What's new in 1.7.1
 
@@ -82,20 +73,20 @@ fixedformat4j is published to **Maven Central**. No repository configuration or 
 <dependency>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j</artifactId>
-  <version>1.7.1</version>
+  <version>1.7.2</version>
 </dependency>
 ```
 
 **Gradle (Groovy DSL)**
 
 ```groovy
-implementation 'com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1'
+implementation 'com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.2'
 ```
 
 **Gradle (Kotlin DSL)**
 
 ```kotlin
-implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1")
+implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.2")
 ```
 
 **Ivy**
@@ -103,7 +94,7 @@ implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1")
 ```xml
 <dependency org="com.ancientprogramming.fixedformat4j"
             name="fixedformat4j"
-            rev="1.7.1"/>
+            rev="1.7.2"/>
 ```
 
 Requires **Java 11 or later**. If you want log output, add an [SLF4J binding](https://www.slf4j.org/manual.html#swapping) such as `logback-classic`; without one the library still works, just silently.
@@ -181,6 +172,19 @@ Full documentation is available at **https://jeyben.github.io/fixedformat4j/**:
 
 **Reports:**
 - [Mutation Report](https://jeyben.github.io/fixedformat4j/pit-reports/) — latest PIT mutation testing results (updated on release)
+
+## Benchmarks
+
+JMH microbenchmarks compare `load()` and `export()` performance across releases. Charts are published at [jeyben.github.io/fixedformat4j/benchmarks](https://jeyben.github.io/fixedformat4j/benchmarks).
+
+To run benchmarks locally (requires Java 11 and `1.6.1` on Maven Central):
+
+```bash
+./benchmarks/run.sh                     # 1.6.1 vs master (default)
+./benchmarks/run.sh 1.6.1 1.6.0 master # explicit version list
+```
+
+Results are written to `docs/assets/benchmarks/` as JMH JSON.
 
 ## License
 
