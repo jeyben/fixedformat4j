@@ -2,6 +2,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
+import com.ancientprogramming.fixedformat4j.annotation.RecordAlign;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatEnum;
@@ -48,7 +49,10 @@ class FormatInstructionsBuilder {
       return fieldAlign;
     }
     Record recordAnno = declaringClass.getAnnotation(Record.class);
-    return (recordAnno != null) ? recordAnno.align() : Align.LEFT;
+    if (recordAnno == null) {
+      return Align.LEFT;
+    }
+    return recordAnno.align() == RecordAlign.RIGHT ? Align.RIGHT : Align.LEFT;
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})

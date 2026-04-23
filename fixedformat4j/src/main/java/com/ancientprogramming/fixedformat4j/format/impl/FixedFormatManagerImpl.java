@@ -15,7 +15,6 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
-import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.annotation.EnumFormat;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatEnum;
@@ -265,11 +264,6 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     Record recordAnno = fixedFormatRecordClass.getAnnotation(Record.class);
     if (recordAnno == null) {
       throw new FixedFormatException(format("%s has to be marked with the record annotation to be loaded", fixedFormatRecordClass.getName()));
-    }
-    if (recordAnno.align() == Align.INHERIT) {
-      throw new FixedFormatException(format(
-          "@Record(align) on %s must not be Align.INHERIT; use Align.LEFT or Align.RIGHT",
-          fixedFormatRecordClass.getName()));
     }
     return recordAnno;
   }

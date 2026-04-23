@@ -6,6 +6,32 @@ title: Changelog
 
 ## [Unreleased] — 1.8.0
 
+### Breaking changes
+
+- **`@Record(align)` now uses `RecordAlign` instead of `Align`** ([#81](https://github.com/jeyben/fixedformat4j/issues/81)) —
+  A new two-value enum `RecordAlign { LEFT, RIGHT }` replaces `Align` as the type of `@Record#align()`.
+  Because `Align` includes the `INHERIT` sentinel, which has no meaning at the record level, the old
+  type admitted a combination that was only detectable at runtime (and was rejected with a
+  `FixedFormatException` since 1.7.1). `RecordAlign` makes that mistake impossible at compile time
+  and removes the runtime check.
+
+  **Migration:** replace `Align.LEFT` / `Align.RIGHT` with `RecordAlign.LEFT` / `RecordAlign.RIGHT`
+  on every `@Record` annotation that specifies the `align` attribute:
+
+  ```java
+  // Before (1.7.x)
+  @Record(length = 20, align = Align.RIGHT)
+  public class MyRecord { … }
+
+  // After (1.8.0+)
+  @Record(length = 20, align = RecordAlign.RIGHT)
+  public class MyRecord { … }
+  ```
+
+  Records that do not specify `align` are **unaffected** — the default (`RecordAlign.LEFT`)
+  preserves the existing behaviour. The `Align` enum itself is unchanged and continues to be
+  used for `@Field(align = …)`.
+
 ### Bug fixes
 
 - **Classloader leak prevention via `ClassValue`** ([#89](https://github.com/jeyben/fixedformat4j/issues/89)) —

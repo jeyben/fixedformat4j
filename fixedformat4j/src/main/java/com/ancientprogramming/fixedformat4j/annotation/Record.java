@@ -46,15 +46,11 @@ public @interface Record {
   /**
    * Default alignment applied to all fields in this record. Individual fields may override this
    * by setting {@link Field#align()} to any value other than {@link Align#INHERIT}.
-   * Defaults to {@link Align#LEFT} to preserve pre-1.7.1 behaviour for records that do not
+   * Defaults to {@link RecordAlign#LEFT} to preserve pre-1.7.1 behaviour for records that do not
    * set this attribute.
-   * <p>
-   * {@link Align#INHERIT} is not a valid value here — it exists solely as a field-level sentinel.
-   * Passing it will cause a {@link com.ancientprogramming.fixedformat4j.exception.FixedFormatException}
-   * to be thrown on the first {@code load} or {@code export} call.
    *
-   * @return the record-level default alignment; must be {@link Align#LEFT} or {@link Align#RIGHT}
+   * @return the record-level default alignment
    * @since 1.7.1
    */
-  Align align() default Align.LEFT;
+  RecordAlign align() default RecordAlign.LEFT;
 }
