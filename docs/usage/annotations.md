@@ -14,7 +14,7 @@ Used on classes. Marks that the class contains `@Field` annotations on its gette
 |-----------|------|----------|---------|-------------|
 | `length` | `int` | no | `-1` | Minimum length the string representation should have. If the string is shorter it is padded with `paddingChar`. |
 | `paddingChar` | `char` | no | `' '` | The character to use when padding is needed. |
-| `align` | `Align` | no | `Align.LEFT` | Default alignment applied to all fields in the record. Individual `@Field` annotations may override it with an explicit `align` value. |
+| `align` | `RecordAlign` | no | `RecordAlign.LEFT` | Default alignment applied to all fields in the record. Individual `@Field` annotations may override it with an explicit `align` value. |
 
 ## @Field
 

@@ -159,5 +159,16 @@ while ((line = reader.readLine()) != null) {
 }
 ```
 
-See [Example 4 — Processing a file line by line](examples#example-4--processing-a-file-line-by-line) for a full file-reading snippet.
+Since 1.8.0, `FixedFormatReader` handles this pattern directly — register each record class with a `RegexFixedFormatMatchPattern` and let the reader route lines automatically:
+
+```java
+FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
+    .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^H"))
+    .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^D"))
+    .build();
+
+Map<Class<?>, List<Object>> byType = reader.readAsMap(Path.of("data.txt"));
+```
+
+See [File Processing](usage/file-processing) for the full API, or [Example 4](examples#example-4--processing-a-file-line-by-line) for the manual loop approach.
 

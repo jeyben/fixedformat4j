@@ -425,7 +425,7 @@ public class InvoiceRecord {
 
 ```java
 // After 1.7.1 — alignment declared once at record level
-@Record(length = 22, align = Align.RIGHT)
+@Record(length = 22, align = RecordAlign.RIGHT)
 public class InvoiceRecord {
 
   private Integer invoiceId;
