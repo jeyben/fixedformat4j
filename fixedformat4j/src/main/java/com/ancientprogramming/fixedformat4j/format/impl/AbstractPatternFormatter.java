@@ -33,6 +33,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * for the pattern, it is re-padded to that length so that the underlying date parser
  * receives a well-formed string.
  *
+ * <p>The formatted length for each pattern is computed once per (formatter subclass, pattern)
+ * pair and cached in a {@link ClassValue}-backed map. Values are automatically eligible for GC
+ * when the formatter's defining classloader is collected, preventing classloader leaks in
+ * hot-reload and multi-classloader environments.
+ *
  * @param <T> the date/time type handled by this formatter
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.6.1
