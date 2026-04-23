@@ -13,8 +13,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
 
@@ -25,15 +23,14 @@ import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFix
  * {@link FieldDescriptor} per effective {@code @Field}. Subsequent calls return the same
  * immutable list without re-scanning.
  *
- * <p>Thread safety: {@code computeIfAbsent} guarantees that {@link #build} runs at most once per
+ * <p>Thread safety: {@link ClassValue} guarantees that {@link #build} runs at most once per
  * class key. Helper objects ({@link AnnotationScanner}, {@link FormatInstructionsBuilder},
  * {@link RepeatingFieldSupport}) are created as local variables inside {@code build} so that
  * concurrent builds of different classes never share mutable state.
  *
- * <p><strong>Note:</strong> this cache is never cleared. In multi-classloader environments
- * (e.g. application servers with hot-reload, OSGi containers) old {@link Class} references may
- * be retained here after their classloader is discarded, preventing garbage collection.
- * In such environments consider using a {@link java.lang.ref.WeakReference}-based map instead.
+ * <p>Classloader safety: values are stored inside each {@link Class} object via {@link ClassValue},
+ * so they are automatically eligible for GC once the defining classloader becomes unreachable.
+ * This prevents classloader leaks in hot-reload and multi-classloader environments.
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.7.0
@@ -42,10 +39,15 @@ class ClassMetadataCache {
 
   static final ClassMetadataCache INSTANCE = new ClassMetadataCache();
 
-  private final Map<Class<?>, List<FieldDescriptor>> cache = new ConcurrentHashMap<>();
+  private final ClassValue<List<FieldDescriptor>> cache = new ClassValue<List<FieldDescriptor>>() {
+    @Override
+    protected List<FieldDescriptor> computeValue(Class<?> clazz) {
+      return build(clazz);
+    }
+  };
 
   List<FieldDescriptor> get(Class<?> clazz) {
-    return cache.computeIfAbsent(clazz, this::build);
+    return cache.get(clazz);
   }
 
   private List<FieldDescriptor> build(Class<?> clazz) {
