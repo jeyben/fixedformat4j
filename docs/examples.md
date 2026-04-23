@@ -151,39 +151,37 @@ System.out.println(manager.export(record));
 
 ## Example 4 — Processing a file line by line
 
-fixedformat4j maps a **single line** to a Java object. To process a whole file, loop through the lines yourself and call `manager.load(...)` for each one.
+Since 1.8.0, use `FixedFormatReader` to process files. Build a reader once, then call any output-shape method — `readAsList`, `readAsMap`, `readAsStream`, or `readWithCallback`.
+
+**Single record type:**
 
 ```java
-FixedFormatManager manager = new FixedFormatManagerImpl();
-List<EmployeeRecord> employees = new ArrayList<>();
+FixedFormatReader<EmployeeRecord> reader = FixedFormatReader.<EmployeeRecord>builder()
+    .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern(".*"))
+    .includeLines(line -> !line.isBlank())
+    .build();
 
-try (BufferedReader reader = new BufferedReader(new FileReader("employees.txt"))) {
-    String line;
-    while ((line = reader.readLine()) != null) {
-        if (!line.isBlank()) {
-            employees.add(manager.load(EmployeeRecord.class, line));
-        }
-    }
-}
+List<EmployeeRecord> employees = reader.readAsList(Path.of("employees.txt"));
 
-// Process the loaded records
 for (EmployeeRecord emp : employees) {
     System.out.println(emp.getName() + " — ID: " + emp.getEmployeeId());
 }
 ```
 
-If a single file contains records of more than one type, read a discriminator field first and branch to the appropriate class:
+**Multiple record types in the same file** — register each class with a discriminator pattern; `readAsMap` groups results by class:
 
 ```java
-while ((line = reader.readLine()) != null) {
-    String recordType = line.substring(0, 1); // type code in column 1
-    if ("E".equals(recordType)) {
-        employees.add(manager.load(EmployeeRecord.class, line));
-    } else if ("M".equals(recordType)) {
-        managers.add(manager.load(ManagerRecord.class, line));
-    }
-}
+FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
+    .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern("^E"))
+    .addMapping(ManagerRecord.class,  new RegexFixedFormatMatchPattern("^M"))
+    .build();
+
+Map<Class<?>, List<Object>> byType = reader.readAsMap(Path.of("staff.txt"));
+List<Object> employees = byType.getOrDefault(EmployeeRecord.class, List.of());
+List<Object> managers  = byType.getOrDefault(ManagerRecord.class,  List.of());
 ```
+
+See [File Processing](usage/file-processing) for the full API including streaming large files and error-handling strategies.
 
 ---
 
