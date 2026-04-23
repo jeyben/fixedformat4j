@@ -49,6 +49,16 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   private static final Logger LOG = LoggerFactory.getLogger(FixedFormatManagerImpl.class);
 
   /**
+   * Returns a new instance of this implementation as a {@link FixedFormatManager}.
+   *
+   * @return a new {@code FixedFormatManagerImpl}; never {@code null}
+   * @since 1.8.0
+   */
+  public static FixedFormatManager create() {
+    return new FixedFormatManagerImpl();
+  }
+
+  /**
    * Tracks which record classes have already been validated. The sentinel value is stored inside
    * each {@link Class} object via {@link ClassValue}, so it is automatically GC'd when the
    * defining classloader becomes unreachable — preventing classloader leaks in hot-reload and

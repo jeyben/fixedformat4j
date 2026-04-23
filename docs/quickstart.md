@@ -128,6 +128,7 @@ The export re-pads every field to its declared length using the configured align
 
 - [Annotations reference](usage/annotations) — full details on every annotation attribute
 - [Examples](examples) — practical scenarios: financial records, booleans, file processing, custom formatters
+- [File Processing](usage/file-processing) — reading large files with FixedFormatReader
 - [Nested Records](usage/nested-records) — embedding one `@Record` class inside another
 - [FAQ](faq)
 

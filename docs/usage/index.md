@@ -57,6 +57,12 @@ String exportedString = manager.export(record);
 // ... do something with the new string
 ```
 
+## FixedFormatReader — reading files
+
+`FixedFormatReader` builds on `FixedFormatManager` to process whole files or streams. It reads line by line, routes each line to the correct `@Record` class via a configurable `FixedFormatMatchPattern`, and returns the results as a `List`, a `Map` grouped by class, a lazy `Stream`, or via a per-record callback.
+
+See the [File Processing](file-processing) page for the full guide including multi-type files, streaming, strategies, and error handling.
+
 ## Annotations
 
 Annotations instruct the manager on how to load and export data. See the [complete annotations reference](annotations).

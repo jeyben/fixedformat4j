@@ -515,3 +515,106 @@ System.out.println(manager.export(r1));
 
 For repeating fields (`count > 1`) the check is applied **per element**: each slot is evaluated independently, so a collection can hold a mix of `null` and non-null values. Primitive array element types (e.g. `int[]`) cannot hold `null` and are unaffected.
 
+---
+
+## Example 10 — Reading a mixed-type file with FixedFormatReader
+
+This example shows how to read a file that contains two distinct record types — a header line and detail lines — using `FixedFormatReader` with `T=Object`.
+
+**File layout** (`orders.txt`):
+
+```
+HDR20260419ACME Corp
+DTL000142WIDGET-A  0000099900
+DTL000143BOLT-SET  0000024999
+```
+
+- Lines starting with `HDR`: one header per file (date + company name).
+- Lines starting with `DTL`: one detail per order (order ID, product, amount in cents).
+
+**Record classes:**
+
+```java
+@Record(length = 19)
+public class OrderHeader {
+
+  private String date;
+  private String company;
+
+  @Field(offset = 4, length = 8)
+  public String getDate() { return date; }
+  public void setDate(String date) { this.date = date; }
+
+  @Field(offset = 12, length = 8)
+  public String getCompany() { return company; }
+  public void setCompany(String company) { this.company = company; }
+}
+
+@Record(length = 26)
+public class OrderDetail {
+
+  private Integer orderId;
+  private String  product;
+  private Integer amountCents;
+
+  @Field(offset = 4, length = 6, align = Align.RIGHT, paddingChar = '0')
+  public Integer getOrderId() { return orderId; }
+  public void setOrderId(Integer id) { this.orderId = id; }
+
+  @Field(offset = 10, length = 10)
+  public String getProduct() { return product; }
+  public void setProduct(String product) { this.product = product; }
+
+  @Field(offset = 20, length = 10, align = Align.RIGHT, paddingChar = '0')
+  public Integer getAmountCents() { return amountCents; }
+  public void setAmountCents(Integer amount) { this.amountCents = amount; }
+}
+```
+
+**Reading into a Map** (groups records by class):
+
+```java
+FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
+    .addMapping(OrderHeader.class, new RegexFixedFormatMatchPattern("^HDR"))
+    .addMapping(OrderDetail.class, new RegexFixedFormatMatchPattern("^DTL"))
+    .unmatchedLineStrategy(UnmatchedLineStrategy.SKIP)
+    .build();
+
+Map<Class<?>, List<Object>> byType = reader.readAsMap(new File("orders.txt"));
+
+OrderHeader header = (OrderHeader) byType.get(OrderHeader.class).get(0);
+System.out.println(header.getDate());    // "20260419"
+System.out.println(header.getCompany()); // "ACME Corp"
+
+List<Object> details = byType.get(OrderDetail.class);
+System.out.println(details.size());      // 2
+```
+
+**Reading into a List** (single-type file, match-all pattern):
+
+```java
+FixedFormatReader<OrderDetail> detailReader = FixedFormatReader.<OrderDetail>builder()
+    .addMapping(OrderDetail.class, new RegexFixedFormatMatchPattern("^DTL"))
+    .unmatchedLineStrategy(UnmatchedLineStrategy.SKIP)
+    .build();
+
+List<OrderDetail> orders = detailReader.readAsList(new File("orders.txt"));
+orders.forEach(o ->
+    System.out.printf("Order %d: %s — %d cents%n",
+        o.getOrderId(), o.getProduct(), o.getAmountCents()));
+```
+
+**Streaming a large file** without loading it all into memory:
+
+```java
+try (Stream<Object> stream = reader.readAsStream(Path.of("orders.txt"))) {
+    stream
+        .filter(r -> r instanceof OrderDetail)
+        .map(r -> (OrderDetail) r)
+        .filter(d -> d.getAmountCents() > 50000)
+        .forEach(d -> System.out.println("High-value order: " + d.getOrderId()));
+}
+```
+
+For the complete `FixedFormatReader` API — strategies, callbacks, charset overloads, and pre-match filtering — see the [File Processing](usage/file-processing) guide.
+
