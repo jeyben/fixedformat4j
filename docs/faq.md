@@ -6,9 +6,19 @@ title: FAQ
 
 ## Can fixedformat4j help me parse large text files?
 
-As the API stands it does not provide file-iteration utilities, but it does not constrain you in any way either.
+Yes. Since 1.8.0, `FixedFormatReader` provides built-in file and stream processing. Use `readAsStream()` for memory-efficient lazy reading — lines are loaded on demand and the underlying reader is closed automatically when the stream is closed:
 
-Fixedformat4j concentrates on mapping one single line to a Java object. You are free to loop through any large text file and use the `FixedFormatManager` to create instances of Java objects for each line.
+```java
+FixedFormatReader<MyRecord> reader = FixedFormatReader.<MyRecord>builder()
+    .addMapping(MyRecord.class, new RegexFixedFormatMatchPattern(".*"))
+    .build();
+
+try (Stream<MyRecord> stream = reader.readAsStream(Path.of("large.txt"))) {
+    stream.forEach(processor::process);
+}
+```
+
+See [File Processing](usage/file-processing) for the full API including output shapes, strategies, and heterogeneous-file support.
 
 ## Can I apply my own custom formatter?
 
