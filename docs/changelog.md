@@ -32,6 +32,37 @@ title: Changelog
   preserves the existing behaviour. The `Align` enum itself is unchanged and continues to be
   used for `@Field(align = …)`.
 
+### New features
+
+- **`FixedFormatReader` — file and stream processing** ([#82](https://github.com/jeyben/fixedformat4j/issues/82)) —
+  Reads fixed-format records from files, streams, or `Reader`s line-by-line, routing each line
+  to one or more `@Record`-annotated classes via `FixedFormatMatchPattern` discriminators.
+  The built-in `RegexFixedFormatMatchPattern` uses `Matcher.find()` semantics and compiles the
+  pattern eagerly (invalid patterns throw immediately).
+
+  Four output shapes: `readAsStream()` (lazy `Stream<T>`, auto-closes on stream close),
+  `readAsList()`, `readAsMap()` (keyed by record class, insertion-ordered), and
+  `readWithCallback()` (`Consumer<T>` or `BiConsumer<Class<? extends T>, T>`). Every shape
+  accepts `Reader`, `InputStream`, `File`, or `Path`; file/stream overloads default to UTF-8.
+
+  Three configurable strategies: `MultiMatchStrategy` (`firstMatch` / `throwOnAmbiguity` /
+  `allMatches`), `UnmatchedLineStrategy` (`skip` / `throwException`), and `ParseErrorStrategy`
+  (`throwException` / `skipAndLog`). An `includeLines(Predicate<String>)` pre-filter runs
+  before pattern matching and bypasses `UnmatchedLineStrategy`.
+
+  `FixedFormatIOException` (extends `FixedFormatException`) is thrown on underlying `IOException`.
+
+  ```java
+  FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
+      .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"))
+      .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
+      .build();
+
+  Map<Class<?>, List<Object>> byType = reader.readAsMap(Path.of("data.txt"));
+  ```
+
+  See [File processing](usage/file-processing) for a complete guide.
+
 ### Bug fixes
 
 - **Classloader leak prevention via `ClassValue`** ([#89](https://github.com/jeyben/fixedformat4j/issues/89)) —
