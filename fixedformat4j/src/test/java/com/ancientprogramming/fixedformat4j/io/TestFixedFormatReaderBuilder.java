@@ -25,7 +25,7 @@ class TestFixedFormatReaderBuilder {
 
   @Test
   void buildsSuccessfullyWithOneMapping() {
-    FixedFormatReader<SampleRecord> reader = FixedFormatReader.<SampleRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(SampleRecord.class, anyPattern)
         .build();
     assertNotNull(reader);
@@ -48,24 +48,26 @@ class TestFixedFormatReaderBuilder {
   @Test
   void throwsIllegalArgumentWhenAddMappingPatternIsNull() {
     assertThrows(IllegalArgumentException.class, () ->
-        FixedFormatReader.<SampleRecord>builder().addMapping(SampleRecord.class, null)
+        FixedFormatReader.builder().addMapping(SampleRecord.class, null)
     );
   }
 
   @Test
   void defaultManagerParsesRecordsWithoutExplicitManagerCall() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, anyPattern)
         .manager(FixedFormatManagerImpl.create())
         .build();
-    List<TenCharRecord> results = reader.readAsList(new StringReader("hello     "));
+    List<TenCharRecord> results = reader
+        .readAsTypedResult(new StringReader("hello     "))
+        .get(TenCharRecord.class);
     assertEquals(1, results.size());
     assertEquals("hello", results.get(0).getValue());
   }
 
   @Test
   void builderIsFluentReturningItself() {
-    FixedFormatReader.Builder<SampleRecord> builder = FixedFormatReader.builder();
+    FixedFormatReaderBuilder builder = FixedFormatReader.builder();
     assertSame(builder, builder.addMapping(SampleRecord.class, anyPattern));
     assertSame(builder, builder.multiMatchStrategy(MultiMatchStrategy.firstMatch()));
     assertSame(builder, builder.unmatchedLineStrategy(UnmatchedLineStrategy.skip()));
@@ -73,8 +75,22 @@ class TestFixedFormatReaderBuilder {
   }
 
   @Test
+  void typedHandlerAddMappingIsFluent() {
+    FixedFormatReaderBuilder builder = FixedFormatReader.builder();
+    assertSame(builder, builder.addMapping(SampleRecord.class, anyPattern, r -> {}));
+  }
+
+  @Test
+  void builderAcceptsTypedHandlerWithoutThrowingOnBuild() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(SampleRecord.class, anyPattern, r -> {})
+        .build();
+    assertNotNull(reader);
+  }
+
+  @Test
   void unmatchedLambdaStrategyIsAcceptedByBuilder() {
-    FixedFormatReader<SampleRecord> reader = FixedFormatReader.<SampleRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(SampleRecord.class, anyPattern)
         .unmatchedLineStrategy((lineNumber, line) -> {})
         .build();
@@ -83,7 +99,7 @@ class TestFixedFormatReaderBuilder {
 
   @Test
   void parseErrorLambdaStrategyIsAcceptedByBuilder() {
-    FixedFormatReader<SampleRecord> reader = FixedFormatReader.<SampleRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(SampleRecord.class, anyPattern)
         .parseErrorStrategy((wrapped, line, lineNumber) -> {})
         .build();

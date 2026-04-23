@@ -23,8 +23,8 @@ class TestFixedFormatReaderCallback {
   private static final FixedFormatMatchPattern A_PATTERN = new RegexFixedFormatMatchPattern("^A");
   private static final FixedFormatMatchPattern B_PATTERN = new RegexFixedFormatMatchPattern("^B");
 
-  private FixedFormatReader<Object> heterogeneousReader() {
-    return FixedFormatReader.<Object>builder()
+  private FixedFormatReader heterogeneousReader() {
+    return FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, A_PATTERN)
         .addMapping(FiveCharRecord.class, B_PATTERN)
         .build();
@@ -32,20 +32,19 @@ class TestFixedFormatReaderCallback {
 
   @Test
   void consumerCallbackInvokesForEachRecordInOrder() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
-        .build();
-
     List<String> values = new ArrayList<>();
-    reader.readWithCallback(new StringReader("hello     \nworld     "),
-        record -> values.add(record.getValue()));
+    FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"),
+            record -> values.add(record.getValue()))
+        .build()
+        .processAll(new StringReader("hello     \nworld     "));
 
     assertEquals(List.of("hello", "world"), values);
   }
 
   @Test
   void biConsumerCallbackReceivesMatchedClassAndRecord() {
-    FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, A_PATTERN)
         .addMapping(FiveCharRecord.class, B_PATTERN)
         .build();
@@ -59,7 +58,7 @@ class TestFixedFormatReaderCallback {
 
   @Test
   void biConsumerCallbackPreservesEncounterOrder() {
-    FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, A_PATTERN)
         .addMapping(FiveCharRecord.class, B_PATTERN)
         .build();
@@ -74,12 +73,14 @@ class TestFixedFormatReaderCallback {
 
   @Test
   void consumerCallbackWorksWithInputStreamAndExplicitCharset() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
-        .build();
-    InputStream is = new ByteArrayInputStream("hello     \nworld     ".getBytes(StandardCharsets.ISO_8859_1));
     List<String> values = new ArrayList<>();
-    reader.readWithCallback(is, StandardCharsets.ISO_8859_1, r -> values.add(r.getValue()));
+    FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"),
+            record -> values.add(record.getValue()))
+        .build()
+        .processAll(
+            new ByteArrayInputStream("hello     \nworld     ".getBytes(StandardCharsets.ISO_8859_1)),
+            StandardCharsets.ISO_8859_1);
     assertEquals(List.of("hello", "world"), values);
   }
 

@@ -18,18 +18,18 @@ class TestFixedFormatReaderStream {
     return new StringReader(String.join("\n", lines));
   }
 
-  private FixedFormatReader<TenCharRecord> singleTypeReader() {
-    return FixedFormatReader.<TenCharRecord>builder()
+  private FixedFormatReader singleTypeReader() {
+    return FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
         .build();
   }
 
   @Test
   void emitsOneRecordPerMatchingLine() {
-    List<TenCharRecord> results;
-    try (Stream<TenCharRecord> stream = singleTypeReader().readAsStream(readerOf("hello     ", "world     "))) {
-      results = stream.collect(Collectors.toList());
-    }
+    List<TenCharRecord> results = singleTypeReader()
+        .readAsTypedResult(readerOf("hello     ", "world     "))
+        .get(TenCharRecord.class);
+
     assertEquals(2, results.size());
     assertEquals("hello", results.get(0).getValue());
     assertEquals("world", results.get(1).getValue());
@@ -37,15 +37,15 @@ class TestFixedFormatReaderStream {
 
   @Test
   void skipsUnmatchedLinesByDefault() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
         .build();
 
-    List<TenCharRecord> results;
-    try (Stream<TenCharRecord> stream = reader.readAsStream(readerOf("AAAAAAAAAA", "BBBBBBBBBB", "AAAAAAAAAA"))) {
-      results = stream.collect(Collectors.toList());
+    long count;
+    try (Stream<Object> stream = reader.readAsStream(readerOf("AAAAAAAAAA", "BBBBBBBBBB", "AAAAAAAAAA"))) {
+      count = stream.count();
     }
-    assertEquals(2, results.size());
+    assertEquals(2, count);
   }
 
   @Test
@@ -61,13 +61,13 @@ class TestFixedFormatReaderStream {
       @Override public <T> String export(String template, T instance) { return ""; }
     };
 
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
         .manager(failingManager)
         .build();
 
     FixedFormatException ex = assertThrows(FixedFormatException.class, () -> {
-      try (Stream<TenCharRecord> stream = reader.readAsStream(readerOf("line1     ", "line2     "))) {
+      try (Stream<Object> stream = reader.readAsStream(readerOf("line1     ", "line2     "))) {
         stream.collect(Collectors.toList());
       }
     });
@@ -84,7 +84,7 @@ class TestFixedFormatReaderStream {
     };
 
     assertThrows(FixedFormatIOException.class, () -> {
-      try (Stream<TenCharRecord> stream = singleTypeReader().readAsStream(brokenReader)) {
+      try (Stream<Object> stream = singleTypeReader().readAsStream(brokenReader)) {
         stream.collect(Collectors.toList());
       }
     });
@@ -92,15 +92,14 @@ class TestFixedFormatReaderStream {
 
   @Test
   void includeLinesPreventsMatchingOnExcludedLines() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
         .includeLines(line -> !line.startsWith("#"))
         .build();
 
-    List<TenCharRecord> results;
-    try (Stream<TenCharRecord> stream = reader.readAsStream(readerOf("hello     ", "# comment ", "world     "))) {
-      results = stream.collect(Collectors.toList());
-    }
+    List<TenCharRecord> results = reader
+        .readAsTypedResult(readerOf("hello     ", "# comment ", "world     "))
+        .get(TenCharRecord.class);
     assertEquals(2, results.size());
     assertEquals("hello", results.get(0).getValue());
     assertEquals("world", results.get(1).getValue());
@@ -116,7 +115,7 @@ class TestFixedFormatReaderStream {
       }
     };
 
-    try (Stream<TenCharRecord> stream = singleTypeReader().readAsStream(trackingReader)) {
+    try (Stream<Object> stream = singleTypeReader().readAsStream(trackingReader)) {
       stream.findFirst();
     }
     assertTrue(closed[0]);

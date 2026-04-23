@@ -15,13 +15,13 @@ class TestFixedFormatReaderUnmatched {
 
   @Test
   void throwsOnUnmatchedLineWhenStrategyIsThrowException() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
         .unmatchedLineStrategy(UnmatchedLineStrategy.throwException())
         .build();
 
     FixedFormatException ex = assertThrows(FixedFormatException.class, () -> {
-      try (Stream<TenCharRecord> stream = reader.readAsStream(new StringReader("BBBBBBBBBB"))) {
+      try (Stream<Object> stream = reader.readAsStream(new StringReader("BBBBBBBBBB"))) {
         stream.collect(Collectors.toList());
       }
     });
@@ -32,12 +32,12 @@ class TestFixedFormatReaderUnmatched {
   @Test
   void customLambdaStrategyReceivesLineNumberAndContent() {
     List<String> captured = new ArrayList<>();
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
         .unmatchedLineStrategy((lineNumber, line) -> captured.add(lineNumber + ":" + line))
         .build();
 
-    try (Stream<TenCharRecord> stream = reader.readAsStream(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"))) {
+    try (Stream<Object> stream = reader.readAsStream(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"))) {
       stream.collect(Collectors.toList());
     }
     assertEquals(1, captured.size());
@@ -47,12 +47,12 @@ class TestFixedFormatReaderUnmatched {
   @Test
   void strategyNotInvokedForMatchedLines() {
     List<String> captured = new ArrayList<>();
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
         .unmatchedLineStrategy((lineNumber, line) -> captured.add(line))
         .build();
 
-    try (Stream<TenCharRecord> stream = reader.readAsStream(new StringReader("AAAAAAAAAA"))) {
+    try (Stream<Object> stream = reader.readAsStream(new StringReader("AAAAAAAAAA"))) {
       stream.collect(Collectors.toList());
     }
     assertTrue(captured.isEmpty());

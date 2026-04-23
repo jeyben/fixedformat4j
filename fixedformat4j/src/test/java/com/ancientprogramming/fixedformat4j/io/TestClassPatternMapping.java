@@ -53,4 +53,17 @@ class TestClassPatternMapping {
     assertThrows(IllegalArgumentException.class,
         () -> new ClassPatternMapping<>(ValidRecord.class, null));
   }
+
+  @Test
+  void getHandlerReturnsNullWhenConstructedWithTwoArgs() {
+    ClassPatternMapping<ValidRecord> mapping = new ClassPatternMapping<>(ValidRecord.class, anyPattern);
+    assertNull(mapping.getHandler());
+  }
+
+  @Test
+  void getHandlerReturnsProvidedConsumerWhenConstructedWithThreeArgs() {
+    java.util.function.Consumer<ValidRecord> handler = r -> {};
+    ClassPatternMapping<ValidRecord> mapping = new ClassPatternMapping<>(ValidRecord.class, anyPattern, handler);
+    assertSame(handler, mapping.getHandler());
+  }
 }

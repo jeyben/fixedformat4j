@@ -45,13 +45,13 @@ class TestFixedFormatReaderParseError {
       @Override public <T> String export(String template, T instance) { return ""; }
     };
 
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
         .parseErrorStrategy(ParseErrorStrategy.skipAndLog())
         .manager(countingManager)
         .build();
 
-    try (Stream<TenCharRecord> stream = reader.readAsStream(
+    try (Stream<Object> stream = reader.readAsStream(
         new StringReader("line1     \nline2     \nline3     "))) {
       stream.collect(Collectors.toList());
     }
@@ -62,14 +62,14 @@ class TestFixedFormatReaderParseError {
   void customLambdaStrategyReceivesLineNumberLineAndCause() {
     List<String> captured = new ArrayList<>();
 
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
         .parseErrorStrategy((wrapped, line, lineNumber) ->
             captured.add(lineNumber + ":" + line + ":" + wrapped.getMessage()))
         .manager(failOnSecondCall())
         .build();
 
-    try (Stream<TenCharRecord> stream = reader.readAsStream(
+    try (Stream<Object> stream = reader.readAsStream(
         new StringReader("line1     \nline2     "))) {
       stream.collect(Collectors.toList());
     }
@@ -79,15 +79,15 @@ class TestFixedFormatReaderParseError {
 
   @Test
   void customLambdaStrategyDoesNotEmitRecordForFailedLine() {
-    List<TenCharRecord> results = new ArrayList<>();
+    List<Object> results = new ArrayList<>();
 
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
         .parseErrorStrategy((wrapped, line, lineNumber) -> {})
         .manager(failOnSecondCall())
         .build();
 
-    try (Stream<TenCharRecord> stream = reader.readAsStream(
+    try (Stream<Object> stream = reader.readAsStream(
         new StringReader("line1     \nline2     "))) {
       stream.forEach(results::add);
     }

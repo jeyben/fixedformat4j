@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,29 +18,29 @@ class TestFixedFormatReaderMultiMatch {
 
   @Test
   void firstMatchWinsWhenTwoPatternsMatch() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
         .multiMatchStrategy(MultiMatchStrategy.firstMatch())
         .build();
 
-    List<TenCharRecord> results;
-    try (Stream<TenCharRecord> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
-      results = stream.collect(Collectors.toList());
+    long count;
+    try (Stream<Object> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
+      count = stream.count();
     }
-    assertEquals(1, results.size());
+    assertEquals(1, count);
   }
 
   @Test
   void throwsOnAmbiguityWhenTwoPatternsMatch() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
         .multiMatchStrategy(MultiMatchStrategy.throwOnAmbiguity())
         .build();
 
     FixedFormatException ex = assertThrows(FixedFormatException.class, () -> {
-      try (Stream<TenCharRecord> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
+      try (Stream<Object> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
         stream.collect(Collectors.toList());
       }
     });
@@ -51,31 +50,31 @@ class TestFixedFormatReaderMultiMatch {
 
   @Test
   void noAmbiguityExceptionWhenOnlyOnePatternMatches() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^B"))
         .multiMatchStrategy(MultiMatchStrategy.throwOnAmbiguity())
         .build();
 
-    List<TenCharRecord> results;
-    try (Stream<TenCharRecord> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
-      results = stream.collect(Collectors.toList());
+    long count;
+    try (Stream<Object> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
+      count = stream.count();
     }
-    assertEquals(1, results.size());
+    assertEquals(1, count);
   }
 
   @Test
   void allMatchesEmitsTwoObjectsForOneMatchingLine() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
+    FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
         .multiMatchStrategy(MultiMatchStrategy.allMatches())
         .build();
 
-    List<TenCharRecord> results;
-    try (Stream<TenCharRecord> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
-      results = stream.collect(Collectors.toList());
+    long count;
+    try (Stream<Object> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
+      count = stream.count();
     }
-    assertEquals(2, results.size());
+    assertEquals(2, count);
   }
 }
