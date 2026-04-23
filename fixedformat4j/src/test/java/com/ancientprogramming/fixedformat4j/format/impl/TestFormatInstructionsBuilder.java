@@ -2,6 +2,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
+import com.ancientprogramming.fixedformat4j.annotation.RecordAlign;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatBoolean;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatNumber;
@@ -164,14 +165,14 @@ public class TestFormatInstructionsBuilder {
     public String fetch() { return null; }
   }
 
-  @Record(align = Align.RIGHT)
+  @Record(align = RecordAlign.RIGHT)
   static class RightAlignRecord {
     @Field(offset = 1, length = 5)
     public String getValue() { return null; }
     public void setValue(String v) {}
   }
 
-  @Record(align = Align.RIGHT)
+  @Record(align = RecordAlign.RIGHT)
   static class OverrideAlignRecord {
     @Field(offset = 1, length = 5, align = Align.LEFT)
     public String getValue() { return null; }
