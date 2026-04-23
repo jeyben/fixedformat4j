@@ -151,34 +151,35 @@ System.out.println(manager.export(record));
 
 ## Example 4 — Processing a file line by line
 
-Since 1.8.0, use `FixedFormatReader` to process files. Build a reader once, then call any output-shape method — `readAsList`, `readAsMap`, `readAsStream`, or `readWithCallback`.
+Since 1.8.0, use `FixedFormatReader` to process files. Build a reader once, then call any output-shape method — `readAsList`, `readAsTypedResult`, `readAsStream`, `processAll`, or `readWithCallback`.
 
 **Single record type:**
 
 ```java
-FixedFormatReader<EmployeeRecord> reader = FixedFormatReader.<EmployeeRecord>builder()
+FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern(".*"))
     .includeLines(line -> !line.isBlank())
     .build();
 
-List<EmployeeRecord> employees = reader.readAsList(Path.of("employees.txt"));
+List<Object> employees = reader.readAsList(Path.of("employees.txt"));
 
-for (EmployeeRecord emp : employees) {
+for (Object obj : employees) {
+    EmployeeRecord emp = (EmployeeRecord) obj;
     System.out.println(emp.getName() + " — ID: " + emp.getEmployeeId());
 }
 ```
 
-**Multiple record types in the same file** — register each class with a discriminator pattern; `readAsMap` groups results by class:
+**Multiple record types in the same file** — register each class with a discriminator pattern; `readAsTypedResult` groups results by class with no casts:
 
 ```java
-FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
+FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern("^E"))
     .addMapping(ManagerRecord.class,  new RegexFixedFormatMatchPattern("^M"))
     .build();
 
-Map<Class<?>, List<Object>> byType = reader.readAsMap(Path.of("staff.txt"));
-List<Object> employees = byType.getOrDefault(EmployeeRecord.class, List.of());
-List<Object> managers  = byType.getOrDefault(ManagerRecord.class,  List.of());
+TypedReadResult result = reader.readAsTypedResult(Path.of("staff.txt"));
+List<EmployeeRecord> employees = result.get(EmployeeRecord.class);
+List<ManagerRecord>  managers  = result.get(ManagerRecord.class);
 ```
 
 See [File Processing](usage/file-processing) for the full API including streaming large files and error-handling strategies.
@@ -517,7 +518,7 @@ For repeating fields (`count > 1`) the check is applied **per element**: each sl
 
 ## Example 10 — Reading a mixed-type file with FixedFormatReader
 
-This example shows how to read a file that contains two distinct record types — a header line and detail lines — using `FixedFormatReader` with `T=Object`.
+This example shows how to read a file that contains two distinct record types — a header line and detail lines — using `FixedFormatReader`.
 
 **File layout** (`orders.txt`):
 
@@ -569,37 +570,42 @@ public class OrderDetail {
 }
 ```
 
-**Reading into a Map** (groups records by class):
+**Build the reader** (shared across all output shapes below):
 
 ```java
-FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
+FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(OrderHeader.class, new RegexFixedFormatMatchPattern("^HDR"))
     .addMapping(OrderDetail.class, new RegexFixedFormatMatchPattern("^DTL"))
     .unmatchedLineStrategy(UnmatchedLineStrategy.SKIP)
     .build();
+```
 
-Map<Class<?>, List<Object>> byType = reader.readAsMap(new File("orders.txt"));
+**Reading as TypedReadResult** (type-safe, no casts):
 
-OrderHeader header = (OrderHeader) byType.get(OrderHeader.class).get(0);
+```java
+TypedReadResult result = reader.readAsTypedResult(new File("orders.txt"));
+
+OrderHeader header = result.get(OrderHeader.class).get(0); // no cast
 System.out.println(header.getDate());    // "20260419"
 System.out.println(header.getCompany()); // "ACME Corp"
 
-List<Object> details = byType.get(OrderDetail.class);
+List<OrderDetail> details = result.get(OrderDetail.class); // no cast
 System.out.println(details.size());      // 2
 ```
 
-**Reading into a List** (single-type file, match-all pattern):
+**Typed handler dispatch** — push-style, no collection step:
 
 ```java
-FixedFormatReader<OrderDetail> detailReader = FixedFormatReader.<OrderDetail>builder()
-    .addMapping(OrderDetail.class, new RegexFixedFormatMatchPattern("^DTL"))
+FixedFormatReader reader = FixedFormatReader.builder()
+    .addMapping(OrderHeader.class, new RegexFixedFormatMatchPattern("^HDR"),
+        header -> System.out.println("Header: " + header.getDate()))
+    .addMapping(OrderDetail.class, new RegexFixedFormatMatchPattern("^DTL"),
+        detail -> System.out.printf("Order %d: %s — %d cents%n",
+            detail.getOrderId(), detail.getProduct(), detail.getAmountCents()))
     .unmatchedLineStrategy(UnmatchedLineStrategy.SKIP)
     .build();
 
-List<OrderDetail> orders = detailReader.readAsList(new File("orders.txt"));
-orders.forEach(o ->
-    System.out.printf("Order %d: %s — %d cents%n",
-        o.getOrderId(), o.getProduct(), o.getAmountCents()));
+reader.processAll(new File("orders.txt"));
 ```
 
 **Streaming a large file** without loading it all into memory:
@@ -613,6 +619,8 @@ try (Stream<Object> stream = reader.readAsStream(Path.of("orders.txt"))) {
         .forEach(d -> System.out.println("High-value order: " + d.getOrderId()));
 }
 ```
+
+For typed dispatch without `instanceof` casts, `readAsTypedResult` or `processAll` are preferred.
 
 For the complete `FixedFormatReader` API — strategies, callbacks, charset overloads, and pre-match filtering — see the [File Processing](usage/file-processing) guide.
 

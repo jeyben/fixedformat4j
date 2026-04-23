@@ -38,12 +38,15 @@ title: Changelog
   Reads fixed-format records from files, streams, or `Reader`s line-by-line, routing each line
   to one or more `@Record`-annotated classes via `FixedFormatMatchPattern` discriminators.
   The built-in `RegexFixedFormatMatchPattern` uses `Matcher.find()` semantics and compiles the
-  pattern eagerly (invalid patterns throw immediately).
+  pattern eagerly (invalid patterns throw immediately). `FixedFormatReader` is unparameterized.
 
-  Four output shapes: `readAsStream()` (lazy `Stream<T>`, auto-closes on stream close),
-  `readAsList()`, `readAsMap()` (keyed by record class, insertion-ordered), and
-  `readWithCallback()` (`Consumer<T>` or `BiConsumer<Class<? extends T>, T>`). Every shape
-  accepts `Reader`, `InputStream`, `File`, or `Path`; file/stream overloads default to UTF-8.
+  Four output shapes:
+  - `readAsStream()` — lazy `Stream<Object>`, auto-closes on stream close.
+  - `readAsList()` — eager `List<Object>` in encounter order.
+  - `readAsTypedResult()` — returns `TypedReadResult`, a type-safe class-keyed container; `get(Class<R>)` returns `List<R>` with no cast required. Also provides `getAll()`, `contains(Class<?>)`, and `classes()`.
+  - `processAll()` — push-style; dispatches each parsed record to the typed `Consumer<R>` handler registered per mapping via the three-argument `addMapping` overload. Mappings without a handler are silently skipped.
+
+  Every shape accepts `Reader`, `InputStream`, `File`, or `Path`; file/stream overloads default to UTF-8.
 
   Three configurable strategies: `MultiMatchStrategy` (`firstMatch` / `throwOnAmbiguity` /
   `allMatches`), `UnmatchedLineStrategy` (`skip` / `throwException`), and `ParseErrorStrategy`
@@ -53,12 +56,14 @@ title: Changelog
   `FixedFormatIOException` (extends `FixedFormatException`) is thrown on underlying `IOException`.
 
   ```java
-  FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
+  FixedFormatReader reader = FixedFormatReader.builder()
       .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"))
       .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
       .build();
 
-  Map<Class<?>, List<Object>> byType = reader.readAsMap(Path.of("data.txt"));
+  TypedReadResult result = reader.readAsTypedResult(Path.of("data.txt"));
+  List<HeaderRecord> headers = result.get(HeaderRecord.class); // no cast
+  List<DetailRecord> details = result.get(DetailRecord.class); // no cast
   ```
 
   See [File processing](usage/file-processing) for a complete guide.

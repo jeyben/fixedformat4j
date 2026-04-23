@@ -9,11 +9,11 @@ title: FAQ
 Yes. Since 1.8.0, `FixedFormatReader` provides built-in file and stream processing. Use `readAsStream()` for memory-efficient lazy reading — lines are loaded on demand and the underlying reader is closed automatically when the stream is closed:
 
 ```java
-FixedFormatReader<MyRecord> reader = FixedFormatReader.<MyRecord>builder()
+FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(MyRecord.class, new RegexFixedFormatMatchPattern(".*"))
     .build();
 
-try (Stream<MyRecord> stream = reader.readAsStream(Path.of("large.txt"))) {
+try (Stream<Object> stream = reader.readAsStream(Path.of("large.txt"))) {
     stream.forEach(processor::process);
 }
 ```
@@ -162,12 +162,14 @@ while ((line = reader.readLine()) != null) {
 Since 1.8.0, `FixedFormatReader` handles this pattern directly — register each record class with a `RegexFixedFormatMatchPattern` and let the reader route lines automatically:
 
 ```java
-FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
+FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^H"))
     .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^D"))
     .build();
 
-Map<Class<?>, List<Object>> byType = reader.readAsMap(Path.of("data.txt"));
+TypedReadResult result = reader.readAsTypedResult(Path.of("data.txt"));
+List<HeaderRecord> headers = result.get(HeaderRecord.class);
+List<DetailRecord> details = result.get(DetailRecord.class);
 ```
 
 See [File Processing](usage/file-processing) for the full API, or [Example 4](examples#example-4--processing-a-file-line-by-line) for the manual loop approach.
