@@ -73,12 +73,12 @@ class FixedFormatLineProcessor {
   }
 
   /**
-   * Variant used by {@link FixedFormatReader#readAsRows} for round-trip support.
+   * Variant used by {@link FixedFormatSegmentReader#readAsSegments} for round-trip support.
    *
    * <p>Unlike the single-callback overload, this variant:</p>
    * <ul>
    *   <li>Calls {@code unmatchedCallback} instead of the configured {@link UnmatchStrategy}
-   *       so that all unmatched lines are captured as {@link com.ancientprogramming.fixedformat4j.io.row.UnmatchedRow} entries.</li>
+   *       so that all unmatched lines are captured as {@link com.ancientprogramming.fixedformat4j.io.segment.UnmatchedSegment} entries.</li>
    *   <li>Calls {@code unmatchedCallback} also for lines rejected by the line filter, so
    *       no line is silently dropped and the original file can be reconstructed exactly.</li>
    * </ul>

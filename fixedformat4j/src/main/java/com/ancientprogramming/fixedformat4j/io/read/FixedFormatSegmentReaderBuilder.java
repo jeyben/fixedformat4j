@@ -17,31 +17,34 @@ package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
-import com.ancientprogramming.fixedformat4j.io.row.UnmatchedRow;
+import com.ancientprogramming.fixedformat4j.io.segment.UnmatchedSegment;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
 /**
- * Fluent builder for {@link FixedFormatRowReader}.
+ * Fluent builder for {@link FixedFormatSegmentReader}.
  *
- * <p>Obtain an instance via {@link FixedFormatRowReader#builder()}.
- * At minimum, one mapping must be added via {@link #addMapping} before calling {@link #build()}.</p>
+ * <p>Obtain an instance via {@link FixedFormatSegmentReader#builder()}.
+ * At minimum, one mapping must be added via {@link #addMapping} before calling
+ * {@link #build()}.</p>
  *
  * <p>Unlike {@link FixedFormatReaderBuilder}, this builder deliberately omits
- * {@code unmatchStrategy} — {@link FixedFormatRowReader} always captures every line,
+ * {@code unmatchStrategy} — {@link FixedFormatSegmentReader} always captures every line,
  * so the concept of an "unmatched line strategy" does not apply.</p>
  */
-public class FixedFormatRowReaderBuilder {
+public class FixedFormatSegmentReaderBuilder {
 
   final List<ClassPatternMapping<?>> mappings = new ArrayList<>();
   MultiMatchStrategy multiMatchStrategy = MultiMatchStrategy.firstMatch();
   ParseErrorStrategy parseErrorStrategy = ParseErrorStrategy.throwException();
   Predicate<String> lineFilter = line -> true;
+  LineSlicingStrategy lineSlicingStrategy = LineSlicingStrategy.singleRecord();
+  PartialChunkStrategy partialChunkStrategy = PartialChunkStrategy.skip();
   FixedFormatManager manager = FixedFormatManagerImpl.create();
 
-  FixedFormatRowReaderBuilder() {}
+  FixedFormatSegmentReaderBuilder() {}
 
   /**
    * Registers a mapping that routes lines matching {@code pattern} to {@code clazz}.
@@ -53,7 +56,7 @@ public class FixedFormatRowReaderBuilder {
    * @return this builder
    * @throws IllegalArgumentException if {@code clazz} is not annotated with {@code @Record}
    */
-  public <R> FixedFormatRowReaderBuilder addMapping(Class<R> clazz, FixedFormatMatchPattern pattern) {
+  public <R> FixedFormatSegmentReaderBuilder addMapping(Class<R> clazz, FixedFormatMatchPattern pattern) {
     mappings.add(new ClassPatternMapping<>(clazz, pattern));
     return this;
   }
@@ -65,7 +68,7 @@ public class FixedFormatRowReaderBuilder {
    * @param strategy the multi-match strategy to use; must not be {@code null}
    * @return this builder
    */
-  public FixedFormatRowReaderBuilder multiMatchStrategy(MultiMatchStrategy strategy) {
+  public FixedFormatSegmentReaderBuilder multiMatchStrategy(MultiMatchStrategy strategy) {
     this.multiMatchStrategy = strategy;
     return this;
   }
@@ -77,20 +80,49 @@ public class FixedFormatRowReaderBuilder {
    * @param strategy the parse-error strategy to use; must not be {@code null}
    * @return this builder
    */
-  public FixedFormatRowReaderBuilder parseErrorStrategy(ParseErrorStrategy strategy) {
+  public FixedFormatSegmentReaderBuilder parseErrorStrategy(ParseErrorStrategy strategy) {
     this.parseErrorStrategy = strategy;
     return this;
   }
 
   /**
    * Registers a pre-match line inclusion predicate. Lines for which the predicate returns
-   * {@code false} are treated as unmatched and become {@link UnmatchedRow} entries in the result.
+   * {@code false} are treated as unmatched and become {@link UnmatchedSegment} entries in the
+   * result.
    *
    * @param predicate returns {@code true} for lines that should be pattern-matched
    * @return this builder
    */
-  public FixedFormatRowReaderBuilder includeLines(Predicate<String> predicate) {
+  public FixedFormatSegmentReaderBuilder includeLines(Predicate<String> predicate) {
     this.lineFilter = predicate;
+    return this;
+  }
+
+  /**
+   * Sets the per-line slicing strategy. Defaults to {@link LineSlicingStrategy#singleRecord()},
+   * which treats each physical line as one record. Use {@link LineSlicingStrategy#packed(int)} for
+   * files where multiple records are packed end-to-end within each line, or
+   * {@link LineSlicingStrategy#mixed(java.util.function.Predicate, int)} for files that mix both
+   * formats.
+   *
+   * @param strategy the slicing strategy to use; must not be {@code null}
+   * @return this builder
+   */
+  public FixedFormatSegmentReaderBuilder lineSlicing(LineSlicingStrategy strategy) {
+    this.lineSlicingStrategy = strategy;
+    return this;
+  }
+
+  /**
+   * Sets the strategy applied when the last chunk on a physical line is shorter than the declared
+   * record width. Only relevant when using a slicing strategy other than
+   * {@link LineSlicingStrategy#singleRecord()}. Defaults to {@link PartialChunkStrategy#skip()}.
+   *
+   * @param strategy the partial-chunk strategy to use; must not be {@code null}
+   * @return this builder
+   */
+  public FixedFormatSegmentReaderBuilder partialChunkStrategy(PartialChunkStrategy strategy) {
+    this.partialChunkStrategy = strategy;
     return this;
   }
 
@@ -100,21 +132,21 @@ public class FixedFormatRowReaderBuilder {
    * @param manager the manager to use; must not be {@code null}
    * @return this builder
    */
-  public FixedFormatRowReaderBuilder manager(FixedFormatManager manager) {
+  public FixedFormatSegmentReaderBuilder manager(FixedFormatManager manager) {
     this.manager = manager;
     return this;
   }
 
   /**
-   * Builds and returns a configured {@link FixedFormatRowReader}.
+   * Builds and returns a configured {@link FixedFormatSegmentReader}.
    *
    * @return a new reader instance
    * @throws IllegalArgumentException if no mappings have been added
    */
-  public FixedFormatRowReader build() {
+  public FixedFormatSegmentReader build() {
     if (mappings.isEmpty()) {
       throw new IllegalArgumentException("At least one mapping must be provided");
     }
-    return new FixedFormatRowReader(this);
+    return new FixedFormatSegmentReader(this);
   }
 }

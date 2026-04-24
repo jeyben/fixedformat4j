@@ -23,27 +23,41 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.Queue;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * Reads a fixed-format file or stream line by line, routes each line to one or more
- * {@link com.ancientprogramming.fixedformat4j.annotation.Record}-annotated classes via
- * {@link FixedFormatMatchPattern} discriminators, and produces parsed record objects.
+ * Reads a fixed-format file or stream line by line (or chunk by chunk for packed lines), routes
+ * each record to one or more {@link com.ancientprogramming.fixedformat4j.annotation.Record}-annotated
+ * classes via {@link FixedFormatMatchPattern} discriminators, and produces parsed record objects.
  *
  * <p>Records are produced lazily (via {@link #readAsStream}) or eagerly (via
  * {@link #readAsList} / {@link #readAsTypedResult}). All input-source overloads default to
  * {@link java.nio.charset.StandardCharsets#UTF_8}; explicit {@link Charset} overloads are
  * provided for every source type.</p>
+ *
+ * <p>The per-line {@link LineSlicingStrategy} controls whether a physical line is treated as one
+ * record or sliced into fixed-width chunks:</p>
+ * <ul>
+ *   <li>{@link LineSlicingStrategy#singleRecord()} (default) — one record per line</li>
+ *   <li>{@link LineSlicingStrategy#packed(int)} — multiple records packed per line</li>
+ *   <li>{@link LineSlicingStrategy#mixed(java.util.function.Predicate, int)} — some lines single,
+ *       some packed</li>
+ * </ul>
  *
  * <p>Quick start — single record type:</p>
  * <pre>{@code
@@ -67,6 +81,24 @@ import java.util.stream.StreamSupport;
  * List<DetailRecord> details = result.get(DetailRecord.class);
  * }</pre>
  *
+ * <p>Quick start — packed records (multiple records per line):</p>
+ * <pre>{@code
+ * FixedFormatReader reader = FixedFormatReader.builder()
+ *     .lineSlicing(LineSlicingStrategy.packed(128))
+ *     .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
+ *     .build();
+ * }</pre>
+ *
+ * <p>Quick start — mixed file (header single-record, details packed, trailer single-record):</p>
+ * <pre>{@code
+ * FixedFormatReader reader = FixedFormatReader.builder()
+ *     .lineSlicing(LineSlicingStrategy.mixed(line -> line.startsWith("DTL"), 128))
+ *     .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"))
+ *     .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
+ *     .addMapping(TrailerRecord.class, new RegexFixedFormatMatchPattern("^TRL"))
+ *     .build();
+ * }</pre>
+ *
  * <p>Quick start — typed handlers (no casts anywhere):</p>
  * <pre>{@code
  * FixedFormatReader reader = FixedFormatReader.builder()
@@ -78,24 +110,33 @@ import java.util.stream.StreamSupport;
  * }</pre>
  *
  * <p>For read-edit-write round trips where unmatched lines must be preserved verbatim,
- * use {@link FixedFormatRowReader} together with {@link com.ancientprogramming.fixedformat4j.io.write.FixedFormatWriter} instead.</p>
+ * use {@link FixedFormatSegmentReader} together with
+ * {@link com.ancientprogramming.fixedformat4j.io.write.FixedFormatWriter} instead.</p>
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
+ * @see LineSlicingStrategy
+ * @see FixedFormatSegmentReader
  */
 public class FixedFormatReader {
 
   private final List<ClassPatternMapping<?>> mappings;
   private final FixedFormatLineProcessor processor;
+  private final LineSlicingStrategy lineSlicingStrategy;
+  private final PartialChunkStrategy partialChunkStrategy;
+  private final Predicate<String> lineFilter;
 
   FixedFormatReader(FixedFormatReaderBuilder builder) {
     this.mappings = List.copyOf(builder.mappings);
+    this.lineFilter = builder.lineFilter;
+    this.lineSlicingStrategy = builder.lineSlicingStrategy;
+    this.partialChunkStrategy = builder.partialChunkStrategy;
     this.processor = new FixedFormatLineProcessor(
         this.mappings,
         builder.multiMatchStrategy,
         builder.unmatchStrategy,
         builder.parseErrorStrategy,
-        builder.lineFilter,
+        line -> true,  // lineFilter applied at reader level for consistency across all slicing modes
         builder.manager);
   }
 
@@ -124,18 +165,23 @@ public class FixedFormatReader {
     long[] lineCounter = {0L};
 
     Spliterator<Object> spliterator = new Spliterators.AbstractSpliterator<Object>(Long.MAX_VALUE, Spliterator.ORDERED) {
+      final Queue<Object> pending = new ArrayDeque<>();
+
       @Override
       public boolean tryAdvance(Consumer<? super Object> action) {
-        String line;
-        try {
-          line = buffered.readLine();
-        } catch (IOException e) {
-          throw new FixedFormatIOException("IO error reading line " + (lineCounter[0] + 1), e);
+        while (pending.isEmpty()) {
+          String line;
+          try {
+            line = buffered.readLine();
+          } catch (IOException e) {
+            throw new FixedFormatIOException("IO error reading line " + (lineCounter[0] + 1), e);
+          }
+          if (line == null) {
+            return false;
+          }
+          processLineMaybeSliced(line, ++lineCounter[0], (clazz, record) -> pending.add(record));
         }
-        if (line == null) {
-          return false;
-        }
-        processor.processLine(line, ++lineCounter[0], (clazz, record) -> action.accept(record));
+        action.accept(pending.poll());
         return true;
       }
     };
@@ -340,7 +386,7 @@ public class FixedFormatReader {
     }
     List<Object> all = new ArrayList<>();
     readWithCallback(reader, (clazz, record) -> {
-      data.get(clazz).add(record);
+      data.computeIfAbsent(clazz, k -> new ArrayList<>()).add(record);
       all.add(record);
     });
     data.entrySet().removeIf(e -> e.getValue().isEmpty());
@@ -468,11 +514,10 @@ public class FixedFormatReader {
   public void readWithCallback(Reader reader, BiConsumer<Class<?>, Object> callback) {
     BufferedReader buffered = toBuffered(reader);
     long[] lineCounter = {0L};
-
     try (buffered) {
       String line;
       while ((line = buffered.readLine()) != null) {
-        processor.processLine(line, ++lineCounter[0], callback);
+        processLineMaybeSliced(line, ++lineCounter[0], callback);
       }
     } catch (IOException e) {
       throw new FixedFormatIOException("IO error reading line " + (lineCounter[0] + 1), e);
@@ -749,6 +794,37 @@ public class FixedFormatReader {
    */
   public static FixedFormatReaderBuilder builder() {
     return new FixedFormatReaderBuilder();
+  }
+
+  private void processLineMaybeSliced(String line, long lineNum, BiConsumer<Class<?>, Object> emit) {
+    if (!lineFilter.test(line)) {
+      return;
+    }
+    OptionalInt width = lineSlicingStrategy.recordWidthFor(line);
+    if (width.isEmpty()) {
+      processor.processLine(line, lineNum, emit);
+    } else {
+      sliceAndEmit(line, width.getAsInt(), lineNum, emit);
+    }
+  }
+
+  private void sliceAndEmit(String line, int recordWidth, long lineNum, BiConsumer<Class<?>, Object> emit) {
+    int offset = 0;
+    int chunkIndex = 0;
+    while (offset < line.length()) {
+      chunkIndex++;
+      int remaining = line.length() - offset;
+      if (remaining >= recordWidth) {
+        String chunk = line.substring(offset, offset + recordWidth);
+        offset += recordWidth;
+        processor.processLine(chunk, lineNum, emit);
+      } else {
+        String partial = line.substring(offset);
+        offset = line.length();
+        Optional<String> resolved = partialChunkStrategy.resolve(lineNum, chunkIndex, partial, recordWidth);
+        resolved.ifPresent(padded -> processor.processLine(padded, lineNum, emit));
+      }
+    }
   }
 
   private static BufferedReader toBuffered(Reader reader) {

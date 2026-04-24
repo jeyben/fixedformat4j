@@ -35,8 +35,8 @@ import java.util.Optional;
  * <p>Because this is a {@link FunctionalInterface}, a lambda can also be supplied directly.</p>
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
- * @since 1.9.0
- * @see PackedRecordReader
+ * @since 1.8.0
+ * @see LineSlicingStrategy
  */
 @FunctionalInterface
 public interface PartialChunkStrategy {

@@ -36,6 +36,8 @@ public class FixedFormatReaderBuilder {
   UnmatchStrategy unmatchStrategy = UnmatchStrategy.skip();
   ParseErrorStrategy parseErrorStrategy = ParseErrorStrategy.throwException();
   Predicate<String> lineFilter = line -> true;
+  LineSlicingStrategy lineSlicingStrategy = LineSlicingStrategy.singleRecord();
+  PartialChunkStrategy partialChunkStrategy = PartialChunkStrategy.skip();
   FixedFormatManager manager = FixedFormatManagerImpl.create();
 
   FixedFormatReaderBuilder() {}
@@ -118,6 +120,34 @@ public class FixedFormatReaderBuilder {
    */
   public FixedFormatReaderBuilder includeLines(Predicate<String> predicate) {
     this.lineFilter = predicate;
+    return this;
+  }
+
+  /**
+   * Sets the per-line slicing strategy. Defaults to {@link LineSlicingStrategy#singleRecord()},
+   * which treats each physical line as one record. Use {@link LineSlicingStrategy#packed(int)} for
+   * files where multiple records are packed end-to-end within each line, or
+   * {@link LineSlicingStrategy#mixed(java.util.function.Predicate, int)} for files that mix both
+   * formats.
+   *
+   * @param strategy the slicing strategy to use; must not be {@code null}
+   * @return this builder
+   */
+  public FixedFormatReaderBuilder lineSlicing(LineSlicingStrategy strategy) {
+    this.lineSlicingStrategy = strategy;
+    return this;
+  }
+
+  /**
+   * Sets the strategy applied when the last chunk on a physical line is shorter than the declared
+   * record width. Only relevant when using a slicing strategy other than
+   * {@link LineSlicingStrategy#singleRecord()}. Defaults to {@link PartialChunkStrategy#skip()}.
+   *
+   * @param strategy the partial-chunk strategy to use; must not be {@code null}
+   * @return this builder
+   */
+  public FixedFormatReaderBuilder partialChunkStrategy(PartialChunkStrategy strategy) {
+    this.partialChunkStrategy = strategy;
     return this;
   }
 

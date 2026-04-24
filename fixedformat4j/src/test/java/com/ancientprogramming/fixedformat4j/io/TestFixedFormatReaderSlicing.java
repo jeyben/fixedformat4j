@@ -1,9 +1,10 @@
 package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
-import com.ancientprogramming.fixedformat4j.io.read.FixedFormatMatchPattern;
-import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
+import com.ancientprogramming.fixedformat4j.io.read.LineSlicingStrategy;
 import com.ancientprogramming.fixedformat4j.io.read.PartialChunkStrategy;
+import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
 import com.ancientprogramming.fixedformat4j.io.read.UnmatchStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -20,50 +21,29 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import com.ancientprogramming.fixedformat4j.io.read.PackedRecordReader;
 
-class TestPackedRecordReader {
+class TestFixedFormatReaderSlicing {
 
   @TempDir
   Path tempDir;
 
-  private static final FixedFormatMatchPattern A_PATTERN = new RegexFixedFormatMatchPattern("^A");
+  private static final RegexFixedFormatMatchPattern A_PATTERN = new RegexFixedFormatMatchPattern("^A");
 
-  // --- builder validation ---
+  // --- builder validation for packed mode ---
 
   @Test
-  void builderThrowsWhenNoMappings() {
+  void packedStrategyRejectsZeroRecordWidth() {
     assertThrows(IllegalArgumentException.class,
-        () -> PackedRecordReader.builder().recordWidth(10).build());
+        () -> LineSlicingStrategy.packed(0));
   }
 
   @Test
-  void builderThrowsWhenRecordWidthNotSet() {
+  void packedStrategyRejectsNegativeRecordWidth() {
     assertThrows(IllegalArgumentException.class,
-        () -> PackedRecordReader.builder()
-            .addMapping(TenCharRecord.class, A_PATTERN)
-            .build());
+        () -> LineSlicingStrategy.packed(-1));
   }
 
-  @Test
-  void builderThrowsWhenRecordWidthIsZero() {
-    assertThrows(IllegalArgumentException.class,
-        () -> PackedRecordReader.builder()
-            .addMapping(TenCharRecord.class, A_PATTERN)
-            .recordWidth(0)
-            .build());
-  }
-
-  @Test
-  void builderThrowsWhenRecordWidthIsNegative() {
-    assertThrows(IllegalArgumentException.class,
-        () -> PackedRecordReader.builder()
-            .addMapping(TenCharRecord.class, A_PATTERN)
-            .recordWidth(-1)
-            .build());
-  }
-
-  // --- single chunk per line (degenerate case) ---
+  // --- single chunk per line (degenerate packed case) ---
 
   @Test
   void singleChunkPerLineActsLikeRegularReader() {
@@ -82,7 +62,6 @@ class TestPackedRecordReader {
     List<Object> results = reader10A()
         .readAsList(new StringReader("AAAAAAAAAA1111111111"));
 
-    // "1111111111" doesn't start with A → skipped by default unmatchStrategy
     assertEquals(1, results.size());
     assertEquals("AAAAAAAAAA", tenCharOf(results.get(0)));
   }
@@ -117,7 +96,6 @@ class TestPackedRecordReader {
 
   @Test
   void partialChunkWithDefaultSkipIsDiscarded() {
-    // "AAAAAAAAAA" (10) + "AAAAAAAAAA" (10) + "AAAAA" (5 — partial) = 25 chars
     List<Object> results = reader10A()
         .readAsList(new StringReader("AAAAAAAAAA" + "AAAAAAAAAA" + "AAAAA"));
 
@@ -126,8 +104,8 @@ class TestPackedRecordReader {
 
   @Test
   void partialChunkWithExplicitSkipIsDiscarded() {
-    List<Object> results = PackedRecordReader.builder()
-        .recordWidth(10)
+    List<Object> results = FixedFormatReader.builder()
+        .lineSlicing(LineSlicingStrategy.packed(10))
         .addMapping(TenCharRecord.class, A_PATTERN)
         .partialChunkStrategy(PartialChunkStrategy.skip())
         .build()
@@ -138,22 +116,21 @@ class TestPackedRecordReader {
 
   @Test
   void partialChunkWithPadStrategyIsPaddedAndParsed() {
-    List<Object> results = PackedRecordReader.builder()
-        .recordWidth(10)
+    List<Object> results = FixedFormatReader.builder()
+        .lineSlicing(LineSlicingStrategy.packed(10))
         .addMapping(TenCharRecord.class, A_PATTERN)
         .partialChunkStrategy(PartialChunkStrategy.pad())
         .build()
         .readAsList(new StringReader("AAAAAAAAAA" + "AAAAA"));
 
-    // "AAAAA" padded with spaces to "AAAAA     " — starts with A, matched
     assertEquals(2, results.size());
     assertEquals("AAAAA", tenCharOf(results.get(1)));
   }
 
   @Test
   void partialChunkWithThrowExceptionStrategyThrows() {
-    PackedRecordReader reader = PackedRecordReader.builder()
-        .recordWidth(10)
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .lineSlicing(LineSlicingStrategy.packed(10))
         .addMapping(TenCharRecord.class, A_PATTERN)
         .partialChunkStrategy(PartialChunkStrategy.throwException())
         .build();
@@ -176,8 +153,8 @@ class TestPackedRecordReader {
   void unmatchedChunkFiresUnmatchStrategy() {
     List<String> captured = new ArrayList<>();
 
-    PackedRecordReader.builder()
-        .recordWidth(10)
+    FixedFormatReader.builder()
+        .lineSlicing(LineSlicingStrategy.packed(10))
         .addMapping(TenCharRecord.class, A_PATTERN)
         .unmatchStrategy((lineNumber, segment) -> captured.add(lineNumber + ":" + segment))
         .build()
@@ -189,8 +166,8 @@ class TestPackedRecordReader {
 
   @Test
   void unmatchedChunkWithThrowExceptionStrategyThrows() {
-    PackedRecordReader reader = PackedRecordReader.builder()
-        .recordWidth(10)
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .lineSlicing(LineSlicingStrategy.packed(10))
         .addMapping(TenCharRecord.class, A_PATTERN)
         .unmatchStrategy(UnmatchStrategy.throwException())
         .build();
@@ -272,8 +249,8 @@ class TestPackedRecordReader {
 
   @Test
   void filteredLineDropsAllItsChunks() {
-    List<Object> results = PackedRecordReader.builder()
-        .recordWidth(10)
+    List<Object> results = FixedFormatReader.builder()
+        .lineSlicing(LineSlicingStrategy.packed(10))
         .addMapping(TenCharRecord.class, A_PATTERN)
         .includeLines(line -> !line.startsWith("#"))
         .build()
@@ -283,11 +260,48 @@ class TestPackedRecordReader {
     assertEquals("AAAAAAAAAA", tenCharOf(results.get(0)));
   }
 
+  // --- mixed: single-record header + packed details + single-record trailer ---
+
+  @Test
+  void mixedFileHeaderPackedDetailTrailer() {
+    String input = "HDR 20260424\n"
+        + "AAAAAAAAAA" + "AAAAAA5678" + "\n"
+        + "AAAAAAAAAA" + "AAAAAA9999" + "\n"
+        + "TRL000004\n";
+
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .lineSlicing(LineSlicingStrategy.mixed(line -> line.startsWith("A"), 10))
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .build();
+
+    List<Object> results = reader.readAsList(new StringReader(input));
+
+    assertEquals(4, results.size());
+    assertEquals("AAAAAAAAAA", tenCharOf(results.get(0)));
+    assertEquals("AAAAAA5678", tenCharOf(results.get(1)));
+    assertEquals("AAAAAAAAAA", tenCharOf(results.get(2)));
+    assertEquals("AAAAAA9999", tenCharOf(results.get(3)));
+  }
+
+  @Test
+  void mixedFileTypedResultGroupsCorrectly() {
+    String input = "AAAAAAAAAA" + "AAAAAA5678" + "\n";
+
+    TypedReadResult result = FixedFormatReader.builder()
+        .lineSlicing(LineSlicingStrategy.mixed(line -> line.startsWith("A"), 10))
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .build()
+        .readAsTypedResult(new StringReader(input));
+
+    List<TenCharRecord> records = result.get(TenCharRecord.class);
+    assertEquals(2, records.size());
+  }
+
   // --- helpers ---
 
-  private PackedRecordReader reader10A() {
-    return PackedRecordReader.builder()
-        .recordWidth(10)
+  private FixedFormatReader reader10A() {
+    return FixedFormatReader.builder()
+        .lineSlicing(LineSlicingStrategy.packed(10))
         .addMapping(TenCharRecord.class, A_PATTERN)
         .build();
   }

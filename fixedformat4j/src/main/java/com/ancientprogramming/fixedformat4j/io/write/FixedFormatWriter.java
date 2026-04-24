@@ -17,9 +17,9 @@ package com.ancientprogramming.fixedformat4j.io.write;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatIOException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
-import com.ancientprogramming.fixedformat4j.io.row.ParsedRow;
-import com.ancientprogramming.fixedformat4j.io.row.Row;
-import com.ancientprogramming.fixedformat4j.io.row.UnmatchedRow;
+import com.ancientprogramming.fixedformat4j.io.segment.ParsedSegment;
+import com.ancientprogramming.fixedformat4j.io.segment.Segment;
+import com.ancientprogramming.fixedformat4j.io.segment.UnmatchedSegment;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -30,40 +30,40 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Writes an ordered list of {@link Row} entries back to a file or stream, enabling
+ * Writes an ordered list of {@link Segment} entries back to a file or stream, enabling
  * read-edit-write round trips on fixed-format files.
  *
- * <p>{@link ParsedRow} entries are exported to a fixed-width string via
- * {@link FixedFormatManager#export(Object)}; {@link UnmatchedRow} entries are emitted
- * verbatim. Each row is followed by a {@code \n} line terminator.</p>
+ * <p>{@link ParsedSegment} entries are exported to a fixed-width string via
+ * {@link FixedFormatManager#export(Object)}; {@link UnmatchedSegment} entries are emitted
+ * verbatim. Each segment is followed by a {@code \n} line terminator.</p>
  *
  * <p>Typical usage:</p>
  * <pre>{@code
- * FixedFormatReader reader = FixedFormatReader.builder()
+ * FixedFormatSegmentReader reader = FixedFormatSegmentReader.builder()
  *     .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"))
  *     .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
  *     .build();
  *
- * List<Row> rows = reader.readAsRows(new File("input.txt"));
+ * List<Segment> segments = reader.readAsSegments(new File("input.txt"));
  *
- * rows.stream()
- *     .filter(r -> r instanceof ParsedRow && ((ParsedRow<?>) r).isOf(DetailRecord.class))
- *     .map(r -> (ParsedRow<DetailRecord>) r)
- *     .forEach(pr -> pr.getRecord().setAmount(pr.getRecord().getAmount() * 2));
+ * segments.stream()
+ *     .filter(s -> s instanceof ParsedSegment && ((ParsedSegment<?>) s).isOf(DetailRecord.class))
+ *     .map(s -> (ParsedSegment<DetailRecord>) s)
+ *     .forEach(ps -> ps.getRecord().setAmount(ps.getRecord().getAmount() * 2));
  *
- * new FixedFormatWriter(new FixedFormatManagerImpl()).write(rows, new File("output.txt"));
+ * new FixedFormatWriter(new FixedFormatManagerImpl()).write(segments, new File("output.txt"));
  * }</pre>
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
- * @since 1.9.0
- * @see com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader#readAsRows(java.io.File)
+ * @since 1.8.0
+ * @see com.ancientprogramming.fixedformat4j.io.read.FixedFormatSegmentReader#readAsSegments(java.io.File)
  */
 public class FixedFormatWriter {
 
   private final FixedFormatManager manager;
 
   /**
-   * Creates a new writer that uses {@code manager} to export {@link ParsedRow} records.
+   * Creates a new writer that uses {@code manager} to export {@link ParsedSegment} records.
    *
    * @param manager the manager used to serialize records; must not be {@code null}
    */
@@ -72,23 +72,24 @@ public class FixedFormatWriter {
   }
 
   /**
-   * Writes all rows in {@code rows} to {@code writer}, one per line.
+   * Writes all segments in {@code segments} to {@code writer}, one per line.
    *
-   * <p>{@link ParsedRow} entries are serialized via {@link FixedFormatManager#export(Object)};
-   * {@link UnmatchedRow} entries are written verbatim. Each row is followed by {@code \n}.</p>
+   * <p>{@link ParsedSegment} entries are serialized via {@link FixedFormatManager#export(Object)};
+   * {@link UnmatchedSegment} entries are written verbatim. Each segment is followed by
+   * {@code \n}.</p>
    *
-   * @param rows   the rows to write; must not be {@code null}
-   * @param writer the destination; must not be {@code null}
+   * @param segments the segments to write; must not be {@code null}
+   * @param writer   the destination; must not be {@code null}
    * @throws FixedFormatIOException if an IO error occurs while writing
    */
-  public void write(List<Row> rows, Writer writer) {
-    Objects.requireNonNull(rows, "rows must not be null");
+  public void write(List<Segment> segments, Writer writer) {
+    Objects.requireNonNull(segments, "segments must not be null");
     Objects.requireNonNull(writer, "writer must not be null");
     BufferedWriter buffered = writer instanceof BufferedWriter
         ? (BufferedWriter) writer : new BufferedWriter(writer);
     try {
-      for (Row row : rows) {
-        buffered.write(toLine(row));
+      for (Segment segment : segments) {
+        buffered.write(toLine(segment));
         buffered.write('\n');
       }
       buffered.flush();
@@ -98,86 +99,86 @@ public class FixedFormatWriter {
   }
 
   /**
-   * Writes all rows to {@code outputStream} using UTF-8 encoding.
+   * Writes all segments to {@code outputStream} using UTF-8 encoding.
    *
-   * @param rows         the rows to write; must not be {@code null}
+   * @param segments     the segments to write; must not be {@code null}
    * @param outputStream the destination; must not be {@code null}
    * @throws FixedFormatIOException if an IO error occurs while writing
    */
-  public void write(List<Row> rows, OutputStream outputStream) {
-    write(rows, outputStream, StandardCharsets.UTF_8);
+  public void write(List<Segment> segments, OutputStream outputStream) {
+    write(segments, outputStream, StandardCharsets.UTF_8);
   }
 
   /**
-   * Writes all rows to {@code outputStream} using the given charset.
+   * Writes all segments to {@code outputStream} using the given charset.
    *
-   * @param rows         the rows to write; must not be {@code null}
+   * @param segments     the segments to write; must not be {@code null}
    * @param outputStream the destination; must not be {@code null}
    * @param charset      the character encoding to apply
    * @throws FixedFormatIOException if an IO error occurs while writing
    */
-  public void write(List<Row> rows, OutputStream outputStream, Charset charset) {
-    write(rows, new OutputStreamWriter(outputStream, charset));
+  public void write(List<Segment> segments, OutputStream outputStream, Charset charset) {
+    write(segments, new OutputStreamWriter(outputStream, charset));
   }
 
   /**
-   * Writes all rows to {@code file} using UTF-8 encoding, creating or overwriting it.
+   * Writes all segments to {@code file} using UTF-8 encoding, creating or overwriting it.
    *
-   * @param rows the rows to write; must not be {@code null}
-   * @param file the destination file; must not be {@code null}
+   * @param segments the segments to write; must not be {@code null}
+   * @param file     the destination file; must not be {@code null}
    * @throws FixedFormatIOException if the file cannot be opened or an IO error occurs
    */
-  public void write(List<Row> rows, File file) {
-    write(rows, file, StandardCharsets.UTF_8);
+  public void write(List<Segment> segments, File file) {
+    write(segments, file, StandardCharsets.UTF_8);
   }
 
   /**
-   * Writes all rows to {@code file} using the given charset, creating or overwriting it.
+   * Writes all segments to {@code file} using the given charset, creating or overwriting it.
    *
-   * @param rows    the rows to write; must not be {@code null}
-   * @param file    the destination file; must not be {@code null}
-   * @param charset the character encoding to apply
+   * @param segments the segments to write; must not be {@code null}
+   * @param file     the destination file; must not be {@code null}
+   * @param charset  the character encoding to apply
    * @throws FixedFormatIOException if the file cannot be opened or an IO error occurs
    */
-  public void write(List<Row> rows, File file, Charset charset) {
+  public void write(List<Segment> segments, File file, Charset charset) {
     try (OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream(file), charset)) {
-      write(rows, w);
+      write(segments, w);
     } catch (IOException e) {
       throw new FixedFormatIOException("IO error writing file: " + file, e);
     }
   }
 
   /**
-   * Writes all rows to {@code path} using UTF-8 encoding, creating or overwriting it.
+   * Writes all segments to {@code path} using UTF-8 encoding, creating or overwriting it.
    *
-   * @param rows the rows to write; must not be {@code null}
-   * @param path the destination path; must not be {@code null}
+   * @param segments the segments to write; must not be {@code null}
+   * @param path     the destination path; must not be {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
-  public void write(List<Row> rows, Path path) {
-    write(rows, path, StandardCharsets.UTF_8);
+  public void write(List<Segment> segments, Path path) {
+    write(segments, path, StandardCharsets.UTF_8);
   }
 
   /**
-   * Writes all rows to {@code path} using the given charset, creating or overwriting it.
+   * Writes all segments to {@code path} using the given charset, creating or overwriting it.
    *
-   * @param rows    the rows to write; must not be {@code null}
-   * @param path    the destination path; must not be {@code null}
-   * @param charset the character encoding to apply
+   * @param segments the segments to write; must not be {@code null}
+   * @param path     the destination path; must not be {@code null}
+   * @param charset  the character encoding to apply
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
-  public void write(List<Row> rows, Path path, Charset charset) {
+  public void write(List<Segment> segments, Path path, Charset charset) {
     try (OutputStreamWriter w = new OutputStreamWriter(Files.newOutputStream(path), charset)) {
-      write(rows, w);
+      write(segments, w);
     } catch (IOException e) {
       throw new FixedFormatIOException("IO error writing path: " + path, e);
     }
   }
 
-  private String toLine(Row row) {
-    if (row instanceof UnmatchedRow) {
-      return ((UnmatchedRow) row).getRawLine();
+  private String toLine(Segment segment) {
+    if (segment instanceof UnmatchedSegment) {
+      return ((UnmatchedSegment) segment).getRawLine();
     }
-    return manager.export(((ParsedRow<?>) row).getRecord());
+    return manager.export(((ParsedSegment<?>) segment).getRecord());
   }
 }
