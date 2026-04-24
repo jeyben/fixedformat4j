@@ -64,7 +64,10 @@ class FixedFormatLineProcessor {
       unmatchStrategy.handle(lineNumber, line);
       return;
     }
-    for (ClassPatternMapping<?> mapping : multiMatchStrategy.resolve(matched, lineNumber)) {
+    List<ClassPatternMapping<?>> toProcess = matched.size() == 1
+        ? matched
+        : multiMatchStrategy.resolve(matched, lineNumber);
+    for (ClassPatternMapping<?> mapping : toProcess) {
       Object record = parseRecord(mapping, line, lineNumber);
       if (record != null) {
         emit.accept(mapping.getRecordClass(), record);

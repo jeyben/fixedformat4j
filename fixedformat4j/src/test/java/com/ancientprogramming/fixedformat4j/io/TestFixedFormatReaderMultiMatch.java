@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,6 +65,24 @@ class TestFixedFormatReaderMultiMatch {
       count = stream.count();
     }
     assertEquals(1, count);
+  }
+
+  @Test
+  void customStrategyNotCalledWhenOnlyOnePatternMatches() {
+    AtomicBoolean called = new AtomicBoolean(false);
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
+        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^B"))
+        .multiMatchStrategy((matched, lineNumber) -> {
+          called.set(true);
+          return matched;
+        })
+        .build();
+
+    try (Stream<Object> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
+      stream.count();
+    }
+    assertFalse(called.get(), "MultiMatchStrategy.resolve() must not be called when only one pattern matches");
   }
 
   @Test

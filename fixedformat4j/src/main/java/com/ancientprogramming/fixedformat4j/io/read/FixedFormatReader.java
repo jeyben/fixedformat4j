@@ -240,7 +240,7 @@ public class FixedFormatReader {
    *
    * <p>For typed record access, prefer {@link #readAsTypedResult} instead.</p>
    *
-   * @param reader the source of lines
+   * @param reader the source of lines; closed when this method returns
    * @return an ordered list of all parsed records; never {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
@@ -336,7 +336,7 @@ public class FixedFormatReader {
    * List<HeaderRecord> headers = result.get(HeaderRecord.class); // no cast
    * }</pre>
    *
-   * @param reader the source of lines
+   * @param reader the source of lines; closed when this method returns
    * @return a {@link TypedReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
@@ -347,7 +347,7 @@ public class FixedFormatReader {
     }
     List<Object> all = new ArrayList<>();
     readWithCallback(reader, (clazz, record) -> {
-      data.computeIfAbsent(clazz, k -> new ArrayList<>()).add(record);
+      data.get(clazz).add(record);
       all.add(record);
     });
     data.entrySet().removeIf(e -> e.getValue().isEmpty());
@@ -449,7 +449,7 @@ public class FixedFormatReader {
    * Reads all records from {@code reader} and invokes {@code callback} once per record
    * in encounter order.
    *
-   * @param reader   the source of lines
+   * @param reader   the source of lines; closed when this method returns
    * @param callback invoked with each parsed record; must not be {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
@@ -467,7 +467,7 @@ public class FixedFormatReader {
    * handlers registered via
    * {@link FixedFormatReaderBuilder#addMapping(Class, FixedFormatMatchPattern, Consumer)}.</p>
    *
-   * @param reader   the source of lines
+   * @param reader   the source of lines; closed when this method returns
    * @param callback invoked with the matched {@link Class} and the parsed record instance;
    *                 must not be {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
