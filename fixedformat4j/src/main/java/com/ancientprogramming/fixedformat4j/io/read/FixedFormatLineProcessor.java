@@ -73,15 +73,8 @@ class FixedFormatLineProcessor {
   }
 
   /**
-   * Variant used by {@link FixedFormatSegmentReader#readAsSegments} for round-trip support.
-   *
-   * <p>Unlike the single-callback overload, this variant:</p>
-   * <ul>
-   *   <li>Calls {@code unmatchedCallback} instead of the configured {@link UnmatchStrategy}
-   *       so that all unmatched lines are captured as {@link com.ancientprogramming.fixedformat4j.io.segment.UnmatchedSegment} entries.</li>
-   *   <li>Calls {@code unmatchedCallback} also for lines rejected by the line filter, so
-   *       no line is silently dropped and the original file can be reconstructed exactly.</li>
-   * </ul>
+   * Variant that routes unmatched lines to a dedicated callback instead of the configured
+   * {@link UnmatchStrategy}, giving the caller explicit control over unmatched content.
    */
   void processLine(String line, long lineNumber,
                    BiConsumer<Class<?>, Object> matchedCallback,
