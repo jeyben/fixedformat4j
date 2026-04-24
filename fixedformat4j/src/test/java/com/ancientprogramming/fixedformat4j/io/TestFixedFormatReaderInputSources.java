@@ -1,7 +1,6 @@
 package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.io.read.HandlerRegistry;
-import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -11,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
@@ -22,7 +22,7 @@ class TestFixedFormatReaderInputSources {
 
   private FixedFormatReader reader() {
     return FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
+        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
         .build();
   }
 
@@ -167,7 +167,7 @@ class TestFixedFormatReaderInputSources {
     TrackingInputStream is = new TrackingInputStream("hello     \nworld     ".getBytes(StandardCharsets.UTF_8));
     List<String> values = new ArrayList<>();
     FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
+        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
         .build()
         .process(is, new HandlerRegistry().on(TenCharRecord.class, r -> values.add(r.getValue())));
     assertTrue(is.closed, "InputStream should be closed after process");

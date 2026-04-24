@@ -1,9 +1,7 @@
 package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.io.read.HandlerRegistry;
-import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
 import com.ancientprogramming.fixedformat4j.io.read.MultiMatchStrategy;
-import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -15,6 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
@@ -24,8 +24,8 @@ class TestFixedFormatReaderProcess {
   @TempDir
   Path tempDir;
 
-  private static final LinePattern A_PATTERN = new RegexLinePattern("^A");
-  private static final LinePattern B_PATTERN = new RegexLinePattern("^B");
+  private static final Predicate<String> A_PATTERN = Pattern.compile("^A").asPredicate();
+  private static final Predicate<String> B_PATTERN = Pattern.compile("^B").asPredicate();
 
   @Test
   void processFiresTypedHandlerForEachRecord() {
@@ -148,7 +148,7 @@ class TestFixedFormatReaderProcess {
 
     FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, A_PATTERN)
-        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
+        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
         .multiMatchStrategy(MultiMatchStrategy.firstMatch())
         .build()
         .process(new StringReader("AAAAAAAAAA"),

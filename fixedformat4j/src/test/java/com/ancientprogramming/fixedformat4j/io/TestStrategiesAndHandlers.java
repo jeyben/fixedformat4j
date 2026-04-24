@@ -2,8 +2,6 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
-import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
-import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import com.ancientprogramming.fixedformat4j.io.read.ParseErrorStrategy;
 import com.ancientprogramming.fixedformat4j.io.read.UnmatchStrategy;
 import org.junit.jupiter.api.Test;
@@ -12,6 +10,8 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
@@ -19,7 +19,7 @@ import com.ancientprogramming.fixedformat4j.io.read.MultiMatchStrategy;
 
 class TestStrategiesAndHandlers {
 
-  private static final LinePattern ANY = new RegexLinePattern(".*");
+  private static final Predicate<String> ANY = Pattern.compile(".*").asPredicate();
   private static final String THREE_LINES = "line1     \nline2     \nline3     ";
 
   @SuppressWarnings("unchecked")
@@ -96,7 +96,7 @@ class TestStrategiesAndHandlers {
   @Test
   void unmatchedSkipDoesNotEmitRecordOrThrow() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexLinePattern("^A"))
+        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
         .unmatchStrategy(UnmatchStrategy.skip())
         .build();
 
@@ -107,7 +107,7 @@ class TestStrategiesAndHandlers {
   @Test
   void unmatchedThrowExceptionThrowsOnUnmatchedLine() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexLinePattern("^A"))
+        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
         .unmatchStrategy(UnmatchStrategy.throwException())
         .build();
 
@@ -120,7 +120,7 @@ class TestStrategiesAndHandlers {
     List<String> captured = new ArrayList<>();
 
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexLinePattern("^A"))
+        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
         .unmatchStrategy((lineNumber, segment) -> captured.add(lineNumber + ":" + segment))
         .build();
 

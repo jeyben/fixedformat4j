@@ -18,6 +18,7 @@ package com.ancientprogramming.fixedformat4j.io.read;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -87,8 +88,9 @@ class FixedFormatLineProcessor {
   }
 
   private List<RecordMapping<?>> findMatches(String line) {
+    if (line == null) return Collections.emptyList();
     return mappings.stream()
-        .filter(m -> m.getPattern().matches(line))
+        .filter(m -> m.getPattern().test(line))
         .collect(Collectors.toList());
   }
 

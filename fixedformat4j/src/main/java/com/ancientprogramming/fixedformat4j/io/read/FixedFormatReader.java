@@ -32,7 +32,7 @@ import java.util.function.BiConsumer;
 /**
  * Reads a fixed-format file or stream line by line, routes each line to one or more
  * {@link com.ancientprogramming.fixedformat4j.annotation.Record}-annotated classes via
- * {@link LinePattern} discriminators, and produces parsed record objects.
+ * {@link java.util.function.Predicate} discriminators, and produces parsed record objects.
  *
  * <p>Each physical line is treated as exactly one record (or unmatched). If a file contains
  * multiple records packed within a single line, split the line before passing it to this reader.</p>
@@ -45,7 +45,7 @@ import java.util.function.BiConsumer;
  * <p>Quick start — single record type:</p>
  * <pre>{@code
  * FixedFormatReader reader = FixedFormatReader.builder()
- *     .addMapping(MyRecord.class, new RegexLinePattern(".*"))
+ *     .addMapping(MyRecord.class, Pattern.compile(".*").asPredicate())
  *     .build();
  *
  * List<MyRecord> records = reader.readAsResult(new File("data.txt")).get(MyRecord.class);
@@ -54,8 +54,8 @@ import java.util.function.BiConsumer;
  * <p>Quick start — heterogeneous file:</p>
  * <pre>{@code
  * FixedFormatReader reader = FixedFormatReader.builder()
- *     .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"))
- *     .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"))
+ *     .addMapping(HeaderRecord.class, Pattern.compile("^HDR").asPredicate())
+ *     .addMapping(DetailRecord.class, Pattern.compile("^DTL").asPredicate())
  *     .unmatchStrategy(UnmatchStrategy.skip())
  *     .build();
  *
@@ -67,8 +67,8 @@ import java.util.function.BiConsumer;
  * <p>Quick start — typed handlers (no casts anywhere):</p>
  * <pre>{@code
  * FixedFormatReader reader = FixedFormatReader.builder()
- *     .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"))
- *     .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"))
+ *     .addMapping(HeaderRecord.class, Pattern.compile("^HDR").asPredicate())
+ *     .addMapping(DetailRecord.class, Pattern.compile("^DTL").asPredicate())
  *     .build();
  *
  * reader.process(Path.of("data.txt"), new HandlerRegistry()

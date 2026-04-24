@@ -2,7 +2,6 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
-import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import com.ancientprogramming.fixedformat4j.io.read.ParseErrorStrategy;
 import org.junit.jupiter.api.Test;
 
@@ -10,6 +9,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
@@ -47,7 +47,7 @@ class TestFixedFormatReaderParseError {
     };
 
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
+        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
         .parseErrorStrategy(ParseErrorStrategy.skipAndLog())
         .manager(countingManager)
         .build();
@@ -61,7 +61,7 @@ class TestFixedFormatReaderParseError {
     List<String> captured = new ArrayList<>();
 
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
+        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
         .parseErrorStrategy((wrapped, line, lineNumber) ->
             captured.add(lineNumber + ":" + line + ":" + wrapped.getMessage()))
         .manager(failOnSecondCall())
@@ -75,7 +75,7 @@ class TestFixedFormatReaderParseError {
   @Test
   void customLambdaStrategyDoesNotEmitRecordForFailedLine() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
+        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
         .parseErrorStrategy((wrapped, line, lineNumber) -> {})
         .manager(failOnSecondCall())
         .build();

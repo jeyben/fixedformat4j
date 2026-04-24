@@ -50,7 +50,7 @@ public class FixedFormatReaderBuilder {
    * @throws IllegalArgumentException if {@code clazz} or {@code pattern} is {@code null},
    *                                  or if {@code clazz} is not annotated with {@code @Record}
    */
-  public <R> FixedFormatReaderBuilder addMapping(Class<R> clazz, LinePattern pattern) {
+  public <R> FixedFormatReaderBuilder addMapping(Class<R> clazz, Predicate<String> pattern) {
     mappings.add(new RecordMapping<>(clazz, pattern));
     return this;
   }

@@ -18,11 +18,12 @@ package com.ancientprogramming.fixedformat4j.io.read;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
- * Immutable pair of a {@link LinePattern} and the
+ * Immutable pair of a {@link Predicate} and the
  * {@link com.ancientprogramming.fixedformat4j.annotation.Record}-annotated class to
- * instantiate when the pattern matches a line.
+ * instantiate when the predicate matches a line.
  *
  * <p>The constructor validates that {@code recordClass} carries the {@code @Record} annotation
  * so that misconfigured mappings fail fast at reader-build time rather than at parse time.</p>
@@ -34,17 +35,17 @@ import java.util.Objects;
 public class RecordMapping<T> {
 
   private final Class<T> recordClass;
-  private final LinePattern pattern;
+  private final Predicate<String> pattern;
 
   /**
    * Creates a new mapping.
    *
    * @param recordClass the class to instantiate when {@code pattern} matches; must be
    *                    annotated with {@link com.ancientprogramming.fixedformat4j.annotation.Record}
-   * @param pattern     the pattern that decides which lines are parsed as {@code recordClass}
+   * @param pattern     the predicate that decides which lines are parsed as {@code recordClass}
    * @throws IllegalArgumentException if {@code recordClass} is not annotated with {@code @Record}
    */
-  public RecordMapping(Class<T> recordClass, LinePattern pattern) {
+  public RecordMapping(Class<T> recordClass, Predicate<String> pattern) {
     Objects.requireNonNull(recordClass, "recordClass must not be null");
     Objects.requireNonNull(pattern, "pattern must not be null");
     if (recordClass.getAnnotation(Record.class) == null) {
@@ -65,12 +66,12 @@ public class RecordMapping<T> {
   }
 
   /**
-   * Returns the pattern used to decide whether a line should be parsed as
+   * Returns the predicate used to decide whether a line should be parsed as
    * {@link #getRecordClass()}.
    *
-   * @return the line pattern; never {@code null}
+   * @return the line predicate; never {@code null}
    */
-  public LinePattern getPattern() {
+  public Predicate<String> getPattern() {
     return pattern;
   }
 }
