@@ -151,7 +151,7 @@ System.out.println(manager.export(record));
 
 ## Example 4 — Processing a file line by line
 
-Since 1.8.0, use `FixedFormatReader` to process files. Build a reader once, then call any output-shape method — `readAsList`, `readAsResult`, `readAsStream`, `processAll`, or `readWithCallback`.
+Since 1.8.0, use `FixedFormatReader` to process files. Build a reader once, then call `readAsResult` or `processAll`.
 
 **Single record type:**
 
@@ -161,10 +161,10 @@ FixedFormatReader reader = FixedFormatReader.builder()
     .includeLines(line -> !line.isBlank())
     .build();
 
-List<Object> employees = reader.readAsList(Path.of("employees.txt"));
+List<EmployeeRecord> employees = reader.readAsResult(Path.of("employees.txt"))
+    .get(EmployeeRecord.class);
 
-for (Object obj : employees) {
-    EmployeeRecord emp = (EmployeeRecord) obj;
+for (EmployeeRecord emp : employees) {
     System.out.println(emp.getName() + " — ID: " + emp.getEmployeeId());
 }
 ```
@@ -608,19 +608,5 @@ FixedFormatReader reader = FixedFormatReader.builder()
 reader.processAll(new File("orders.txt"));
 ```
 
-**Streaming a large file** without loading it all into memory:
-
-```java
-try (Stream<Object> stream = reader.readAsStream(Path.of("orders.txt"))) {
-    stream
-        .filter(r -> r instanceof OrderDetail)
-        .map(r -> (OrderDetail) r)
-        .filter(d -> d.getAmountCents() > 50000)
-        .forEach(d -> System.out.println("High-value order: " + d.getOrderId()));
-}
-```
-
-For typed dispatch without `instanceof` casts, `readAsResult` or `processAll` are preferred.
-
-For the complete `FixedFormatReader` API — strategies, callbacks, charset overloads, and pre-match filtering — see the [File Processing](usage/file-processing) guide.
+For the complete `FixedFormatReader` API — strategies, charset overloads, and pre-match filtering — see the [File Processing](usage/file-processing) guide.
 

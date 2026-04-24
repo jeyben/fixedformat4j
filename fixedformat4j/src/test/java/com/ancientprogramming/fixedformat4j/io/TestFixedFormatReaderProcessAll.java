@@ -147,19 +147,17 @@ class TestFixedFormatReaderProcessAll {
   }
 
   @Test
-  void processAllDoesNotInterfereWithReadWithCallback() {
+  void processAllAndReadAsResultAreIndependent() {
     List<TenCharRecord> fromHandler = new ArrayList<>();
-    List<Class<?>> fromCallback = new ArrayList<>();
 
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, A_PATTERN, fromHandler::add)
         .build();
 
     reader.processAll(new StringReader("AAAAAAAAAA"));
-    reader.readWithCallback(new StringReader("AAAAAAAAAA"),
-        (clazz, record) -> fromCallback.add(clazz));
+    List<Object> fromResult = reader.readAsResult(new StringReader("AAAAAAAAAA")).getAll();
 
     assertEquals(1, fromHandler.size());
-    assertEquals(1, fromCallback.size());
+    assertEquals(1, fromResult.size());
   }
 }

@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
@@ -28,10 +26,7 @@ class TestFixedFormatReaderMultiMatch {
         .multiMatchStrategy(MultiMatchStrategy.firstMatch())
         .build();
 
-    long count;
-    try (Stream<Object> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
-      count = stream.count();
-    }
+    long count = reader.readAsResult(readerOf("AAAAAAAAAA")).getAll().size();
     assertEquals(1, count);
   }
 
@@ -43,11 +38,8 @@ class TestFixedFormatReaderMultiMatch {
         .multiMatchStrategy(MultiMatchStrategy.throwOnAmbiguity())
         .build();
 
-    FixedFormatException ex = assertThrows(FixedFormatException.class, () -> {
-      try (Stream<Object> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
-        stream.collect(Collectors.toList());
-      }
-    });
+    FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
+        reader.readAsResult(readerOf("AAAAAAAAAA")));
     assertTrue(ex.getMessage().contains("TenCharRecord"));
     assertTrue(ex.getMessage().contains("1"), "Should mention line 1: " + ex.getMessage());
   }
@@ -60,10 +52,7 @@ class TestFixedFormatReaderMultiMatch {
         .multiMatchStrategy(MultiMatchStrategy.throwOnAmbiguity())
         .build();
 
-    long count;
-    try (Stream<Object> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
-      count = stream.count();
-    }
+    long count = reader.readAsResult(readerOf("AAAAAAAAAA")).getAll().size();
     assertEquals(1, count);
   }
 
@@ -79,9 +68,7 @@ class TestFixedFormatReaderMultiMatch {
         })
         .build();
 
-    try (Stream<Object> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
-      stream.count();
-    }
+    reader.readAsResult(readerOf("AAAAAAAAAA"));
     assertFalse(called.get(), "MultiMatchStrategy.resolve() must not be called when only one pattern matches");
   }
 
@@ -93,10 +80,7 @@ class TestFixedFormatReaderMultiMatch {
         .multiMatchStrategy(MultiMatchStrategy.allMatches())
         .build();
 
-    long count;
-    try (Stream<Object> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
-      count = stream.count();
-    }
+    long count = reader.readAsResult(readerOf("AAAAAAAAAA")).getAll().size();
     assertEquals(2, count);
   }
 }

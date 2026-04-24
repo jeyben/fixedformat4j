@@ -88,44 +88,6 @@ Mappings are evaluated in registration order. The `multiMatchStrategy` controls 
 
 ---
 
-## Reading into a List
-
-`readAsList` eagerly reads all records and returns them as `List<Object>` in encounter order. For typed access without casts, prefer `readAsResult` (see below). Overloads are available for `File`, `Path`, `InputStream`, and `Reader`. All default to UTF-8; pass an explicit `Charset` when needed.
-
-```java
-// From a File (UTF-8)
-List<Object> records = reader.readAsList(new File("employees.txt"));
-
-// From a Path with an explicit charset
-List<Object> records = reader.readAsList(
-    Path.of("employees.txt"), StandardCharsets.ISO_8859_1);
-
-// From any Reader
-List<Object> records = reader.readAsList(new StringReader(data));
-```
-
----
-
-## Streaming large files
-
-`readAsStream` returns a **lazy** `Stream<Object>` backed by the underlying reader. Lines are read on demand — only the current line is held in memory. The stream closes the reader automatically when the stream itself is closed, so always use try-with-resources:
-
-```java
-try (Stream<Object> stream = reader.readAsStream(Path.of("employees.txt"))) {
-    stream
-        .filter(r -> r instanceof EmployeeRecord)
-        .map(r -> (EmployeeRecord) r)
-        .filter(e -> e.getEmployeeId() > 1000)
-        .forEach(this::process);
-}
-```
-
-For typed dispatch without `instanceof` casts, `readAsResult` or `processAll` are preferred.
-
-The stream is sequential and ordered. The same `File`, `Path`, `InputStream`, and `Reader` overloads are available as for `readAsList`.
-
----
-
 ## Reading as ReadResult
 
 `readAsResult` is the recommended collect-then-process method for heterogeneous files. It reads all records eagerly and returns a `ReadResult` — a type-safe, class-keyed container that eliminates casts at the call site.
@@ -152,7 +114,7 @@ List<DetailRecord> details = result.get(DetailRecord.class); // no cast
 | `contains(Class<?>)` | `boolean` | `true` if at least one record of the given class was parsed. |
 | `classes()` | `Set<Class<?>>` | Set of all classes that produced at least one record. |
 
-The same `File`, `Path`, `InputStream`, and `Reader` overloads are available as for `readAsList`.
+Overloads are available for `File`, `Path`, `InputStream`, and `Reader`. All default to UTF-8; pass an explicit `Charset` when needed.
 
 ---
 
@@ -176,32 +138,6 @@ reader.processAll(Path.of("data.txt"));
 
 Mappings registered without a handler (the two-argument `addMapping` overload) are silently skipped during `processAll` — the line is still parsed and routed, but no handler is invoked. The same source-type overloads (`File`, `Path`, `InputStream`, `Reader`) are available as for other output shapes.
 
----
-
-## Per-record callbacks
-
-`readWithCallback` drives the read loop and invokes a callback for each parsed record. Two signatures are available:
-
-**`Consumer<Object>`** — receive only the record:
-
-```java
-reader.readWithCallback(new File("employees.txt"),
-    record -> System.out.println(record));
-```
-
-**`BiConsumer<Class<?>, Object>`** — receive the matched class and the record:
-
-```java
-reader.readWithCallback(new File("data.txt"), (clazz, record) -> {
-    if (clazz == HeaderRecord.class) {
-        processHeader((HeaderRecord) record);
-    } else if (clazz == DetailRecord.class) {
-        processDetail((DetailRecord) record);
-    }
-});
-```
-
-For typed dispatch without casts, `processAll` with per-mapping handlers is preferred.
 
 ---
 

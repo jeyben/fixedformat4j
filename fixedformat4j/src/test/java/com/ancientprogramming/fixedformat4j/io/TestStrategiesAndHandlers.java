@@ -12,8 +12,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
@@ -47,11 +45,10 @@ class TestStrategiesAndHandlers {
         .multiMatchStrategy(MultiMatchStrategy.firstMatch())
         .build();
 
-    List<Class<?>> classes = new ArrayList<>();
-    reader.readWithCallback(new StringReader("AAAAAAAAAA"), (clazz, r) -> classes.add(clazz));
+    List<Object> records = reader.readAsResult(new StringReader("AAAAAAAAAA")).getAll();
 
-    assertEquals(1, classes.size());
-    assertEquals(TenCharRecord.class, classes.get(0));
+    assertEquals(1, records.size());
+    assertInstanceOf(TenCharRecord.class, records.get(0));
   }
 
   @Test
@@ -63,7 +60,7 @@ class TestStrategiesAndHandlers {
         .build();
 
     assertThrows(FixedFormatException.class, () ->
-        reader.readAsList(new StringReader("AAAAAAAAAA")));
+        reader.readAsResult(new StringReader("AAAAAAAAAA")));
   }
 
   @Test
@@ -74,10 +71,9 @@ class TestStrategiesAndHandlers {
         .multiMatchStrategy(MultiMatchStrategy.allMatches())
         .build();
 
-    List<Class<?>> classes = new ArrayList<>();
-    reader.readWithCallback(new StringReader("AAAAAAAAAA"), (clazz, r) -> classes.add(clazz));
+    List<Object> records = reader.readAsResult(new StringReader("AAAAAAAAAA")).getAll();
 
-    assertEquals(2, classes.size());
+    assertEquals(2, records.size());
   }
 
   @Test
@@ -91,11 +87,10 @@ class TestStrategiesAndHandlers {
         .multiMatchStrategy(lastMatch)
         .build();
 
-    List<Class<?>> classes = new ArrayList<>();
-    reader.readWithCallback(new StringReader("AAAAA"), (clazz, r) -> classes.add(clazz));
+    List<Object> records = reader.readAsResult(new StringReader("AAAAA")).getAll();
 
-    assertEquals(1, classes.size());
-    assertEquals(FiveCharRecord.class, classes.get(0));
+    assertEquals(1, records.size());
+    assertInstanceOf(FiveCharRecord.class, records.get(0));
   }
 
   @Test
@@ -105,7 +100,7 @@ class TestStrategiesAndHandlers {
         .unmatchStrategy(UnmatchStrategy.skip())
         .build();
 
-    List<Object> results = reader.readAsList(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
+    List<Object> results = reader.readAsResult(new StringReader("AAAAAAAAAA\nBBBBBBBBBB")).getAll();
     assertEquals(1, results.size());
   }
 
@@ -117,7 +112,7 @@ class TestStrategiesAndHandlers {
         .build();
 
     assertThrows(FixedFormatException.class, () ->
-        reader.readAsList(new StringReader("AAAAAAAAAA\nBBBBBBBBBB")));
+        reader.readAsResult(new StringReader("AAAAAAAAAA\nBBBBBBBBBB")));
   }
 
   @Test
@@ -129,7 +124,7 @@ class TestStrategiesAndHandlers {
         .unmatchStrategy((lineNumber, segment) -> captured.add(lineNumber + ":" + segment))
         .build();
 
-    reader.readAsList(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
+    reader.readAsResult(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
 
     assertEquals(1, captured.size());
     assertEquals("2:BBBBBBBBBB", captured.get(0));
@@ -143,10 +138,8 @@ class TestStrategiesAndHandlers {
         .manager(failOnLine(2))
         .build();
 
-    try (Stream<Object> stream = reader.readAsStream(new StringReader(THREE_LINES))) {
-      List<Object> results = stream.collect(Collectors.toList());
-      assertEquals(2, results.size(), "Bad line should be skipped; two good lines emitted");
-    }
+    List<Object> results = reader.readAsResult(new StringReader(THREE_LINES)).getAll();
+    assertEquals(2, results.size(), "Bad line should be skipped; two good lines emitted");
   }
 
   @Test
@@ -159,10 +152,8 @@ class TestStrategiesAndHandlers {
         .manager(failOnLine(2))
         .build();
 
-    try (Stream<Object> stream = reader.readAsStream(new StringReader(THREE_LINES))) {
-      List<Object> results = stream.collect(Collectors.toList());
-      assertEquals(2, results.size(), "Record for bad line must not be emitted");
-    }
+    List<Object> results = reader.readAsResult(new StringReader(THREE_LINES)).getAll();
+    assertEquals(2, results.size(), "Record for bad line must not be emitted");
     assertEquals(1, captured.size());
     assertTrue(captured.get(0).startsWith("2:"));
   }
@@ -176,6 +167,6 @@ class TestStrategiesAndHandlers {
         .build();
 
     assertThrows(FixedFormatException.class, () ->
-        reader.readAsList(new StringReader(THREE_LINES)));
+        reader.readAsResult(new StringReader(THREE_LINES)));
   }
 }

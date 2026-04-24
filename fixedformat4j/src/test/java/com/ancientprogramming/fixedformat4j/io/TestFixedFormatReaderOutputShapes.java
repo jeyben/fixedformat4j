@@ -53,7 +53,7 @@ class TestFixedFormatReaderOutputShapes {
   }
 
   @Test
-  void readAsListReturnsAllRecordsInEncounterOrder() {
+  void readAsResultGetReturnsTypedRecordsInOrder() {
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
         .build();

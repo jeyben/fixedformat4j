@@ -40,9 +40,7 @@ title: Changelog
   The built-in `RegexLinePattern` uses `Matcher.find()` semantics and compiles the
   pattern eagerly (invalid patterns throw immediately). `FixedFormatReader` is unparameterized.
 
-  Four output shapes:
-  - `readAsStream()` — lazy `Stream<Object>`, auto-closes on stream close.
-  - `readAsList()` — eager `List<Object>` in encounter order.
+  Two output shapes:
   - `readAsResult()` — returns `ReadResult`, a type-safe class-keyed container; `get(Class<R>)` returns `List<R>` with no cast required. Also provides `getAll()`, `contains(Class<?>)`, and `classes()`.
   - `processAll()` — push-style; dispatches each parsed record to the typed `Consumer<R>` handler registered per mapping via the three-argument `addMapping` overload. Mappings without a handler are silently skipped.
 

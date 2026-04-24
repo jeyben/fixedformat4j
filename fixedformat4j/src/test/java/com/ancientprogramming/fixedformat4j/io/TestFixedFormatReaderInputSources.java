@@ -111,13 +111,6 @@ class TestFixedFormatReaderInputSources {
   }
 
   @Test
-  void inputStreamIsClosedAfterReadAsList() {
-    TrackingInputStream is = new TrackingInputStream("hello     \nworld     ".getBytes(StandardCharsets.UTF_8));
-    reader().readAsList(is);
-    assertTrue(is.closed, "InputStream should be closed after readAsList");
-  }
-
-  @Test
   void inputStreamIsClosedAfterReadAsTypedResult() {
     TrackingInputStream is = new TrackingInputStream("hello     \nworld     ".getBytes(StandardCharsets.UTF_8));
     reader().readAsResult(is);
@@ -136,13 +129,4 @@ class TestFixedFormatReaderInputSources {
     assertTrue(is.closed, "InputStream should be closed after processAll(Consumer)");
   }
 
-  @Test
-  void inputStreamIsClosedAfterReadWithCallbackBiConsumer() {
-    FixedFormatReader r = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
-        .build();
-    TrackingInputStream is = new TrackingInputStream("hello     \nworld     ".getBytes(StandardCharsets.UTF_8));
-    r.readWithCallback(is, (clazz, record) -> {});
-    assertTrue(is.closed, "InputStream should be closed after readWithCallback(BiConsumer)");
-  }
 }

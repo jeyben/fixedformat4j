@@ -10,8 +10,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
@@ -54,10 +52,7 @@ class TestFixedFormatReaderParseError {
         .manager(countingManager)
         .build();
 
-    try (Stream<Object> stream = reader.readAsStream(
-        new StringReader("line1     \nline2     \nline3     "))) {
-      stream.collect(Collectors.toList());
-    }
+    reader.readAsResult(new StringReader("line1     \nline2     \nline3     "));
     assertEquals(2, goodLines.get(), "Two good lines should have been processed");
   }
 
@@ -72,28 +67,20 @@ class TestFixedFormatReaderParseError {
         .manager(failOnSecondCall())
         .build();
 
-    try (Stream<Object> stream = reader.readAsStream(
-        new StringReader("line1     \nline2     "))) {
-      stream.collect(Collectors.toList());
-    }
+    reader.readAsResult(new StringReader("line1     \nline2     "));
     assertEquals(1, captured.size());
     assertTrue(captured.get(0).startsWith("2:line2     "));
   }
 
   @Test
   void customLambdaStrategyDoesNotEmitRecordForFailedLine() {
-    List<Object> results = new ArrayList<>();
-
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
         .parseErrorStrategy((wrapped, line, lineNumber) -> {})
         .manager(failOnSecondCall())
         .build();
 
-    try (Stream<Object> stream = reader.readAsStream(
-        new StringReader("line1     \nline2     "))) {
-      stream.forEach(results::add);
-    }
+    List<Object> results = reader.readAsResult(new StringReader("line1     \nline2     ")).getAll();
     assertEquals(1, results.size());
   }
 }
