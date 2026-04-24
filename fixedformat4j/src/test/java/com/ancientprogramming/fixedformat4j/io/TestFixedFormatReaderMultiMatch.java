@@ -5,11 +5,12 @@ import org.junit.jupiter.api.Test;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
+import com.ancientprogramming.fixedformat4j.io.read.MultiMatchStrategy;
 
 class TestFixedFormatReaderMultiMatch {
 
@@ -19,63 +20,67 @@ class TestFixedFormatReaderMultiMatch {
 
   @Test
   void firstMatchWinsWhenTwoPatternsMatch() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
         .multiMatchStrategy(MultiMatchStrategy.firstMatch())
         .build();
 
-    List<TenCharRecord> results;
-    try (Stream<TenCharRecord> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
-      results = stream.collect(Collectors.toList());
-    }
-    assertEquals(1, results.size());
+    long count = reader.read(readerOf("AAAAAAAAAA")).getAll().size();
+    assertEquals(1, count);
   }
 
   @Test
   void throwsOnAmbiguityWhenTwoPatternsMatch() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
         .multiMatchStrategy(MultiMatchStrategy.throwOnAmbiguity())
         .build();
 
-    FixedFormatException ex = assertThrows(FixedFormatException.class, () -> {
-      try (Stream<TenCharRecord> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
-        stream.collect(Collectors.toList());
-      }
-    });
+    FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
+        reader.read(readerOf("AAAAAAAAAA")));
     assertTrue(ex.getMessage().contains("TenCharRecord"));
     assertTrue(ex.getMessage().contains("1"), "Should mention line 1: " + ex.getMessage());
   }
 
   @Test
   void noAmbiguityExceptionWhenOnlyOnePatternMatches() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^B"))
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+        .addMapping(TenCharRecord.class, Pattern.compile("^B").asPredicate())
         .multiMatchStrategy(MultiMatchStrategy.throwOnAmbiguity())
         .build();
 
-    List<TenCharRecord> results;
-    try (Stream<TenCharRecord> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
-      results = stream.collect(Collectors.toList());
-    }
-    assertEquals(1, results.size());
+    long count = reader.read(readerOf("AAAAAAAAAA")).getAll().size();
+    assertEquals(1, count);
+  }
+
+  @Test
+  void customStrategyNotCalledWhenOnlyOnePatternMatches() {
+    AtomicBoolean called = new AtomicBoolean(false);
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+        .addMapping(TenCharRecord.class, Pattern.compile("^B").asPredicate())
+        .multiMatchStrategy((matched, lineNumber) -> {
+          called.set(true);
+          return matched;
+        })
+        .build();
+
+    reader.read(readerOf("AAAAAAAAAA"));
+    assertFalse(called.get(), "MultiMatchStrategy.resolve() must not be called when only one pattern matches");
   }
 
   @Test
   void allMatchesEmitsTwoObjectsForOneMatchingLine() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
         .multiMatchStrategy(MultiMatchStrategy.allMatches())
         .build();
 
-    List<TenCharRecord> results;
-    try (Stream<TenCharRecord> stream = reader.readAsStream(readerOf("AAAAAAAAAA"))) {
-      results = stream.collect(Collectors.toList());
-    }
-    assertEquals(2, results.size());
+    long count = reader.read(readerOf("AAAAAAAAAA")).getAll().size();
+    assertEquals(2, count);
   }
 }

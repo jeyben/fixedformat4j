@@ -18,10 +18,12 @@ It is also straightforward to write and plug in your own formatters for custom d
 - Handles signed numbers (e.g. `'-1000'` or `'1000-'` can be treated as negative 1000)
 - Repeating fields: map consecutive same-format slots to arrays or collections with a single `@Field(count = N)` annotation
 - Detailed error reporting when parsing fails
+- Lombok-friendly: place `@Field` on fields instead of getters — add `@Getter @Setter @NoArgsConstructor` and you're done
+- Spring-friendly: plain Java objects with no Spring dependency — register as `@Bean`s, inject by interface
 
 ## Getting started
 
-Annotate your getter methods and use the `FixedFormatManager` to load and export your fixed-format text. The [Quick Start guide](quickstart) walks you through each step with a full working example.
+Annotate your record class — place `@Field` on fields or getter methods — and use the `FixedFormatManager` to load and export your fixed-format text. The [Quick Start guide](quickstart) walks you through each step with a full working example.
 
 In short: add `@Record` to your class, add `@Field` to each getter with an `offset` and `length`, then call `manager.load(...)` or `manager.export(...)`:
 

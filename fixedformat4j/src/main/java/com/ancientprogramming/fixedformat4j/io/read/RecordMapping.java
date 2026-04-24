@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 
+import java.util.Objects;
+import java.util.function.Predicate;
+
+import static java.lang.String.format;
 
 /**
- * Immutable pair of a {@link FixedFormatMatchPattern} and the
+ * Immutable pair of a {@link Predicate} and the
  * {@link com.ancientprogramming.fixedformat4j.annotation.Record}-annotated class to
- * instantiate when the pattern matches a line.
+ * instantiate when the predicate matches a line.
  *
  * <p>The constructor validates that {@code recordClass} carries the {@code @Record} annotation
  * so that misconfigured mappings fail fast at reader-build time rather than at parse time.</p>
@@ -30,29 +34,25 @@ import com.ancientprogramming.fixedformat4j.annotation.Record;
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
  */
-public class ClassPatternMapping<T> {
+public class RecordMapping<T> {
 
   private final Class<T> recordClass;
-  private final FixedFormatMatchPattern pattern;
+  private final Predicate<String> pattern;
 
   /**
    * Creates a new mapping.
    *
    * @param recordClass the class to instantiate when {@code pattern} matches; must be
    *                    annotated with {@link com.ancientprogramming.fixedformat4j.annotation.Record}
-   * @param pattern     the pattern that decides which lines are parsed as {@code recordClass}
+   * @param pattern     the predicate that decides which lines are parsed as {@code recordClass}
    * @throws IllegalArgumentException if {@code recordClass} is not annotated with {@code @Record}
    */
-  public ClassPatternMapping(Class<T> recordClass, FixedFormatMatchPattern pattern) {
-    if (recordClass == null) {
-      throw new IllegalArgumentException("recordClass must not be null");
-    }
-    if (pattern == null) {
-      throw new IllegalArgumentException("pattern must not be null");
-    }
+  public RecordMapping(Class<T> recordClass, Predicate<String> pattern) {
+    Objects.requireNonNull(recordClass, "recordClass must not be null");
+    Objects.requireNonNull(pattern, "pattern must not be null");
     if (recordClass.getAnnotation(Record.class) == null) {
       throw new IllegalArgumentException(
-          recordClass.getSimpleName() + " is not annotated with @Record");
+          format("%s is not annotated with @Record", recordClass.getSimpleName()));
     }
     this.recordClass = recordClass;
     this.pattern = pattern;
@@ -68,12 +68,12 @@ public class ClassPatternMapping<T> {
   }
 
   /**
-   * Returns the pattern used to decide whether a line should be parsed as
+   * Returns the predicate used to decide whether a line should be parsed as
    * {@link #getRecordClass()}.
    *
-   * @return the match pattern; never {@code null}
+   * @return the line predicate; never {@code null}
    */
-  public FixedFormatMatchPattern getPattern() {
+  public Predicate<String> getPattern() {
     return pattern;
   }
 }

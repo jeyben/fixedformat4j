@@ -4,9 +4,13 @@ import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
-class TestClassPatternMapping {
+import static org.junit.jupiter.api.Assertions.*;
+import com.ancientprogramming.fixedformat4j.io.read.RecordMapping;
+
+class TestRecordMapping {
 
   @Record(length = 10)
   static class ValidRecord {
@@ -19,17 +23,17 @@ class TestClassPatternMapping {
 
   static class NotARecord {}
 
-  private final FixedFormatMatchPattern anyPattern = new RegexFixedFormatMatchPattern(".*");
+  private final Predicate<String> anyPattern = Pattern.compile(".*").asPredicate();
 
   @Test
   void returnsRecordClass() {
-    ClassPatternMapping<ValidRecord> mapping = new ClassPatternMapping<>(ValidRecord.class, anyPattern);
+    RecordMapping<ValidRecord> mapping = new RecordMapping<>(ValidRecord.class, anyPattern);
     assertSame(ValidRecord.class, mapping.getRecordClass());
   }
 
   @Test
   void returnsPattern() {
-    ClassPatternMapping<ValidRecord> mapping = new ClassPatternMapping<>(ValidRecord.class, anyPattern);
+    RecordMapping<ValidRecord> mapping = new RecordMapping<>(ValidRecord.class, anyPattern);
     assertSame(anyPattern, mapping.getPattern());
   }
 
@@ -37,20 +41,21 @@ class TestClassPatternMapping {
   void throwsWhenClassNotAnnotatedWithRecord() {
     IllegalArgumentException ex = assertThrows(
         IllegalArgumentException.class,
-        () -> new ClassPatternMapping<>(NotARecord.class, anyPattern)
+        () -> new RecordMapping<>(NotARecord.class, anyPattern)
     );
     assertTrue(ex.getMessage().contains("NotARecord"));
   }
 
   @Test
-  void throwsIllegalArgumentWhenClassIsNull() {
-    assertThrows(IllegalArgumentException.class,
-        () -> new ClassPatternMapping<>(null, anyPattern));
+  void throwsNullPointerWhenClassIsNull() {
+    assertThrows(NullPointerException.class,
+        () -> new RecordMapping<>(null, anyPattern));
   }
 
   @Test
-  void throwsIllegalArgumentWhenPatternIsNull() {
-    assertThrows(IllegalArgumentException.class,
-        () -> new ClassPatternMapping<>(ValidRecord.class, null));
+  void throwsNullPointerWhenPatternIsNull() {
+    assertThrows(NullPointerException.class,
+        () -> new RecordMapping<>(ValidRecord.class, null));
   }
+
 }

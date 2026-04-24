@@ -49,7 +49,7 @@ implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1")
 
 ## Step 2 — Annotate your record class
 
-Create a plain Java class, annotate it with `@Record`, and place a `@Field` annotation on each getter method.
+Create a plain Java class, annotate it with `@Record`, and add `@Field` to each field or getter method.
 
 ```java
 import com.ancientprogramming.fixedformat4j.annotation.Field;
@@ -82,10 +82,12 @@ public class EmployeeRecord {
 }
 ```
 
+> **Tip — using Lombok?** Place `@Field` directly on the fields and add `@Getter @Setter @NoArgsConstructor` to the class. The manager discovers field annotations and derives getters by convention, so no getter boilerplate is needed. See [Example 6](examples#example-6--field-annotations-and-lombok).
+
 Key rules:
 - The class must be annotated with `@Record`.
 - Every mapped field needs a getter **and** a setter.
-- `@Field` goes on the getter, not the setter or the field.
+- `@Field` goes on the getter **or** directly on the field (since 1.5.0) — see [Example 6](examples#example-6--field-annotations-and-lombok) for the Lombok-friendly style.
 - `offset` is **1-based** — offset 1 means the first character.
 
 ## Step 3 — Load from a string

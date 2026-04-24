@@ -6,19 +6,106 @@ title: FAQ
 
 ## Can fixedformat4j help me parse large text files?
 
-Yes. Since 1.8.0, `FixedFormatReader` provides built-in file and stream processing. Use `readAsStream()` for memory-efficient lazy reading — lines are loaded on demand and the underlying reader is closed automatically when the stream is closed:
+Yes. Since 1.8.0, `FixedFormatReader` provides built-in file processing. Supply a `HandlerRegistry` to `process` — each record is parsed and dispatched immediately without loading the whole file into memory:
 
 ```java
-FixedFormatReader<MyRecord> reader = FixedFormatReader.<MyRecord>builder()
-    .addMapping(MyRecord.class, new RegexFixedFormatMatchPattern(".*"))
+// import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
+FixedFormatReader reader = FixedFormatReader.builder()
+    .addMapping(MyRecord.class, regex(".*"))
     .build();
 
-try (Stream<MyRecord> stream = reader.readAsStream(Path.of("large.txt"))) {
-    stream.forEach(processor::process);
-}
+reader.process(Path.of("large.txt"),
+    new HandlerRegistry().on(MyRecord.class, processor::process));
 ```
 
 See [File Processing](usage/file-processing) for the full API including output shapes, strategies, and heterogeneous-file support.
+
+## Can I use fixedformat4j with Spring?
+
+Yes — both `FixedFormatManager` and `FixedFormatReader` are plain Java objects with no Spring dependency; wire them as `@Bean`s in a `@Configuration` class and inject them wherever you need them.
+
+**Registering `FixedFormatManager`:**
+
+```java
+@Configuration
+public class FixedFormatConfig {
+
+  @Bean
+  public FixedFormatManager fixedFormatManager() {
+    return new FixedFormatManagerImpl();
+  }
+}
+```
+
+Because the bean is registered against the `FixedFormatManager` interface, it is easy to mock in tests and swap implementations without touching call sites.
+
+**Registering `FixedFormatReader`:**
+
+```java
+// import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
+@Bean
+public FixedFormatReader payrollReader() {
+  return FixedFormatReader.builder()
+      .addMapping(HeaderRecord.class, regex("^HDR"))
+      .addMapping(DetailRecord.class, regex("^DTL"))
+      .build();
+}
+```
+
+Each `FixedFormatReader` instance is immutable and thread-safe after construction, so a single singleton bean shared across the application is fine.
+
+**Injecting into a service:**
+
+```java
+@Service
+public class PayrollService {
+  private final FixedFormatManager manager;
+  private final FixedFormatReader reader;
+
+  public PayrollService(FixedFormatManager manager, FixedFormatReader reader) {
+    this.manager = manager;
+    this.reader = reader;
+  }
+
+  public List<DetailRecord> load(Path file) {
+    return reader.read(file).get(DetailRecord.class);
+  }
+}
+```
+
+No Spring Boot auto-configuration or starter is required — add the dependency, write the `@Configuration` class, and you're done.
+
+## Can I use Lombok with fixedformat4j?
+
+Yes. Since 1.5.0, `@Field` can be placed directly on Java fields rather than getter methods. Add `@Getter @Setter @NoArgsConstructor` to the class; the manager derives getter/setter names by convention and no boilerplate is needed:
+
+```java
+@Getter @Setter @NoArgsConstructor
+@Record
+public class EmployeeRecord {
+
+  @Field(offset = 1, length = 12)
+  private String name;
+
+  @Field(offset = 13, length = 5, align = Align.RIGHT, paddingChar = '0')
+  private Integer employeeId;
+
+  @Field(offset = 18, length = 8)
+  @FixedFormatPattern("yyyyMMdd")
+  private LocalDate hireDate;
+
+  @Field(offset = 26, length = 1)
+  @FixedFormatBoolean(trueValue = "Y", falseValue = "N")
+  private Boolean active;
+}
+```
+
+Key points:
+- Supplementary annotations (`@FixedFormatPattern`, `@FixedFormatBoolean`, `@FixedFormatDecimal`, `@FixedFormatNumber`) can also be placed on fields.
+- `@NoArgsConstructor` is required — the manager instantiates the record via its no-arg constructor before calling setters.
+- If `@Field` appears on both a field **and** its getter, the field annotation takes precedence (an error is logged). Annotate only one location.
+
+See [Example 6](examples#example-6--field-annotations-and-lombok) for a full worked example including the equivalent plain-POJO style.
 
 ## Can I apply my own custom formatter?
 
@@ -159,15 +246,18 @@ while ((line = reader.readLine()) != null) {
 }
 ```
 
-Since 1.8.0, `FixedFormatReader` handles this pattern directly — register each record class with a `RegexFixedFormatMatchPattern` and let the reader route lines automatically:
+Since 1.8.0, `FixedFormatReader` handles this pattern directly — register each record class with a `Predicate<String>` and let the reader route lines automatically:
 
 ```java
-FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
-    .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^H"))
-    .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^D"))
+// import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
+FixedFormatReader reader = FixedFormatReader.builder()
+    .addMapping(HeaderRecord.class, regex("^H"))
+    .addMapping(DetailRecord.class, regex("^D"))
     .build();
 
-Map<Class<?>, List<Object>> byType = reader.readAsMap(Path.of("data.txt"));
+ReadResult result = reader.read(Path.of("data.txt"));
+List<HeaderRecord> headers = result.get(HeaderRecord.class);
+List<DetailRecord> details = result.get(DetailRecord.class);
 ```
 
 See [File Processing](usage/file-processing) for the full API, or [Example 4](examples#example-4--processing-a-file-line-by-line) for the manual loop approach.

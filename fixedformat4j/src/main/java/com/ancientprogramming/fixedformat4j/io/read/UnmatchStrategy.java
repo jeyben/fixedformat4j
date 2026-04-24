@@ -13,21 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static java.lang.String.format;
 
 /**
- * Strategy invoked when no {@link ClassPatternMapping} pattern matches a line.
+ * Strategy invoked when no pattern matches a line.
  *
- * <p>Implement this interface to define custom handling — for example, collecting unmatched
- * lines for later inspection. Two built-in strategies are provided as static factory methods:
- * {@link #skip()} and {@link #throwException()}.</p>
+ * <p>Two built-in strategies are provided as static factory methods: {@link #skip()} and
+ * {@link #throwException()}.</p>
  *
  * <p>Because this is a {@link FunctionalInterface}, a lambda can be passed wherever an
- * {@code UnmatchedLineStrategy} is expected:</p>
+ * {@code UnmatchStrategy} is expected:</p>
  * <pre>{@code
- * .unmatchedLineStrategy((lineNumber, line) ->
+ * .unmatchStrategy((lineNumber, line) ->
  *     System.err.println("Unmatched line " + lineNumber + ": " + line))
  * }</pre>
  *
@@ -35,27 +38,34 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
  * @since 1.8.0
  */
 @FunctionalInterface
-public interface UnmatchedLineStrategy {
+public interface UnmatchStrategy {
+
+  Logger LOG = LoggerFactory.getLogger(UnmatchStrategy.class);
 
   /**
    * Handles a line that matched no registered pattern.
    *
    * <p>Implementations may throw a {@link FixedFormatException} to abort processing, or
-   * return normally to silently skip the line.</p>
+   * return normally to skip the line.</p>
    *
    * @param lineNumber the 1-based line number within the source being read
-   * @param line       the raw content of the line, without any trailing line-ending characters
+   * @param line       the raw content of the unmatched line, without trailing line-ending characters
    */
   void handle(long lineNumber, String line);
 
   /**
-   * Returns a strategy that silently ignores unmatched lines.
-   * Useful for files where header, footer, or comment lines are expected.
+   * Returns a strategy that skips unmatched lines and logs each one at WARN level via SLF4J.
+   * Useful for files where header, footer, or comment lines are expected but should still be visible.
    *
-   * @return a no-op strategy; never {@code null}
+   * <p><strong>Note:</strong> logging only occurs if an SLF4J binding is present on the
+   * classpath at runtime. If no binding is configured, the warning is silently discarded.
+   * When guaranteed error visibility is required, use a custom lambda strategy instead.</p>
+   *
+   * @return a skip-and-warn strategy; never {@code null}
    */
-  static UnmatchedLineStrategy skip() {
-    return (lineNumber, line) -> {};
+  static UnmatchStrategy skip() {
+    return (lineNumber, line) ->
+      LOG.warn("Skipping unmatched line {}: {}", lineNumber, line);
   }
 
   /**
@@ -64,9 +74,9 @@ public interface UnmatchedLineStrategy {
    *
    * @return a fail-fast strategy; never {@code null}
    */
-  static UnmatchedLineStrategy throwException() {
+  static UnmatchStrategy throwException() {
     return (lineNumber, line) -> {
-      throw new FixedFormatException("No pattern matched line " + lineNumber + ": " + line);
+      throw new FixedFormatException(format("No pattern matched line %d: %s", lineNumber, line));
     };
   }
 }

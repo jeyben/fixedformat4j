@@ -1,65 +1,79 @@
 package com.ancientprogramming.fixedformat4j.io;
 
+import com.ancientprogramming.fixedformat4j.io.read.ReadResult;
 import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
 
 class TestFixedFormatReaderOutputShapes {
 
-  private static final FixedFormatMatchPattern A_PATTERN = new RegexFixedFormatMatchPattern("^A");
-  private static final FixedFormatMatchPattern B_PATTERN = new RegexFixedFormatMatchPattern("^B");
+  private static final Predicate<String> A_PATTERN = Pattern.compile("^A").asPredicate();
+  private static final Predicate<String> B_PATTERN = Pattern.compile("^B").asPredicate();
 
-  private FixedFormatReader<Object> multiTypeReader() {
-    return FixedFormatReader.<Object>builder()
+  private FixedFormatReader multiTypeReader() {
+    return FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, A_PATTERN)
         .addMapping(FiveCharRecord.class, B_PATTERN)
         .build();
   }
 
   @Test
-  void readAsListReturnsAllRecordsInEncounterOrder() {
-    FixedFormatReader<TenCharRecord> reader = FixedFormatReader.<TenCharRecord>builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+  void readGroupsByMatchedClass() {
+    ReadResult result = multiTypeReader().read(
+        new StringReader("AAAAAAAAAA\nBBBBBBBBBB\nAAAAAAAAAAAA"));
+
+    assertEquals(2, result.get(TenCharRecord.class).size());
+    assertEquals(1, result.get(FiveCharRecord.class).size());
+  }
+
+  @Test
+  void readPreservesRegistrationOrder() {
+    ReadResult result = multiTypeReader().read(
+        new StringReader("BBBBBBBBBB\nAAAAAAAAAAAA"));
+
+    List<Class<?>> keys = new ArrayList<>(result.classes());
+    assertEquals(TenCharRecord.class, keys.get(0));
+    assertEquals(FiveCharRecord.class, keys.get(1));
+  }
+
+  @Test
+  void readExcludesClassesWithNoMatches() {
+    ReadResult result = multiTypeReader().read(
+        new StringReader("AAAAAAAAAA"));
+
+    assertTrue(result.contains(TenCharRecord.class));
+    assertFalse(result.contains(FiveCharRecord.class));
+  }
+
+  @Test
+  void readGetReturnsTypedRecordsInOrder() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
         .build();
 
-    List<TenCharRecord> results = reader.readAsList(new StringReader("hello     \nworld     "));
+    List<TenCharRecord> results = reader
+        .read(new StringReader("hello     \nworld     "))
+        .get(TenCharRecord.class);
     assertEquals(2, results.size());
     assertEquals("hello", results.get(0).getValue());
     assertEquals("world", results.get(1).getValue());
   }
 
   @Test
-  void readAsMapGroupsByMatchedClass() {
-    Map<Class<? extends Object>, List<Object>> map =
-        multiTypeReader().readAsMap(new StringReader("AAAAAAAAAA\nBBBBBBBBBB\nAAAAAAAAAAAA"));
+  void getAllReturnsFlatListInEncounterOrder() {
+    ReadResult result = multiTypeReader().read(
+        new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
 
-    assertEquals(2, map.size());
-    assertEquals(2, map.get(TenCharRecord.class).size());
-    assertEquals(1, map.get(FiveCharRecord.class).size());
-  }
-
-  @Test
-  void readAsMapPreservesRegistrationOrder() {
-    Map<Class<? extends Object>, List<Object>> map =
-        multiTypeReader().readAsMap(new StringReader("BBBBBBBBBB\nAAAAAAAAAAAA"));
-
-    List<Class<?>> keys = new ArrayList<>(map.keySet());
-    assertEquals(TenCharRecord.class, keys.get(0));
-    assertEquals(FiveCharRecord.class, keys.get(1));
-  }
-
-  @Test
-  void readAsMapExcludesClassesWithNoMatches() {
-    Map<Class<? extends Object>, List<Object>> map =
-        multiTypeReader().readAsMap(new StringReader("AAAAAAAAAA"));
-
-    assertEquals(1, map.size());
-    assertTrue(map.containsKey(TenCharRecord.class));
-    assertFalse(map.containsKey(FiveCharRecord.class));
+    List<Object> all = result.getAll();
+    assertEquals(2, all.size());
+    assertInstanceOf(TenCharRecord.class, all.get(0));
+    assertInstanceOf(FiveCharRecord.class, all.get(1));
   }
 }

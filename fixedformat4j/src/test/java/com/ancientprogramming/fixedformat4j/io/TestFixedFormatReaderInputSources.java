@@ -1,5 +1,6 @@
 package com.ancientprogramming.fixedformat4j.io;
 
+import com.ancientprogramming.fixedformat4j.io.read.HandlerRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -9,18 +10,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
 
 class TestFixedFormatReaderInputSources {
 
   @TempDir
   Path tempDir;
 
-  private FixedFormatReader<TenCharRecord> reader() {
-    return FixedFormatReader.<TenCharRecord>builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+  private FixedFormatReader reader() {
+    return FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
         .build();
   }
 
@@ -43,26 +45,9 @@ class TestFixedFormatReaderInputSources {
   }
 
   @Test
-  void readsFromFile() throws IOException {
-    Path path = writeTemp("hello     \nworld     ");
-    List<TenCharRecord> results = reader().readAsList(path.toFile());
-    assertEquals(2, results.size());
-    assertEquals("hello", results.get(0).getValue());
-  }
-
-  @Test
-  void readsFromFileWithExplicitCharset() throws IOException {
-    Path path = tempDir.resolve("latin.txt");
-    Files.write(path, "hello     \nworld     ".getBytes(StandardCharsets.ISO_8859_1));
-
-    List<TenCharRecord> results = reader().readAsList(path.toFile(), StandardCharsets.ISO_8859_1);
-    assertEquals(2, results.size());
-  }
-
-  @Test
   void readsFromPath() throws IOException {
     Path path = writeTemp("hello     \nworld     ");
-    List<TenCharRecord> results = reader().readAsList(path);
+    List<TenCharRecord> results = reader().read(path).get(TenCharRecord.class);
     assertEquals(2, results.size());
     assertEquals("world", results.get(1).getValue());
   }
@@ -72,67 +57,75 @@ class TestFixedFormatReaderInputSources {
     Path path = tempDir.resolve("latin.txt");
     Files.write(path, "hello     \nworld     ".getBytes(StandardCharsets.ISO_8859_1));
 
-    List<TenCharRecord> results = reader().readAsList(path, StandardCharsets.ISO_8859_1);
+    List<TenCharRecord> results = reader()
+        .read(path, StandardCharsets.ISO_8859_1)
+        .get(TenCharRecord.class);
     assertEquals(2, results.size());
   }
 
   @Test
   void readsFromInputStream() {
     InputStream is = new ByteArrayInputStream("hello     \nworld     ".getBytes(StandardCharsets.UTF_8));
-    List<TenCharRecord> results = reader().readAsList(is);
+    List<TenCharRecord> results = reader().read(is).get(TenCharRecord.class);
     assertEquals(2, results.size());
   }
 
   @Test
   void readsFromInputStreamWithExplicitCharset() {
     InputStream is = new ByteArrayInputStream("hello     \nworld     ".getBytes(StandardCharsets.ISO_8859_1));
-    List<TenCharRecord> results = reader().readAsList(is, StandardCharsets.ISO_8859_1);
+    List<TenCharRecord> results = reader()
+        .read(is, StandardCharsets.ISO_8859_1)
+        .get(TenCharRecord.class);
     assertEquals(2, results.size());
   }
 
   @Test
-  void defaultCharsetIsUtf8() throws IOException {
-    String content = "hello     \nworld     ";
-    Path path = tempDir.resolve("utf8.txt");
-    Files.writeString(path, content, StandardCharsets.UTF_8);
-
-    List<TenCharRecord> withDefault = reader().readAsList(path.toFile());
-    List<TenCharRecord> withExplicit = reader().readAsList(path.toFile(), StandardCharsets.UTF_8);
-    assertEquals(withExplicit.size(), withDefault.size());
-  }
-
-  @Test
-  void inputStreamIsClosedAfterReadAsList() {
+  void inputStreamIsClosedAfterReadAsResult() {
     TrackingInputStream is = new TrackingInputStream("hello     \nworld     ".getBytes(StandardCharsets.UTF_8));
-    reader().readAsList(is);
-    assertTrue(is.closed, "InputStream should be closed after readAsList");
+    reader().read(is);
+    assertTrue(is.closed, "InputStream should be closed after read");
   }
 
   @Test
-  void inputStreamIsClosedAfterReadAsMap() {
-    FixedFormatReader<Object> r = FixedFormatReader.<Object>builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
-        .build();
-    TrackingInputStream is = new TrackingInputStream("hello     \nworld     ".getBytes(StandardCharsets.UTF_8));
-    r.readAsMap(is);
-    assertTrue(is.closed, "InputStream should be closed after readAsMap");
+  void throwsNullPointerWhenReaderIsNull() {
+    assertThrows(NullPointerException.class, () ->
+        reader().read((java.io.Reader) null));
   }
 
   @Test
-  void inputStreamIsClosedAfterReadWithCallbackConsumer() {
+  void throwsNullPointerWhenInputStreamIsNull() {
+    assertThrows(NullPointerException.class, () ->
+        reader().read((java.io.InputStream) null));
+  }
+
+  @Test
+  void throwsNullPointerWhenInputStreamCharsetIsNull() {
+    assertThrows(NullPointerException.class, () ->
+        reader().read(new ByteArrayInputStream("data".getBytes()), null));
+  }
+
+  @Test
+  void throwsNullPointerWhenPathIsNull() {
+    assertThrows(NullPointerException.class, () ->
+        reader().read((java.nio.file.Path) null));
+  }
+
+  @Test
+  void throwsNullPointerWhenPathCharsetIsNull() throws IOException {
+    Path path = writeTemp("hello     ");
+    assertThrows(NullPointerException.class, () ->
+        reader().read(path, null));
+  }
+
+  @Test
+  void inputStreamIsClosedAfterProcess() {
     TrackingInputStream is = new TrackingInputStream("hello     \nworld     ".getBytes(StandardCharsets.UTF_8));
     List<String> values = new ArrayList<>();
-    reader().readWithCallback(is, r -> values.add(r.getValue()));
-    assertTrue(is.closed, "InputStream should be closed after readWithCallback(Consumer)");
+    FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
+        .build()
+        .process(is, new HandlerRegistry().on(TenCharRecord.class, r -> values.add(r.getValue())));
+    assertTrue(is.closed, "InputStream should be closed after process");
   }
 
-  @Test
-  void inputStreamIsClosedAfterReadWithCallbackBiConsumer() {
-    FixedFormatReader<Object> r = FixedFormatReader.<Object>builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
-        .build();
-    TrackingInputStream is = new TrackingInputStream("hello     \nworld     ".getBytes(StandardCharsets.UTF_8));
-    r.readWithCallback(is, (clazz, record) -> {});
-    assertTrue(is.closed, "InputStream should be closed after readWithCallback(BiConsumer)");
-  }
 }

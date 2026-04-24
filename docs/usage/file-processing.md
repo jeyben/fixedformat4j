@@ -43,21 +43,24 @@ public class EmployeeRecord {
 
 ## Defining patterns
 
-A `FixedFormatMatchPattern` decides whether a line belongs to a particular record class. The built-in `RegexFixedFormatMatchPattern` compiles a regular expression at construction time and applies it with `find()` semantics (partial-line match).
+A `Predicate<String>` decides whether a line belongs to a particular record class.
+The `LinePredicates.regex(String)` factory (designed for static import) is the most
+concise option — it compiles the regular expression once and applies it with `find()`
+semantics (partial-line match):
 
 ```java
-// Matches any line that starts with "EMP"
-FixedFormatMatchPattern employeePattern = new RegexFixedFormatMatchPattern("^EMP");
+import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
 
-// Matches every line (use for single-type files)
-FixedFormatMatchPattern anyLine = new RegexFixedFormatMatchPattern(".*");
+Predicate<String> employeePattern = regex("^EMP");  // lines starting with "EMP"
+Predicate<String> anyLine         = regex(".*");     // every line
 ```
 
-Implement `FixedFormatMatchPattern` directly for custom discrimination logic — for example, testing a fixed-width type code in a specific column:
+Pass any `Predicate<String>` for custom discrimination logic — for example, testing
+a fixed-width type code in a specific column:
 
 ```java
-FixedFormatMatchPattern headerPattern = line ->
-    line != null && line.length() >= 3 && "HDR".equals(line.substring(0, 3));
+Predicate<String> headerPattern =
+    line -> line.length() >= 3 && "HDR".equals(line.substring(0, 3));
 ```
 
 ---
@@ -69,18 +72,27 @@ Use the fluent builder to configure the reader. At least one mapping must be add
 **Single-type file:**
 
 ```java
-FixedFormatReader<EmployeeRecord> reader = FixedFormatReader.<EmployeeRecord>builder()
-    .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern(".*"))
+FixedFormatReader reader = FixedFormatReader.builder()
+    .addMapping(EmployeeRecord.class, regex(".*"))
     .build();
 ```
 
-**Heterogeneous file** — use `T=Object` when the record classes share no common supertype:
+**Heterogeneous file (strict — throw on any unrecognised line):**
 
 ```java
-FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
-    .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"))
-    .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
-    .unmatchedLineStrategy(UnmatchedLineStrategy.SKIP)
+FixedFormatReader reader = FixedFormatReader.builder()
+    .addMapping(HeaderRecord.class, regex("^HDR"))
+    .addMapping(DetailRecord.class, regex("^DTL"))
+    .build();
+```
+
+**Heterogeneous file (lenient — skip and log unrecognised lines):**
+
+```java
+FixedFormatReader reader = FixedFormatReader.builder()
+    .addMapping(HeaderRecord.class, regex("^HDR"))
+    .addMapping(DetailRecord.class, regex("^DTL"))
+    .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 ```
 
@@ -88,83 +100,54 @@ Mappings are evaluated in registration order. The `multiMatchStrategy` controls 
 
 ---
 
-## Reading into a List
+## Reading as ReadResult
 
-`readAsList` eagerly reads all records and returns them in encounter order. Overloads are available for `File`, `Path`, `InputStream`, and `Reader`. All default to UTF-8; pass an explicit `Charset` when needed.
-
-```java
-// From a File (UTF-8)
-List<EmployeeRecord> records = reader.readAsList(new File("employees.txt"));
-
-// From a Path with an explicit charset
-List<EmployeeRecord> records = reader.readAsList(
-    Path.of("employees.txt"), StandardCharsets.ISO_8859_1);
-
-// From any Reader
-List<EmployeeRecord> records = reader.readAsList(new StringReader(data));
-```
-
----
-
-## Streaming large files
-
-`readAsStream` returns a **lazy** `Stream<T>` backed by the underlying reader. Lines are read on demand — only the current line is held in memory. The stream closes the reader automatically when the stream itself is closed, so always use try-with-resources:
+`read` is the recommended collect-then-process method for heterogeneous files. It reads all records eagerly and returns a `ReadResult` — a type-safe, class-keyed container that eliminates casts at the call site.
 
 ```java
-try (Stream<EmployeeRecord> stream = reader.readAsStream(Path.of("employees.txt"))) {
-    stream
-        .filter(e -> e.getEmployeeId() > 1000)
-        .forEach(this::process);
-}
-```
-
-The stream is sequential and ordered. The same `File`, `Path`, `InputStream`, and `Reader` overloads are available as for `readAsList`.
-
----
-
-## Reading into a Map
-
-For heterogeneous files, `readAsMap` groups records by their matched class:
-
-```java
-FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
-    .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"))
-    .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
-    .unmatchedLineStrategy(UnmatchedLineStrategy.SKIP)
+FixedFormatReader reader = FixedFormatReader.builder()
+    .addMapping(HeaderRecord.class, regex("^HDR"))
+    .addMapping(DetailRecord.class, regex("^DTL"))
     .build();
 
-Map<Class<?>, List<Object>> byType = reader.readAsMap(Path.of("data.txt"));
+ReadResult result = reader.read(Path.of("data.txt"));
 
-List<Object> headers = byType.get(HeaderRecord.class); // may be absent if no HDR lines
-List<Object> details = byType.get(DetailRecord.class);
+List<HeaderRecord> headers = result.get(HeaderRecord.class); // no cast
+List<DetailRecord> details = result.get(DetailRecord.class); // no cast
 ```
 
-The map is a `LinkedHashMap` whose key order follows the `addMapping` registration order. Classes with no matching lines are excluded from the map entirely.
+`ReadResult` key methods:
+
+| Method | Returns | Description |
+|---|---|---|
+| `get(Class<R>)` | `List<R>` | All records of type `R`; empty list if none matched. |
+| `getAll()` | `List<Object>` | All records in encounter order, regardless of type. |
+| `contains(Class<?>)` | `boolean` | `true` if at least one record of the given class was parsed. |
+| `classes()` | `Set<Class<?>>` | Set of all classes that produced at least one record. |
+
+Overloads are available for `Path`, `InputStream`, and `Reader`. All default to UTF-8; pass an explicit `Charset` when needed.
 
 ---
 
-## Per-record callbacks
+## Typed handler dispatch
 
-`readWithCallback` drives the read loop and invokes a callback for each parsed record. Two signatures are available:
+`process` is the push-style alternative to `read`. Instead of collecting records and querying the result, you supply a `HandlerRegistry` at call time; `process` parses each line and immediately dispatches the record to the matching handler.
 
-**`Consumer<T>`** — receive only the record:
-
-```java
-reader.readWithCallback(new File("employees.txt"),
-    record -> System.out.println(record.getName()));
-```
-
-**`BiConsumer<Class<? extends T>, T>`** — receive the matched class and the record (useful when `T=Object`):
+Supply handlers via a `HandlerRegistry` at the call site:
 
 ```java
-reader.readWithCallback(new File("data.txt"), (clazz, record) -> {
-    if (clazz == HeaderRecord.class) {
-        processHeader((HeaderRecord) record);
-    } else if (clazz == DetailRecord.class) {
-        processDetail((DetailRecord) record);
-    }
-});
+FixedFormatReader reader = FixedFormatReader.builder()
+    .addMapping(HeaderRecord.class, regex("^HDR"))
+    .addMapping(DetailRecord.class, regex("^DTL"))
+    .build();
+
+reader.process(Path.of("data.txt"), new HandlerRegistry()
+    .on(HeaderRecord.class, header -> System.out.println("Header: " + header.getDate()))
+    .on(DetailRecord.class, detail -> System.out.println("Detail: " + detail.getOrderId())));
 ```
+
+Classes not registered in the `HandlerRegistry` are silently ignored — they are still parsed and routed, but no handler is invoked. Because the registry is supplied per call, the same reader instance is safe to use from multiple threads with independent registries. The same source-type overloads (`Path`, `InputStream`, `Reader`) are available as for `read`.
+
 
 ---
 
@@ -181,7 +164,7 @@ All three strategy types are interfaces. The built-in behaviours are available a
 | `MultiMatchStrategy.allMatches()` | Emit one record per matching mapping, in registration order. |
 
 ```java
-FixedFormatReader.<Object>builder()
+FixedFormatReader.builder()
     .addMapping(TypeARecord.class, patternA)
     .addMapping(TypeBRecord.class, patternB)
     .multiMatchStrategy(MultiMatchStrategy.throwOnAmbiguity())
@@ -201,14 +184,14 @@ Implement `MultiMatchStrategy` directly for custom resolution logic:
 
 | Factory method | Behaviour |
 |---|---|
-| `UnmatchedLineStrategy.skip()` *(default)* | Silently ignore the line. Useful for header, footer, or comment lines. |
-| `UnmatchedLineStrategy.throwException()` | Throw `FixedFormatException` with the line number and raw content. |
+| `UnmatchStrategy.throwException()` *(default)* | Throw `FixedFormatException` with the line number and raw content. |
+| `UnmatchStrategy.skip()` | Skip the line and log a WARN via SLF4J. Useful when some record types are intentionally ignored. |
 | Lambda | Invoke any custom logic; throw to abort, return to continue. |
 
 ```java
-FixedFormatReader.<EmployeeRecord>builder()
-    .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern("^EMP"))
-    .unmatchedLineStrategy((lineNumber, line) ->
+FixedFormatReader.builder()
+    .addMapping(EmployeeRecord.class, regex("^EMP"))
+    .unmatchStrategy((lineNumber, line) ->
         System.err.println("Unmatched line " + lineNumber + ": " + line))
     .build();
 ```
@@ -222,24 +205,24 @@ FixedFormatReader.<EmployeeRecord>builder()
 | Lambda | Invoke any custom logic; throw to abort, return to skip the record. |
 
 ```java
-FixedFormatReader.<EmployeeRecord>builder()
-    .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern(".*"))
+FixedFormatReader.builder()
+    .addMapping(EmployeeRecord.class, regex(".*"))
     .parseErrorStrategy((wrapped, line, lineNumber) ->
         System.err.println("Parse error on line " + lineNumber + ": " + wrapped.getMessage()))
     .build();
 ```
 
-**Note:** `ParseErrorStrategy.skipAndLog()` only logs if an SLF4J binding is present at runtime. For guaranteed error visibility, use a custom lambda that writes to your preferred output.
+**Note:** `UnmatchStrategy.skip()` and `ParseErrorStrategy.skipAndLog()` only log if an SLF4J binding is present at runtime. For guaranteed error visibility, use a custom lambda that writes to your preferred output.
 
 ---
 
 ## Pre-match filtering
 
-Use `includeLines` to select which lines reach pattern matching. Lines for which the predicate returns `false` are silently skipped and do **not** trigger the unmatched-line strategy:
+Use `excludeLines` to drop lines before pattern matching. Lines for which the predicate returns `true` are silently skipped and do **not** trigger the unmatched-line strategy:
 
 ```java
-FixedFormatReader.<EmployeeRecord>builder()
-    .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern(".*"))
-    .includeLines(line -> !line.isBlank() && !line.startsWith("#"))
+FixedFormatReader.builder()
+    .addMapping(EmployeeRecord.class, regex(".*"))
+    .excludeLines(line -> line.isBlank() || line.startsWith("#"))
     .build();
 ```

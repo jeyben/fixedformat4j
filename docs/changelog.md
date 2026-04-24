@@ -36,29 +36,37 @@ title: Changelog
 
 - **`FixedFormatReader` — file and stream processing** ([#82](https://github.com/jeyben/fixedformat4j/issues/82)) —
   Reads fixed-format records from files, streams, or `Reader`s line-by-line, routing each line
-  to one or more `@Record`-annotated classes via `FixedFormatMatchPattern` discriminators.
-  The built-in `RegexFixedFormatMatchPattern` uses `Matcher.find()` semantics and compiles the
-  pattern eagerly (invalid patterns throw immediately).
+  to one or more `@Record`-annotated classes via `Predicate<String>` discriminators.
+  The `LinePredicates.regex(String)` factory compiles a regular expression once with
+  `Matcher.find()` semantics; pass any `Predicate<String>` for custom logic. `FixedFormatReader` is unparameterized.
 
-  Four output shapes: `readAsStream()` (lazy `Stream<T>`, auto-closes on stream close),
-  `readAsList()`, `readAsMap()` (keyed by record class, insertion-ordered), and
-  `readWithCallback()` (`Consumer<T>` or `BiConsumer<Class<? extends T>, T>`). Every shape
-  accepts `Reader`, `InputStream`, `File`, or `Path`; file/stream overloads default to UTF-8.
+  Two output shapes:
+  - `read()` — returns `ReadResult`, a type-safe class-keyed container; `get(Class<R>)` returns `List<R>` with no cast required. Also provides `getAll()`, `contains(Class<?>)`, and `classes()`.
+  - `process(source, HandlerRegistry)` — push-style; dispatches each parsed record to the typed `Consumer<R>` registered in a per-call `HandlerRegistry`. Classes absent from the registry are silently ignored. Because the registry is supplied at call time, the same reader is safe to use from multiple threads.
+
+  Every shape accepts `Reader`, `InputStream`, or `Path`; stream overloads default to UTF-8.
 
   Three configurable strategies: `MultiMatchStrategy` (`firstMatch` / `throwOnAmbiguity` /
-  `allMatches`), `UnmatchedLineStrategy` (`skip` / `throwException`), and `ParseErrorStrategy`
-  (`throwException` / `skipAndLog`). An `includeLines(Predicate<String>)` pre-filter runs
-  before pattern matching and bypasses `UnmatchedLineStrategy`.
+  `allMatches`), `UnmatchStrategy` (`skip` / `throwException`), and `ParseErrorStrategy`
+  (`throwException` / `skipAndLog`). An `excludeLines(Predicate<String>)` pre-filter runs
+  before pattern matching and bypasses `UnmatchStrategy`.
+
+  `RecordMapping<T>` is the public value type carrying the class and pattern for each registered
+  mapping; it is surfaced as the parameter and return type of `MultiMatchStrategy.resolve()`.
+  Consumers implementing a custom `MultiMatchStrategy` must reference it directly.
 
   `FixedFormatIOException` (extends `FixedFormatException`) is thrown on underlying `IOException`.
 
   ```java
-  FixedFormatReader<Object> reader = FixedFormatReader.<Object>builder()
-      .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"))
-      .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
+  // import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
+  FixedFormatReader reader = FixedFormatReader.builder()
+      .addMapping(HeaderRecord.class, regex("^HDR"))
+      .addMapping(DetailRecord.class, regex("^DTL"))
       .build();
 
-  Map<Class<?>, List<Object>> byType = reader.readAsMap(Path.of("data.txt"));
+  ReadResult result = reader.read(Path.of("data.txt"));
+  List<HeaderRecord> headers = result.get(HeaderRecord.class); // no cast
+  List<DetailRecord> details = result.get(DetailRecord.class); // no cast
   ```
 
   See [File processing](usage/file-processing) for a complete guide.
@@ -111,6 +119,24 @@ title: Changelog
 
 ## 1.7.1 (2026-04-18)
 
+### Breaking changes
+
+- **`@Field.align()` default changed from `Align.LEFT` to `Align.INHERIT`** —
+  The raw annotation value returned by `fieldAnnotation.align()` is now `Align.INHERIT` for
+  any field that does not set `align` explicitly. The *effective runtime behaviour* is
+  unchanged — the framework resolves `INHERIT` to `LEFT` via the enclosing `@Record`'s
+  `align` default — but code that reads the annotation directly (annotation processors,
+  reflection tools, custom bootstrap code) and passes the result to `Align.apply()` or
+  `Align.remove()` will now receive an `UnsupportedOperationException`.
+
+  **Migration:** read `FormatInstructions.getAlignment()` instead of the raw annotation
+  (it is already resolved), or guard against `Align.INHERIT` before calling `apply`/`remove`.
+
+- **`Align.INHERIT` new enum constant** — The `Align` enum gains a third value. `switch`
+  statements over `Align` without an explicit `default` arm now have an unhandled case.
+  Add a `default:` branch (or an explicit `case INHERIT:`) that throws or delegates
+  appropriately.
+
 ### New features
 
 - **Opt-in `nullChar` attribute on `@Field` to represent null values** ([#29](https://github.com/jeyben/fixedformat4j/issues/29)) —
@@ -139,8 +165,9 @@ title: Changelog
 - **Record-level default alignment via `@Record(align = …)`** ([#30](https://github.com/jeyben/fixedformat4j/issues/30)) —
   Adds an `align` attribute to the `@Record` annotation that sets a default alignment for all
   fields in the record. Individual fields may still override it with an explicit `@Field(align = …)`.
-  Existing records are unaffected: the attribute defaults to `Align.LEFT`, matching the
-  previous per-field default.
+  The effective runtime behaviour for existing records is unchanged: `@Record.align()` defaults to
+  `Align.LEFT`, and fields that inherit that default continue to behave as they did before.
+  See the breaking-change note above regarding the raw `@Field.align()` annotation value.
 
   ```java
   // Before — alignment repeated on every field

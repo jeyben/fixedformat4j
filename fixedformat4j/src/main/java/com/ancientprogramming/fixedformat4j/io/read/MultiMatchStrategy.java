@@ -13,36 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+
 /**
  * Strategy that decides which mappings to use when more than one
- * {@link ClassPatternMapping} matches the same line.
+ * {@link RecordMapping} matches the same line.
  *
  * <p>Three built-in strategies are provided as static factory methods:
  * {@link #firstMatch()}, {@link #throwOnAmbiguity()}, and {@link #allMatches()}.</p>
  *
  * <p>Implement this interface to define custom multi-match logic — for example, choosing
- * the mapping whose {@code @Record} length most closely matches the actual line length:</p>
- * <pre>{@code
- * MultiMatchStrategy bestFit = new MultiMatchStrategy() {
- *     public <T> List<ClassPatternMapping<? extends T>> resolve(
- *             List<ClassPatternMapping<? extends T>> matched, long lineNumber) {
- *         return matched.stream()
- *             .filter(m -> m.getRecordClass().getAnnotation(Record.class).length() == line.length())
- *             .collect(Collectors.toList());
- *     }
- * };
- * }</pre>
+ * the mapping whose {@code @Record} length most closely matches the actual line length.</p>
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
  */
+@FunctionalInterface
 public interface MultiMatchStrategy {
 
   /**
@@ -50,12 +43,10 @@ public interface MultiMatchStrategy {
    *
    * @param matched    all mappings whose pattern matched the line; never empty
    * @param lineNumber the 1-based line number
-   * @param <T>        the common record supertype
    * @return the subset of {@code matched} to use for parsing; may be empty to skip the line;
    *         never {@code null}
    */
-  <T> List<ClassPatternMapping<? extends T>> resolve(
-      List<ClassPatternMapping<? extends T>> matched, long lineNumber);
+  List<RecordMapping<?>> resolve(List<RecordMapping<?>> matched, long lineNumber);
 
   /**
    * Returns a strategy that uses the first matching mapping in registration order and ignores
@@ -64,13 +55,7 @@ public interface MultiMatchStrategy {
    * @return a first-match strategy; never {@code null}
    */
   static MultiMatchStrategy firstMatch() {
-    return new MultiMatchStrategy() {
-      @Override
-      public <T> List<ClassPatternMapping<? extends T>> resolve(
-          List<ClassPatternMapping<? extends T>> matched, long lineNumber) {
-        return matched.isEmpty() ? matched : matched.subList(0, 1);
-      }
-    };
+    return (matched, lineNumber) -> matched.subList(0, 1);
   }
 
   /**
@@ -80,19 +65,15 @@ public interface MultiMatchStrategy {
    * @return a throw-on-ambiguity strategy; never {@code null}
    */
   static MultiMatchStrategy throwOnAmbiguity() {
-    return new MultiMatchStrategy() {
-      @Override
-      public <T> List<ClassPatternMapping<? extends T>> resolve(
-          List<ClassPatternMapping<? extends T>> matched, long lineNumber) {
-        if (matched.size() > 1) {
-          String classes = matched.stream()
-              .map(m -> m.getRecordClass().getSimpleName())
-              .collect(Collectors.joining(", "));
-          throw new FixedFormatException(
-              "Line " + lineNumber + " matched multiple patterns: " + classes);
-        }
-        return matched;
+    return (matched, lineNumber) -> {
+      if (matched.size() > 1) {
+        String classes = matched.stream()
+            .map(m -> m.getRecordClass().getSimpleName())
+            .collect(Collectors.joining(", "));
+        throw new FixedFormatException(
+            format("Line %d matched multiple patterns: %s", lineNumber, classes));
       }
+      return matched;
     };
   }
 
@@ -103,12 +84,6 @@ public interface MultiMatchStrategy {
    * @return an all-matches strategy; never {@code null}
    */
   static MultiMatchStrategy allMatches() {
-    return new MultiMatchStrategy() {
-      @Override
-      public <T> List<ClassPatternMapping<? extends T>> resolve(
-          List<ClassPatternMapping<? extends T>> matched, long lineNumber) {
-        return matched;
-      }
-    };
+    return (matched, lineNumber) -> matched;
   }
 }
