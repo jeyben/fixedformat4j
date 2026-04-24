@@ -125,7 +125,7 @@ class TestStrategiesAndHandlers {
 
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
-        .unmatchStrategy((lineNumber, segment) -> captured.add(lineNumber + ":" + segment))
+        .unmatchStrategy((lineNumber, line) -> captured.add(lineNumber + ":" + line))
         .build();
 
     reader.readAsResult(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));

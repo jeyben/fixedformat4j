@@ -105,8 +105,12 @@ public class FixedFormatReader {
    * provides type-safe, class-keyed access without casts.
    *
    * <p>This method is safe to call concurrently from multiple threads on the same
-   * {@link FixedFormatReader} instance; each call builds independent local state and the
-   * shared line processor carries no mutable per-call state.</p>
+   * {@link FixedFormatReader} instance, provided that all configured strategies and the
+   * {@link com.ancientprogramming.fixedformat4j.format.FixedFormatManager} are also thread-safe.
+   * The built-in strategies and
+   * {@link com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl} are stateless
+   * and satisfy this requirement. Each call builds its own independent local state; the shared
+   * line processor carries no mutable per-call state.</p>
    *
    * <pre>{@code
    * ReadResult result = reader.readAsResult(source);
@@ -250,7 +254,11 @@ public class FixedFormatReader {
    * <p>Classes not present in the registry are silently ignored — they are still parsed,
    * but no handler is invoked. Because the registry is supplied per call rather than stored
    * in the reader, the same {@link FixedFormatReader} instance is safe to use from multiple
-   * threads with independent registries.</p>
+   * threads with independent registries, provided that all configured strategies and the
+   * {@link com.ancientprogramming.fixedformat4j.format.FixedFormatManager} are also thread-safe.
+   * The built-in strategies and
+   * {@link com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl} are stateless
+   * and satisfy this requirement.</p>
    *
    * <pre>{@code
    * reader.process(source, new HandlerRegistry()

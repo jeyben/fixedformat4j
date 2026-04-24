@@ -130,7 +130,7 @@ class TestFixedFormatReaderBuilder {
   void unmatchedLambdaStrategyIsAcceptedByBuilder() {
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(SampleRecord.class, anyPattern)
-        .unmatchStrategy((lineNumber, segment) -> {})
+        .unmatchStrategy((lineNumber, line) -> {})
         .build();
     assertNotNull(reader);
   }

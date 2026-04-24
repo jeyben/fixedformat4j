@@ -32,7 +32,7 @@ class TestFixedFormatReaderUnmatched {
     List<String> captured = new ArrayList<>();
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
-        .unmatchStrategy((lineNumber, segment) -> captured.add(lineNumber + ":" + segment))
+        .unmatchStrategy((lineNumber, line) -> captured.add(lineNumber + ":" + line))
         .build();
 
     reader.readAsResult(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
@@ -45,7 +45,7 @@ class TestFixedFormatReaderUnmatched {
     List<String> captured = new ArrayList<>();
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
-        .unmatchStrategy((lineNumber, segment) -> captured.add(segment))
+        .unmatchStrategy((lineNumber, line) -> captured.add(line))
         .build();
 
     reader.readAsResult(new StringReader("AAAAAAAAAA"));
