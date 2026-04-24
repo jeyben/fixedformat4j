@@ -584,7 +584,7 @@ FixedFormatReader reader = FixedFormatReader.builder()
 **Reading as ReadResult** (type-safe, no casts):
 
 ```java
-ReadResult result = reader.read(new File("orders.txt"));
+ReadResult result = reader.read(Path.of("orders.txt"));
 
 OrderHeader header = result.get(OrderHeader.class).get(0); // no cast
 System.out.println(header.getDate());    // "20260419"
@@ -602,7 +602,7 @@ FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(OrderDetail.class, regex("^DTL"))
     .build();
 
-reader.process(new File("orders.txt"), new HandlerRegistry()
+reader.process(Path.of("orders.txt"), new HandlerRegistry()
     .on(OrderHeader.class, header -> System.out.println("Header: " + header.getDate()))
     .on(OrderDetail.class, detail -> System.out.printf("Order %d: %s — %d cents%n",
         detail.getOrderId(), detail.getProduct(), detail.getAmountCents())));

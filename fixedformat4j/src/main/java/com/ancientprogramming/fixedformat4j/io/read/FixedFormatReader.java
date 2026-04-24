@@ -17,7 +17,11 @@ package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatIOException;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -52,7 +56,7 @@ import static java.lang.String.format;
  *     .addMapping(MyRecord.class, regex(".*"))
  *     .build();
  *
- * List<MyRecord> records = reader.read(new File("data.txt")).get(MyRecord.class);
+ * List<MyRecord> records = reader.read(Path.of("data.txt")).get(MyRecord.class);
  * }</pre>
  *
  * <p>Quick start — heterogeneous file:</p>
@@ -168,39 +172,6 @@ public class FixedFormatReader {
   }
 
   /**
-   * Eagerly reads all records from {@code file} using UTF-8 encoding and returns
-   * a {@link ReadResult}.
-   *
-   * @param file the file to read
-   * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
-   * @throws FixedFormatIOException if the file is not found or an IO error occurs
-   */
-  public ReadResult read(File file) {
-    return read(file, StandardCharsets.UTF_8);
-  }
-
-  /**
-   * Eagerly reads all records from {@code file} using the given charset and returns
-   * a {@link ReadResult}.
-   *
-   * @param file    the file to read
-   * @param charset the character encoding to apply
-   * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
-   * @throws FixedFormatIOException if the file is not found or an IO error occurs
-   */
-  public ReadResult read(File file, Charset charset) {
-    Objects.requireNonNull(file, "file must not be null");
-    Objects.requireNonNull(charset, "charset must not be null");
-    try (InputStreamReader r = new InputStreamReader(new FileInputStream(file), charset)) {
-      return read(r);
-    } catch (FileNotFoundException e) {
-      throw new FixedFormatIOException(format("File not found: %s", file), e);
-    } catch (IOException e) {
-      throw new FixedFormatIOException(format("IO error reading file: %s", file), e);
-    }
-  }
-
-  /**
    * Eagerly reads all records from {@code path} using UTF-8 encoding and returns
    * a {@link ReadResult}.
    *
@@ -305,39 +276,6 @@ public class FixedFormatReader {
       process(r, registry);
     } catch (IOException e) {
       throw new FixedFormatIOException("IO error reading input stream", e);
-    }
-  }
-
-  /**
-   * Reads all records from {@code file} using UTF-8 encoding and dispatches each to
-   * its handler in {@code registry}.
-   *
-   * @param file     the file to read
-   * @param registry the typed handlers to invoke per matched class; must not be {@code null}
-   * @throws FixedFormatIOException if the file is not found or an IO error occurs
-   */
-  public void process(File file, HandlerRegistry registry) {
-    process(file, StandardCharsets.UTF_8, registry);
-  }
-
-  /**
-   * Reads all records from {@code file} using the given charset and dispatches each to
-   * its handler in {@code registry}.
-   *
-   * @param file     the file to read
-   * @param charset  the character encoding to apply
-   * @param registry the typed handlers to invoke per matched class; must not be {@code null}
-   * @throws FixedFormatIOException if the file is not found or an IO error occurs
-   */
-  public void process(File file, Charset charset, HandlerRegistry registry) {
-    Objects.requireNonNull(file, "file must not be null");
-    Objects.requireNonNull(charset, "charset must not be null");
-    try (InputStreamReader r = new InputStreamReader(new FileInputStream(file), charset)) {
-      process(r, registry);
-    } catch (FileNotFoundException e) {
-      throw new FixedFormatIOException(format("File not found: %s", file), e);
-    } catch (IOException e) {
-      throw new FixedFormatIOException(format("IO error reading file: %s", file), e);
     }
   }
 

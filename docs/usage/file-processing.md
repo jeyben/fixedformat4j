@@ -125,7 +125,7 @@ List<DetailRecord> details = result.get(DetailRecord.class); // no cast
 | `contains(Class<?>)` | `boolean` | `true` if at least one record of the given class was parsed. |
 | `classes()` | `Set<Class<?>>` | Set of all classes that produced at least one record. |
 
-Overloads are available for `File`, `Path`, `InputStream`, and `Reader`. All default to UTF-8; pass an explicit `Charset` when needed.
+Overloads are available for `Path`, `InputStream`, and `Reader`. All default to UTF-8; pass an explicit `Charset` when needed.
 
 ---
 
@@ -146,7 +146,7 @@ reader.process(Path.of("data.txt"), new HandlerRegistry()
     .on(DetailRecord.class, detail -> System.out.println("Detail: " + detail.getOrderId())));
 ```
 
-Classes not registered in the `HandlerRegistry` are silently ignored — they are still parsed and routed, but no handler is invoked. Because the registry is supplied per call, the same reader instance is safe to use from multiple threads with independent registries. The same source-type overloads (`File`, `Path`, `InputStream`, `Reader`) are available as for `read`.
+Classes not registered in the `HandlerRegistry` are silently ignored — they are still parsed and routed, but no handler is invoked. Because the registry is supplied per call, the same reader instance is safe to use from multiple threads with independent registries. The same source-type overloads (`Path`, `InputStream`, `Reader`) are available as for `read`.
 
 
 ---

@@ -44,7 +44,7 @@ title: Changelog
   - `read()` — returns `ReadResult`, a type-safe class-keyed container; `get(Class<R>)` returns `List<R>` with no cast required. Also provides `getAll()`, `contains(Class<?>)`, and `classes()`.
   - `process(source, HandlerRegistry)` — push-style; dispatches each parsed record to the typed `Consumer<R>` registered in a per-call `HandlerRegistry`. Classes absent from the registry are silently ignored. Because the registry is supplied at call time, the same reader is safe to use from multiple threads.
 
-  Every shape accepts `Reader`, `InputStream`, `File`, or `Path`; file/stream overloads default to UTF-8.
+  Every shape accepts `Reader`, `InputStream`, or `Path`; stream overloads default to UTF-8.
 
   Three configurable strategies: `MultiMatchStrategy` (`firstMatch` / `throwOnAmbiguity` /
   `allMatches`), `UnmatchStrategy` (`skip` / `throwException`), and `ParseErrorStrategy`

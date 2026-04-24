@@ -105,25 +105,6 @@ class TestFixedFormatReaderProcess {
   }
 
   @Test
-  void processWorksWithFile() throws IOException {
-    Path file = tempDir.resolve("data.txt");
-    Files.writeString(file, "AAAAAAAAAA\nBBBBBBBBBB", StandardCharsets.UTF_8);
-    List<TenCharRecord> tens = new ArrayList<>();
-    List<FiveCharRecord> fives = new ArrayList<>();
-
-    FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, A_PATTERN)
-        .addMapping(FiveCharRecord.class, B_PATTERN)
-        .build()
-        .process(file.toFile(), new HandlerRegistry()
-            .on(TenCharRecord.class, tens::add)
-            .on(FiveCharRecord.class, fives::add));
-
-    assertEquals(1, tens.size());
-    assertEquals(1, fives.size());
-  }
-
-  @Test
   void processWorksWithPath() throws IOException {
     Path file = tempDir.resolve("data.txt");
     Files.writeString(file, "AAAAAAAAAA\nBBBBBBBBBB", StandardCharsets.UTF_8);

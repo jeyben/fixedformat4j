@@ -45,25 +45,6 @@ class TestFixedFormatReaderInputSources {
   }
 
   @Test
-  void readsFromFile() throws IOException {
-    Path path = writeTemp("hello     \nworld     ");
-    List<TenCharRecord> results = reader().read(path.toFile()).get(TenCharRecord.class);
-    assertEquals(2, results.size());
-    assertEquals("hello", results.get(0).getValue());
-  }
-
-  @Test
-  void readsFromFileWithExplicitCharset() throws IOException {
-    Path path = tempDir.resolve("latin.txt");
-    Files.write(path, "hello     \nworld     ".getBytes(StandardCharsets.ISO_8859_1));
-
-    List<TenCharRecord> results = reader()
-        .read(path.toFile(), StandardCharsets.ISO_8859_1)
-        .get(TenCharRecord.class);
-    assertEquals(2, results.size());
-  }
-
-  @Test
   void readsFromPath() throws IOException {
     Path path = writeTemp("hello     \nworld     ");
     List<TenCharRecord> results = reader().read(path).get(TenCharRecord.class);
@@ -99,19 +80,6 @@ class TestFixedFormatReaderInputSources {
   }
 
   @Test
-  void defaultCharsetIsUtf8() throws IOException {
-    String content = "hello     \nworld     ";
-    Path path = tempDir.resolve("utf8.txt");
-    Files.writeString(path, content, StandardCharsets.UTF_8);
-
-    List<TenCharRecord> withDefault = reader().read(path.toFile()).get(TenCharRecord.class);
-    List<TenCharRecord> withExplicit = reader()
-        .read(path.toFile(), StandardCharsets.UTF_8)
-        .get(TenCharRecord.class);
-    assertEquals(withExplicit.size(), withDefault.size());
-  }
-
-  @Test
   void inputStreamIsClosedAfterReadAsResult() {
     TrackingInputStream is = new TrackingInputStream("hello     \nworld     ".getBytes(StandardCharsets.UTF_8));
     reader().read(is);
@@ -134,19 +102,6 @@ class TestFixedFormatReaderInputSources {
   void throwsNullPointerWhenInputStreamCharsetIsNull() {
     assertThrows(NullPointerException.class, () ->
         reader().read(new ByteArrayInputStream("data".getBytes()), null));
-  }
-
-  @Test
-  void throwsNullPointerWhenFileIsNull() {
-    assertThrows(NullPointerException.class, () ->
-        reader().read((java.io.File) null));
-  }
-
-  @Test
-  void throwsNullPointerWhenFileCharsetIsNull() throws IOException {
-    Path path = writeTemp("hello     ");
-    assertThrows(NullPointerException.class, () ->
-        reader().read(path.toFile(), null));
   }
 
   @Test

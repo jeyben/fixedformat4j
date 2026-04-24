@@ -54,18 +54,6 @@ class TestFixedFormatReaderLombok {
   }
 
   @Test
-  void readsLombokRecordFromFile() throws IOException {
-    Path file = tempDir.resolve("records.txt");
-    Files.writeString(file, TEST_DATA, StandardCharsets.UTF_8);
-
-    List<LombokRecord> results = reader()
-        .read(file.toFile())
-        .get(LombokRecord.class);
-    assertEquals(1, results.size());
-    assertEquals("Jacob", results.get(0).getName());
-  }
-
-  @Test
   void readsLombokRecordFromPath() throws IOException {
     Path file = tempDir.resolve("records.txt");
     Files.writeString(file, TEST_DATA, StandardCharsets.UTF_8);

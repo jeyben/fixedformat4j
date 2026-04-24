@@ -109,28 +109,6 @@ class TestFixedFormatReaderReadResult {
   }
 
   @Test
-  void readWorksWithFile() throws IOException {
-    Path file = tempDir.resolve("data.txt");
-    Files.writeString(file, "AAAAAAAAAA\nBBBBBBBBBB", StandardCharsets.UTF_8);
-
-    ReadResult result = multiTypeReader().read(file.toFile());
-
-    assertEquals(1, result.get(TenCharRecord.class).size());
-    assertEquals(1, result.get(FiveCharRecord.class).size());
-  }
-
-  @Test
-  void readWorksWithFileAndCharset() throws IOException {
-    Path file = tempDir.resolve("data.txt");
-    Files.write(file, "AAAAAAAAAA\nBBBBBBBBBB".getBytes(StandardCharsets.ISO_8859_1));
-
-    ReadResult result = multiTypeReader().read(file.toFile(), StandardCharsets.ISO_8859_1);
-
-    assertEquals(1, result.get(TenCharRecord.class).size());
-    assertEquals(1, result.get(FiveCharRecord.class).size());
-  }
-
-  @Test
   void readWorksWithPath() throws IOException {
     Path file = tempDir.resolve("data.txt");
     Files.writeString(file, "AAAAAAAAAA\nBBBBBBBBBB", StandardCharsets.UTF_8);
