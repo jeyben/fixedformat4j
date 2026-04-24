@@ -94,7 +94,7 @@ class TestFixedFormatReaderLombok {
     List<String> captured = new ArrayList<>();
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(LombokRecord.class, new RegexFixedFormatMatchPattern("^Jacob"))
-        .unmatchedLineStrategy((lineNumber, line) -> captured.add(lineNumber + ":" + line))
+        .unmatchStrategy((lineNumber, segment) -> captured.add(lineNumber + ":" + segment))
         .build();
 
     String input = TEST_DATA + "\nOther     0000119990101N0000000001";

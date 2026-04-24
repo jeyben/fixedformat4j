@@ -17,7 +17,7 @@ class TestFixedFormatReaderUnmatched {
   void throwsOnUnmatchedLineWhenStrategyIsThrowException() {
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
-        .unmatchedLineStrategy(UnmatchedLineStrategy.throwException())
+        .unmatchStrategy(UnmatchStrategy.throwException())
         .build();
 
     FixedFormatException ex = assertThrows(FixedFormatException.class, () -> {
@@ -34,7 +34,7 @@ class TestFixedFormatReaderUnmatched {
     List<String> captured = new ArrayList<>();
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
-        .unmatchedLineStrategy((lineNumber, line) -> captured.add(lineNumber + ":" + line))
+        .unmatchStrategy((lineNumber, segment) -> captured.add(lineNumber + ":" + segment))
         .build();
 
     try (Stream<Object> stream = reader.readAsStream(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"))) {
@@ -49,7 +49,7 @@ class TestFixedFormatReaderUnmatched {
     List<String> captured = new ArrayList<>();
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
-        .unmatchedLineStrategy((lineNumber, line) -> captured.add(line))
+        .unmatchStrategy((lineNumber, segment) -> captured.add(segment))
         .build();
 
     try (Stream<Object> stream = reader.readAsStream(new StringReader("AAAAAAAAAA"))) {

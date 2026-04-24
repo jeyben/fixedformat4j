@@ -70,7 +70,7 @@ class TestFixedFormatReaderBuilder {
     FixedFormatReaderBuilder builder = FixedFormatReader.builder();
     assertSame(builder, builder.addMapping(SampleRecord.class, anyPattern));
     assertSame(builder, builder.multiMatchStrategy(MultiMatchStrategy.firstMatch()));
-    assertSame(builder, builder.unmatchedLineStrategy(UnmatchedLineStrategy.skip()));
+    assertSame(builder, builder.unmatchStrategy(UnmatchStrategy.skip()));
     assertSame(builder, builder.parseErrorStrategy(ParseErrorStrategy.throwException()));
   }
 
@@ -92,7 +92,7 @@ class TestFixedFormatReaderBuilder {
   void unmatchedLambdaStrategyIsAcceptedByBuilder() {
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(SampleRecord.class, anyPattern)
-        .unmatchedLineStrategy((lineNumber, line) -> {})
+        .unmatchStrategy((lineNumber, segment) -> {})
         .build();
     assertNotNull(reader);
   }

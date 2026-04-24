@@ -96,7 +96,7 @@ class TestStrategiesAndHandlers {
   void unmatchedSkipDoesNotEmitRecordOrThrow() {
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
-        .unmatchedLineStrategy(UnmatchedLineStrategy.skip())
+        .unmatchStrategy(UnmatchStrategy.skip())
         .build();
 
     List<Object> results = reader.readAsList(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
@@ -107,7 +107,7 @@ class TestStrategiesAndHandlers {
   void unmatchedThrowExceptionThrowsOnUnmatchedLine() {
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
-        .unmatchedLineStrategy(UnmatchedLineStrategy.throwException())
+        .unmatchStrategy(UnmatchStrategy.throwException())
         .build();
 
     assertThrows(FixedFormatException.class, () ->
@@ -120,7 +120,7 @@ class TestStrategiesAndHandlers {
 
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
-        .unmatchedLineStrategy((lineNumber, line) -> captured.add(lineNumber + ":" + line))
+        .unmatchStrategy((lineNumber, segment) -> captured.add(lineNumber + ":" + segment))
         .build();
 
     reader.readAsList(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));

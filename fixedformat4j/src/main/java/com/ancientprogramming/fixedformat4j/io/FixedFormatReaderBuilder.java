@@ -33,7 +33,7 @@ public class FixedFormatReaderBuilder {
 
   final List<ClassPatternMapping<?>> mappings = new ArrayList<>();
   MultiMatchStrategy multiMatchStrategy = MultiMatchStrategy.firstMatch();
-  UnmatchedLineStrategy unmatchedLineStrategy = UnmatchedLineStrategy.skip();
+  UnmatchStrategy unmatchStrategy = UnmatchStrategy.skip();
   ParseErrorStrategy parseErrorStrategy = ParseErrorStrategy.throwException();
   Predicate<String> lineFilter = line -> true;
   FixedFormatManager manager = FixedFormatManagerImpl.create();
@@ -85,14 +85,14 @@ public class FixedFormatReaderBuilder {
   }
 
   /**
-   * Sets the strategy applied when no pattern matches a line.
-   * Defaults to {@link UnmatchedLineStrategy#skip()}.
+   * Sets the strategy applied when no pattern matches a segment.
+   * Defaults to {@link UnmatchStrategy#skip()}.
    *
-   * @param strategy the unmatched-line strategy to use; must not be {@code null}
+   * @param strategy the unmatched strategy to use; must not be {@code null}
    * @return this builder
    */
-  public FixedFormatReaderBuilder unmatchedLineStrategy(UnmatchedLineStrategy strategy) {
-    this.unmatchedLineStrategy = strategy;
+  public FixedFormatReaderBuilder unmatchStrategy(UnmatchStrategy strategy) {
+    this.unmatchStrategy = strategy;
     return this;
   }
 
@@ -111,7 +111,7 @@ public class FixedFormatReaderBuilder {
   /**
    * Registers a pre-match line inclusion predicate. Lines for which the predicate returns
    * {@code false} are skipped entirely before pattern matching, bypassing the
-   * {@link UnmatchedLineStrategy}.
+   * {@link UnmatchStrategy}.
    *
    * @param predicate returns {@code true} for lines that should be processed
    * @return this builder

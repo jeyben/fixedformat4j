@@ -89,7 +89,7 @@ class TestFixedFormatRowReader {
 
   @Test
   void unmatchedLinesAlwaysCapturedRegardlessOfBuilderConfig() {
-    // FixedFormatRowReader has no unmatchedLineStrategy — all unmatched become UnmatchedRow
+    // FixedFormatRowReader has no unmatchStrategy — all unmatched become UnmatchedRow
     FixedFormatRowReader reader = FixedFormatRowReader.builder()
         .addMapping(TenCharRecord.class, A_PATTERN)
         .build();

@@ -58,7 +58,7 @@ import java.util.stream.StreamSupport;
  * FixedFormatReader reader = FixedFormatReader.builder()
  *     .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"))
  *     .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
- *     .unmatchedLineStrategy(UnmatchedLineStrategy.skip())
+ *     .unmatchStrategy(UnmatchStrategy.skip())
  *     .build();
  *
  * TypedReadResult result = reader.readAsTypedResult(Path.of("data.txt"));
@@ -92,7 +92,7 @@ public class FixedFormatReader {
     this.processor = new FixedFormatLineProcessor(
         this.mappings,
         builder.multiMatchStrategy,
-        builder.unmatchedLineStrategy,
+        builder.unmatchStrategy,
         builder.parseErrorStrategy,
         builder.lineFilter,
         builder.manager);

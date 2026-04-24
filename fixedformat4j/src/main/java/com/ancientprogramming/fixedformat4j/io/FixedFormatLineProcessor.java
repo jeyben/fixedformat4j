@@ -35,7 +35,7 @@ class FixedFormatLineProcessor {
 
   private final List<ClassPatternMapping<?>> mappings;
   private final MultiMatchStrategy multiMatchStrategy;
-  private final UnmatchedLineStrategy unmatchedLineStrategy;
+  private final UnmatchStrategy unmatchStrategy;
   private final ParseErrorStrategy parseErrorStrategy;
   private final Predicate<String> lineFilter;
   private final FixedFormatManager manager;
@@ -43,13 +43,13 @@ class FixedFormatLineProcessor {
   FixedFormatLineProcessor(
       List<ClassPatternMapping<?>> mappings,
       MultiMatchStrategy multiMatchStrategy,
-      UnmatchedLineStrategy unmatchedLineStrategy,
+      UnmatchStrategy unmatchStrategy,
       ParseErrorStrategy parseErrorStrategy,
       Predicate<String> lineFilter,
       FixedFormatManager manager) {
     this.mappings = mappings;
     this.multiMatchStrategy = multiMatchStrategy;
-    this.unmatchedLineStrategy = unmatchedLineStrategy;
+    this.unmatchStrategy = unmatchStrategy;
     this.parseErrorStrategy = parseErrorStrategy;
     this.lineFilter = lineFilter;
     this.manager = manager;
@@ -61,7 +61,7 @@ class FixedFormatLineProcessor {
     }
     List<ClassPatternMapping<?>> matched = findMatches(line);
     if (matched.isEmpty()) {
-      unmatchedLineStrategy.handle(lineNumber, line);
+      unmatchStrategy.handle(lineNumber, line);
       return;
     }
     for (ClassPatternMapping<?> mapping : multiMatchStrategy.resolve(matched, lineNumber)) {
@@ -77,7 +77,7 @@ class FixedFormatLineProcessor {
    *
    * <p>Unlike the single-callback overload, this variant:</p>
    * <ul>
-   *   <li>Calls {@code unmatchedCallback} instead of the configured {@link UnmatchedLineStrategy}
+   *   <li>Calls {@code unmatchedCallback} instead of the configured {@link UnmatchStrategy}
    *       so that all unmatched lines are captured as {@link UnmatchedRow} entries.</li>
    *   <li>Calls {@code unmatchedCallback} also for lines rejected by the line filter, so
    *       no line is silently dropped and the original file can be reconstructed exactly.</li>

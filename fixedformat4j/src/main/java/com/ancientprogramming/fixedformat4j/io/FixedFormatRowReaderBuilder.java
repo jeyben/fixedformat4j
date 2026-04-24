@@ -29,7 +29,7 @@ import java.util.function.Predicate;
  * At minimum, one mapping must be added via {@link #addMapping} before calling {@link #build()}.</p>
  *
  * <p>Unlike {@link FixedFormatReaderBuilder}, this builder deliberately omits
- * {@code unmatchedLineStrategy} — {@link FixedFormatRowReader} always captures every line,
+ * {@code unmatchStrategy} — {@link FixedFormatRowReader} always captures every line,
  * so the concept of an "unmatched line strategy" does not apply.</p>
  */
 public class FixedFormatRowReaderBuilder {

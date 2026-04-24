@@ -18,55 +18,56 @@ package com.ancientprogramming.fixedformat4j.io;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 
 /**
- * Strategy invoked when no {@link ClassPatternMapping} pattern matches a line.
+ * Strategy invoked when no {@link ClassPatternMapping} pattern matches a text segment.
  *
- * <p>Implement this interface to define custom handling — for example, collecting unmatched
- * lines for later inspection. Two built-in strategies are provided as static factory methods:
- * {@link #skip()} and {@link #throwException()}.</p>
+ * <p>A "segment" is any string of text that is tried against registered patterns — it may be
+ * a full physical line (in {@link FixedFormatReader}) or a fixed-width chunk extracted from a
+ * line (in {@link PackedRecordReader}). Two built-in strategies are provided as static factory
+ * methods: {@link #skip()} and {@link #throwException()}.</p>
  *
  * <p>Because this is a {@link FunctionalInterface}, a lambda can be passed wherever an
- * {@code UnmatchedLineStrategy} is expected:</p>
+ * {@code UnmatchStrategy} is expected:</p>
  * <pre>{@code
- * .unmatchedLineStrategy((lineNumber, line) ->
- *     System.err.println("Unmatched line " + lineNumber + ": " + line))
+ * .unmatchStrategy((lineNumber, segment) ->
+ *     System.err.println("Unmatched segment at line " + lineNumber + ": " + segment))
  * }</pre>
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
  */
 @FunctionalInterface
-public interface UnmatchedLineStrategy {
+public interface UnmatchStrategy {
 
   /**
-   * Handles a line that matched no registered pattern.
+   * Handles a segment that matched no registered pattern.
    *
    * <p>Implementations may throw a {@link FixedFormatException} to abort processing, or
-   * return normally to silently skip the line.</p>
+   * return normally to silently skip the segment.</p>
    *
    * @param lineNumber the 1-based line number within the source being read
-   * @param line       the raw content of the line, without any trailing line-ending characters
+   * @param segment    the raw content of the unmatched segment, without trailing line-ending characters
    */
-  void handle(long lineNumber, String line);
+  void handle(long lineNumber, String segment);
 
   /**
-   * Returns a strategy that silently ignores unmatched lines.
-   * Useful for files where header, footer, or comment lines are expected.
+   * Returns a strategy that silently ignores unmatched segments.
+   * Useful for files where header, footer, comment lines, or padding chunks are expected.
    *
    * @return a no-op strategy; never {@code null}
    */
-  static UnmatchedLineStrategy skip() {
-    return (lineNumber, line) -> {};
+  static UnmatchStrategy skip() {
+    return (lineNumber, segment) -> {};
   }
 
   /**
-   * Returns a strategy that throws {@link FixedFormatException} when a line is unmatched,
+   * Returns a strategy that throws {@link FixedFormatException} when a segment is unmatched,
    * including the line number and raw content in the exception message.
    *
    * @return a fail-fast strategy; never {@code null}
    */
-  static UnmatchedLineStrategy throwException() {
-    return (lineNumber, line) -> {
-      throw new FixedFormatException("No pattern matched line " + lineNumber + ": " + line);
+  static UnmatchStrategy throwException() {
+    return (lineNumber, segment) -> {
+      throw new FixedFormatException("No pattern matched line " + lineNumber + ": " + segment);
     };
   }
 }
