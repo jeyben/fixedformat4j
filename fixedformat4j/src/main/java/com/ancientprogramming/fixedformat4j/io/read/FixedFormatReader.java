@@ -16,7 +16,6 @@
 package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatIOException;
-import com.ancientprogramming.fixedformat4j.io.TypedReadResult;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -40,34 +39,34 @@ import java.util.stream.StreamSupport;
 /**
  * Reads a fixed-format file or stream line by line, routes each line to one or more
  * {@link com.ancientprogramming.fixedformat4j.annotation.Record}-annotated classes via
- * {@link FixedFormatMatchPattern} discriminators, and produces parsed record objects.
+ * {@link LinePattern} discriminators, and produces parsed record objects.
  *
  * <p>Each physical line is treated as exactly one record (or unmatched). If a file contains
  * multiple records packed within a single line, split the line before passing it to this reader.</p>
  *
  * <p>Records are produced lazily (via {@link #readAsStream}) or eagerly (via
- * {@link #readAsList} / {@link #readAsTypedResult}). All input-source overloads default to
+ * {@link #readAsList} / {@link #readAsResult}). All input-source overloads default to
  * {@link java.nio.charset.StandardCharsets#UTF_8}; explicit {@link Charset} overloads are
  * provided for every source type.</p>
  *
  * <p>Quick start — single record type:</p>
  * <pre>{@code
  * FixedFormatReader reader = FixedFormatReader.builder()
- *     .addMapping(MyRecord.class, new RegexFixedFormatMatchPattern(".*"))
+ *     .addMapping(MyRecord.class, new RegexLinePattern(".*"))
  *     .build();
  *
- * List<MyRecord> records = reader.readAsTypedResult(new File("data.txt")).get(MyRecord.class);
+ * List<MyRecord> records = reader.readAsResult(new File("data.txt")).get(MyRecord.class);
  * }</pre>
  *
  * <p>Quick start — heterogeneous file:</p>
  * <pre>{@code
  * FixedFormatReader reader = FixedFormatReader.builder()
- *     .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"))
- *     .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
+ *     .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"))
+ *     .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"))
  *     .unmatchStrategy(UnmatchStrategy.skip())
  *     .build();
  *
- * TypedReadResult result = reader.readAsTypedResult(Path.of("data.txt"));
+ * ReadResult result = reader.readAsResult(Path.of("data.txt"));
  * List<HeaderRecord> headers = result.get(HeaderRecord.class);
  * List<DetailRecord> details = result.get(DetailRecord.class);
  * }</pre>
@@ -75,8 +74,8 @@ import java.util.stream.StreamSupport;
  * <p>Quick start — typed handlers (no casts anywhere):</p>
  * <pre>{@code
  * FixedFormatReader reader = FixedFormatReader.builder()
- *     .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"), this::onHeader)
- *     .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"), this::onDetail)
+ *     .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"), this::onHeader)
+ *     .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"), this::onDetail)
  *     .build();
  *
  * reader.processAll(Path.of("data.txt"));
@@ -87,7 +86,7 @@ import java.util.stream.StreamSupport;
  */
 public class FixedFormatReader {
 
-  private final List<ClassPatternMapping<?>> mappings;
+  private final List<RecordMapping<?>> mappings;
   private final FixedFormatLineProcessor processor;
 
   FixedFormatReader(FixedFormatReaderBuilder builder) {
@@ -114,7 +113,7 @@ public class FixedFormatReader {
    * }
    * }</pre>
    *
-   * <p>For typed record access, prefer {@link #readAsTypedResult} instead.</p>
+   * <p>For typed record access, prefer {@link #readAsResult} instead.</p>
    *
    * @param reader the source of lines; wrapped in a {@link BufferedReader} if not already one
    * @return a lazily-evaluated, ordered, sequential stream of parsed records
@@ -256,7 +255,7 @@ public class FixedFormatReader {
   /**
    * Eagerly reads all records from {@code reader} and returns them as a list in encounter order.
    *
-   * <p>For typed record access, prefer {@link #readAsTypedResult} instead.</p>
+   * <p>For typed record access, prefer {@link #readAsResult} instead.</p>
    *
    * @param reader the source of lines; closed when this method returns
    * @return an ordered list of all parsed records; never {@code null}
@@ -343,24 +342,24 @@ public class FixedFormatReader {
     }
   }
 
-  // --- readAsTypedResult ---
+  // --- readAsResult ---
 
   /**
-   * Eagerly reads all records from {@code reader} and returns a {@link TypedReadResult} that
+   * Eagerly reads all records from {@code reader} and returns a {@link ReadResult} that
    * provides type-safe, class-keyed access without casts.
    *
    * <pre>{@code
-   * TypedReadResult result = reader.readAsTypedResult(source);
+   * ReadResult result = reader.readAsResult(source);
    * List<HeaderRecord> headers = result.get(HeaderRecord.class); // no cast
    * }</pre>
    *
    * @param reader the source of lines; closed when this method returns
-   * @return a {@link TypedReadResult} grouping records by their matched class; never {@code null}
+   * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
-  public TypedReadResult readAsTypedResult(Reader reader) {
+  public ReadResult readAsResult(Reader reader) {
     Map<Class<?>, List<Object>> data = new LinkedHashMap<>();
-    for (ClassPatternMapping<?> mapping : mappings) {
+    for (RecordMapping<?> mapping : mappings) {
       data.put(mapping.getRecordClass(), new ArrayList<>());
     }
     List<Object> all = new ArrayList<>();
@@ -369,33 +368,33 @@ public class FixedFormatReader {
       all.add(record);
     });
     data.entrySet().removeIf(e -> e.getValue().isEmpty());
-    return new TypedReadResult(data, all);
+    return new ReadResult(data, all);
   }
 
   /**
    * Eagerly reads all records from {@code inputStream} using UTF-8 encoding and returns
-   * a {@link TypedReadResult}.
+   * a {@link ReadResult}.
    *
    * @param inputStream the source stream; closed when this method returns
-   * @return a {@link TypedReadResult} grouping records by their matched class; never {@code null}
+   * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
-  public TypedReadResult readAsTypedResult(InputStream inputStream) {
-    return readAsTypedResult(inputStream, StandardCharsets.UTF_8);
+  public ReadResult readAsResult(InputStream inputStream) {
+    return readAsResult(inputStream, StandardCharsets.UTF_8);
   }
 
   /**
    * Eagerly reads all records from {@code inputStream} using the given charset and returns
-   * a {@link TypedReadResult}.
+   * a {@link ReadResult}.
    *
    * @param inputStream the source stream; closed when this method returns
    * @param charset     the character encoding to apply
-   * @return a {@link TypedReadResult} grouping records by their matched class; never {@code null}
+   * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
-  public TypedReadResult readAsTypedResult(InputStream inputStream, Charset charset) {
+  public ReadResult readAsResult(InputStream inputStream, Charset charset) {
     try (InputStreamReader r = new InputStreamReader(inputStream, charset)) {
-      return readAsTypedResult(r);
+      return readAsResult(r);
     } catch (IOException e) {
       throw new FixedFormatIOException("IO error reading input stream", e);
     }
@@ -403,28 +402,28 @@ public class FixedFormatReader {
 
   /**
    * Eagerly reads all records from {@code file} using UTF-8 encoding and returns
-   * a {@link TypedReadResult}.
+   * a {@link ReadResult}.
    *
    * @param file the file to read
-   * @return a {@link TypedReadResult} grouping records by their matched class; never {@code null}
+   * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
-  public TypedReadResult readAsTypedResult(File file) {
-    return readAsTypedResult(file, StandardCharsets.UTF_8);
+  public ReadResult readAsResult(File file) {
+    return readAsResult(file, StandardCharsets.UTF_8);
   }
 
   /**
    * Eagerly reads all records from {@code file} using the given charset and returns
-   * a {@link TypedReadResult}.
+   * a {@link ReadResult}.
    *
    * @param file    the file to read
    * @param charset the character encoding to apply
-   * @return a {@link TypedReadResult} grouping records by their matched class; never {@code null}
+   * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
-  public TypedReadResult readAsTypedResult(File file, Charset charset) {
+  public ReadResult readAsResult(File file, Charset charset) {
     try (InputStreamReader r = new InputStreamReader(new FileInputStream(file), charset)) {
-      return readAsTypedResult(r);
+      return readAsResult(r);
     } catch (FileNotFoundException e) {
       throw new FixedFormatIOException("File not found: " + file, e);
     } catch (IOException e) {
@@ -434,28 +433,28 @@ public class FixedFormatReader {
 
   /**
    * Eagerly reads all records from {@code path} using UTF-8 encoding and returns
-   * a {@link TypedReadResult}.
+   * a {@link ReadResult}.
    *
    * @param path the path to read
-   * @return a {@link TypedReadResult} grouping records by their matched class; never {@code null}
+   * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
-  public TypedReadResult readAsTypedResult(Path path) {
-    return readAsTypedResult(path, StandardCharsets.UTF_8);
+  public ReadResult readAsResult(Path path) {
+    return readAsResult(path, StandardCharsets.UTF_8);
   }
 
   /**
    * Eagerly reads all records from {@code path} using the given charset and returns
-   * a {@link TypedReadResult}.
+   * a {@link ReadResult}.
    *
    * @param path    the path to read
    * @param charset the character encoding to apply
-   * @return a {@link TypedReadResult} grouping records by their matched class; never {@code null}
+   * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
-  public TypedReadResult readAsTypedResult(Path path, Charset charset) {
+  public ReadResult readAsResult(Path path, Charset charset) {
     try (InputStreamReader r = new InputStreamReader(Files.newInputStream(path), charset)) {
-      return readAsTypedResult(r);
+      return readAsResult(r);
     } catch (IOException e) {
       throw new FixedFormatIOException("Cannot open path: " + path, e);
     }
@@ -479,11 +478,11 @@ public class FixedFormatReader {
    * Reads all records from {@code reader} and invokes {@code callback} once per record,
    * passing both the matched class and the record instance.
    *
-   * <p>This overload is the basis for {@link #readAsTypedResult(Reader)} and is the preferred
+   * <p>This overload is the basis for {@link #readAsResult(Reader)} and is the preferred
    * low-level approach when the caller needs to know which class each record belongs to.
    * For typed dispatch without casts, prefer {@link #processAll(Reader)} with per-mapping
    * handlers registered via
-   * {@link FixedFormatReaderBuilder#addMapping(Class, FixedFormatMatchPattern, Consumer)}.</p>
+   * {@link FixedFormatReaderBuilder#addMapping(Class, LinePattern, Consumer)}.</p>
    *
    * @param reader   the source of lines; closed when this method returns
    * @param callback invoked with the matched {@link Class} and the parsed record instance;
@@ -496,7 +495,7 @@ public class FixedFormatReader {
   }
 
   private void readWithMappingCallback(Reader reader,
-                                       BiConsumer<ClassPatternMapping<?>, Object> callback) {
+                                       BiConsumer<RecordMapping<?>, Object> callback) {
     BufferedReader buffered = toBuffered(reader);
     long[] lineCounter = {0L};
     try (buffered) {
@@ -683,7 +682,7 @@ public class FixedFormatReader {
   /**
    * Reads all records from {@code reader} and dispatches each to the typed handler registered
    * for its class via
-   * {@link FixedFormatReaderBuilder#addMapping(Class, FixedFormatMatchPattern, Consumer)}.
+   * {@link FixedFormatReaderBuilder#addMapping(Class, LinePattern, Consumer)}.
    *
    * <p>Mappings added without a handler are silently skipped. This is the preferred method
    * when type-safe dispatch without casts is desired:</p>

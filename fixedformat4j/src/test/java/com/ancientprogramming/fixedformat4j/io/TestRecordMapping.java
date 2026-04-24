@@ -2,14 +2,14 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
-import com.ancientprogramming.fixedformat4j.io.read.FixedFormatMatchPattern;
-import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
+import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import com.ancientprogramming.fixedformat4j.io.read.ClassPatternMapping;
+import com.ancientprogramming.fixedformat4j.io.read.RecordMapping;
 
-class TestClassPatternMapping {
+class TestRecordMapping {
 
   @Record(length = 10)
   static class ValidRecord {
@@ -22,17 +22,17 @@ class TestClassPatternMapping {
 
   static class NotARecord {}
 
-  private final FixedFormatMatchPattern anyPattern = new RegexFixedFormatMatchPattern(".*");
+  private final LinePattern anyPattern = new RegexLinePattern(".*");
 
   @Test
   void returnsRecordClass() {
-    ClassPatternMapping<ValidRecord> mapping = new ClassPatternMapping<>(ValidRecord.class, anyPattern);
+    RecordMapping<ValidRecord> mapping = new RecordMapping<>(ValidRecord.class, anyPattern);
     assertSame(ValidRecord.class, mapping.getRecordClass());
   }
 
   @Test
   void returnsPattern() {
-    ClassPatternMapping<ValidRecord> mapping = new ClassPatternMapping<>(ValidRecord.class, anyPattern);
+    RecordMapping<ValidRecord> mapping = new RecordMapping<>(ValidRecord.class, anyPattern);
     assertSame(anyPattern, mapping.getPattern());
   }
 
@@ -40,7 +40,7 @@ class TestClassPatternMapping {
   void throwsWhenClassNotAnnotatedWithRecord() {
     IllegalArgumentException ex = assertThrows(
         IllegalArgumentException.class,
-        () -> new ClassPatternMapping<>(NotARecord.class, anyPattern)
+        () -> new RecordMapping<>(NotARecord.class, anyPattern)
     );
     assertTrue(ex.getMessage().contains("NotARecord"));
   }
@@ -48,25 +48,25 @@ class TestClassPatternMapping {
   @Test
   void throwsIllegalArgumentWhenClassIsNull() {
     assertThrows(IllegalArgumentException.class,
-        () -> new ClassPatternMapping<>(null, anyPattern));
+        () -> new RecordMapping<>(null, anyPattern));
   }
 
   @Test
   void throwsIllegalArgumentWhenPatternIsNull() {
     assertThrows(IllegalArgumentException.class,
-        () -> new ClassPatternMapping<>(ValidRecord.class, null));
+        () -> new RecordMapping<>(ValidRecord.class, null));
   }
 
   @Test
   void getHandlerReturnsNullWhenConstructedWithTwoArgs() {
-    ClassPatternMapping<ValidRecord> mapping = new ClassPatternMapping<>(ValidRecord.class, anyPattern);
+    RecordMapping<ValidRecord> mapping = new RecordMapping<>(ValidRecord.class, anyPattern);
     assertNull(mapping.getHandler());
   }
 
   @Test
   void getHandlerReturnsProvidedConsumerWhenConstructedWithThreeArgs() {
     java.util.function.Consumer<ValidRecord> handler = r -> {};
-    ClassPatternMapping<ValidRecord> mapping = new ClassPatternMapping<>(ValidRecord.class, anyPattern, handler);
+    RecordMapping<ValidRecord> mapping = new RecordMapping<>(ValidRecord.class, anyPattern, handler);
     assertSame(handler, mapping.getHandler());
   }
 }

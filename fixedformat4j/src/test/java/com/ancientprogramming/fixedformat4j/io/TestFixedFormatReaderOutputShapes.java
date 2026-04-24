@@ -1,7 +1,8 @@
 package com.ancientprogramming.fixedformat4j.io;
 
-import com.ancientprogramming.fixedformat4j.io.read.FixedFormatMatchPattern;
-import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
+import com.ancientprogramming.fixedformat4j.io.read.ReadResult;
+import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
@@ -13,8 +14,8 @@ import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
 
 class TestFixedFormatReaderOutputShapes {
 
-  private static final FixedFormatMatchPattern A_PATTERN = new RegexFixedFormatMatchPattern("^A");
-  private static final FixedFormatMatchPattern B_PATTERN = new RegexFixedFormatMatchPattern("^B");
+  private static final LinePattern A_PATTERN = new RegexLinePattern("^A");
+  private static final LinePattern B_PATTERN = new RegexLinePattern("^B");
 
   private FixedFormatReader multiTypeReader() {
     return FixedFormatReader.builder()
@@ -24,8 +25,8 @@ class TestFixedFormatReaderOutputShapes {
   }
 
   @Test
-  void readAsTypedResultGroupsByMatchedClass() {
-    TypedReadResult result = multiTypeReader().readAsTypedResult(
+  void readAsResultGroupsByMatchedClass() {
+    ReadResult result = multiTypeReader().readAsResult(
         new StringReader("AAAAAAAAAA\nBBBBBBBBBB\nAAAAAAAAAAAA"));
 
     assertEquals(2, result.get(TenCharRecord.class).size());
@@ -33,8 +34,8 @@ class TestFixedFormatReaderOutputShapes {
   }
 
   @Test
-  void readAsTypedResultPreservesRegistrationOrder() {
-    TypedReadResult result = multiTypeReader().readAsTypedResult(
+  void readAsResultPreservesRegistrationOrder() {
+    ReadResult result = multiTypeReader().readAsResult(
         new StringReader("BBBBBBBBBB\nAAAAAAAAAAAA"));
 
     List<Class<?>> keys = new ArrayList<>(result.classes());
@@ -43,8 +44,8 @@ class TestFixedFormatReaderOutputShapes {
   }
 
   @Test
-  void readAsTypedResultExcludesClassesWithNoMatches() {
-    TypedReadResult result = multiTypeReader().readAsTypedResult(
+  void readAsResultExcludesClassesWithNoMatches() {
+    ReadResult result = multiTypeReader().readAsResult(
         new StringReader("AAAAAAAAAA"));
 
     assertTrue(result.contains(TenCharRecord.class));
@@ -54,11 +55,11 @@ class TestFixedFormatReaderOutputShapes {
   @Test
   void readAsListReturnsAllRecordsInEncounterOrder() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
         .build();
 
     List<TenCharRecord> results = reader
-        .readAsTypedResult(new StringReader("hello     \nworld     "))
+        .readAsResult(new StringReader("hello     \nworld     "))
         .get(TenCharRecord.class);
     assertEquals(2, results.size());
     assertEquals("hello", results.get(0).getValue());
@@ -67,7 +68,7 @@ class TestFixedFormatReaderOutputShapes {
 
   @Test
   void getAllReturnsFlatListInEncounterOrder() {
-    TypedReadResult result = multiTypeReader().readAsTypedResult(
+    ReadResult result = multiTypeReader().readAsResult(
         new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
 
     List<Object> all = result.getAll();

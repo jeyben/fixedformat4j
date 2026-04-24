@@ -1,7 +1,7 @@
 package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.issues.LombokRecord;
-import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -27,14 +27,14 @@ class TestFixedFormatReaderLombok {
 
   private FixedFormatReader reader() {
     return FixedFormatReader.builder()
-        .addMapping(LombokRecord.class, new RegexFixedFormatMatchPattern(".*"))
+        .addMapping(LombokRecord.class, new RegexLinePattern(".*"))
         .build();
   }
 
   @Test
   void readsLombokRecordFromReader() {
     List<LombokRecord> results = reader()
-        .readAsTypedResult(new StringReader(TEST_DATA))
+        .readAsResult(new StringReader(TEST_DATA))
         .get(LombokRecord.class);
     assertEquals(1, results.size());
     assertEquals("Jacob", results.get(0).getName());
@@ -45,7 +45,7 @@ class TestFixedFormatReaderLombok {
   @Test
   void readsMultipleLombokRecordsFromReader() {
     List<LombokRecord> results = reader()
-        .readAsTypedResult(new StringReader(TEST_DATA + "\n" + TEST_DATA))
+        .readAsResult(new StringReader(TEST_DATA + "\n" + TEST_DATA))
         .get(LombokRecord.class);
     assertEquals(2, results.size());
     assertEquals("Jacob", results.get(0).getName());
@@ -58,7 +58,7 @@ class TestFixedFormatReaderLombok {
     Files.writeString(file, TEST_DATA, StandardCharsets.UTF_8);
 
     List<LombokRecord> results = reader()
-        .readAsTypedResult(file.toFile())
+        .readAsResult(file.toFile())
         .get(LombokRecord.class);
     assertEquals(1, results.size());
     assertEquals("Jacob", results.get(0).getName());
@@ -70,7 +70,7 @@ class TestFixedFormatReaderLombok {
     Files.writeString(file, TEST_DATA, StandardCharsets.UTF_8);
 
     List<LombokRecord> results = reader()
-        .readAsTypedResult(file)
+        .readAsResult(file)
         .get(LombokRecord.class);
     assertEquals(1, results.size());
     assertEquals("Jacob", results.get(0).getName());
@@ -79,12 +79,12 @@ class TestFixedFormatReaderLombok {
   @Test
   void patternMatchesOnlyLombokLines() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(LombokRecord.class, new RegexFixedFormatMatchPattern("^Jacob"))
+        .addMapping(LombokRecord.class, new RegexLinePattern("^Jacob"))
         .build();
 
     String input = TEST_DATA + "\nOther     0000119990101N0000000001";
     List<LombokRecord> results = reader
-        .readAsTypedResult(new StringReader(input))
+        .readAsResult(new StringReader(input))
         .get(LombokRecord.class);
 
     assertEquals(1, results.size());
@@ -95,13 +95,13 @@ class TestFixedFormatReaderLombok {
   void unmatchedLineForwardedToLambdaStrategy() {
     List<String> captured = new ArrayList<>();
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(LombokRecord.class, new RegexFixedFormatMatchPattern("^Jacob"))
+        .addMapping(LombokRecord.class, new RegexLinePattern("^Jacob"))
         .unmatchStrategy((lineNumber, segment) -> captured.add(lineNumber + ":" + segment))
         .build();
 
     String input = TEST_DATA + "\nOther     0000119990101N0000000001";
     List<LombokRecord> results = reader
-        .readAsTypedResult(new StringReader(input))
+        .readAsResult(new StringReader(input))
         .get(LombokRecord.class);
 
     assertEquals(1, results.size());

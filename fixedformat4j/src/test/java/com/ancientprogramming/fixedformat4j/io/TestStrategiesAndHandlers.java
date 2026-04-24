@@ -2,8 +2,8 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
-import com.ancientprogramming.fixedformat4j.io.read.FixedFormatMatchPattern;
-import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
+import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import com.ancientprogramming.fixedformat4j.io.read.ParseErrorStrategy;
 import com.ancientprogramming.fixedformat4j.io.read.UnmatchStrategy;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ import com.ancientprogramming.fixedformat4j.io.read.MultiMatchStrategy;
 
 class TestStrategiesAndHandlers {
 
-  private static final FixedFormatMatchPattern ANY = new RegexFixedFormatMatchPattern(".*");
+  private static final LinePattern ANY = new RegexLinePattern(".*");
   private static final String THREE_LINES = "line1     \nline2     \nline3     ";
 
   @SuppressWarnings("unchecked")
@@ -101,7 +101,7 @@ class TestStrategiesAndHandlers {
   @Test
   void unmatchedSkipDoesNotEmitRecordOrThrow() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
+        .addMapping(TenCharRecord.class, new RegexLinePattern("^A"))
         .unmatchStrategy(UnmatchStrategy.skip())
         .build();
 
@@ -112,7 +112,7 @@ class TestStrategiesAndHandlers {
   @Test
   void unmatchedThrowExceptionThrowsOnUnmatchedLine() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
+        .addMapping(TenCharRecord.class, new RegexLinePattern("^A"))
         .unmatchStrategy(UnmatchStrategy.throwException())
         .build();
 
@@ -125,7 +125,7 @@ class TestStrategiesAndHandlers {
     List<String> captured = new ArrayList<>();
 
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
+        .addMapping(TenCharRecord.class, new RegexLinePattern("^A"))
         .unmatchStrategy((lineNumber, segment) -> captured.add(lineNumber + ":" + segment))
         .build();
 

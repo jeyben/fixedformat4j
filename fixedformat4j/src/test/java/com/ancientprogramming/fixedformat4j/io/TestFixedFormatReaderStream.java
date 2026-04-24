@@ -3,7 +3,7 @@ package com.ancientprogramming.fixedformat4j.io;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatIOException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
-import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -22,14 +22,14 @@ class TestFixedFormatReaderStream {
 
   private FixedFormatReader singleTypeReader() {
     return FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
         .build();
   }
 
   @Test
   void emitsOneRecordPerMatchingLine() {
     List<TenCharRecord> results = singleTypeReader()
-        .readAsTypedResult(readerOf("hello     ", "world     "))
+        .readAsResult(readerOf("hello     ", "world     "))
         .get(TenCharRecord.class);
 
     assertEquals(2, results.size());
@@ -40,7 +40,7 @@ class TestFixedFormatReaderStream {
   @Test
   void skipsUnmatchedLinesByDefault() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
+        .addMapping(TenCharRecord.class, new RegexLinePattern("^A"))
         .build();
 
     long count;
@@ -64,7 +64,7 @@ class TestFixedFormatReaderStream {
     };
 
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
         .manager(failingManager)
         .build();
 
@@ -95,12 +95,12 @@ class TestFixedFormatReaderStream {
   @Test
   void includeLinesPreventsMatchingOnExcludedLines() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
         .includeLines(line -> !line.startsWith("#"))
         .build();
 
     List<TenCharRecord> results = reader
-        .readAsTypedResult(readerOf("hello     ", "# comment ", "world     "))
+        .readAsResult(readerOf("hello     ", "# comment ", "world     "))
         .get(TenCharRecord.class);
     assertEquals(2, results.size());
     assertEquals("hello", results.get(0).getValue());

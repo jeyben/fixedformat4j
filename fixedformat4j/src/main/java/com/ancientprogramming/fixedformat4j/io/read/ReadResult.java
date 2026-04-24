@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.read;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,18 +21,19 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * The result of a {@link FixedFormatReader#readAsTypedResult} call: an immutable, class-keyed
- * container of parsed records that provides type-safe retrieval without casts at the call site.
+ * The result of a {@link com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader#readAsResult}
+ * call: an immutable, class-keyed container of parsed records that provides type-safe retrieval
+ * without casts at the call site.
  *
  * <p>The type safety relies on the invariant that every record stored under key {@code K}
  * is an instance of {@code K}. This invariant is maintained automatically when the result
- * is produced by {@link FixedFormatReader#readAsTypedResult}. Callers who construct a
- * {@code TypedReadResult} directly are responsible for upholding it; violations will not
- * be detected at construction time and will manifest as {@link ClassCastException} at the
- * call site of {@link #get}.</p>
+ * is produced by {@link com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader#readAsResult}.
+ * Callers who construct a {@code ReadResult} directly are responsible for upholding it;
+ * violations will not be detected at construction time and will manifest as
+ * {@link ClassCastException} at the call site of {@link #get}.</p>
  *
  * <pre>{@code
- * TypedReadResult result = reader.readAsTypedResult(path);
+ * ReadResult result = reader.readAsResult(path);
  * List<HeaderRecord> headers = result.get(HeaderRecord.class); // no cast
  * List<DetailRecord> details = result.get(DetailRecord.class); // no cast
  * }</pre>
@@ -40,12 +41,12 @@ import java.util.Set;
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
  */
-public final class TypedReadResult {
+public final class ReadResult {
 
   private final Map<Class<?>, List<Object>> data;
   private final List<Object> all;
 
-  public TypedReadResult(Map<Class<?>, List<Object>> data, List<Object> all) {
+  public ReadResult(Map<Class<?>, List<Object>> data, List<Object> all) {
     this.data = Collections.unmodifiableMap(data);
     this.all = Collections.unmodifiableList(all);
   }

@@ -1,5 +1,6 @@
 package com.ancientprogramming.fixedformat4j.io;
 
+import com.ancientprogramming.fixedformat4j.io.read.ReadResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TestTypedReadResult {
+class TestReadResult {
 
   private static TenCharRecord tenChar(String value) {
     TenCharRecord r = new TenCharRecord();
@@ -28,7 +29,7 @@ class TestTypedReadResult {
     TenCharRecord record = tenChar("hello     ");
     Map<Class<?>, List<Object>> data = new LinkedHashMap<>();
     data.put(TenCharRecord.class, List.of(record));
-    TypedReadResult result = new TypedReadResult(data, List.of(record));
+    ReadResult result = new ReadResult(data, List.of(record));
 
     List<TenCharRecord> records = result.get(TenCharRecord.class);
 
@@ -39,7 +40,7 @@ class TestTypedReadResult {
   @Test
   void getReturnsEmptyListForUnregisteredClass() {
     Map<Class<?>, List<Object>> data = new LinkedHashMap<>();
-    TypedReadResult result = new TypedReadResult(data, List.of());
+    ReadResult result = new ReadResult(data, List.of());
 
     List<TenCharRecord> records = result.get(TenCharRecord.class);
 
@@ -53,7 +54,7 @@ class TestTypedReadResult {
     Map<Class<?>, List<Object>> data = new LinkedHashMap<>();
     data.put(TenCharRecord.class, List.of(ten));
     data.put(FiveCharRecord.class, List.of(five));
-    TypedReadResult result = new TypedReadResult(data, List.of(ten, five));
+    ReadResult result = new ReadResult(data, List.of(ten, five));
 
     List<Object> all = result.getAll();
 
@@ -65,7 +66,7 @@ class TestTypedReadResult {
     TenCharRecord record = tenChar("hello     ");
     Map<Class<?>, List<Object>> data = new LinkedHashMap<>();
     data.put(TenCharRecord.class, List.of(record));
-    TypedReadResult result = new TypedReadResult(data, List.of(record));
+    ReadResult result = new ReadResult(data, List.of(record));
 
     assertTrue(result.contains(TenCharRecord.class));
     assertFalse(result.contains(FiveCharRecord.class));
@@ -76,7 +77,7 @@ class TestTypedReadResult {
     TenCharRecord record = tenChar("hello     ");
     Map<Class<?>, List<Object>> data = new LinkedHashMap<>();
     data.put(TenCharRecord.class, new ArrayList<>(List.of(record)));
-    TypedReadResult result = new TypedReadResult(data, List.of(record));
+    ReadResult result = new ReadResult(data, List.of(record));
 
     List<TenCharRecord> records = result.get(TenCharRecord.class);
 
@@ -88,7 +89,7 @@ class TestTypedReadResult {
     TenCharRecord record = tenChar("hello     ");
     Map<Class<?>, List<Object>> data = new LinkedHashMap<>();
     data.put(TenCharRecord.class, List.of(record));
-    TypedReadResult result = new TypedReadResult(data, List.of(record));
+    ReadResult result = new ReadResult(data, List.of(record));
 
     assertEquals(1, result.classes().size());
     assertTrue(result.classes().contains(TenCharRecord.class));

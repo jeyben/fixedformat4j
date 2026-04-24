@@ -1,8 +1,8 @@
 package com.ancientprogramming.fixedformat4j.io;
 
-import com.ancientprogramming.fixedformat4j.io.read.FixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
 import com.ancientprogramming.fixedformat4j.io.read.MultiMatchStrategy;
-import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -23,8 +23,8 @@ class TestFixedFormatReaderProcessAll {
   @TempDir
   Path tempDir;
 
-  private static final FixedFormatMatchPattern A_PATTERN = new RegexFixedFormatMatchPattern("^A");
-  private static final FixedFormatMatchPattern B_PATTERN = new RegexFixedFormatMatchPattern("^B");
+  private static final LinePattern A_PATTERN = new RegexLinePattern("^A");
+  private static final LinePattern B_PATTERN = new RegexLinePattern("^B");
 
   @Test
   void processAllFiresTypedHandlerForEachRecord() {

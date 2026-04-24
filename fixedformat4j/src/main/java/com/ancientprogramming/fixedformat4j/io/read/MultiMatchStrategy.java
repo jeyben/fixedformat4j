@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * Strategy that decides which mappings to use when more than one
- * {@link ClassPatternMapping} matches the same line.
+ * {@link RecordMapping} matches the same line.
  *
  * <p>Three built-in strategies are provided as static factory methods:
  * {@link #firstMatch()}, {@link #throwOnAmbiguity()}, and {@link #allMatches()}.</p>
@@ -44,7 +44,7 @@ public interface MultiMatchStrategy {
    * @return the subset of {@code matched} to use for parsing; may be empty to skip the line;
    *         never {@code null}
    */
-  List<ClassPatternMapping<?>> resolve(List<ClassPatternMapping<?>> matched, long lineNumber);
+  List<RecordMapping<?>> resolve(List<RecordMapping<?>> matched, long lineNumber);
 
   /**
    * Returns a strategy that uses the first matching mapping in registration order and ignores

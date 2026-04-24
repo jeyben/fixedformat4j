@@ -20,7 +20,7 @@ import com.ancientprogramming.fixedformat4j.annotation.Record;
 import java.util.function.Consumer;
 
 /**
- * Immutable pair of a {@link FixedFormatMatchPattern}, the
+ * Immutable pair of a {@link LinePattern}, the
  * {@link com.ancientprogramming.fixedformat4j.annotation.Record}-annotated class to
  * instantiate when the pattern matches a line, and an optional typed handler to invoke
  * when {@link FixedFormatReader#processAll} is called.
@@ -32,10 +32,10 @@ import java.util.function.Consumer;
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
  */
-public class ClassPatternMapping<T> {
+public class RecordMapping<T> {
 
   private final Class<T> recordClass;
-  private final FixedFormatMatchPattern pattern;
+  private final LinePattern pattern;
   private final Consumer<T> handler;
 
   /**
@@ -46,7 +46,7 @@ public class ClassPatternMapping<T> {
    * @param pattern     the pattern that decides which lines are parsed as {@code recordClass}
    * @throws IllegalArgumentException if {@code recordClass} is not annotated with {@code @Record}
    */
-  public ClassPatternMapping(Class<T> recordClass, FixedFormatMatchPattern pattern) {
+  public RecordMapping(Class<T> recordClass, LinePattern pattern) {
     this(recordClass, pattern, null);
   }
 
@@ -61,8 +61,7 @@ public class ClassPatternMapping<T> {
    *                    {@link FixedFormatReader#processAll}; {@code null} for handler-less mappings
    * @throws IllegalArgumentException if {@code recordClass} is not annotated with {@code @Record}
    */
-  public ClassPatternMapping(Class<T> recordClass, FixedFormatMatchPattern pattern,
-                              Consumer<T> handler) {
+  public RecordMapping(Class<T> recordClass, LinePattern pattern, Consumer<T> handler) {
     if (recordClass == null) {
       throw new IllegalArgumentException("recordClass must not be null");
     }
@@ -91,9 +90,9 @@ public class ClassPatternMapping<T> {
    * Returns the pattern used to decide whether a line should be parsed as
    * {@link #getRecordClass()}.
    *
-   * @return the match pattern; never {@code null}
+   * @return the line pattern; never {@code null}
    */
-  public FixedFormatMatchPattern getPattern() {
+  public LinePattern getPattern() {
     return pattern;
   }
 

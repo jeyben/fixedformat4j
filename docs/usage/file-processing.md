@@ -43,20 +43,20 @@ public class EmployeeRecord {
 
 ## Defining patterns
 
-A `FixedFormatMatchPattern` decides whether a line belongs to a particular record class. The built-in `RegexFixedFormatMatchPattern` compiles a regular expression at construction time and applies it with `find()` semantics (partial-line match).
+A `LinePattern` decides whether a line belongs to a particular record class. The built-in `RegexLinePattern` compiles a regular expression at construction time and applies it with `find()` semantics (partial-line match).
 
 ```java
 // Matches any line that starts with "EMP"
-FixedFormatMatchPattern employeePattern = new RegexFixedFormatMatchPattern("^EMP");
+LinePattern employeePattern = new RegexLinePattern("^EMP");
 
 // Matches every line (use for single-type files)
-FixedFormatMatchPattern anyLine = new RegexFixedFormatMatchPattern(".*");
+LinePattern anyLine = new RegexLinePattern(".*");
 ```
 
-Implement `FixedFormatMatchPattern` directly for custom discrimination logic — for example, testing a fixed-width type code in a specific column:
+Implement `LinePattern` directly for custom discrimination logic — for example, testing a fixed-width type code in a specific column:
 
 ```java
-FixedFormatMatchPattern headerPattern = line ->
+LinePattern headerPattern = line ->
     line != null && line.length() >= 3 && "HDR".equals(line.substring(0, 3));
 ```
 
@@ -70,7 +70,7 @@ Use the fluent builder to configure the reader. At least one mapping must be add
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern(".*"))
+    .addMapping(EmployeeRecord.class, new RegexLinePattern(".*"))
     .build();
 ```
 
@@ -78,8 +78,8 @@ FixedFormatReader reader = FixedFormatReader.builder()
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"))
-    .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
+    .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"))
+    .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"))
     .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 ```
@@ -90,7 +90,7 @@ Mappings are evaluated in registration order. The `multiMatchStrategy` controls 
 
 ## Reading into a List
 
-`readAsList` eagerly reads all records and returns them as `List<Object>` in encounter order. For typed access without casts, prefer `readAsTypedResult` (see below). Overloads are available for `File`, `Path`, `InputStream`, and `Reader`. All default to UTF-8; pass an explicit `Charset` when needed.
+`readAsList` eagerly reads all records and returns them as `List<Object>` in encounter order. For typed access without casts, prefer `readAsResult` (see below). Overloads are available for `File`, `Path`, `InputStream`, and `Reader`. All default to UTF-8; pass an explicit `Charset` when needed.
 
 ```java
 // From a File (UTF-8)
@@ -120,30 +120,30 @@ try (Stream<Object> stream = reader.readAsStream(Path.of("employees.txt"))) {
 }
 ```
 
-For typed dispatch without `instanceof` casts, `readAsTypedResult` or `processAll` are preferred.
+For typed dispatch without `instanceof` casts, `readAsResult` or `processAll` are preferred.
 
 The stream is sequential and ordered. The same `File`, `Path`, `InputStream`, and `Reader` overloads are available as for `readAsList`.
 
 ---
 
-## Reading as TypedReadResult
+## Reading as ReadResult
 
-`readAsTypedResult` is the recommended collect-then-process method for heterogeneous files. It reads all records eagerly and returns a `TypedReadResult` — a type-safe, class-keyed container that eliminates casts at the call site.
+`readAsResult` is the recommended collect-then-process method for heterogeneous files. It reads all records eagerly and returns a `ReadResult` — a type-safe, class-keyed container that eliminates casts at the call site.
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"))
-    .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
+    .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"))
+    .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"))
     .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 
-TypedReadResult result = reader.readAsTypedResult(Path.of("data.txt"));
+ReadResult result = reader.readAsResult(Path.of("data.txt"));
 
 List<HeaderRecord> headers = result.get(HeaderRecord.class); // no cast
 List<DetailRecord> details = result.get(DetailRecord.class); // no cast
 ```
 
-`TypedReadResult` key methods:
+`ReadResult` key methods:
 
 | Method | Returns | Description |
 |---|---|---|
@@ -158,15 +158,15 @@ The same `File`, `Path`, `InputStream`, and `Reader` overloads are available as 
 
 ## Typed handler dispatch
 
-`processAll` is the push-style alternative to `readAsTypedResult`. Instead of collecting records and querying the result, you register a typed `Consumer<R>` handler per mapping; `processAll` parses each line and immediately dispatches the record to the matching handler.
+`processAll` is the push-style alternative to `readAsResult`. Instead of collecting records and querying the result, you register a typed `Consumer<R>` handler per mapping; `processAll` parses each line and immediately dispatches the record to the matching handler.
 
 Register handlers at build time using the three-argument `addMapping` overload:
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"),
+    .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"),
         header -> System.out.println("Header: " + header.getDate()))
-    .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"),
+    .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"),
         detail -> System.out.println("Detail: " + detail.getOrderId()))
     .unmatchStrategy(UnmatchStrategy.skip())
     .build();
@@ -244,7 +244,7 @@ Implement `MultiMatchStrategy` directly for custom resolution logic:
 
 ```java
 FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern("^EMP"))
+    .addMapping(EmployeeRecord.class, new RegexLinePattern("^EMP"))
     .unmatchStrategy((lineNumber, line) ->
         System.err.println("Unmatched line " + lineNumber + ": " + line))
     .build();
@@ -260,7 +260,7 @@ FixedFormatReader.builder()
 
 ```java
 FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern(".*"))
+    .addMapping(EmployeeRecord.class, new RegexLinePattern(".*"))
     .parseErrorStrategy((wrapped, line, lineNumber) ->
         System.err.println("Parse error on line " + lineNumber + ": " + wrapped.getMessage()))
     .build();
@@ -276,7 +276,7 @@ Use `includeLines` to select which lines reach pattern matching. Lines for which
 
 ```java
 FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern(".*"))
+    .addMapping(EmployeeRecord.class, new RegexLinePattern(".*"))
     .includeLines(line -> !line.isBlank() && !line.startsWith("#"))
     .build();
 ```

@@ -3,8 +3,8 @@ package com.ancientprogramming.fixedformat4j.io;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
-import com.ancientprogramming.fixedformat4j.io.read.FixedFormatMatchPattern;
-import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
+import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import com.ancientprogramming.fixedformat4j.io.read.ParseErrorStrategy;
 import com.ancientprogramming.fixedformat4j.io.read.UnmatchStrategy;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ class TestFixedFormatReaderBuilder {
     public void setData(String data) { this.data = data; }
   }
 
-  private final FixedFormatMatchPattern anyPattern = new RegexFixedFormatMatchPattern(".*");
+  private final LinePattern anyPattern = new RegexLinePattern(".*");
 
   @Test
   void buildsSuccessfullyWithOneMapping() {
@@ -66,7 +66,7 @@ class TestFixedFormatReaderBuilder {
         .manager(FixedFormatManagerImpl.create())
         .build();
     List<TenCharRecord> results = reader
-        .readAsTypedResult(new StringReader("hello     "))
+        .readAsResult(new StringReader("hello     "))
         .get(TenCharRecord.class);
     assertEquals(1, results.size());
     assertEquals("hello", results.get(0).getValue());

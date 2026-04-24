@@ -1,7 +1,7 @@
 package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
-import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import com.ancientprogramming.fixedformat4j.io.read.UnmatchStrategy;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +19,7 @@ class TestFixedFormatReaderUnmatched {
   @Test
   void throwsOnUnmatchedLineWhenStrategyIsThrowException() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
+        .addMapping(TenCharRecord.class, new RegexLinePattern("^A"))
         .unmatchStrategy(UnmatchStrategy.throwException())
         .build();
 
@@ -36,7 +36,7 @@ class TestFixedFormatReaderUnmatched {
   void customLambdaStrategyReceivesLineNumberAndContent() {
     List<String> captured = new ArrayList<>();
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern("^A"))
+        .addMapping(TenCharRecord.class, new RegexLinePattern("^A"))
         .unmatchStrategy((lineNumber, segment) -> captured.add(lineNumber + ":" + segment))
         .build();
 
@@ -51,7 +51,7 @@ class TestFixedFormatReaderUnmatched {
   void strategyNotInvokedForMatchedLines() {
     List<String> captured = new ArrayList<>();
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
         .unmatchStrategy((lineNumber, segment) -> captured.add(segment))
         .build();
 

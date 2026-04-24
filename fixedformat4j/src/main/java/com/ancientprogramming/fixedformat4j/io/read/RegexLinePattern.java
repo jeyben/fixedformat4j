@@ -21,20 +21,20 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 /**
- * A {@link FixedFormatMatchPattern} that matches lines using a regular expression.
+ * A {@link LinePattern} that matches lines using a regular expression.
  * The regex is compiled at construction time; an invalid expression throws
  * {@link com.ancientprogramming.fixedformat4j.exception.FixedFormatException} immediately
  * rather than at match time.
  *
  * <p>Example — match any line that starts with {@code "HDR"}:</p>
  * <pre>{@code
- * FixedFormatMatchPattern pattern = new RegexFixedFormatMatchPattern("^HDR");
+ * LinePattern pattern = new RegexLinePattern("^HDR");
  * }</pre>
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
  */
-public class RegexFixedFormatMatchPattern implements FixedFormatMatchPattern {
+public class RegexLinePattern implements LinePattern {
 
   private final Pattern pattern;
 
@@ -45,7 +45,7 @@ public class RegexFixedFormatMatchPattern implements FixedFormatMatchPattern {
    *              semantics so the expression does not need to match the full line
    * @throws FixedFormatException if {@code regex} is not a valid regular expression
    */
-  public RegexFixedFormatMatchPattern(String regex) {
+  public RegexLinePattern(String regex) {
     try {
       this.pattern = Pattern.compile(regex);
     } catch (PatternSyntaxException e) {

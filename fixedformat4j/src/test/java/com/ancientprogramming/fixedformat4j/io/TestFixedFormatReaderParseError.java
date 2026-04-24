@@ -2,7 +2,7 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
-import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import com.ancientprogramming.fixedformat4j.io.read.ParseErrorStrategy;
 import org.junit.jupiter.api.Test;
 
@@ -49,7 +49,7 @@ class TestFixedFormatReaderParseError {
     };
 
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
         .parseErrorStrategy(ParseErrorStrategy.skipAndLog())
         .manager(countingManager)
         .build();
@@ -66,7 +66,7 @@ class TestFixedFormatReaderParseError {
     List<String> captured = new ArrayList<>();
 
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
         .parseErrorStrategy((wrapped, line, lineNumber) ->
             captured.add(lineNumber + ":" + line + ":" + wrapped.getMessage()))
         .manager(failOnSecondCall())
@@ -85,7 +85,7 @@ class TestFixedFormatReaderParseError {
     List<Object> results = new ArrayList<>();
 
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"))
+        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
         .parseErrorStrategy((wrapped, line, lineNumber) -> {})
         .manager(failOnSecondCall())
         .build();

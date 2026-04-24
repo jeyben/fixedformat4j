@@ -18,12 +18,12 @@ package com.ancientprogramming.fixedformat4j.io.read;
 /**
  * Strategy interface for deciding whether a line in a fixed-format file should be loaded
  * as a particular record type. Implement this interface to define custom line-discrimination
- * logic beyond the built-in {@link RegexFixedFormatMatchPattern}.
+ * logic beyond the built-in {@link RegexLinePattern}.
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
  */
-public interface FixedFormatMatchPattern {
+public interface LinePattern {
 
   /**
    * Returns {@code true} if the given line should be parsed as the associated record type.

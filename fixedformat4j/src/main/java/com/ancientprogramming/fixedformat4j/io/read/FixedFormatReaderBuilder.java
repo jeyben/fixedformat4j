@@ -31,7 +31,7 @@ import java.util.function.Predicate;
  */
 public class FixedFormatReaderBuilder {
 
-  final List<ClassPatternMapping<?>> mappings = new ArrayList<>();
+  final List<RecordMapping<?>> mappings = new ArrayList<>();
   MultiMatchStrategy multiMatchStrategy = MultiMatchStrategy.firstMatch();
   UnmatchStrategy unmatchStrategy = UnmatchStrategy.skip();
   ParseErrorStrategy parseErrorStrategy = ParseErrorStrategy.throwException();
@@ -49,8 +49,8 @@ public class FixedFormatReaderBuilder {
    * @return this builder
    * @throws IllegalArgumentException if {@code clazz} is not annotated with {@code @Record}
    */
-  public <R> FixedFormatReaderBuilder addMapping(Class<R> clazz, FixedFormatMatchPattern pattern) {
-    mappings.add(new ClassPatternMapping<>(clazz, pattern));
+  public <R> FixedFormatReaderBuilder addMapping(Class<R> clazz, LinePattern pattern) {
+    mappings.add(new RecordMapping<>(clazz, pattern));
     return this;
   }
 
@@ -67,12 +67,12 @@ public class FixedFormatReaderBuilder {
    * @throws IllegalArgumentException if {@code clazz} is not annotated with {@code @Record},
    *                                  or if {@code handler} is {@code null}
    */
-  public <R> FixedFormatReaderBuilder addMapping(Class<R> clazz, FixedFormatMatchPattern pattern,
+  public <R> FixedFormatReaderBuilder addMapping(Class<R> clazz, LinePattern pattern,
                                                   Consumer<R> handler) {
     if (handler == null) {
       throw new IllegalArgumentException("handler must not be null");
     }
-    mappings.add(new ClassPatternMapping<>(clazz, pattern, handler));
+    mappings.add(new RecordMapping<>(clazz, pattern, handler));
     return this;
   }
 

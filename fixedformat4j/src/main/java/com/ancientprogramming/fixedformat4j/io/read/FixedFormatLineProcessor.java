@@ -27,13 +27,13 @@ import java.util.stream.Collectors;
 /**
  * Core line-routing engine for {@link FixedFormatReader}.
  *
- * <p>Matches each line against registered {@link ClassPatternMapping}s, applies multi-match
+ * <p>Matches each line against registered {@link RecordMapping}s, applies multi-match
  * and unmatched-line strategies, parses the line into a record, and emits the result via a
  * callback. Also handles typed handler dispatch for {@link FixedFormatReader#processAll}.</p>
  */
 class FixedFormatLineProcessor {
 
-  private final List<ClassPatternMapping<?>> mappings;
+  private final List<RecordMapping<?>> mappings;
   private final MultiMatchStrategy multiMatchStrategy;
   private final UnmatchStrategy unmatchStrategy;
   private final ParseErrorStrategy parseErrorStrategy;
@@ -41,7 +41,7 @@ class FixedFormatLineProcessor {
   private final FixedFormatManager manager;
 
   FixedFormatLineProcessor(
-      List<ClassPatternMapping<?>> mappings,
+      List<RecordMapping<?>> mappings,
       MultiMatchStrategy multiMatchStrategy,
       UnmatchStrategy unmatchStrategy,
       ParseErrorStrategy parseErrorStrategy,
@@ -55,19 +55,19 @@ class FixedFormatLineProcessor {
     this.manager = manager;
   }
 
-  void processLine(String line, long lineNumber, BiConsumer<ClassPatternMapping<?>, Object> emit) {
+  void processLine(String line, long lineNumber, BiConsumer<RecordMapping<?>, Object> emit) {
     if (!lineFilter.test(line)) {
       return;
     }
-    List<ClassPatternMapping<?>> matched = findMatches(line);
+    List<RecordMapping<?>> matched = findMatches(line);
     if (matched.isEmpty()) {
       unmatchStrategy.handle(lineNumber, line);
       return;
     }
-    List<ClassPatternMapping<?>> toProcess = matched.size() == 1
+    List<RecordMapping<?>> toProcess = matched.size() == 1
         ? matched
         : multiMatchStrategy.resolve(matched, lineNumber);
-    for (ClassPatternMapping<?> mapping : toProcess) {
+    for (RecordMapping<?> mapping : toProcess) {
       Object record = parseRecord(mapping, line, lineNumber);
       if (record != null) {
         emit.accept(mapping, record);
@@ -75,8 +75,8 @@ class FixedFormatLineProcessor {
     }
   }
 
-  // Wildcard capture: ClassPatternMapping<?> → ClassPatternMapping<R>, enabling type-safe load.
-  private <R> Object parseRecord(ClassPatternMapping<R> mapping, String line, long lineNumber) {
+  // Wildcard capture: RecordMapping<?> → RecordMapping<R>, enabling type-safe load.
+  private <R> Object parseRecord(RecordMapping<R> mapping, String line, long lineNumber) {
     try {
       return manager.load(mapping.getRecordClass(), line);
     } catch (FixedFormatException e) {
@@ -87,7 +87,7 @@ class FixedFormatLineProcessor {
     }
   }
 
-  private List<ClassPatternMapping<?>> findMatches(String line) {
+  private List<RecordMapping<?>> findMatches(String line) {
     return mappings.stream()
         .filter(m -> m.getPattern().matches(line))
         .collect(Collectors.toList());
@@ -95,13 +95,13 @@ class FixedFormatLineProcessor {
 
   // Called from FixedFormatReader.processAll via method reference (processor::fireHandler).
   // Safe: records dispatched under key K were loaded via manager.load(K, line), i.e. are K instances.
-  void fireHandler(ClassPatternMapping<?> mapping, Object record) {
+  void fireHandler(RecordMapping<?> mapping, Object record) {
     doFireHandler(mapping, record);
   }
 
   // Wildcard capture allows the typed Consumer<R> cast to be verified by the compiler.
   @SuppressWarnings("unchecked")
-  private <R> void doFireHandler(ClassPatternMapping<R> mapping, Object record) {
+  private <R> void doFireHandler(RecordMapping<R> mapping, Object record) {
     if (mapping.getHandler() != null) {
       mapping.getHandler().accept((R) record);
     }

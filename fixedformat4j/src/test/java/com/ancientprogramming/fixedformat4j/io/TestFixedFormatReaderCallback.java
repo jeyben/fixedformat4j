@@ -1,7 +1,7 @@
 package com.ancientprogramming.fixedformat4j.io;
 
-import com.ancientprogramming.fixedformat4j.io.read.FixedFormatMatchPattern;
-import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
+import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -23,8 +23,8 @@ class TestFixedFormatReaderCallback {
   @TempDir
   Path tempDir;
 
-  private static final FixedFormatMatchPattern A_PATTERN = new RegexFixedFormatMatchPattern("^A");
-  private static final FixedFormatMatchPattern B_PATTERN = new RegexFixedFormatMatchPattern("^B");
+  private static final LinePattern A_PATTERN = new RegexLinePattern("^A");
+  private static final LinePattern B_PATTERN = new RegexLinePattern("^B");
 
   private FixedFormatReader heterogeneousReader() {
     return FixedFormatReader.builder()
@@ -37,7 +37,7 @@ class TestFixedFormatReaderCallback {
   void consumerCallbackInvokesForEachRecordInOrder() {
     List<String> values = new ArrayList<>();
     FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"),
+        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"),
             record -> values.add(record.getValue()))
         .build()
         .processAll(new StringReader("hello     \nworld     "));
@@ -78,7 +78,7 @@ class TestFixedFormatReaderCallback {
   void consumerCallbackWorksWithInputStreamAndExplicitCharset() {
     List<String> values = new ArrayList<>();
     FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexFixedFormatMatchPattern(".*"),
+        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"),
             record -> values.add(record.getValue()))
         .build()
         .processAll(
