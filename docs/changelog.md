@@ -36,9 +36,9 @@ title: Changelog
 
 - **`FixedFormatReader` — file and stream processing** ([#82](https://github.com/jeyben/fixedformat4j/issues/82)) —
   Reads fixed-format records from files, streams, or `Reader`s line-by-line, routing each line
-  to one or more `@Record`-annotated classes via `LinePattern` discriminators.
-  The built-in `RegexLinePattern` uses `Matcher.find()` semantics and compiles the
-  pattern eagerly (invalid patterns throw immediately). `FixedFormatReader` is unparameterized.
+  to one or more `@Record`-annotated classes via `Predicate<String>` discriminators.
+  The `LinePredicates.regex(String)` factory compiles a regular expression once with
+  `Matcher.find()` semantics; pass any `Predicate<String>` for custom logic. `FixedFormatReader` is unparameterized.
 
   Two output shapes:
   - `readAsResult()` — returns `ReadResult`, a type-safe class-keyed container; `get(Class<R>)` returns `List<R>` with no cast required. Also provides `getAll()`, `contains(Class<?>)`, and `classes()`.
@@ -58,9 +58,10 @@ title: Changelog
   `FixedFormatIOException` (extends `FixedFormatException`) is thrown on underlying `IOException`.
 
   ```java
+  // import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
   FixedFormatReader reader = FixedFormatReader.builder()
-      .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"))
-      .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"))
+      .addMapping(HeaderRecord.class, regex("^HDR"))
+      .addMapping(DetailRecord.class, regex("^DTL"))
       .build();
 
   ReadResult result = reader.readAsResult(Path.of("data.txt"));

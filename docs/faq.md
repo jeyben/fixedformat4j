@@ -6,14 +6,16 @@ title: FAQ
 
 ## Can fixedformat4j help me parse large text files?
 
-Yes. Since 1.8.0, `FixedFormatReader` provides built-in file processing. Register a typed handler per record class and call `processAll` — each record is parsed and dispatched immediately without loading the whole file into memory:
+Yes. Since 1.8.0, `FixedFormatReader` provides built-in file processing. Supply a `HandlerRegistry` to `process` — each record is parsed and dispatched immediately without loading the whole file into memory:
 
 ```java
+// import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(MyRecord.class, new RegexLinePattern(".*"), processor::process)
+    .addMapping(MyRecord.class, regex(".*"))
     .build();
 
-reader.processAll(Path.of("large.txt"));
+reader.process(Path.of("large.txt"),
+    new HandlerRegistry().on(MyRecord.class, processor::process));
 ```
 
 See [File Processing](usage/file-processing) for the full API including output shapes, strategies, and heterogeneous-file support.
@@ -40,11 +42,12 @@ Because the bean is registered against the `FixedFormatManager` interface, it is
 **Registering `FixedFormatReader`:**
 
 ```java
+// import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
 @Bean
 public FixedFormatReader payrollReader() {
   return FixedFormatReader.builder()
-      .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"))
-      .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"))
+      .addMapping(HeaderRecord.class, regex("^HDR"))
+      .addMapping(DetailRecord.class, regex("^DTL"))
       .unmatchStrategy(UnmatchStrategy.skip())
       .build();
 }
@@ -244,12 +247,13 @@ while ((line = reader.readLine()) != null) {
 }
 ```
 
-Since 1.8.0, `FixedFormatReader` handles this pattern directly — register each record class with a `RegexLinePattern` and let the reader route lines automatically:
+Since 1.8.0, `FixedFormatReader` handles this pattern directly — register each record class with a `Predicate<String>` and let the reader route lines automatically:
 
 ```java
+// import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, new RegexLinePattern("^H"))
-    .addMapping(DetailRecord.class, new RegexLinePattern("^D"))
+    .addMapping(HeaderRecord.class, regex("^H"))
+    .addMapping(DetailRecord.class, regex("^D"))
     .build();
 
 ReadResult result = reader.readAsResult(Path.of("data.txt"));

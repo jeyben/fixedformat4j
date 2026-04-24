@@ -156,8 +156,9 @@ Since 1.8.0, use `FixedFormatReader` to process files. Build a reader once, then
 **Single record type:**
 
 ```java
+// import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, new RegexLinePattern(".*"))
+    .addMapping(EmployeeRecord.class, regex(".*"))
     .includeLines(line -> !line.isBlank())
     .build();
 
@@ -173,8 +174,8 @@ for (EmployeeRecord emp : employees) {
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, new RegexLinePattern("^E"))
-    .addMapping(ManagerRecord.class,  new RegexLinePattern("^M"))
+    .addMapping(EmployeeRecord.class, regex("^E"))
+    .addMapping(ManagerRecord.class,  regex("^M"))
     .build();
 
 ReadResult result = reader.readAsResult(Path.of("staff.txt"));
@@ -573,9 +574,10 @@ public class OrderDetail {
 **Build the reader** (shared across all output shapes below):
 
 ```java
+// import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(OrderHeader.class, new RegexLinePattern("^HDR"))
-    .addMapping(OrderDetail.class, new RegexLinePattern("^DTL"))
+    .addMapping(OrderHeader.class, regex("^HDR"))
+    .addMapping(OrderDetail.class, regex("^DTL"))
     .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 ```
@@ -597,8 +599,8 @@ System.out.println(details.size());      // 2
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(OrderHeader.class, new RegexLinePattern("^HDR"))
-    .addMapping(OrderDetail.class, new RegexLinePattern("^DTL"))
+    .addMapping(OrderHeader.class, regex("^HDR"))
+    .addMapping(OrderDetail.class, regex("^DTL"))
     .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 

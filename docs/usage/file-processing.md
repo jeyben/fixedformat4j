@@ -43,21 +43,24 @@ public class EmployeeRecord {
 
 ## Defining patterns
 
-A `LinePattern` decides whether a line belongs to a particular record class. The built-in `RegexLinePattern` compiles a regular expression at construction time and applies it with `find()` semantics (partial-line match).
+A `Predicate<String>` decides whether a line belongs to a particular record class.
+The `LinePredicates.regex(String)` factory (designed for static import) is the most
+concise option — it compiles the regular expression once and applies it with `find()`
+semantics (partial-line match):
 
 ```java
-// Matches any line that starts with "EMP"
-LinePattern employeePattern = new RegexLinePattern("^EMP");
+import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
 
-// Matches every line (use for single-type files)
-LinePattern anyLine = new RegexLinePattern(".*");
+Predicate<String> employeePattern = regex("^EMP");  // lines starting with "EMP"
+Predicate<String> anyLine         = regex(".*");     // every line
 ```
 
-Implement `LinePattern` directly for custom discrimination logic — for example, testing a fixed-width type code in a specific column:
+Pass any `Predicate<String>` for custom discrimination logic — for example, testing
+a fixed-width type code in a specific column:
 
 ```java
-LinePattern headerPattern = line ->
-    line != null && line.length() >= 3 && "HDR".equals(line.substring(0, 3));
+Predicate<String> headerPattern =
+    line -> line.length() >= 3 && "HDR".equals(line.substring(0, 3));
 ```
 
 ---
@@ -70,7 +73,7 @@ Use the fluent builder to configure the reader. At least one mapping must be add
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, new RegexLinePattern(".*"))
+    .addMapping(EmployeeRecord.class, regex(".*"))
     .build();
 ```
 
@@ -78,8 +81,8 @@ FixedFormatReader reader = FixedFormatReader.builder()
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"))
-    .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"))
+    .addMapping(HeaderRecord.class, regex("^HDR"))
+    .addMapping(DetailRecord.class, regex("^DTL"))
     .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 ```
@@ -94,8 +97,8 @@ Mappings are evaluated in registration order. The `multiMatchStrategy` controls 
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"))
-    .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"))
+    .addMapping(HeaderRecord.class, regex("^HDR"))
+    .addMapping(DetailRecord.class, regex("^DTL"))
     .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 
@@ -120,14 +123,14 @@ Overloads are available for `File`, `Path`, `InputStream`, and `Reader`. All def
 
 ## Typed handler dispatch
 
-`processAll` is the push-style alternative to `readAsResult`. Instead of collecting records and querying the result, you register a typed `Consumer<R>` handler per mapping; `processAll` parses each line and immediately dispatches the record to the matching handler.
+`process` is the push-style alternative to `readAsResult`. Instead of collecting records and querying the result, you supply a `HandlerRegistry` at call time; `process` parses each line and immediately dispatches the record to the matching handler.
 
-Register handlers at build time using the three-argument `addMapping` overload:
+Supply handlers via a `HandlerRegistry` at the call site:
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"))
-    .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"))
+    .addMapping(HeaderRecord.class, regex("^HDR"))
+    .addMapping(DetailRecord.class, regex("^DTL"))
     .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 
@@ -180,7 +183,7 @@ Implement `MultiMatchStrategy` directly for custom resolution logic:
 
 ```java
 FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, new RegexLinePattern("^EMP"))
+    .addMapping(EmployeeRecord.class, regex("^EMP"))
     .unmatchStrategy((lineNumber, line) ->
         System.err.println("Unmatched line " + lineNumber + ": " + line))
     .build();
@@ -196,7 +199,7 @@ FixedFormatReader.builder()
 
 ```java
 FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, new RegexLinePattern(".*"))
+    .addMapping(EmployeeRecord.class, regex(".*"))
     .parseErrorStrategy((wrapped, line, lineNumber) ->
         System.err.println("Parse error on line " + lineNumber + ": " + wrapped.getMessage()))
     .build();
@@ -212,7 +215,7 @@ Use `includeLines` to select which lines reach pattern matching. Lines for which
 
 ```java
 FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, new RegexLinePattern(".*"))
+    .addMapping(EmployeeRecord.class, regex(".*"))
     .includeLines(line -> !line.isBlank() && !line.startsWith("#"))
     .build();
 ```
