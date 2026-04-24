@@ -20,6 +20,7 @@ import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -62,7 +63,7 @@ public class FixedFormatReaderBuilder {
    * @return this builder
    */
   public FixedFormatReaderBuilder multiMatchStrategy(MultiMatchStrategy strategy) {
-    if (strategy == null) throw new IllegalArgumentException("strategy must not be null");
+    Objects.requireNonNull(strategy, "strategy must not be null");
     this.multiMatchStrategy = strategy;
     return this;
   }
@@ -75,7 +76,7 @@ public class FixedFormatReaderBuilder {
    * @return this builder
    */
   public FixedFormatReaderBuilder unmatchStrategy(UnmatchStrategy strategy) {
-    if (strategy == null) throw new IllegalArgumentException("strategy must not be null");
+    Objects.requireNonNull(strategy, "strategy must not be null");
     this.unmatchStrategy = strategy;
     return this;
   }
@@ -88,7 +89,7 @@ public class FixedFormatReaderBuilder {
    * @return this builder
    */
   public FixedFormatReaderBuilder parseErrorStrategy(ParseErrorStrategy strategy) {
-    if (strategy == null) throw new IllegalArgumentException("strategy must not be null");
+    Objects.requireNonNull(strategy, "strategy must not be null");
     this.parseErrorStrategy = strategy;
     return this;
   }
@@ -102,7 +103,7 @@ public class FixedFormatReaderBuilder {
    * @return this builder
    */
   public FixedFormatReaderBuilder includeLines(Predicate<String> predicate) {
-    if (predicate == null) throw new IllegalArgumentException("predicate must not be null");
+    Objects.requireNonNull(predicate, "predicate must not be null");
     this.lineFilter = predicate;
     return this;
   }
@@ -114,7 +115,7 @@ public class FixedFormatReaderBuilder {
    * @return this builder
    */
   public FixedFormatReaderBuilder manager(FixedFormatManager manager) {
-    if (manager == null) throw new IllegalArgumentException("manager must not be null");
+    Objects.requireNonNull(manager, "manager must not be null");
     this.manager = manager;
     return this;
   }

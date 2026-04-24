@@ -46,15 +46,15 @@ class TestFixedFormatReaderBuilder {
   }
 
   @Test
-  void throwsIllegalArgumentWhenAddMappingClassIsNull() {
-    assertThrows(IllegalArgumentException.class, () ->
+  void throwsNullPointerWhenAddMappingClassIsNull() {
+    assertThrows(NullPointerException.class, () ->
         FixedFormatReader.builder().addMapping(null, anyPattern)
     );
   }
 
   @Test
-  void throwsIllegalArgumentWhenAddMappingPatternIsNull() {
-    assertThrows(IllegalArgumentException.class, () ->
+  void throwsNullPointerWhenAddMappingPatternIsNull() {
+    assertThrows(NullPointerException.class, () ->
         FixedFormatReader.builder().addMapping(SampleRecord.class, null)
     );
   }
@@ -82,8 +82,8 @@ class TestFixedFormatReaderBuilder {
   }
 
   @Test
-  void throwsWhenMultiMatchStrategyIsNull() {
-    assertThrows(IllegalArgumentException.class, () ->
+  void throwsNullPointerWhenMultiMatchStrategyIsNull() {
+    assertThrows(NullPointerException.class, () ->
         FixedFormatReader.builder()
             .addMapping(SampleRecord.class, anyPattern)
             .multiMatchStrategy(null)
@@ -91,8 +91,8 @@ class TestFixedFormatReaderBuilder {
   }
 
   @Test
-  void throwsWhenUnmatchStrategyIsNull() {
-    assertThrows(IllegalArgumentException.class, () ->
+  void throwsNullPointerWhenUnmatchStrategyIsNull() {
+    assertThrows(NullPointerException.class, () ->
         FixedFormatReader.builder()
             .addMapping(SampleRecord.class, anyPattern)
             .unmatchStrategy(null)
@@ -100,8 +100,8 @@ class TestFixedFormatReaderBuilder {
   }
 
   @Test
-  void throwsWhenParseErrorStrategyIsNull() {
-    assertThrows(IllegalArgumentException.class, () ->
+  void throwsNullPointerWhenParseErrorStrategyIsNull() {
+    assertThrows(NullPointerException.class, () ->
         FixedFormatReader.builder()
             .addMapping(SampleRecord.class, anyPattern)
             .parseErrorStrategy(null)
@@ -109,8 +109,8 @@ class TestFixedFormatReaderBuilder {
   }
 
   @Test
-  void throwsWhenManagerIsNull() {
-    assertThrows(IllegalArgumentException.class, () ->
+  void throwsNullPointerWhenManagerIsNull() {
+    assertThrows(NullPointerException.class, () ->
         FixedFormatReader.builder()
             .addMapping(SampleRecord.class, anyPattern)
             .manager(null)
@@ -118,8 +118,8 @@ class TestFixedFormatReaderBuilder {
   }
 
   @Test
-  void throwsWhenIncludeLinesPredicateIsNull() {
-    assertThrows(IllegalArgumentException.class, () ->
+  void throwsNullPointerWhenIncludeLinesPredicateIsNull() {
+    assertThrows(NullPointerException.class, () ->
         FixedFormatReader.builder()
             .addMapping(SampleRecord.class, anyPattern)
             .includeLines(null)

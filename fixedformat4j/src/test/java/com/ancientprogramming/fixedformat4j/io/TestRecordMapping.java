@@ -46,14 +46,14 @@ class TestRecordMapping {
   }
 
   @Test
-  void throwsIllegalArgumentWhenClassIsNull() {
-    assertThrows(IllegalArgumentException.class,
+  void throwsNullPointerWhenClassIsNull() {
+    assertThrows(NullPointerException.class,
         () -> new RecordMapping<>(null, anyPattern));
   }
 
   @Test
-  void throwsIllegalArgumentWhenPatternIsNull() {
-    assertThrows(IllegalArgumentException.class,
+  void throwsNullPointerWhenPatternIsNull() {
+    assertThrows(NullPointerException.class,
         () -> new RecordMapping<>(ValidRecord.class, null));
   }
 
