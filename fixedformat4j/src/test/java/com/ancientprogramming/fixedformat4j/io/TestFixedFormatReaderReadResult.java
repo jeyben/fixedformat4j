@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
 
-class TestFixedFormatReaderTypedResult {
+class TestFixedFormatReaderReadResult {
 
   @TempDir
   Path tempDir;

@@ -112,7 +112,7 @@ class TestFixedFormatReaderInputSources {
   }
 
   @Test
-  void inputStreamIsClosedAfterReadAsTypedResult() {
+  void inputStreamIsClosedAfterReadAsResult() {
     TrackingInputStream is = new TrackingInputStream("hello     \nworld     ".getBytes(StandardCharsets.UTF_8));
     reader().readAsResult(is);
     assertTrue(is.closed, "InputStream should be closed after readAsResult");
