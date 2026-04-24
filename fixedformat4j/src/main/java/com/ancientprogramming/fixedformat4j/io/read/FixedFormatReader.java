@@ -108,7 +108,7 @@ public class FixedFormatReader {
    * {@link FixedFormatReader} instance, provided that all configured strategies and the
    * {@link com.ancientprogramming.fixedformat4j.format.FixedFormatManager} are also thread-safe.
    * The built-in strategies and
-   * {@link com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl} are stateless
+   * {@link com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl} are thread-safe
    * and satisfy this requirement. Each call builds its own independent local state; the shared
    * line processor carries no mutable per-call state.</p>
    *
@@ -257,7 +257,7 @@ public class FixedFormatReader {
    * threads with independent registries, provided that all configured strategies and the
    * {@link com.ancientprogramming.fixedformat4j.format.FixedFormatManager} are also thread-safe.
    * The built-in strategies and
-   * {@link com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl} are stateless
+   * {@link com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl} are thread-safe
    * and satisfy this requirement.</p>
    *
    * <pre>{@code
