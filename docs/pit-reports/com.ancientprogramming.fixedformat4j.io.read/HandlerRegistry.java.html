@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>HandlerRegistry.java</h1>
+
+<table class="src">
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/*</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Copyright 2004 the original author or authors.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * you may not use this file except in compliance with the License.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * You may obtain a copy of the License at</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_8'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     http://www.apache.org/licenses/LICENSE-2.0</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_10'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * Unless required by applicable law or agreed to in writing, software</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_11'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * distributed under the License is distributed on an &#34;AS IS&#34; BASIS,</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_12'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_13'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * See the License for the specific language governing permissions and</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_14'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * limitations under the License.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_15'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_16'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package com.ancientprogramming.fixedformat4j.io.read;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_17'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_18'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.LinkedHashMap;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_19'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Map;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_20'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Objects;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_21'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.function.Consumer;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_22'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_23'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>/**</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_24'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * A per-call registry of typed record handlers for use with</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_25'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * {@link FixedFormatReader#process}.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_26'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_27'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;p&#62;Register one handler per record class via the fluent {@link #on} method, then pass</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_28'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * the registry to {@link FixedFormatReader#process}. Classes not registered are silently</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_29'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * ignored &#8212; they are still parsed, but no handler is invoked.&#60;/p&#62;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_30'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_31'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;pre&#62;{@code</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_32'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * reader.process(Path.of(&#34;data.txt&#34;), new HandlerRegistry()</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_33'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     .on(HeaderRecord.class, this::onHeader)</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_34'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *     .on(DetailRecord.class, this::onDetail));</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_35'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * }&#60;/pre&#62;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_36'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_37'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * &#60;p&#62;Because {@code HandlerRegistry} instances are created at the call site rather than</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_38'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * stored in the reader, the same {@link FixedFormatReader} can safely be used from multiple</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_39'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * threads with independent registries.&#60;/p&#62;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_40'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_41'/>
+41
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_41'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @author Jacob von Eyben - &#60;a href=&#34;https://eybenconsult.com&#34;&#62;https://eybenconsult.com&#60;/a&#62;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_42'/>
+42
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_42'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> * @since 1.8.0</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_43'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''> */</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_44'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>public final class HandlerRegistry {</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_45'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_46'/>
+46
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_46'>2</a>
+<span>
+1. &#60;init&#62; : Removed assignment to member variable handlers &rarr; KILLED<br/>
+2. &#60;init&#62; : removed call to java/util/LinkedHashMap::&#60;init&#62; &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>  private final Map&#60;Class&#60;?&#62;, Consumer&#60;?&#62;&#62; handlers = new LinkedHashMap&#60;&#62;();</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_47'/>
+47
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_47'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_48'/>
+48
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_48'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_49'/>
+49
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_49'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Registers a typed handler for {@code clazz}.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_50'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_51'/>
+51
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_51'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * &#60;p&#62;If a handler has already been registered for {@code clazz}, it is replaced by this</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_52'/>
+52
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_52'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * call. Only the most recently registered handler for a given class is invoked.&#60;/p&#62;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_53'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_54'/>
+54
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_54'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @param &#60;R&#62;     the record type</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_55'/>
+55
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_55'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @param clazz   the record class; must not be {@code null}</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_56'/>
+56
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_56'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @param handler invoked with each parsed record of type {@code R}; must not be {@code null}</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_57'/>
+57
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_57'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * @return this registry (for chaining)</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_58'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_59'/>
+59
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_59'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public &#60;R&#62; HandlerRegistry on(Class&#60;R&#62; clazz, Consumer&#60;R&#62; handler) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_60'/>
+60
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_60'>4</a>
+<span>
+1. on : replaced call to java/util/Objects::requireNonNull with argument &rarr; SURVIVED<br/>
+2. on : replaced call to java/util/Map::put with argument &rarr; KILLED<br/>
+3. on : removed call to java/util/Map::put &rarr; KILLED<br/>
+4. on : removed call to java/util/Objects::requireNonNull &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>    handlers.put(Objects.requireNonNull(clazz, &#34;clazz must not be null&#34;),</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_61'/>
+61
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_61'>2</a>
+<span>
+1. on : replaced call to java/util/Objects::requireNonNull with argument &rarr; SURVIVED<br/>
+2. on : removed call to java/util/Objects::requireNonNull &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>                 Objects.requireNonNull(handler, &#34;handler must not be null&#34;));</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_62'/>
+62
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_62'>1</a>
+<span>
+1. on : replaced return value with null for com/ancientprogramming/fixedformat4j/io/read/HandlerRegistry::on &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return this;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_63'/>
+63
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_63'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_64'/>
+64
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_64'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_65'/>
+65
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_65'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  /**</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_66'/>
+66
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_66'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Dispatches {@code record} to the handler registered for {@code clazz}, if any.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_67'/>
+67
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_67'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * Package-private: only {@link FixedFormatReader} calls this.</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_68'/>
+68
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_68'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   *</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_69'/>
+69
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_69'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * &#60;p&#62;The unchecked cast is safe by construction: {@link #on} always aligns the class key</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_70'/>
+70
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_70'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   * with the consumer&#39;s type parameter.&#60;/p&#62;</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_71'/>
+71
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_71'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>   */</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_72'/>
+72
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_72'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @SuppressWarnings(&#34;unchecked&#34;)</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_73'/>
+73
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_73'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  void dispatch(Class&#60;?&#62; clazz, Object record) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_74'/>
+74
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_74'>2</a>
+<span>
+1. dispatch : replaced call to java/util/Map::get with argument &rarr; KILLED<br/>
+2. dispatch : removed call to java/util/Map::get &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    Consumer&#60;Object&#62; handler = (Consumer&#60;Object&#62;) handlers.get(clazz);</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_75'/>
+75
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_75'>3</a>
+<span>
+1. dispatch : negated conditional &rarr; KILLED<br/>
+2. dispatch : removed conditional - replaced equality check with false &rarr; KILLED<br/>
+3. dispatch : removed conditional - replaced equality check with true &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (handler != null) {</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_76'/>
+76
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_76'>1</a>
+<span>
+1. dispatch : removed call to java/util/function/Consumer::accept &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      handler.accept(record);</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_77'/>
+77
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_77'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_78'/>
+78
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_78'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@150963fe_79'/>
+79
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_79'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@150963fe_46'>46</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_46'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>&#60;init&#62;<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()]</span></span> Removed assignment to member variable handlers &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>&#60;init&#62;<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()]</span></span> removed call to java/util/LinkedHashMap::&#60;init&#62; &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@150963fe_60'>60</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_60'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>on<br/><b>Killed by : </b>none</span></span> replaced call to java/util/Objects::requireNonNull with argument &rarr; SURVIVED</span>
+<a title="Click to view covering tests" class="view-covered-by-tests" onClick="document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.io.read.HandlerRegistry,-method=on,-methodDesc=(Ljava/lang/Class;Ljava/util/function/Consumer;)Lcom/ancientprogramming/fixedformat4j/io/read/HandlerRegistry;],-indexes=[7],-mutator=org.pitest.mutationtest.engine.gregor.mutators.experimental.ArgumentPropagationMutator]').style.display=(document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.io.read.HandlerRegistry,-method=on,-methodDesc=(Ljava/lang/Class;Ljava/util/function/Consumer;)Lcom/ancientprogramming/fixedformat4j/io/read/HandlerRegistry;],-indexes=[7],-mutator=org.pitest.mutationtest.engine.gregor.mutators.experimental.ArgumentPropagationMutator]').style.display == 'block')?'none':'block';">Covering tests</a>
+<div class="covered-tests" id="MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.io.read.HandlerRegistry,-method=on,-methodDesc=(Ljava/lang/Class;Ljava/util/function/Consumer;)Lcom/ancientprogramming/fixedformat4j/io/read/HandlerRegistry;],-indexes=[7],-mutator=org.pitest.mutationtest.engine.gregor.mutators.experimental.ArgumentPropagationMutator]" style="display:none;">Covered by tests:
+<ul>
+<li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:throwsNullPointerWhenCharsetIsNullOnProcess()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:throwsNullPointerWhenReaderIsNullOnProcess()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:throwsNullPointerWhenInputStreamIsNullOnProcess()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processFiresHandlerOnceWhenFirstMatchStrategyIsActive()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStream()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processSilentlyIgnoresClassesNotInRegistry()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processFiresTypedHandlerForEachRecord()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processFiresHandlersInEncounterOrder()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithPath()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderInputSources.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderInputSources]/[method:inputStreamIsClosedAfterProcess()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processAndReadAsResultAreIndependent()]</li> 
+</ul>
+</div></div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>on<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()]</span></span> replaced call to java/util/Map::put with argument &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>on<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()]</span></span> removed call to java/util/Map::put &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>4.<span><b>4</b><br/><b>Location : </b>on<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()]</span></span> removed call to java/util/Objects::requireNonNull &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@150963fe_61'>61</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_61'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>on<br/><b>Killed by : </b>none</span></span> replaced call to java/util/Objects::requireNonNull with argument &rarr; SURVIVED</span>
+<a title="Click to view covering tests" class="view-covered-by-tests" onClick="document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.io.read.HandlerRegistry,-method=on,-methodDesc=(Ljava/lang/Class;Ljava/util/function/Consumer;)Lcom/ancientprogramming/fixedformat4j/io/read/HandlerRegistry;],-indexes=[13],-mutator=org.pitest.mutationtest.engine.gregor.mutators.experimental.ArgumentPropagationMutator]').style.display=(document.getElementById('MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.io.read.HandlerRegistry,-method=on,-methodDesc=(Ljava/lang/Class;Ljava/util/function/Consumer;)Lcom/ancientprogramming/fixedformat4j/io/read/HandlerRegistry;],-indexes=[13],-mutator=org.pitest.mutationtest.engine.gregor.mutators.experimental.ArgumentPropagationMutator]').style.display == 'block')?'none':'block';">Covering tests</a>
+<div class="covered-tests" id="MutationIdentifier-[location=Location-[clazz=com.ancientprogramming.fixedformat4j.io.read.HandlerRegistry,-method=on,-methodDesc=(Ljava/lang/Class;Ljava/util/function/Consumer;)Lcom/ancientprogramming/fixedformat4j/io/read/HandlerRegistry;],-indexes=[13],-mutator=org.pitest.mutationtest.engine.gregor.mutators.experimental.ArgumentPropagationMutator]" style="display:none;">Covered by tests:
+<ul>
+<li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:throwsNullPointerWhenCharsetIsNullOnProcess()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:throwsNullPointerWhenReaderIsNullOnProcess()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:throwsNullPointerWhenInputStreamIsNullOnProcess()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processFiresHandlerOnceWhenFirstMatchStrategyIsActive()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStream()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processSilentlyIgnoresClassesNotInRegistry()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processFiresTypedHandlerForEachRecord()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processFiresHandlersInEncounterOrder()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithPath()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderInputSources.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderInputSources]/[method:inputStreamIsClosedAfterProcess()]</li> <li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processAndReadAsResultAreIndependent()]</li> 
+</ul>
+</div></div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>on<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()]</span></span> removed call to java/util/Objects::requireNonNull &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@150963fe_62'>62</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_62'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>on<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()]</span></span> replaced return value with null for com/ancientprogramming/fixedformat4j/io/read/HandlerRegistry::on &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@150963fe_74'>74</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_74'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>dispatch<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()]</span></span> replaced call to java/util/Map::get with argument &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>dispatch<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()]</span></span> removed call to java/util/Map::get &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@150963fe_75'>75</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_75'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>dispatch<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()]</span></span> negated conditional &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>dispatch<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()]</span></span> removed conditional - replaced equality check with false &rarr; KILLED</span>
+</div> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>dispatch<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processSilentlyIgnoresClassesNotInRegistry()]</span></span> removed conditional - replaced equality check with true &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@150963fe_76'>76</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@150963fe_76'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>dispatch<br/><b>Killed by : </b>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()]</span></span> removed call to java/util/function/Consumer::accept &rarr; KILLED</span>
+</div> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+<li class='mutator'>CONSTRUCTOR_CALLS</li>
+<li class='mutator'>EMPTY_RETURNS</li>
+<li class='mutator'>EXPERIMENTAL_ARGUMENT_PROPAGATION</li>
+<li class='mutator'>EXPERIMENTAL_BIG_DECIMAL</li>
+<li class='mutator'>EXPERIMENTAL_BIG_INTEGER</li>
+<li class='mutator'>EXPERIMENTAL_MEMBER_VARIABLE</li>
+<li class='mutator'>EXPERIMENTAL_NAKED_RECEIVER</li>
+<li class='mutator'>EXPERIMENTAL_REMOVE_SWITCH_MUTATOR_[0-99]</li>
+<li class='mutator'>EXPERIMENTAL_SWITCH</li>
+<li class='mutator'>FALSE_RETURNS</li>
+<li class='mutator'>INCREMENTS</li>
+<li class='mutator'>INLINE_CONSTS</li>
+<li class='mutator'>INVERT_NEGS</li>
+<li class='mutator'>MATH</li>
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+<li class='mutator'>NON_VOID_METHOD_CALLS</li>
+<li class='mutator'>NULL_RETURNS</li>
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+<li class='mutator'>REMOVE_CONDITIONALS_EQUAL_ELSE</li>
+<li class='mutator'>REMOVE_CONDITIONALS_EQUAL_IF</li>
+<li class='mutator'>REMOVE_CONDITIONALS_ORDER_ELSE</li>
+<li class='mutator'>REMOVE_CONDITIONALS_ORDER_IF</li>
+<li class='mutator'>REMOVE_INCREMENTS</li>
+<li class='mutator'>TRUE_RETURNS</li>
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:throwsNullPointerWhenCharsetIsNullOnProcess()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:throwsNullPointerWhenReaderIsNullOnProcess()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:throwsNullPointerWhenInputStreamIsNullOnProcess()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStreamAndCharset()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processFiresHandlerOnceWhenFirstMatchStrategyIsActive()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithInputStream()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processSilentlyIgnoresClassesNotInRegistry()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processFiresTypedHandlerForEachRecord()] (0 ms)</li><li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processFiresHandlersInEncounterOrder()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processWorksWithPath()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderInputSources.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderInputSources]/[method:inputStreamIsClosedAfterProcess()] (1 ms)</li><li>com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess.[engine:junit-jupiter]/[class:com.ancientprogramming.fixedformat4j.io.TestFixedFormatReaderProcess]/[method:processAndReadAsResultAreIndependent()] (0 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.23.1 <a href='https://github.com/sponsors/hcoles'>support</a>
+
+</body>
+</html>
