@@ -20,6 +20,8 @@ import com.ancientprogramming.fixedformat4j.annotation.Record;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import static java.lang.String.format;
+
 /**
  * Immutable pair of a {@link Predicate} and the
  * {@link com.ancientprogramming.fixedformat4j.annotation.Record}-annotated class to
@@ -50,7 +52,7 @@ public class RecordMapping<T> {
     Objects.requireNonNull(pattern, "pattern must not be null");
     if (recordClass.getAnnotation(Record.class) == null) {
       throw new IllegalArgumentException(
-          recordClass.getSimpleName() + " is not annotated with @Record");
+          format("%s is not annotated with @Record", recordClass.getSimpleName()));
     }
     this.recordClass = recordClass;
     this.pattern = pattern;

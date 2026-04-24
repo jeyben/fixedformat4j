@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
+import static java.lang.String.format;
+
 /**
  * Reads a fixed-format file or stream line by line, routes each line to one or more
  * {@link com.ancientprogramming.fixedformat4j.annotation.Record}-annotated classes via
@@ -188,9 +190,9 @@ public class FixedFormatReader {
     try (InputStreamReader r = new InputStreamReader(new FileInputStream(file), charset)) {
       return readAsResult(r);
     } catch (FileNotFoundException e) {
-      throw new FixedFormatIOException("File not found: " + file, e);
+      throw new FixedFormatIOException(format("File not found: %s", file), e);
     } catch (IOException e) {
-      throw new FixedFormatIOException("IO error reading file: " + file, e);
+      throw new FixedFormatIOException(format("IO error reading file: %s", file), e);
     }
   }
 
@@ -221,7 +223,7 @@ public class FixedFormatReader {
     try (InputStreamReader r = new InputStreamReader(Files.newInputStream(path), charset)) {
       return readAsResult(r);
     } catch (IOException e) {
-      throw new FixedFormatIOException("Cannot open path: " + path, e);
+      throw new FixedFormatIOException(format("Cannot open path: %s", path), e);
     }
   }
 
@@ -235,7 +237,7 @@ public class FixedFormatReader {
         processor.processLine(line, ++lineCounter[0], callback);
       }
     } catch (IOException e) {
-      throw new FixedFormatIOException("IO error reading line " + (lineCounter[0] + 1), e);
+      throw new FixedFormatIOException(format("IO error reading line %d", lineCounter[0] + 1), e);
     }
   }
 
@@ -325,9 +327,9 @@ public class FixedFormatReader {
     try (InputStreamReader r = new InputStreamReader(new FileInputStream(file), charset)) {
       process(r, registry);
     } catch (FileNotFoundException e) {
-      throw new FixedFormatIOException("File not found: " + file, e);
+      throw new FixedFormatIOException(format("File not found: %s", file), e);
     } catch (IOException e) {
-      throw new FixedFormatIOException("IO error reading file: " + file, e);
+      throw new FixedFormatIOException(format("IO error reading file: %s", file), e);
     }
   }
 
@@ -358,7 +360,7 @@ public class FixedFormatReader {
     try (InputStreamReader r = new InputStreamReader(Files.newInputStream(path), charset)) {
       process(r, registry);
     } catch (IOException e) {
-      throw new FixedFormatIOException("Cannot open path: " + path, e);
+      throw new FixedFormatIOException(format("Cannot open path: %s", path), e);
     }
   }
 

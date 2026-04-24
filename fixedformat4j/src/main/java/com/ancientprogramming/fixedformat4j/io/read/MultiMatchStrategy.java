@@ -20,6 +20,8 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+
 /**
  * Strategy that decides which mappings to use when more than one
  * {@link RecordMapping} matches the same line.
@@ -69,7 +71,7 @@ public interface MultiMatchStrategy {
             .map(m -> m.getRecordClass().getSimpleName())
             .collect(Collectors.joining(", "));
         throw new FixedFormatException(
-            "Line " + lineNumber + " matched multiple patterns: " + classes);
+            format("Line %d matched multiple patterns: %s", lineNumber, classes));
       }
       return matched;
     };

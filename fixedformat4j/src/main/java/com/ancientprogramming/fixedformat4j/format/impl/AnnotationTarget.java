@@ -5,6 +5,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
+import static java.lang.String.format;
+
 /**
  * Pairs a getter {@link Method} (used for invocation and type resolution) with an
  * {@link AnnotatedElement} (used for supplementary annotation lookup). When the
@@ -26,7 +28,7 @@ class AnnotationTarget {
     try {
       this.getterHandle = MethodHandles.lookup().unreflect(getter);
     } catch (IllegalAccessException e) {
-      throw new RuntimeException("Cannot create MethodHandle for " + getter, e);
+      throw new RuntimeException(format("Cannot create MethodHandle for %s", getter), e);
     }
   }
 

@@ -18,6 +18,8 @@ package com.ancientprogramming.fixedformat4j.io.read;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 
+import static java.lang.String.format;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -81,7 +83,7 @@ class FixedFormatLineProcessor {
       return manager.load(mapping.getRecordClass(), line);
     } catch (FixedFormatException e) {
       FixedFormatException wrapped = new FixedFormatException(
-          "Parse error on line " + lineNumber + ": " + e.getMessage(), e);
+          format("Parse error on line %d: %s", lineNumber, e.getMessage()), e);
       parseErrorStrategy.handle(wrapped, line, lineNumber);
       return null;
     }

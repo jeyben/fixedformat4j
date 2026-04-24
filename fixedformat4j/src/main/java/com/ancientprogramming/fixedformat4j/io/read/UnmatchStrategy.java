@@ -19,6 +19,8 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.lang.String.format;
+
 /**
  * Strategy invoked when no pattern matches a line.
  *
@@ -74,7 +76,7 @@ public interface UnmatchStrategy {
    */
   static UnmatchStrategy throwException() {
     return (lineNumber, line) -> {
-      throw new FixedFormatException("No pattern matched line " + lineNumber + ": " + line);
+      throw new FixedFormatException(format("No pattern matched line %d: %s", lineNumber, line));
     };
   }
 }

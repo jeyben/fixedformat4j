@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
+import static java.lang.String.format;
 
 /**
  * JVM-level cache of per-class field metadata ({@link FieldDescriptor} lists).
@@ -113,7 +114,7 @@ class ClassMetadataCache {
     try {
       return MethodHandles.lookup().unreflect(method);
     } catch (IllegalAccessException e) {
-      throw new RuntimeException("Cannot create MethodHandle for " + method, e);
+      throw new RuntimeException(format("Cannot create MethodHandle for %s", method), e);
     }
   }
 }
