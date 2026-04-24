@@ -44,8 +44,10 @@ import java.util.function.BiConsumer;
  *
  * <p>Quick start — single record type:</p>
  * <pre>{@code
+ * import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
+ *
  * FixedFormatReader reader = FixedFormatReader.builder()
- *     .addMapping(MyRecord.class, Pattern.compile(".*").asPredicate())
+ *     .addMapping(MyRecord.class, regex(".*"))
  *     .build();
  *
  * List<MyRecord> records = reader.readAsResult(new File("data.txt")).get(MyRecord.class);
@@ -54,8 +56,8 @@ import java.util.function.BiConsumer;
  * <p>Quick start — heterogeneous file:</p>
  * <pre>{@code
  * FixedFormatReader reader = FixedFormatReader.builder()
- *     .addMapping(HeaderRecord.class, Pattern.compile("^HDR").asPredicate())
- *     .addMapping(DetailRecord.class, Pattern.compile("^DTL").asPredicate())
+ *     .addMapping(HeaderRecord.class, regex("^HDR"))
+ *     .addMapping(DetailRecord.class, regex("^DTL"))
  *     .unmatchStrategy(UnmatchStrategy.skip())
  *     .build();
  *
@@ -67,8 +69,8 @@ import java.util.function.BiConsumer;
  * <p>Quick start — typed handlers (no casts anywhere):</p>
  * <pre>{@code
  * FixedFormatReader reader = FixedFormatReader.builder()
- *     .addMapping(HeaderRecord.class, Pattern.compile("^HDR").asPredicate())
- *     .addMapping(DetailRecord.class, Pattern.compile("^DTL").asPredicate())
+ *     .addMapping(HeaderRecord.class, regex("^HDR"))
+ *     .addMapping(DetailRecord.class, regex("^DTL"))
  *     .build();
  *
  * reader.process(Path.of("data.txt"), new HandlerRegistry()
