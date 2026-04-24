@@ -159,7 +159,10 @@ public class FixedFormatReader {
   /**
    * Returns a lazy stream of records read from {@code inputStream} using UTF-8 encoding.
    *
-   * @param inputStream the source stream
+   * <p>The underlying stream is closed automatically when the returned stream is closed; use
+   * try-with-resources to ensure the stream is released.</p>
+   *
+   * @param inputStream the source stream; closed when the returned stream is closed
    * @return a lazily-evaluated, ordered, sequential stream of parsed records
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
@@ -170,7 +173,10 @@ public class FixedFormatReader {
   /**
    * Returns a lazy stream of records read from {@code inputStream} using the given charset.
    *
-   * @param inputStream the source stream
+   * <p>The underlying stream is closed automatically when the returned stream is closed; use
+   * try-with-resources to ensure the stream is released.</p>
+   *
+   * @param inputStream the source stream; closed when the returned stream is closed
    * @param charset     the character encoding to apply
    * @return a lazily-evaluated, ordered, sequential stream of parsed records
    * @throws FixedFormatIOException if an IO error occurs while reading
@@ -182,6 +188,9 @@ public class FixedFormatReader {
   /**
    * Returns a lazy stream of records read from {@code file} using UTF-8 encoding.
    *
+   * <p>The underlying file is closed automatically when the stream is closed; use
+   * try-with-resources to ensure the file handle is released.</p>
+   *
    * @param file the file to read
    * @return a lazily-evaluated, ordered, sequential stream of parsed records
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
@@ -192,6 +201,9 @@ public class FixedFormatReader {
 
   /**
    * Returns a lazy stream of records read from {@code file} using the given charset.
+   *
+   * <p>The underlying file is closed automatically when the stream is closed; use
+   * try-with-resources to ensure the file handle is released.</p>
    *
    * @param file    the file to read
    * @param charset the character encoding to apply
@@ -209,6 +221,9 @@ public class FixedFormatReader {
   /**
    * Returns a lazy stream of records read from {@code path} using UTF-8 encoding.
    *
+   * <p>The underlying file is closed automatically when the stream is closed; use
+   * try-with-resources to ensure the file handle is released.</p>
+   *
    * @param path the path to read
    * @return a lazily-evaluated, ordered, sequential stream of parsed records
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
@@ -219,6 +234,9 @@ public class FixedFormatReader {
 
   /**
    * Returns a lazy stream of records read from {@code path} using the given charset.
+   *
+   * <p>The underlying file is closed automatically when the stream is closed; use
+   * try-with-resources to ensure the file handle is released.</p>
    *
    * @param path    the path to read
    * @param charset the character encoding to apply
@@ -253,7 +271,7 @@ public class FixedFormatReader {
   /**
    * Eagerly reads all records from {@code inputStream} using UTF-8 encoding.
    *
-   * @param inputStream the source stream
+   * @param inputStream the source stream; closed when this method returns
    * @return an ordered list of all parsed records; never {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
@@ -264,7 +282,7 @@ public class FixedFormatReader {
   /**
    * Eagerly reads all records from {@code inputStream} using the given charset.
    *
-   * @param inputStream the source stream
+   * @param inputStream the source stream; closed when this method returns
    * @param charset     the character encoding to apply
    * @return an ordered list of all parsed records; never {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
@@ -358,7 +376,7 @@ public class FixedFormatReader {
    * Eagerly reads all records from {@code inputStream} using UTF-8 encoding and returns
    * a {@link TypedReadResult}.
    *
-   * @param inputStream the source stream
+   * @param inputStream the source stream; closed when this method returns
    * @return a {@link TypedReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
@@ -370,7 +388,7 @@ public class FixedFormatReader {
    * Eagerly reads all records from {@code inputStream} using the given charset and returns
    * a {@link TypedReadResult}.
    *
-   * @param inputStream the source stream
+   * @param inputStream the source stream; closed when this method returns
    * @param charset     the character encoding to apply
    * @return a {@link TypedReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
@@ -495,8 +513,8 @@ public class FixedFormatReader {
    * Reads all records from {@code inputStream} using UTF-8 encoding and invokes
    * {@code callback} once per record.
    *
-   * @param inputStream the source stream
-   * @param callback    invoked with each parsed record
+   * @param inputStream the source stream; closed when this method returns
+   * @param callback    invoked with each parsed record; must not be {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void readWithCallback(InputStream inputStream, Consumer<Object> callback) {
@@ -507,9 +525,9 @@ public class FixedFormatReader {
    * Reads all records from {@code inputStream} using the given charset and invokes
    * {@code callback} once per record.
    *
-   * @param inputStream the source stream
+   * @param inputStream the source stream; closed when this method returns
    * @param charset     the character encoding to apply
-   * @param callback    invoked with each parsed record
+   * @param callback    invoked with each parsed record; must not be {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void readWithCallback(InputStream inputStream, Charset charset, Consumer<Object> callback) {
@@ -521,7 +539,7 @@ public class FixedFormatReader {
    * {@code callback} once per record.
    *
    * @param file     the file to read
-   * @param callback invoked with each parsed record
+   * @param callback invoked with each parsed record; must not be {@code null}
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
   public void readWithCallback(File file, Consumer<Object> callback) {
@@ -534,13 +552,11 @@ public class FixedFormatReader {
    *
    * @param file     the file to read
    * @param charset  the character encoding to apply
-   * @param callback invoked with each parsed record
+   * @param callback invoked with each parsed record; must not be {@code null}
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
   public void readWithCallback(File file, Charset charset, Consumer<Object> callback) {
-    try (Stream<Object> stream = readAsStream(file, charset)) {
-      stream.forEach(callback);
-    }
+    readWithCallback(file, charset, (clazz, record) -> callback.accept(record));
   }
 
   /**
@@ -548,7 +564,7 @@ public class FixedFormatReader {
    * {@code callback} once per record.
    *
    * @param path     the path to read
-   * @param callback invoked with each parsed record
+   * @param callback invoked with each parsed record; must not be {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
   public void readWithCallback(Path path, Consumer<Object> callback) {
@@ -561,21 +577,20 @@ public class FixedFormatReader {
    *
    * @param path     the path to read
    * @param charset  the character encoding to apply
-   * @param callback invoked with each parsed record
+   * @param callback invoked with each parsed record; must not be {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
   public void readWithCallback(Path path, Charset charset, Consumer<Object> callback) {
-    try (Stream<Object> stream = readAsStream(path, charset)) {
-      stream.forEach(callback);
-    }
+    readWithCallback(path, charset, (clazz, record) -> callback.accept(record));
   }
 
   /**
    * Reads all records from {@code inputStream} using UTF-8 encoding and invokes
    * {@code callback} once per record, passing both the matched class and the record instance.
    *
-   * @param inputStream the source stream
-   * @param callback    invoked with the matched {@link Class} and the parsed record instance
+   * @param inputStream the source stream; closed when this method returns
+   * @param callback    invoked with the matched {@link Class} and the parsed record instance;
+   *                    must not be {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void readWithCallback(InputStream inputStream, BiConsumer<Class<?>, Object> callback) {
@@ -586,9 +601,10 @@ public class FixedFormatReader {
    * Reads all records from {@code inputStream} using the given charset and invokes
    * {@code callback} once per record, passing both the matched class and the record instance.
    *
-   * @param inputStream the source stream
+   * @param inputStream the source stream; closed when this method returns
    * @param charset     the character encoding to apply
-   * @param callback    invoked with the matched {@link Class} and the parsed record instance
+   * @param callback    invoked with the matched {@link Class} and the parsed record instance;
+   *                    must not be {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void readWithCallback(InputStream inputStream, Charset charset,
@@ -601,7 +617,8 @@ public class FixedFormatReader {
    * once per record, passing both the matched class and the record instance.
    *
    * @param file     the file to read
-   * @param callback invoked with the matched {@link Class} and the parsed record instance
+   * @param callback invoked with the matched {@link Class} and the parsed record instance;
+   *                 must not be {@code null}
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
   public void readWithCallback(File file, BiConsumer<Class<?>, Object> callback) {
@@ -614,7 +631,8 @@ public class FixedFormatReader {
    *
    * @param file     the file to read
    * @param charset  the character encoding to apply
-   * @param callback invoked with the matched {@link Class} and the parsed record instance
+   * @param callback invoked with the matched {@link Class} and the parsed record instance;
+   *                 must not be {@code null}
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
   public void readWithCallback(File file, Charset charset,
@@ -633,7 +651,8 @@ public class FixedFormatReader {
    * once per record, passing both the matched class and the record instance.
    *
    * @param path     the path to read
-   * @param callback invoked with the matched {@link Class} and the parsed record instance
+   * @param callback invoked with the matched {@link Class} and the parsed record instance;
+   *                 must not be {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
   public void readWithCallback(Path path, BiConsumer<Class<?>, Object> callback) {
@@ -646,7 +665,8 @@ public class FixedFormatReader {
    *
    * @param path     the path to read
    * @param charset  the character encoding to apply
-   * @param callback invoked with the matched {@link Class} and the parsed record instance
+   * @param callback invoked with the matched {@link Class} and the parsed record instance;
+   *                 must not be {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
   public void readWithCallback(Path path, Charset charset,
@@ -687,7 +707,7 @@ public class FixedFormatReader {
    * Reads all records from {@code inputStream} using UTF-8 encoding and dispatches each to
    * its registered typed handler.
    *
-   * @param inputStream the source stream
+   * @param inputStream the source stream; closed when this method returns
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void processAll(InputStream inputStream) {
@@ -698,7 +718,7 @@ public class FixedFormatReader {
    * Reads all records from {@code inputStream} using the given charset and dispatches each to
    * its registered typed handler.
    *
-   * @param inputStream the source stream
+   * @param inputStream the source stream; closed when this method returns
    * @param charset     the character encoding to apply
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
@@ -726,10 +746,12 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
   public void processAll(File file, Charset charset) {
-    try {
-      processAll(new InputStreamReader(new FileInputStream(file), charset));
+    try (InputStreamReader r = new InputStreamReader(new FileInputStream(file), charset)) {
+      processAll(r);
     } catch (FileNotFoundException e) {
       throw new FixedFormatIOException("File not found: " + file, e);
+    } catch (IOException e) {
+      throw new FixedFormatIOException("IO error reading file: " + file, e);
     }
   }
 
@@ -753,8 +775,8 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
   public void processAll(Path path, Charset charset) {
-    try {
-      processAll(new InputStreamReader(Files.newInputStream(path), charset));
+    try (InputStreamReader r = new InputStreamReader(Files.newInputStream(path), charset)) {
+      processAll(r);
     } catch (IOException e) {
       throw new FixedFormatIOException("Cannot open path: " + path, e);
     }
