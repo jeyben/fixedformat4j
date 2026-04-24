@@ -2,6 +2,7 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -68,6 +69,18 @@ class TestTypedReadResult {
 
     assertTrue(result.contains(TenCharRecord.class));
     assertFalse(result.contains(FiveCharRecord.class));
+  }
+
+  @Test
+  void getReturnedListIsUnmodifiable() {
+    TenCharRecord record = tenChar("hello     ");
+    Map<Class<?>, List<Object>> data = new LinkedHashMap<>();
+    data.put(TenCharRecord.class, new ArrayList<>(List.of(record)));
+    TypedReadResult result = new TypedReadResult(data, List.of(record));
+
+    List<TenCharRecord> records = result.get(TenCharRecord.class);
+
+    assertThrows(UnsupportedOperationException.class, () -> records.clear());
   }
 
   @Test

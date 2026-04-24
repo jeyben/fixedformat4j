@@ -64,7 +64,7 @@ public final class TypedReadResult {
     if (records == null) {
       return Collections.emptyList();
     }
-    return (List<R>) records;
+    return Collections.unmodifiableList((List<R>) records);
   }
 
   /**

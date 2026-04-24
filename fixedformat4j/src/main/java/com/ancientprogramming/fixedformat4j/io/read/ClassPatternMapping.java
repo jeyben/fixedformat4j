@@ -58,10 +58,8 @@ public class ClassPatternMapping<T> {
    *                    annotated with {@link com.ancientprogramming.fixedformat4j.annotation.Record}
    * @param pattern     the pattern that decides which lines are parsed as {@code recordClass}
    * @param handler     invoked with each correctly-typed record during
-   *                    {@link FixedFormatReader#processAll}; must not be {@code null}
-   *                    (use the two-argument constructor for handler-less mappings)
-   * @throws IllegalArgumentException if {@code recordClass} is not annotated with {@code @Record},
-   *                                  or if {@code handler} is {@code null}
+   *                    {@link FixedFormatReader#processAll}; {@code null} for handler-less mappings
+   * @throws IllegalArgumentException if {@code recordClass} is not annotated with {@code @Record}
    */
   public ClassPatternMapping(Class<T> recordClass, FixedFormatMatchPattern pattern,
                               Consumer<T> handler) {

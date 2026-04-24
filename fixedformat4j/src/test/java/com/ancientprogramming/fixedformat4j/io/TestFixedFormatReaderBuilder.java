@@ -88,6 +88,13 @@ class TestFixedFormatReaderBuilder {
   }
 
   @Test
+  void throwsIllegalArgumentWhenHandlerIsNull() {
+    assertThrows(IllegalArgumentException.class, () ->
+        FixedFormatReader.builder().addMapping(SampleRecord.class, anyPattern, null)
+    );
+  }
+
+  @Test
   void builderAcceptsTypedHandlerWithoutThrowingOnBuild() {
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(SampleRecord.class, anyPattern, r -> {})

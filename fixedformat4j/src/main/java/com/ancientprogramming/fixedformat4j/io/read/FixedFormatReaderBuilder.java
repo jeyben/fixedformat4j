@@ -64,10 +64,14 @@ public class FixedFormatReaderBuilder {
    * @param pattern the pattern that decides which lines are parsed as {@code clazz}
    * @param handler invoked with each record parsed from a matching line; must not be {@code null}
    * @return this builder
-   * @throws IllegalArgumentException if {@code clazz} is not annotated with {@code @Record}
+   * @throws IllegalArgumentException if {@code clazz} is not annotated with {@code @Record},
+   *                                  or if {@code handler} is {@code null}
    */
   public <R> FixedFormatReaderBuilder addMapping(Class<R> clazz, FixedFormatMatchPattern pattern,
                                                   Consumer<R> handler) {
+    if (handler == null) {
+      throw new IllegalArgumentException("handler must not be null");
+    }
     mappings.add(new ClassPatternMapping<>(clazz, pattern, handler));
     return this;
   }
