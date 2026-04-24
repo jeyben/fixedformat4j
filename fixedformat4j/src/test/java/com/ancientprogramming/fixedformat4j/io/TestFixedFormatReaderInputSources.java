@@ -119,6 +119,50 @@ class TestFixedFormatReaderInputSources {
   }
 
   @Test
+  void throwsNullPointerWhenReaderIsNull() {
+    assertThrows(NullPointerException.class, () ->
+        reader().readAsResult((java.io.Reader) null));
+  }
+
+  @Test
+  void throwsNullPointerWhenInputStreamIsNull() {
+    assertThrows(NullPointerException.class, () ->
+        reader().readAsResult((java.io.InputStream) null));
+  }
+
+  @Test
+  void throwsNullPointerWhenInputStreamCharsetIsNull() {
+    assertThrows(NullPointerException.class, () ->
+        reader().readAsResult(new ByteArrayInputStream("data".getBytes()), null));
+  }
+
+  @Test
+  void throwsNullPointerWhenFileIsNull() {
+    assertThrows(NullPointerException.class, () ->
+        reader().readAsResult((java.io.File) null));
+  }
+
+  @Test
+  void throwsNullPointerWhenFileCharsetIsNull() throws IOException {
+    Path path = writeTemp("hello     ");
+    assertThrows(NullPointerException.class, () ->
+        reader().readAsResult(path.toFile(), null));
+  }
+
+  @Test
+  void throwsNullPointerWhenPathIsNull() {
+    assertThrows(NullPointerException.class, () ->
+        reader().readAsResult((java.nio.file.Path) null));
+  }
+
+  @Test
+  void throwsNullPointerWhenPathCharsetIsNull() throws IOException {
+    Path path = writeTemp("hello     ");
+    assertThrows(NullPointerException.class, () ->
+        reader().readAsResult(path, null));
+  }
+
+  @Test
   void inputStreamIsClosedAfterProcess() {
     TrackingInputStream is = new TrackingInputStream("hello     \nworld     ".getBytes(StandardCharsets.UTF_8));
     List<String> values = new ArrayList<>();

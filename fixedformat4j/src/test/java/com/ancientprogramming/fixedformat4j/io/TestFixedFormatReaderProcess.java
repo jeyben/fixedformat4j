@@ -158,13 +158,44 @@ class TestFixedFormatReaderProcess {
   }
 
   @Test
-  void throwsIllegalArgumentWhenRegistryIsNull() {
+  void throwsNullPointerWhenRegistryIsNull() {
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, A_PATTERN)
         .build();
 
-    assertThrows(IllegalArgumentException.class, () ->
+    assertThrows(NullPointerException.class, () ->
         reader.process(new StringReader("AAAAAAAAAA"), null));
+  }
+
+  @Test
+  void throwsNullPointerWhenReaderIsNullOnProcess() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .build();
+
+    assertThrows(NullPointerException.class, () ->
+        reader.process((java.io.Reader) null, new HandlerRegistry().on(TenCharRecord.class, r -> {})));
+  }
+
+  @Test
+  void throwsNullPointerWhenInputStreamIsNullOnProcess() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .build();
+
+    assertThrows(NullPointerException.class, () ->
+        reader.process((java.io.InputStream) null, new HandlerRegistry().on(TenCharRecord.class, r -> {})));
+  }
+
+  @Test
+  void throwsNullPointerWhenCharsetIsNullOnProcess() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .build();
+
+    assertThrows(NullPointerException.class, () ->
+        reader.process(new ByteArrayInputStream("AAAAAAAAAA".getBytes()), null,
+            new HandlerRegistry().on(TenCharRecord.class, r -> {})));
   }
 
   @Test

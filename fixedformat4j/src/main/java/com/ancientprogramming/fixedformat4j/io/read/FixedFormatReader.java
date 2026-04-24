@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 /**
@@ -110,6 +111,7 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public ReadResult readAsResult(Reader reader) {
+    Objects.requireNonNull(reader, "reader must not be null");
     Map<Class<?>, List<Object>> data = new LinkedHashMap<>();
     for (RecordMapping<?> mapping : mappings) {
       data.put(mapping.getRecordClass(), new ArrayList<>());
@@ -145,6 +147,8 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public ReadResult readAsResult(InputStream inputStream, Charset charset) {
+    Objects.requireNonNull(inputStream, "inputStream must not be null");
+    Objects.requireNonNull(charset, "charset must not be null");
     try (InputStreamReader r = new InputStreamReader(inputStream, charset)) {
       return readAsResult(r);
     } catch (IOException e) {
@@ -174,6 +178,8 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
   public ReadResult readAsResult(File file, Charset charset) {
+    Objects.requireNonNull(file, "file must not be null");
+    Objects.requireNonNull(charset, "charset must not be null");
     try (InputStreamReader r = new InputStreamReader(new FileInputStream(file), charset)) {
       return readAsResult(r);
     } catch (FileNotFoundException e) {
@@ -205,6 +211,8 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
   public ReadResult readAsResult(Path path, Charset charset) {
+    Objects.requireNonNull(path, "path must not be null");
+    Objects.requireNonNull(charset, "charset must not be null");
     try (InputStreamReader r = new InputStreamReader(Files.newInputStream(path), charset)) {
       return readAsResult(r);
     } catch (IOException e) {
@@ -248,7 +256,8 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void process(Reader reader, HandlerRegistry registry) {
-    if (registry == null) throw new IllegalArgumentException("registry must not be null");
+    Objects.requireNonNull(reader, "reader must not be null");
+    Objects.requireNonNull(registry, "registry must not be null");
     readWithMappingCallback(reader,
         (mapping, record) -> registry.dispatch(mapping.getRecordClass(), record));
   }
@@ -275,6 +284,8 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void process(InputStream inputStream, Charset charset, HandlerRegistry registry) {
+    Objects.requireNonNull(inputStream, "inputStream must not be null");
+    Objects.requireNonNull(charset, "charset must not be null");
     try (InputStreamReader r = new InputStreamReader(inputStream, charset)) {
       process(r, registry);
     } catch (IOException e) {
@@ -304,6 +315,8 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
   public void process(File file, Charset charset, HandlerRegistry registry) {
+    Objects.requireNonNull(file, "file must not be null");
+    Objects.requireNonNull(charset, "charset must not be null");
     try (InputStreamReader r = new InputStreamReader(new FileInputStream(file), charset)) {
       process(r, registry);
     } catch (FileNotFoundException e) {
@@ -335,6 +348,8 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
   public void process(Path path, Charset charset, HandlerRegistry registry) {
+    Objects.requireNonNull(path, "path must not be null");
+    Objects.requireNonNull(charset, "charset must not be null");
     try (InputStreamReader r = new InputStreamReader(Files.newInputStream(path), charset)) {
       process(r, registry);
     } catch (IOException e) {
