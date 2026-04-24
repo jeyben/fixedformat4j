@@ -57,16 +57,4 @@ class TestRecordMapping {
         () -> new RecordMapping<>(ValidRecord.class, null));
   }
 
-  @Test
-  void getHandlerReturnsNullWhenConstructedWithTwoArgs() {
-    RecordMapping<ValidRecord> mapping = new RecordMapping<>(ValidRecord.class, anyPattern);
-    assertNull(mapping.getHandler());
-  }
-
-  @Test
-  void getHandlerReturnsProvidedConsumerWhenConstructedWithThreeArgs() {
-    java.util.function.Consumer<ValidRecord> handler = r -> {};
-    RecordMapping<ValidRecord> mapping = new RecordMapping<>(ValidRecord.class, anyPattern, handler);
-    assertSame(handler, mapping.getHandler());
-  }
 }

@@ -20,7 +20,6 @@ import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -29,7 +28,7 @@ import java.util.stream.Collectors;
  *
  * <p>Matches each line against registered {@link RecordMapping}s, applies multi-match
  * and unmatched-line strategies, parses the line into a record, and emits the result via a
- * callback. Also handles typed handler dispatch for {@link FixedFormatReader#processAll}.</p>
+ * callback.</p>
  */
 class FixedFormatLineProcessor {
 
@@ -93,17 +92,4 @@ class FixedFormatLineProcessor {
         .collect(Collectors.toList());
   }
 
-  // Called from FixedFormatReader.processAll via method reference (processor::fireHandler).
-  // Safe: records dispatched under key K were loaded via manager.load(K, line), i.e. are K instances.
-  void fireHandler(RecordMapping<?> mapping, Object record) {
-    doFireHandler(mapping, record);
-  }
-
-  // Wildcard capture allows the typed Consumer<R> cast to be verified by the compiler.
-  @SuppressWarnings("unchecked")
-  private <R> void doFireHandler(RecordMapping<R> mapping, Object record) {
-    if (mapping.getHandler() != null) {
-      mapping.getHandler().accept((R) record);
-    }
-  }
 }

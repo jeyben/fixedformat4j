@@ -20,7 +20,6 @@ import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -51,28 +50,6 @@ public class FixedFormatReaderBuilder {
    */
   public <R> FixedFormatReaderBuilder addMapping(Class<R> clazz, LinePattern pattern) {
     mappings.add(new RecordMapping<>(clazz, pattern));
-    return this;
-  }
-
-  /**
-   * Registers a mapping with a per-record typed handler. When {@link FixedFormatReader#processAll}
-   * is called, {@code handler} is invoked with each correctly-typed record — no cast needed at the
-   * call site.
-   *
-   * @param <R>     the concrete record type for this mapping
-   * @param clazz   the {@code @Record}-annotated class to instantiate when {@code pattern} matches
-   * @param pattern the pattern that decides which lines are parsed as {@code clazz}
-   * @param handler invoked with each record parsed from a matching line; must not be {@code null}
-   * @return this builder
-   * @throws IllegalArgumentException if {@code clazz} is not annotated with {@code @Record},
-   *                                  or if {@code handler} is {@code null}
-   */
-  public <R> FixedFormatReaderBuilder addMapping(Class<R> clazz, LinePattern pattern,
-                                                  Consumer<R> handler) {
-    if (handler == null) {
-      throw new IllegalArgumentException("handler must not be null");
-    }
-    mappings.add(new RecordMapping<>(clazz, pattern, handler));
     return this;
   }
 

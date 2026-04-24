@@ -82,27 +82,6 @@ class TestFixedFormatReaderBuilder {
   }
 
   @Test
-  void typedHandlerAddMappingIsFluent() {
-    FixedFormatReaderBuilder builder = FixedFormatReader.builder();
-    assertSame(builder, builder.addMapping(SampleRecord.class, anyPattern, r -> {}));
-  }
-
-  @Test
-  void throwsIllegalArgumentWhenHandlerIsNull() {
-    assertThrows(IllegalArgumentException.class, () ->
-        FixedFormatReader.builder().addMapping(SampleRecord.class, anyPattern, null)
-    );
-  }
-
-  @Test
-  void builderAcceptsTypedHandlerWithoutThrowingOnBuild() {
-    FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(SampleRecord.class, anyPattern, r -> {})
-        .build();
-    assertNotNull(reader);
-  }
-
-  @Test
   void throwsWhenMultiMatchStrategyIsNull() {
     assertThrows(IllegalArgumentException.class, () ->
         FixedFormatReader.builder()

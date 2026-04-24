@@ -126,17 +126,17 @@ Register handlers at build time using the three-argument `addMapping` overload:
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"),
-        header -> System.out.println("Header: " + header.getDate()))
-    .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"),
-        detail -> System.out.println("Detail: " + detail.getOrderId()))
+    .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"))
+    .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"))
     .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 
-reader.processAll(Path.of("data.txt"));
+reader.process(Path.of("data.txt"), new HandlerRegistry()
+    .on(HeaderRecord.class, header -> System.out.println("Header: " + header.getDate()))
+    .on(DetailRecord.class, detail -> System.out.println("Detail: " + detail.getOrderId())));
 ```
 
-Mappings registered without a handler (the two-argument `addMapping` overload) are silently skipped during `processAll` — the line is still parsed and routed, but no handler is invoked. The same source-type overloads (`File`, `Path`, `InputStream`, `Reader`) are available as for other output shapes.
+Classes not registered in the `HandlerRegistry` are silently ignored — they are still parsed and routed, but no handler is invoked. Because the registry is supplied per call, the same reader instance is safe to use from multiple threads with independent registries. The same source-type overloads (`File`, `Path`, `InputStream`, `Reader`) are available as for `readAsResult`.
 
 
 ---

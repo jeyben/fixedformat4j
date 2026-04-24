@@ -1,5 +1,6 @@
 package com.ancientprogramming.fixedformat4j.io;
 
+import com.ancientprogramming.fixedformat4j.io.read.HandlerRegistry;
 import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
 import com.ancientprogramming.fixedformat4j.io.read.MultiMatchStrategy;
 import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
@@ -18,7 +19,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
 
-class TestFixedFormatReaderProcessAll {
+class TestFixedFormatReaderProcess {
 
   @TempDir
   Path tempDir;
@@ -27,15 +28,17 @@ class TestFixedFormatReaderProcessAll {
   private static final LinePattern B_PATTERN = new RegexLinePattern("^B");
 
   @Test
-  void processAllFiresTypedHandlerForEachRecord() {
+  void processFiresTypedHandlerForEachRecord() {
     List<TenCharRecord> tens = new ArrayList<>();
     List<FiveCharRecord> fives = new ArrayList<>();
 
     FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, A_PATTERN, tens::add)
-        .addMapping(FiveCharRecord.class, B_PATTERN, fives::add)
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .addMapping(FiveCharRecord.class, B_PATTERN)
         .build()
-        .processAll(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
+        .process(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"), new HandlerRegistry()
+            .on(TenCharRecord.class, tens::add)
+            .on(FiveCharRecord.class, fives::add));
 
     assertEquals(1, tens.size());
     assertEquals(1, fives.size());
@@ -44,117 +47,126 @@ class TestFixedFormatReaderProcessAll {
   }
 
   @Test
-  void processAllFiresHandlersInEncounterOrder() {
+  void processFiresHandlersInEncounterOrder() {
     List<String> order = new ArrayList<>();
 
     FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, A_PATTERN, r -> order.add("ten:" + r.getValue().trim()))
-        .addMapping(FiveCharRecord.class, B_PATTERN, r -> order.add("five:" + r.getCode().trim()))
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .addMapping(FiveCharRecord.class, B_PATTERN)
         .build()
-        .processAll(new StringReader("BBBBBBBBBB\nAAAAAAAAAAAA"));
+        .process(new StringReader("BBBBBBBBBB\nAAAAAAAAAAAA"), new HandlerRegistry()
+            .on(TenCharRecord.class, r -> order.add("ten:" + r.getValue().trim()))
+            .on(FiveCharRecord.class, r -> order.add("five:" + r.getCode().trim())));
 
     assertEquals(List.of("five:BBBBB", "ten:AAAAAAAAAA"), order);
   }
 
   @Test
-  void processAllSilentlySkipsMappingsWithNoHandler() {
+  void processSilentlyIgnoresClassesNotInRegistry() {
     List<FiveCharRecord> fives = new ArrayList<>();
 
     FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, A_PATTERN)           // no handler
-        .addMapping(FiveCharRecord.class, B_PATTERN, fives::add)
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .addMapping(FiveCharRecord.class, B_PATTERN)
         .build()
-        .processAll(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
+        .process(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"), new HandlerRegistry()
+            .on(FiveCharRecord.class, fives::add));  // TenCharRecord not registered
 
     assertEquals(1, fives.size());
   }
 
   @Test
-  void processAllWorksWithInputStream() {
+  void processWorksWithInputStream() {
     List<TenCharRecord> results = new ArrayList<>();
     ByteArrayInputStream is = new ByteArrayInputStream(
         "AAAAAAAAAA".getBytes(StandardCharsets.UTF_8));
 
     FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, A_PATTERN, results::add)
+        .addMapping(TenCharRecord.class, A_PATTERN)
         .build()
-        .processAll(is);
+        .process(is, new HandlerRegistry().on(TenCharRecord.class, results::add));
 
     assertEquals(1, results.size());
   }
 
   @Test
-  void processAllWorksWithInputStreamAndCharset() {
+  void processWorksWithInputStreamAndCharset() {
     List<TenCharRecord> results = new ArrayList<>();
     ByteArrayInputStream is = new ByteArrayInputStream(
         "AAAAAAAAAA".getBytes(StandardCharsets.ISO_8859_1));
 
     FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, A_PATTERN, results::add)
+        .addMapping(TenCharRecord.class, A_PATTERN)
         .build()
-        .processAll(is, StandardCharsets.ISO_8859_1);
+        .process(is, StandardCharsets.ISO_8859_1,
+            new HandlerRegistry().on(TenCharRecord.class, results::add));
 
     assertEquals(1, results.size());
   }
 
   @Test
-  void processAllWorksWithFile() throws IOException {
+  void processWorksWithFile() throws IOException {
     Path file = tempDir.resolve("data.txt");
     Files.writeString(file, "AAAAAAAAAA\nBBBBBBBBBB", StandardCharsets.UTF_8);
     List<TenCharRecord> tens = new ArrayList<>();
     List<FiveCharRecord> fives = new ArrayList<>();
 
     FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, A_PATTERN, tens::add)
-        .addMapping(FiveCharRecord.class, B_PATTERN, fives::add)
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .addMapping(FiveCharRecord.class, B_PATTERN)
         .build()
-        .processAll(file.toFile());
+        .process(file.toFile(), new HandlerRegistry()
+            .on(TenCharRecord.class, tens::add)
+            .on(FiveCharRecord.class, fives::add));
 
     assertEquals(1, tens.size());
     assertEquals(1, fives.size());
   }
 
   @Test
-  void processAllWorksWithPath() throws IOException {
+  void processWorksWithPath() throws IOException {
     Path file = tempDir.resolve("data.txt");
     Files.writeString(file, "AAAAAAAAAA\nBBBBBBBBBB", StandardCharsets.UTF_8);
     List<TenCharRecord> tens = new ArrayList<>();
     List<FiveCharRecord> fives = new ArrayList<>();
 
     FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, A_PATTERN, tens::add)
-        .addMapping(FiveCharRecord.class, B_PATTERN, fives::add)
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .addMapping(FiveCharRecord.class, B_PATTERN)
         .build()
-        .processAll(file);
+        .process(file, new HandlerRegistry()
+            .on(TenCharRecord.class, tens::add)
+            .on(FiveCharRecord.class, fives::add));
 
     assertEquals(1, tens.size());
     assertEquals(1, fives.size());
   }
 
   @Test
-  void onlyHandlerForMatchedMappingFiresWhenTwoMappingsShareSameClass() {
-    List<String> fired = new ArrayList<>();
+  void processFiresHandlerOnceWhenFirstMatchStrategyIsActive() {
+    List<TenCharRecord> fired = new ArrayList<>();
 
     FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, A_PATTERN, r -> fired.add("handlerA"))
-        .addMapping(TenCharRecord.class, B_PATTERN, r -> fired.add("handlerB"))
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
         .multiMatchStrategy(MultiMatchStrategy.firstMatch())
         .build()
-        .processAll(new StringReader("AAAAAAAAAA"));
+        .process(new StringReader("AAAAAAAAAA"),
+            new HandlerRegistry().on(TenCharRecord.class, fired::add));
 
-    assertEquals(List.of("handlerA"), fired,
-        "Only the handler for the matched mapping should fire; handlerB must not be called");
+    assertEquals(1, fired.size(), "firstMatch should emit exactly one record");
   }
 
   @Test
-  void processAllAndReadAsResultAreIndependent() {
+  void processAndReadAsResultAreIndependent() {
     List<TenCharRecord> fromHandler = new ArrayList<>();
 
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, A_PATTERN, fromHandler::add)
+        .addMapping(TenCharRecord.class, A_PATTERN)
         .build();
 
-    reader.processAll(new StringReader("AAAAAAAAAA"));
+    reader.process(new StringReader("AAAAAAAAAA"),
+        new HandlerRegistry().on(TenCharRecord.class, fromHandler::add));
     List<Object> fromResult = reader.readAsResult(new StringReader("AAAAAAAAAA")).getAll();
 
     assertEquals(1, fromHandler.size());

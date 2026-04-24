@@ -42,7 +42,7 @@ title: Changelog
 
   Two output shapes:
   - `readAsResult()` — returns `ReadResult`, a type-safe class-keyed container; `get(Class<R>)` returns `List<R>` with no cast required. Also provides `getAll()`, `contains(Class<?>)`, and `classes()`.
-  - `processAll()` — push-style; dispatches each parsed record to the typed `Consumer<R>` handler registered per mapping via the three-argument `addMapping` overload. Mappings without a handler are silently skipped.
+  - `process(source, HandlerRegistry)` — push-style; dispatches each parsed record to the typed `Consumer<R>` registered in a per-call `HandlerRegistry`. Classes absent from the registry are silently ignored. Because the registry is supplied at call time, the same reader is safe to use from multiple threads.
 
   Every shape accepts `Reader`, `InputStream`, `File`, or `Path`; file/stream overloads default to UTF-8.
 
@@ -51,10 +51,9 @@ title: Changelog
   (`throwException` / `skipAndLog`). An `includeLines(Predicate<String>)` pre-filter runs
   before pattern matching and bypasses `UnmatchStrategy`.
 
-  `RecordMapping<T>` is the public value type carrying the class, pattern, and optional handler
-  for each registered mapping; it is surfaced as the parameter and return type of
-  `MultiMatchStrategy.resolve()`. Consumers implementing a custom `MultiMatchStrategy` must
-  reference it directly.
+  `RecordMapping<T>` is the public value type carrying the class and pattern for each registered
+  mapping; it is surfaced as the parameter and return type of `MultiMatchStrategy.resolve()`.
+  Consumers implementing a custom `MultiMatchStrategy` must reference it directly.
 
   `FixedFormatIOException` (extends `FixedFormatException`) is thrown on underlying `IOException`.
 

@@ -17,13 +17,10 @@ package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 
-import java.util.function.Consumer;
-
 /**
- * Immutable pair of a {@link LinePattern}, the
+ * Immutable pair of a {@link LinePattern} and the
  * {@link com.ancientprogramming.fixedformat4j.annotation.Record}-annotated class to
- * instantiate when the pattern matches a line, and an optional typed handler to invoke
- * when {@link FixedFormatReader#processAll} is called.
+ * instantiate when the pattern matches a line.
  *
  * <p>The constructor validates that {@code recordClass} carries the {@code @Record} annotation
  * so that misconfigured mappings fail fast at reader-build time rather than at parse time.</p>
@@ -36,10 +33,9 @@ public class RecordMapping<T> {
 
   private final Class<T> recordClass;
   private final LinePattern pattern;
-  private final Consumer<T> handler;
 
   /**
-   * Creates a new mapping without a handler.
+   * Creates a new mapping.
    *
    * @param recordClass the class to instantiate when {@code pattern} matches; must be
    *                    annotated with {@link com.ancientprogramming.fixedformat4j.annotation.Record}
@@ -47,21 +43,6 @@ public class RecordMapping<T> {
    * @throws IllegalArgumentException if {@code recordClass} is not annotated with {@code @Record}
    */
   public RecordMapping(Class<T> recordClass, LinePattern pattern) {
-    this(recordClass, pattern, null);
-  }
-
-  /**
-   * Creates a new mapping with a typed handler invoked by
-   * {@link FixedFormatReader#processAll}.
-   *
-   * @param recordClass the class to instantiate when {@code pattern} matches; must be
-   *                    annotated with {@link com.ancientprogramming.fixedformat4j.annotation.Record}
-   * @param pattern     the pattern that decides which lines are parsed as {@code recordClass}
-   * @param handler     invoked with each correctly-typed record during
-   *                    {@link FixedFormatReader#processAll}; {@code null} for handler-less mappings
-   * @throws IllegalArgumentException if {@code recordClass} is not annotated with {@code @Record}
-   */
-  public RecordMapping(Class<T> recordClass, LinePattern pattern, Consumer<T> handler) {
     if (recordClass == null) {
       throw new IllegalArgumentException("recordClass must not be null");
     }
@@ -74,7 +55,6 @@ public class RecordMapping<T> {
     }
     this.recordClass = recordClass;
     this.pattern = pattern;
-    this.handler = handler;
   }
 
   /**
@@ -94,15 +74,5 @@ public class RecordMapping<T> {
    */
   public LinePattern getPattern() {
     return pattern;
-  }
-
-  /**
-   * Returns the handler registered for this mapping, or {@code null} if none was provided.
-   * Used by {@link FixedFormatReader#processAll} to dispatch records without casts.
-   *
-   * @return the typed handler, or {@code null}
-   */
-  public Consumer<T> getHandler() {
-    return handler;
   }
 }

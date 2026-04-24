@@ -151,7 +151,7 @@ System.out.println(manager.export(record));
 
 ## Example 4 — Processing a file line by line
 
-Since 1.8.0, use `FixedFormatReader` to process files. Build a reader once, then call `readAsResult` or `processAll`.
+Since 1.8.0, use `FixedFormatReader` to process files. Build a reader once, then call `readAsResult` or `process`.
 
 **Single record type:**
 
@@ -597,15 +597,15 @@ System.out.println(details.size());      // 2
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(OrderHeader.class, new RegexLinePattern("^HDR"),
-        header -> System.out.println("Header: " + header.getDate()))
-    .addMapping(OrderDetail.class, new RegexLinePattern("^DTL"),
-        detail -> System.out.printf("Order %d: %s — %d cents%n",
-            detail.getOrderId(), detail.getProduct(), detail.getAmountCents()))
+    .addMapping(OrderHeader.class, new RegexLinePattern("^HDR"))
+    .addMapping(OrderDetail.class, new RegexLinePattern("^DTL"))
     .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 
-reader.processAll(new File("orders.txt"));
+reader.process(new File("orders.txt"), new HandlerRegistry()
+    .on(OrderHeader.class, header -> System.out.println("Header: " + header.getDate()))
+    .on(OrderDetail.class, detail -> System.out.printf("Order %d: %s — %d cents%n",
+        detail.getOrderId(), detail.getProduct(), detail.getAmountCents())));
 ```
 
 For the complete `FixedFormatReader` API — strategies, charset overloads, and pre-match filtering — see the [File Processing](usage/file-processing) guide.

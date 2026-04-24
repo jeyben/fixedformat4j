@@ -66,11 +66,13 @@ import java.util.function.BiConsumer;
  * <p>Quick start — typed handlers (no casts anywhere):</p>
  * <pre>{@code
  * FixedFormatReader reader = FixedFormatReader.builder()
- *     .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"), this::onHeader)
- *     .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"), this::onDetail)
+ *     .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"))
+ *     .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"))
  *     .build();
  *
- * reader.processAll(Path.of("data.txt"));
+ * reader.process(Path.of("data.txt"), new HandlerRegistry()
+ *     .on(HeaderRecord.class, this::onHeader)
+ *     .on(DetailRecord.class, this::onDetail));
  * }</pre>
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
@@ -224,76 +226,81 @@ public class FixedFormatReader {
     }
   }
 
-  // --- processAll ---
+  // --- process ---
 
   /**
-   * Reads all records from {@code reader} and dispatches each to the typed handler registered
-   * for its class via
-   * {@link FixedFormatReaderBuilder#addMapping(Class, LinePattern, Consumer)}.
+   * Reads all records from {@code reader} and dispatches each to the handler registered
+   * for its class in {@code registry}.
    *
-   * <p>Mappings added without a handler are silently skipped. This is the preferred method
-   * when type-safe dispatch without casts is desired:</p>
+   * <p>Classes not present in the registry are silently ignored — they are still parsed,
+   * but no handler is invoked. Because the registry is supplied per call rather than stored
+   * in the reader, the same {@link FixedFormatReader} instance is safe to use from multiple
+   * threads with independent registries.</p>
+   *
    * <pre>{@code
-   * FixedFormatReader reader = FixedFormatReader.builder()
-   *     .addMapping(HeaderRecord.class, hdrPattern, this::onHeader)
-   *     .addMapping(DetailRecord.class, dtlPattern, this::onDetail)
-   *     .build();
-   *
-   * reader.processAll(source); // handlers receive HeaderRecord / DetailRecord directly
+   * reader.process(source, new HandlerRegistry()
+   *     .on(HeaderRecord.class, this::onHeader)
+   *     .on(DetailRecord.class, this::onDetail));
    * }</pre>
    *
-   * @param reader the source of lines; closed when this method returns
+   * @param reader   the source of lines; closed when this method returns
+   * @param registry the typed handlers to invoke per matched class; must not be {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
-  public void processAll(Reader reader) {
-    readWithMappingCallback(reader, processor::fireHandler);
+  public void process(Reader reader, HandlerRegistry registry) {
+    readWithMappingCallback(reader,
+        (mapping, record) -> registry.dispatch(mapping.getRecordClass(), record));
   }
 
   /**
    * Reads all records from {@code inputStream} using UTF-8 encoding and dispatches each to
-   * its registered typed handler.
+   * its handler in {@code registry}.
    *
    * @param inputStream the source stream; closed when this method returns
+   * @param registry    the typed handlers to invoke per matched class; must not be {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
-  public void processAll(InputStream inputStream) {
-    processAll(inputStream, StandardCharsets.UTF_8);
+  public void process(InputStream inputStream, HandlerRegistry registry) {
+    process(inputStream, StandardCharsets.UTF_8, registry);
   }
 
   /**
    * Reads all records from {@code inputStream} using the given charset and dispatches each to
-   * its registered typed handler.
+   * its handler in {@code registry}.
    *
    * @param inputStream the source stream; closed when this method returns
    * @param charset     the character encoding to apply
+   * @param registry    the typed handlers to invoke per matched class; must not be {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
-  public void processAll(InputStream inputStream, Charset charset) {
-    processAll(new InputStreamReader(inputStream, charset));
+  public void process(InputStream inputStream, Charset charset, HandlerRegistry registry) {
+    process(new InputStreamReader(inputStream, charset), registry);
   }
 
   /**
    * Reads all records from {@code file} using UTF-8 encoding and dispatches each to
-   * its registered typed handler.
+   * its handler in {@code registry}.
    *
-   * @param file the file to read
+   * @param file     the file to read
+   * @param registry the typed handlers to invoke per matched class; must not be {@code null}
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
-  public void processAll(File file) {
-    processAll(file, StandardCharsets.UTF_8);
+  public void process(File file, HandlerRegistry registry) {
+    process(file, StandardCharsets.UTF_8, registry);
   }
 
   /**
    * Reads all records from {@code file} using the given charset and dispatches each to
-   * its registered typed handler.
+   * its handler in {@code registry}.
    *
-   * @param file    the file to read
-   * @param charset the character encoding to apply
+   * @param file     the file to read
+   * @param charset  the character encoding to apply
+   * @param registry the typed handlers to invoke per matched class; must not be {@code null}
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
-  public void processAll(File file, Charset charset) {
+  public void process(File file, Charset charset, HandlerRegistry registry) {
     try (InputStreamReader r = new InputStreamReader(new FileInputStream(file), charset)) {
-      processAll(r);
+      process(r, registry);
     } catch (FileNotFoundException e) {
       throw new FixedFormatIOException("File not found: " + file, e);
     } catch (IOException e) {
@@ -303,26 +310,28 @@ public class FixedFormatReader {
 
   /**
    * Reads all records from {@code path} using UTF-8 encoding and dispatches each to
-   * its registered typed handler.
+   * its handler in {@code registry}.
    *
-   * @param path the path to read
+   * @param path     the path to read
+   * @param registry the typed handlers to invoke per matched class; must not be {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
-  public void processAll(Path path) {
-    processAll(path, StandardCharsets.UTF_8);
+  public void process(Path path, HandlerRegistry registry) {
+    process(path, StandardCharsets.UTF_8, registry);
   }
 
   /**
    * Reads all records from {@code path} using the given charset and dispatches each to
-   * its registered typed handler.
+   * its handler in {@code registry}.
    *
-   * @param path    the path to read
-   * @param charset the character encoding to apply
+   * @param path     the path to read
+   * @param charset  the character encoding to apply
+   * @param registry the typed handlers to invoke per matched class; must not be {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
-  public void processAll(Path path, Charset charset) {
+  public void process(Path path, Charset charset, HandlerRegistry registry) {
     try (InputStreamReader r = new InputStreamReader(Files.newInputStream(path), charset)) {
-      processAll(r);
+      process(r, registry);
     } catch (IOException e) {
       throw new FixedFormatIOException("Cannot open path: " + path, e);
     }

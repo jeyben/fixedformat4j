@@ -1,5 +1,6 @@
 package com.ancientprogramming.fixedformat4j.io;
 
+import com.ancientprogramming.fixedformat4j.io.read.HandlerRegistry;
 import com.ancientprogramming.fixedformat4j.io.read.RegexLinePattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -118,15 +119,14 @@ class TestFixedFormatReaderInputSources {
   }
 
   @Test
-  void inputStreamIsClosedAfterReadWithCallbackConsumer() {
+  void inputStreamIsClosedAfterProcess() {
     TrackingInputStream is = new TrackingInputStream("hello     \nworld     ".getBytes(StandardCharsets.UTF_8));
     List<String> values = new ArrayList<>();
     FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"),
-            r -> values.add(r.getValue()))
+        .addMapping(TenCharRecord.class, new RegexLinePattern(".*"))
         .build()
-        .processAll(is);
-    assertTrue(is.closed, "InputStream should be closed after processAll(Consumer)");
+        .process(is, new HandlerRegistry().on(TenCharRecord.class, r -> values.add(r.getValue())));
+    assertTrue(is.closed, "InputStream should be closed after process");
   }
 
 }
