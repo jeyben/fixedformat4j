@@ -46,7 +46,8 @@ public class FixedFormatReaderBuilder {
    * @param clazz   the {@code @Record}-annotated class to instantiate when {@code pattern} matches
    * @param pattern the pattern that decides which lines are parsed as {@code clazz}
    * @return this builder
-   * @throws IllegalArgumentException if {@code clazz} is not annotated with {@code @Record}
+   * @throws IllegalArgumentException if {@code clazz} or {@code pattern} is {@code null},
+   *                                  or if {@code clazz} is not annotated with {@code @Record}
    */
   public <R> FixedFormatReaderBuilder addMapping(Class<R> clazz, LinePattern pattern) {
     mappings.add(new RecordMapping<>(clazz, pattern));

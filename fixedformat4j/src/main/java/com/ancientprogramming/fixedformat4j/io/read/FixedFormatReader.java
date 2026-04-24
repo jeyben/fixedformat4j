@@ -274,7 +274,11 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void process(InputStream inputStream, Charset charset, HandlerRegistry registry) {
-    process(new InputStreamReader(inputStream, charset), registry);
+    try (InputStreamReader r = new InputStreamReader(inputStream, charset)) {
+      process(r, registry);
+    } catch (IOException e) {
+      throw new FixedFormatIOException("IO error reading input stream", e);
+    }
   }
 
   /**

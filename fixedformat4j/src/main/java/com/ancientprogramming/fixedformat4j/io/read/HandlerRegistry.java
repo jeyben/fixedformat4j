@@ -48,6 +48,9 @@ public final class HandlerRegistry {
   /**
    * Registers a typed handler for {@code clazz}.
    *
+   * <p>If a handler has already been registered for {@code clazz}, it is replaced by this
+   * call. Only the most recently registered handler for a given class is invoked.</p>
+   *
    * @param <R>     the record type
    * @param clazz   the record class; must not be {@code null}
    * @param handler invoked with each parsed record of type {@code R}; must not be {@code null}
