@@ -69,7 +69,7 @@ public class FixedFormatReaderBuilder {
   }
 
   /**
-   * Sets the strategy applied when no pattern matches a segment.
+   * Sets the strategy applied when no pattern matches a line.
    * Defaults to {@link UnmatchStrategy#skip()}.
    *
    * @param strategy the unmatched strategy to use; must not be {@code null}

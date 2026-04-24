@@ -38,7 +38,7 @@ import java.util.function.BiConsumer;
  * multiple records packed within a single line, split the line before passing it to this reader.</p>
  *
  * <p>Records are collected eagerly via {@link #readAsResult} or dispatched via
- * {@link #processAll}. All input-source overloads default to
+ * {@link #process(Reader, HandlerRegistry)}. All input-source overloads default to
  * {@link java.nio.charset.StandardCharsets#UTF_8}; explicit {@link Charset} overloads are
  * provided for every source type.</p>
  *
