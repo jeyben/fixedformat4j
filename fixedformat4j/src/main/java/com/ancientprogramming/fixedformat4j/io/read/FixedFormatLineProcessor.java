@@ -20,7 +20,6 @@ import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 
 import static java.lang.String.format;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -90,7 +89,6 @@ class FixedFormatLineProcessor {
   }
 
   private List<RecordMapping<?>> findMatches(String line) {
-    if (line == null) return Collections.emptyList();
     return mappings.stream()
         .filter(m -> m.getPattern().test(line))
         .collect(Collectors.toList());

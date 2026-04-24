@@ -55,7 +55,7 @@ public interface MultiMatchStrategy {
    * @return a first-match strategy; never {@code null}
    */
   static MultiMatchStrategy firstMatch() {
-    return (matched, lineNumber) -> matched.isEmpty() ? matched : matched.subList(0, 1);
+    return (matched, lineNumber) -> matched.subList(0, 1);
   }
 
   /**

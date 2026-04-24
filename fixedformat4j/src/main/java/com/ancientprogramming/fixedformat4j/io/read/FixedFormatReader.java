@@ -272,6 +272,7 @@ public class FixedFormatReader {
   public void process(InputStream inputStream, Charset charset, HandlerRegistry registry) {
     Objects.requireNonNull(inputStream, "inputStream must not be null");
     Objects.requireNonNull(charset, "charset must not be null");
+    Objects.requireNonNull(registry, "registry must not be null");
     try (InputStreamReader r = new InputStreamReader(inputStream, charset)) {
       process(r, registry);
     } catch (IOException e) {
@@ -303,6 +304,7 @@ public class FixedFormatReader {
   public void process(Path path, Charset charset, HandlerRegistry registry) {
     Objects.requireNonNull(path, "path must not be null");
     Objects.requireNonNull(charset, "charset must not be null");
+    Objects.requireNonNull(registry, "registry must not be null");
     try (InputStreamReader r = new InputStreamReader(Files.newInputStream(path), charset)) {
       process(r, registry);
     } catch (IOException e) {

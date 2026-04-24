@@ -180,6 +180,29 @@ class TestFixedFormatReaderProcess {
   }
 
   @Test
+  void throwsNullPointerWhenRegistryIsNullForInputStream() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .build();
+
+    assertThrows(NullPointerException.class, () ->
+        reader.process(new ByteArrayInputStream("AAAAAAAAAA".getBytes()),
+            StandardCharsets.UTF_8, null));
+  }
+
+  @Test
+  void throwsNullPointerWhenRegistryIsNullForPath(@TempDir Path tmp) throws IOException {
+    Path file = tmp.resolve("data.txt");
+    Files.writeString(file, "AAAAAAAAAA", StandardCharsets.UTF_8);
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .build();
+
+    assertThrows(NullPointerException.class, () ->
+        reader.process(file, StandardCharsets.UTF_8, null));
+  }
+
+  @Test
   void processAndReadAsResultAreIndependent() {
     List<TenCharRecord> fromHandler = new ArrayList<>();
 
