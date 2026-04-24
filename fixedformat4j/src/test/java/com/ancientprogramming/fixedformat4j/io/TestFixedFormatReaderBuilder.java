@@ -103,6 +103,51 @@ class TestFixedFormatReaderBuilder {
   }
 
   @Test
+  void throwsWhenMultiMatchStrategyIsNull() {
+    assertThrows(IllegalArgumentException.class, () ->
+        FixedFormatReader.builder()
+            .addMapping(SampleRecord.class, anyPattern)
+            .multiMatchStrategy(null)
+    );
+  }
+
+  @Test
+  void throwsWhenUnmatchStrategyIsNull() {
+    assertThrows(IllegalArgumentException.class, () ->
+        FixedFormatReader.builder()
+            .addMapping(SampleRecord.class, anyPattern)
+            .unmatchStrategy(null)
+    );
+  }
+
+  @Test
+  void throwsWhenParseErrorStrategyIsNull() {
+    assertThrows(IllegalArgumentException.class, () ->
+        FixedFormatReader.builder()
+            .addMapping(SampleRecord.class, anyPattern)
+            .parseErrorStrategy(null)
+    );
+  }
+
+  @Test
+  void throwsWhenManagerIsNull() {
+    assertThrows(IllegalArgumentException.class, () ->
+        FixedFormatReader.builder()
+            .addMapping(SampleRecord.class, anyPattern)
+            .manager(null)
+    );
+  }
+
+  @Test
+  void throwsWhenIncludeLinesPredicateIsNull() {
+    assertThrows(IllegalArgumentException.class, () ->
+        FixedFormatReader.builder()
+            .addMapping(SampleRecord.class, anyPattern)
+            .includeLines(null)
+    );
+  }
+
+  @Test
   void unmatchedLambdaStrategyIsAcceptedByBuilder() {
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(SampleRecord.class, anyPattern)

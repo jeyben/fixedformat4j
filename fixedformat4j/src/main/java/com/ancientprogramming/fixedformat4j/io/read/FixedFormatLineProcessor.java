@@ -72,30 +72,6 @@ class FixedFormatLineProcessor {
     }
   }
 
-  /**
-   * Variant that routes unmatched lines to a dedicated callback instead of the configured
-   * {@link UnmatchStrategy}, giving the caller explicit control over unmatched content.
-   */
-  void processLine(String line, long lineNumber,
-                   BiConsumer<Class<?>, Object> matchedCallback,
-                   Consumer<String> unmatchedCallback) {
-    if (!lineFilter.test(line)) {
-      unmatchedCallback.accept(line);
-      return;
-    }
-    List<ClassPatternMapping<?>> matched = findMatches(line);
-    if (matched.isEmpty()) {
-      unmatchedCallback.accept(line);
-      return;
-    }
-    for (ClassPatternMapping<?> mapping : multiMatchStrategy.resolve(matched, lineNumber)) {
-      Object record = parseRecord(mapping, line, lineNumber);
-      if (record != null) {
-        matchedCallback.accept(mapping.getRecordClass(), record);
-      }
-    }
-  }
-
   // Wildcard capture: ClassPatternMapping<?> → ClassPatternMapping<R>, enabling type-safe load.
   private <R> Object parseRecord(ClassPatternMapping<R> mapping, String line, long lineNumber) {
     try {
