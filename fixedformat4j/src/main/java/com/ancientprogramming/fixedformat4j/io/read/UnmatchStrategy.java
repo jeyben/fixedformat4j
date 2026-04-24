@@ -63,7 +63,7 @@ public interface UnmatchStrategy {
    */
   static UnmatchStrategy skip() {
     return (lineNumber, line) ->
-        LOG.warn("Skipping unmatched line {}: {}", lineNumber, line);
+      LOG.warn("Skipping unmatched line {}: {}", lineNumber, line);
   }
 
   /**
