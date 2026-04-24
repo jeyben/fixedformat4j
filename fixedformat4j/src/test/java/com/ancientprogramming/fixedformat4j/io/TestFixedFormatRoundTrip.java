@@ -4,11 +4,9 @@ import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -69,123 +67,6 @@ class TestFixedFormatRoundTrip {
     assertEquals("  COMMENT  ", row.getRawLine());
   }
 
-  // --- readAsRows: ordering and types ---
-
-  @Test
-  void readAsRowsReturnsEmptyListForEmptyInput() {
-    FixedFormatReader reader = readerAB();
-
-    List<Row> rows = reader.readAsRows(new StringReader(""));
-
-    assertTrue(rows.isEmpty());
-  }
-
-  @Test
-  void readAsRowsProducesParsedRowsForAllMatchedLines() {
-    FixedFormatReader reader = readerA();
-
-    List<Row> rows = reader.readAsRows(new StringReader("AAAAAAAAAA\nAAAAAAAAAAAA"));
-
-    assertEquals(2, rows.size());
-    assertInstanceOf(ParsedRow.class, rows.get(0));
-    assertInstanceOf(ParsedRow.class, rows.get(1));
-    assertEquals("AAAAAAAAAA", tenCharOf(rows.get(0)));
-    assertEquals("AAAAAAAAAA", tenCharOf(rows.get(1)));
-  }
-
-  @Test
-  void readAsRowsProducesUnmatchedRowsForAllUnmatchedLines() {
-    FixedFormatReader reader = readerA();
-
-    List<Row> rows = reader.readAsRows(new StringReader("COMMENT1\nCOMMENT2"));
-
-    assertEquals(2, rows.size());
-    assertInstanceOf(UnmatchedRow.class, rows.get(0));
-    assertInstanceOf(UnmatchedRow.class, rows.get(1));
-    assertEquals("COMMENT1", ((UnmatchedRow) rows.get(0)).getRawLine());
-    assertEquals("COMMENT2", ((UnmatchedRow) rows.get(1)).getRawLine());
-  }
-
-  @Test
-  void readAsRowsPreservesMixedOrderExactly() {
-    FixedFormatReader reader = readerAB();
-
-    List<Row> rows = reader.readAsRows(
-        new StringReader("AAAAAAAAAA\nCOMMENT\nBBBBB     "));
-
-    assertEquals(3, rows.size());
-    assertInstanceOf(ParsedRow.class, rows.get(0));
-    assertInstanceOf(UnmatchedRow.class, rows.get(1));
-    assertInstanceOf(ParsedRow.class, rows.get(2));
-    assertEquals("AAAAAAAAAA", tenCharOf(rows.get(0)));
-    assertEquals("COMMENT", ((UnmatchedRow) rows.get(1)).getRawLine());
-    assertEquals("BBBBB", fiveCharOf(rows.get(2)));
-  }
-
-  @Test
-  void readAsRowsIgnoresConfiguredUnmatchedStrategyAndCaptures() {
-    FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, A_PATTERN)
-        .unmatchedLineStrategy(UnmatchedLineStrategy.throwException())
-        .build();
-
-    // throwException strategy does NOT fire — unmatched line becomes UnmatchedRow
-    List<Row> rows = reader.readAsRows(new StringReader("AAAAAAAAAA\nCOMMENT"));
-
-    assertEquals(2, rows.size());
-    assertInstanceOf(UnmatchedRow.class, rows.get(1));
-    assertEquals("COMMENT", ((UnmatchedRow) rows.get(1)).getRawLine());
-  }
-
-  // --- readAsRows: input-source overloads ---
-
-  @Test
-  void readAsRowsWorksWithInputStream() {
-    FixedFormatReader reader = readerA();
-    byte[] bytes = "AAAAAAAAAA\nCOMMENT".getBytes(StandardCharsets.UTF_8);
-
-    List<Row> rows = reader.readAsRows(new ByteArrayInputStream(bytes));
-
-    assertEquals(2, rows.size());
-    assertInstanceOf(ParsedRow.class, rows.get(0));
-    assertInstanceOf(UnmatchedRow.class, rows.get(1));
-  }
-
-  @Test
-  void readAsRowsWorksWithInputStreamAndCharset() {
-    FixedFormatReader reader = readerA();
-    byte[] bytes = "AAAAAAAAAA\nCOMMENT".getBytes(StandardCharsets.ISO_8859_1);
-
-    List<Row> rows = reader.readAsRows(new ByteArrayInputStream(bytes), StandardCharsets.ISO_8859_1);
-
-    assertEquals(2, rows.size());
-  }
-
-  @Test
-  void readAsRowsWorksWithFile() throws IOException {
-    FixedFormatReader reader = readerAB();
-    Path file = tempDir.resolve("data.txt");
-    Files.writeString(file, "AAAAAAAAAA\nCOMMENT\nBBBBB     ");
-
-    List<Row> rows = reader.readAsRows(file.toFile());
-
-    assertEquals(3, rows.size());
-    assertInstanceOf(ParsedRow.class, rows.get(0));
-    assertInstanceOf(UnmatchedRow.class, rows.get(1));
-    assertInstanceOf(ParsedRow.class, rows.get(2));
-  }
-
-  @Test
-  void readAsRowsWorksWithPath() throws IOException {
-    FixedFormatReader reader = readerA();
-    Path file = tempDir.resolve("data.txt");
-    Files.writeString(file, "AAAAAAAAAA\nCOMMENT");
-
-    List<Row> rows = reader.readAsRows(file);
-
-    assertEquals(2, rows.size());
-  }
-
   // --- FixedFormatWriter ---
 
   @Test
@@ -198,8 +79,7 @@ class TestFixedFormatRoundTrip {
 
   @Test
   void writerExportsMatchedRowsViaManager() {
-    TenCharRecord record = tenChar("AAAAAAAAAA");
-    List<Row> rows = List.of(new ParsedRow<>(TenCharRecord.class, record));
+    List<Row> rows = List.of(new ParsedRow<>(TenCharRecord.class, tenChar("AAAAAAAAAA")));
 
     StringWriter out = new StringWriter();
     new FixedFormatWriter(new FixedFormatManagerImpl()).write(rows, out);
@@ -219,7 +99,7 @@ class TestFixedFormatRoundTrip {
 
   @Test
   void writerPreservesMixedOrderExactly() {
-    FixedFormatReader reader = readerAB();
+    FixedFormatRowReader reader = readerAB();
     List<Row> rows = reader.readAsRows(
         new StringReader("AAAAAAAAAA\nCOMMENT\nBBBBB     "));
 
@@ -255,7 +135,7 @@ class TestFixedFormatRoundTrip {
 
   @Test
   void roundTripEditsRecordAndPreservesOtherLinesInOrder() {
-    FixedFormatReader reader = readerAB();
+    FixedFormatRowReader reader = readerAB();
     List<Row> rows = reader.readAsRows(
         new StringReader("AAAAAAAAAA\nCOMMENT\nBBBBB     "));
 
@@ -263,7 +143,7 @@ class TestFixedFormatRoundTrip {
         .filter(r -> r instanceof ParsedRow && ((ParsedRow<?>) r).isOf(TenCharRecord.class))
         .map(r -> (ParsedRow<TenCharRecord>) r)
         .findFirst()
-        .ifPresent(pr -> pr.getRecord().setValue("AAAAZZZZZZ"));  // still starts with A
+        .ifPresent(pr -> pr.getRecord().setValue("AAAAZZZZZZ"));
 
     StringWriter out = new StringWriter();
     new FixedFormatWriter(new FixedFormatManagerImpl()).write(rows, out);
@@ -280,14 +160,8 @@ class TestFixedFormatRoundTrip {
 
   // --- helpers ---
 
-  private FixedFormatReader readerA() {
-    return FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, A_PATTERN)
-        .build();
-  }
-
-  private FixedFormatReader readerAB() {
-    return FixedFormatReader.builder()
+  private FixedFormatRowReader readerAB() {
+    return FixedFormatRowReader.builder()
         .addMapping(TenCharRecord.class, A_PATTERN)
         .addMapping(FiveCharRecord.class, B_PATTERN)
         .build();
