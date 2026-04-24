@@ -47,7 +47,7 @@ class FixedFormatLineProcessor {
       ParseErrorStrategy parseErrorStrategy,
       Predicate<String> lineFilter,
       FixedFormatManager manager) {
-    this.mappings = mappings;
+    this.mappings = List.copyOf(mappings);
     this.multiMatchStrategy = multiMatchStrategy;
     this.unmatchStrategy = unmatchStrategy;
     this.parseErrorStrategy = parseErrorStrategy;

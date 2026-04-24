@@ -103,6 +103,10 @@ public class FixedFormatReader {
    * Eagerly reads all records from {@code reader} and returns a {@link ReadResult} that
    * provides type-safe, class-keyed access without casts.
    *
+   * <p>This method is safe to call concurrently from multiple threads on the same
+   * {@link FixedFormatReader} instance; each call builds independent local state and the
+   * shared line processor carries no mutable per-call state.</p>
+   *
    * <pre>{@code
    * ReadResult result = reader.readAsResult(source);
    * List<HeaderRecord> headers = result.get(HeaderRecord.class); // no cast
