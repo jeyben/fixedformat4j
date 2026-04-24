@@ -29,6 +29,8 @@ That single line encodes: employee ID (`00423`), department code (`2`), name (`S
 - **Implicit decimals** — store `BigDecimal` without a decimal point in the file
 - **Nested records** — embed one `@Record` class inside another
 - **Extensible** — plug in your own formatter for any custom type
+- **Lombok-friendly** — place `@Field` on fields instead of getters; `@Getter @Setter @NoArgsConstructor` and you're done
+- **Spring-friendly** — plain Java objects with no Spring dependency; register as `@Bean`s and inject by interface
 
 ## What's new in 1.7.2
 
@@ -132,8 +134,29 @@ public class EmployeeRecord {
 ```
 
 - `@Record` marks the class as a fixed-format record.
-- `@Field` goes on the **getter**; `offset` is **1-based**.
-- Each mapped getter must have a corresponding setter.
+- `@Field` goes on the getter **or directly on the field** (since 1.5.0); `offset` is **1-based**.
+- Each mapped field needs a getter and a setter.
+
+#### Using Lombok instead
+
+```java
+@Getter @Setter @NoArgsConstructor
+@Record
+public class EmployeeRecord {
+
+  @Field(offset = 1, length = 20)
+  private String name;
+
+  @Field(offset = 21, length = 6, align = Align.RIGHT, paddingChar = '0')
+  private Integer employeeId;
+
+  @Field(offset = 27, length = 8)
+  @FixedFormatPattern("yyyyMMdd")
+  private LocalDate hireDate;
+}
+```
+
+Place `@Field` on the fields, let Lombok generate the getters and setters, and the result is identical.
 
 ### 3. Load from a string
 

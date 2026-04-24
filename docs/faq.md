@@ -10,7 +10,7 @@ Yes. Since 1.8.0, `FixedFormatReader` provides built-in file and stream processi
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(MyRecord.class, new RegexFixedFormatMatchPattern(".*"))
+    .addMapping(MyRecord.class, new RegexLinePattern(".*"))
     .build();
 
 try (Stream<Object> stream = reader.readAsStream(Path.of("large.txt"))) {
@@ -19,6 +19,93 @@ try (Stream<Object> stream = reader.readAsStream(Path.of("large.txt"))) {
 ```
 
 See [File Processing](usage/file-processing) for the full API including output shapes, strategies, and heterogeneous-file support.
+
+## Can I use fixedformat4j with Spring?
+
+Yes — both `FixedFormatManager` and `FixedFormatReader` are plain Java objects with no Spring dependency; wire them as `@Bean`s in a `@Configuration` class and inject them wherever you need them.
+
+**Registering `FixedFormatManager`:**
+
+```java
+@Configuration
+public class FixedFormatConfig {
+
+  @Bean
+  public FixedFormatManager fixedFormatManager() {
+    return new FixedFormatManagerImpl();
+  }
+}
+```
+
+Because the bean is registered against the `FixedFormatManager` interface, it is easy to mock in tests and swap implementations without touching call sites.
+
+**Registering `FixedFormatReader`:**
+
+```java
+@Bean
+public FixedFormatReader payrollReader() {
+  return FixedFormatReader.builder()
+      .addMapping(HeaderRecord.class, new RegexLinePattern("^HDR"))
+      .addMapping(DetailRecord.class, new RegexLinePattern("^DTL"))
+      .unmatchStrategy(UnmatchStrategy.skip())
+      .build();
+}
+```
+
+Each `FixedFormatReader` instance is immutable and thread-safe after construction, so a single singleton bean shared across the application is fine.
+
+**Injecting into a service:**
+
+```java
+@Service
+public class PayrollService {
+  private final FixedFormatManager manager;
+  private final FixedFormatReader reader;
+
+  public PayrollService(FixedFormatManager manager, FixedFormatReader reader) {
+    this.manager = manager;
+    this.reader = reader;
+  }
+
+  public List<DetailRecord> load(Path file) {
+    return reader.readAsResult(file).get(DetailRecord.class);
+  }
+}
+```
+
+No Spring Boot auto-configuration or starter is required — add the dependency, write the `@Configuration` class, and you're done.
+
+## Can I use Lombok with fixedformat4j?
+
+Yes. Since 1.5.0, `@Field` can be placed directly on Java fields rather than getter methods. Add `@Getter @Setter @NoArgsConstructor` to the class; the manager derives getter/setter names by convention and no boilerplate is needed:
+
+```java
+@Getter @Setter @NoArgsConstructor
+@Record
+public class EmployeeRecord {
+
+  @Field(offset = 1, length = 12)
+  private String name;
+
+  @Field(offset = 13, length = 5, align = Align.RIGHT, paddingChar = '0')
+  private Integer employeeId;
+
+  @Field(offset = 18, length = 8)
+  @FixedFormatPattern("yyyyMMdd")
+  private LocalDate hireDate;
+
+  @Field(offset = 26, length = 1)
+  @FixedFormatBoolean(trueValue = "Y", falseValue = "N")
+  private Boolean active;
+}
+```
+
+Key points:
+- Supplementary annotations (`@FixedFormatPattern`, `@FixedFormatBoolean`, `@FixedFormatDecimal`, `@FixedFormatNumber`) can also be placed on fields.
+- `@NoArgsConstructor` is required — the manager instantiates the record via its no-arg constructor before calling setters.
+- If `@Field` appears on both a field **and** its getter, the field annotation takes precedence (an error is logged). Annotate only one location.
+
+See [Example 6](examples#example-6--field-annotations-and-lombok) for a full worked example including the equivalent plain-POJO style.
 
 ## Can I apply my own custom formatter?
 
@@ -159,15 +246,15 @@ while ((line = reader.readLine()) != null) {
 }
 ```
 
-Since 1.8.0, `FixedFormatReader` handles this pattern directly — register each record class with a `RegexFixedFormatMatchPattern` and let the reader route lines automatically:
+Since 1.8.0, `FixedFormatReader` handles this pattern directly — register each record class with a `RegexLinePattern` and let the reader route lines automatically:
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^H"))
-    .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^D"))
+    .addMapping(HeaderRecord.class, new RegexLinePattern("^H"))
+    .addMapping(DetailRecord.class, new RegexLinePattern("^D"))
     .build();
 
-TypedReadResult result = reader.readAsTypedResult(Path.of("data.txt"));
+ReadResult result = reader.readAsResult(Path.of("data.txt"));
 List<HeaderRecord> headers = result.get(HeaderRecord.class);
 List<DetailRecord> details = result.get(DetailRecord.class);
 ```
