@@ -98,7 +98,7 @@ public class FixedFormatReader {
         builder.multiMatchStrategy,
         builder.unmatchStrategy,
         builder.parseErrorStrategy,
-        builder.lineFilter,
+        builder.exclusionFilter,
         builder.manager);
   }
 

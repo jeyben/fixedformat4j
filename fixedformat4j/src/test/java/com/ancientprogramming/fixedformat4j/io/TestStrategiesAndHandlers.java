@@ -209,4 +209,51 @@ class TestStrategiesAndHandlers {
     assertThrows(FixedFormatException.class, () ->
         reader.read(new StringReader(THREE_LINES)));
   }
+
+  @Test
+  void excludeLinesSilentlySkipsMatchedLinesBeforePatternMatching() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+        .excludeLines(line -> line.isBlank())
+        .build();
+
+    List<Object> results = reader.read(new StringReader("AAAAAAAAAA\n\nAAAAAAAAAA")).getAll();
+
+    assertEquals(2, results.size());
+  }
+
+  @Test
+  void withoutExcludeLinesBlankLineTriggerUnmatchStrategy() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+        .build();
+
+    assertThrows(FixedFormatException.class, () ->
+        reader.read(new StringReader("AAAAAAAAAA\n\nAAAAAAAAAA")));
+  }
+
+  @Test
+  void excludeLinesLogsDebugWithLineNumberAndContent() {
+    ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger)
+        LoggerFactory.getLogger("com.ancientprogramming.fixedformat4j.io.read.FixedFormatLineProcessor");
+    logger.setLevel(Level.DEBUG);
+    ListAppender<ILoggingEvent> appender = new ListAppender<>();
+    appender.start();
+    logger.addAppender(appender);
+    try {
+      FixedFormatReader reader = FixedFormatReader.builder()
+          .addMapping(TenCharRecord.class, ANY)
+          .excludeLines(line -> line.isBlank())
+          .build();
+
+      reader.read(new StringReader("AAAAAAAAAA\n\nAAAAAAAAAA"));
+
+      assertEquals(1, appender.list.size(), "Expected exactly one DEBUG log entry");
+      ILoggingEvent event = appender.list.get(0);
+      assertEquals(Level.DEBUG, event.getLevel());
+      assertTrue(event.getFormattedMessage().contains("2"), "Message must include line number");
+    } finally {
+      logger.detachAppender(appender);
+    }
+  }
 }

@@ -159,7 +159,7 @@ Since 1.8.0, use `FixedFormatReader` to process files. Build a reader once, then
 // import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
 FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(EmployeeRecord.class, regex(".*"))
-    .includeLines(line -> !line.isBlank())
+    .excludeLines(line -> line.isBlank())
     .build();
 
 List<EmployeeRecord> employees = reader.read(Path.of("employees.txt"))

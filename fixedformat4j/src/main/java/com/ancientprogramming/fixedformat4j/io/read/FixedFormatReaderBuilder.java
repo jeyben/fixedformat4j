@@ -35,7 +35,7 @@ public class FixedFormatReaderBuilder {
   MultiMatchStrategy multiMatchStrategy = MultiMatchStrategy.firstMatch();
   UnmatchStrategy unmatchStrategy = UnmatchStrategy.throwException();
   ParseErrorStrategy parseErrorStrategy = ParseErrorStrategy.throwException();
-  Predicate<String> lineFilter = line -> true;
+  Predicate<String> exclusionFilter = line -> false;
   FixedFormatManager manager = FixedFormatManagerImpl.create();
 
   FixedFormatReaderBuilder() {}
@@ -95,16 +95,22 @@ public class FixedFormatReaderBuilder {
   }
 
   /**
-   * Registers a pre-match line inclusion predicate. Lines for which the predicate returns
-   * {@code false} are skipped entirely before pattern matching, bypassing the
+   * Registers a pre-match line exclusion predicate. Lines for which the predicate returns
+   * {@code true} are skipped entirely before pattern matching, bypassing the
    * {@link UnmatchStrategy}.
    *
-   * @param predicate returns {@code true} for lines that should be processed
+   * <p>Use this to discard structural lines that should never be parsed — for example,
+   * comment lines or blank separators:</p>
+   * <pre>{@code
+   * .excludeLines(line -> line.startsWith("#") || line.isBlank())
+   * }</pre>
+   *
+   * @param predicate returns {@code true} for lines that should be skipped
    * @return this builder
    */
-  public FixedFormatReaderBuilder includeLines(Predicate<String> predicate) {
+  public FixedFormatReaderBuilder excludeLines(Predicate<String> predicate) {
     Objects.requireNonNull(predicate, "predicate must not be null");
-    this.lineFilter = predicate;
+    this.exclusionFilter = predicate;
     return this;
   }
 

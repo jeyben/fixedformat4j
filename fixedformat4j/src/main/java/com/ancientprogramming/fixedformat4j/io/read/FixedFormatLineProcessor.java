@@ -17,6 +17,8 @@ package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.lang.String.format;
 
@@ -34,11 +36,13 @@ import java.util.stream.Collectors;
  */
 class FixedFormatLineProcessor {
 
+  private static final Logger LOG = LoggerFactory.getLogger(FixedFormatLineProcessor.class);
+
   private final List<RecordMapping<?>> mappings;
   private final MultiMatchStrategy multiMatchStrategy;
   private final UnmatchStrategy unmatchStrategy;
   private final ParseErrorStrategy parseErrorStrategy;
-  private final Predicate<String> lineFilter;
+  private final Predicate<String> exclusionFilter;
   private final FixedFormatManager manager;
 
   FixedFormatLineProcessor(
@@ -46,18 +50,19 @@ class FixedFormatLineProcessor {
       MultiMatchStrategy multiMatchStrategy,
       UnmatchStrategy unmatchStrategy,
       ParseErrorStrategy parseErrorStrategy,
-      Predicate<String> lineFilter,
+      Predicate<String> exclusionFilter,
       FixedFormatManager manager) {
     this.mappings = List.copyOf(mappings);
     this.multiMatchStrategy = multiMatchStrategy;
     this.unmatchStrategy = unmatchStrategy;
     this.parseErrorStrategy = parseErrorStrategy;
-    this.lineFilter = lineFilter;
+    this.exclusionFilter = exclusionFilter;
     this.manager = manager;
   }
 
   void processLine(String line, long lineNumber, BiConsumer<RecordMapping<?>, Object> emit) {
-    if (!lineFilter.test(line)) {
+    if (exclusionFilter.test(line)) {
+      LOG.debug("Excluding line {}: {}", lineNumber, line);
       return;
     }
     List<RecordMapping<?>> matched = findMatches(line);

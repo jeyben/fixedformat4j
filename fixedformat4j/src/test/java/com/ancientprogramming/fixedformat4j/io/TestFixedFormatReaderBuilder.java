@@ -118,11 +118,11 @@ class TestFixedFormatReaderBuilder {
   }
 
   @Test
-  void throwsNullPointerWhenIncludeLinesPredicateIsNull() {
+  void throwsNullPointerWhenExcludeLinesPredicateIsNull() {
     assertThrows(NullPointerException.class, () ->
         FixedFormatReader.builder()
             .addMapping(SampleRecord.class, anyPattern)
-            .includeLines(null)
+            .excludeLines(null)
     );
   }
 

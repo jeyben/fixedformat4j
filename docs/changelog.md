@@ -48,7 +48,7 @@ title: Changelog
 
   Three configurable strategies: `MultiMatchStrategy` (`firstMatch` / `throwOnAmbiguity` /
   `allMatches`), `UnmatchStrategy` (`skip` / `throwException`), and `ParseErrorStrategy`
-  (`throwException` / `skipAndLog`). An `includeLines(Predicate<String>)` pre-filter runs
+  (`throwException` / `skipAndLog`). An `excludeLines(Predicate<String>)` pre-filter runs
   before pattern matching and bypasses `UnmatchStrategy`.
 
   `RecordMapping<T>` is the public value type carrying the class and pattern for each registered
