@@ -26,7 +26,7 @@ class TestFixedFormatReaderMultiMatch {
         .multiMatchStrategy(MultiMatchStrategy.firstMatch())
         .build();
 
-    long count = reader.readAsResult(readerOf("AAAAAAAAAA")).getAll().size();
+    long count = reader.read(readerOf("AAAAAAAAAA")).getAll().size();
     assertEquals(1, count);
   }
 
@@ -39,7 +39,7 @@ class TestFixedFormatReaderMultiMatch {
         .build();
 
     FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
-        reader.readAsResult(readerOf("AAAAAAAAAA")));
+        reader.read(readerOf("AAAAAAAAAA")));
     assertTrue(ex.getMessage().contains("TenCharRecord"));
     assertTrue(ex.getMessage().contains("1"), "Should mention line 1: " + ex.getMessage());
   }
@@ -52,7 +52,7 @@ class TestFixedFormatReaderMultiMatch {
         .multiMatchStrategy(MultiMatchStrategy.throwOnAmbiguity())
         .build();
 
-    long count = reader.readAsResult(readerOf("AAAAAAAAAA")).getAll().size();
+    long count = reader.read(readerOf("AAAAAAAAAA")).getAll().size();
     assertEquals(1, count);
   }
 
@@ -68,7 +68,7 @@ class TestFixedFormatReaderMultiMatch {
         })
         .build();
 
-    reader.readAsResult(readerOf("AAAAAAAAAA"));
+    reader.read(readerOf("AAAAAAAAAA"));
     assertFalse(called.get(), "MultiMatchStrategy.resolve() must not be called when only one pattern matches");
   }
 
@@ -80,7 +80,7 @@ class TestFixedFormatReaderMultiMatch {
         .multiMatchStrategy(MultiMatchStrategy.allMatches())
         .build();
 
-    long count = reader.readAsResult(readerOf("AAAAAAAAAA")).getAll().size();
+    long count = reader.read(readerOf("AAAAAAAAAA")).getAll().size();
     assertEquals(2, count);
   }
 }

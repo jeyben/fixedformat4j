@@ -25,8 +25,8 @@ class TestFixedFormatReaderOutputShapes {
   }
 
   @Test
-  void readAsResultGroupsByMatchedClass() {
-    ReadResult result = multiTypeReader().readAsResult(
+  void readGroupsByMatchedClass() {
+    ReadResult result = multiTypeReader().read(
         new StringReader("AAAAAAAAAA\nBBBBBBBBBB\nAAAAAAAAAAAA"));
 
     assertEquals(2, result.get(TenCharRecord.class).size());
@@ -34,8 +34,8 @@ class TestFixedFormatReaderOutputShapes {
   }
 
   @Test
-  void readAsResultPreservesRegistrationOrder() {
-    ReadResult result = multiTypeReader().readAsResult(
+  void readPreservesRegistrationOrder() {
+    ReadResult result = multiTypeReader().read(
         new StringReader("BBBBBBBBBB\nAAAAAAAAAAAA"));
 
     List<Class<?>> keys = new ArrayList<>(result.classes());
@@ -44,8 +44,8 @@ class TestFixedFormatReaderOutputShapes {
   }
 
   @Test
-  void readAsResultExcludesClassesWithNoMatches() {
-    ReadResult result = multiTypeReader().readAsResult(
+  void readExcludesClassesWithNoMatches() {
+    ReadResult result = multiTypeReader().read(
         new StringReader("AAAAAAAAAA"));
 
     assertTrue(result.contains(TenCharRecord.class));
@@ -53,13 +53,13 @@ class TestFixedFormatReaderOutputShapes {
   }
 
   @Test
-  void readAsResultGetReturnsTypedRecordsInOrder() {
+  void readGetReturnsTypedRecordsInOrder() {
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
         .build();
 
     List<TenCharRecord> results = reader
-        .readAsResult(new StringReader("hello     \nworld     "))
+        .read(new StringReader("hello     \nworld     "))
         .get(TenCharRecord.class);
     assertEquals(2, results.size());
     assertEquals("hello", results.get(0).getValue());
@@ -68,7 +68,7 @@ class TestFixedFormatReaderOutputShapes {
 
   @Test
   void getAllReturnsFlatListInEncounterOrder() {
-    ReadResult result = multiTypeReader().readAsResult(
+    ReadResult result = multiTypeReader().read(
         new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
 
     List<Object> all = result.getAll();

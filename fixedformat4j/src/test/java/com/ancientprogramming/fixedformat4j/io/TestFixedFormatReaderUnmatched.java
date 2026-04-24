@@ -22,7 +22,7 @@ class TestFixedFormatReaderUnmatched {
         .build();
 
     FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
-        reader.readAsResult(new StringReader("BBBBBBBBBB")));
+        reader.read(new StringReader("BBBBBBBBBB")));
     assertTrue(ex.getMessage().contains("1"), "Should contain line number: " + ex.getMessage());
     assertTrue(ex.getMessage().contains("BBBBBBBBBB"), "Should contain raw line: " + ex.getMessage());
   }
@@ -35,7 +35,7 @@ class TestFixedFormatReaderUnmatched {
         .unmatchStrategy((lineNumber, line) -> captured.add(lineNumber + ":" + line))
         .build();
 
-    reader.readAsResult(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
+    reader.read(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
     assertEquals(1, captured.size());
     assertEquals("2:BBBBBBBBBB", captured.get(0));
   }
@@ -48,7 +48,7 @@ class TestFixedFormatReaderUnmatched {
         .unmatchStrategy((lineNumber, line) -> captured.add(line))
         .build();
 
-    reader.readAsResult(new StringReader("AAAAAAAAAA"));
+    reader.read(new StringReader("AAAAAAAAAA"));
     assertTrue(captured.isEmpty());
   }
 }

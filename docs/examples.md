@@ -151,7 +151,7 @@ System.out.println(manager.export(record));
 
 ## Example 4 — Processing a file line by line
 
-Since 1.8.0, use `FixedFormatReader` to process files. Build a reader once, then call `readAsResult` or `process`.
+Since 1.8.0, use `FixedFormatReader` to process files. Build a reader once, then call `read` or `process`.
 
 **Single record type:**
 
@@ -162,7 +162,7 @@ FixedFormatReader reader = FixedFormatReader.builder()
     .includeLines(line -> !line.isBlank())
     .build();
 
-List<EmployeeRecord> employees = reader.readAsResult(Path.of("employees.txt"))
+List<EmployeeRecord> employees = reader.read(Path.of("employees.txt"))
     .get(EmployeeRecord.class);
 
 for (EmployeeRecord emp : employees) {
@@ -170,7 +170,7 @@ for (EmployeeRecord emp : employees) {
 }
 ```
 
-**Multiple record types in the same file** — register each class with a discriminator pattern; `readAsResult` groups results by class with no casts:
+**Multiple record types in the same file** — register each class with a discriminator pattern; `read` groups results by class with no casts:
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
@@ -178,7 +178,7 @@ FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(ManagerRecord.class,  regex("^M"))
     .build();
 
-ReadResult result = reader.readAsResult(Path.of("staff.txt"));
+ReadResult result = reader.read(Path.of("staff.txt"));
 List<EmployeeRecord> employees = result.get(EmployeeRecord.class);
 List<ManagerRecord>  managers  = result.get(ManagerRecord.class);
 ```
@@ -584,7 +584,7 @@ FixedFormatReader reader = FixedFormatReader.builder()
 **Reading as ReadResult** (type-safe, no casts):
 
 ```java
-ReadResult result = reader.readAsResult(new File("orders.txt"));
+ReadResult result = reader.read(new File("orders.txt"));
 
 OrderHeader header = result.get(OrderHeader.class).get(0); // no cast
 System.out.println(header.getDate());    // "20260419"

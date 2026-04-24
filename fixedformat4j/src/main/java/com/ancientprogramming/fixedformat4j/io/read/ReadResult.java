@@ -21,19 +21,19 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * The result of a {@link com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader#readAsResult}
+ * The result of a {@link com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader#read}
  * call: an immutable, class-keyed container of parsed records that provides type-safe retrieval
  * without casts at the call site.
  *
  * <p>The type safety relies on the invariant that every record stored under key {@code K}
  * is an instance of {@code K}. This invariant is maintained automatically when the result
- * is produced by {@link com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader#readAsResult}.
+ * is produced by {@link com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader#read}.
  * Callers who construct a {@code ReadResult} directly are responsible for upholding it;
  * violations will not be detected at construction time and will manifest as
  * {@link ClassCastException} at the call site of {@link #get}.</p>
  *
  * <pre>{@code
- * ReadResult result = reader.readAsResult(path);
+ * ReadResult result = reader.read(path);
  * List<HeaderRecord> headers = result.get(HeaderRecord.class); // no cast
  * List<DetailRecord> details = result.get(DetailRecord.class); // no cast
  * }</pre>

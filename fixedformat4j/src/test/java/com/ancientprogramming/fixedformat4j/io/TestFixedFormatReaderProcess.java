@@ -208,7 +208,7 @@ class TestFixedFormatReaderProcess {
 
     reader.process(new StringReader("AAAAAAAAAA"),
         new HandlerRegistry().on(TenCharRecord.class, fromHandler::add));
-    List<Object> fromResult = reader.readAsResult(new StringReader("AAAAAAAAAA")).getAll();
+    List<Object> fromResult = reader.read(new StringReader("AAAAAAAAAA")).getAll();
 
     assertEquals(1, fromHandler.size());
     assertEquals(1, fromResult.size());

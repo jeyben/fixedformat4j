@@ -49,7 +49,7 @@ class TestStrategiesAndHandlers {
         .multiMatchStrategy(MultiMatchStrategy.firstMatch())
         .build();
 
-    List<Object> records = reader.readAsResult(new StringReader("AAAAAAAAAA")).getAll();
+    List<Object> records = reader.read(new StringReader("AAAAAAAAAA")).getAll();
 
     assertEquals(1, records.size());
     assertInstanceOf(TenCharRecord.class, records.get(0));
@@ -64,7 +64,7 @@ class TestStrategiesAndHandlers {
         .build();
 
     assertThrows(FixedFormatException.class, () ->
-        reader.readAsResult(new StringReader("AAAAAAAAAA")));
+        reader.read(new StringReader("AAAAAAAAAA")));
   }
 
   @Test
@@ -75,7 +75,7 @@ class TestStrategiesAndHandlers {
         .multiMatchStrategy(MultiMatchStrategy.allMatches())
         .build();
 
-    List<Object> records = reader.readAsResult(new StringReader("AAAAAAAAAA")).getAll();
+    List<Object> records = reader.read(new StringReader("AAAAAAAAAA")).getAll();
 
     assertEquals(2, records.size());
   }
@@ -91,7 +91,7 @@ class TestStrategiesAndHandlers {
         .multiMatchStrategy(lastMatch)
         .build();
 
-    List<Object> records = reader.readAsResult(new StringReader("AAAAA")).getAll();
+    List<Object> records = reader.read(new StringReader("AAAAA")).getAll();
 
     assertEquals(1, records.size());
     assertInstanceOf(FiveCharRecord.class, records.get(0));
@@ -104,7 +104,7 @@ class TestStrategiesAndHandlers {
         .unmatchStrategy(UnmatchStrategy.skip())
         .build();
 
-    List<Object> results = reader.readAsResult(new StringReader("AAAAAAAAAA\nBBBBBBBBBB")).getAll();
+    List<Object> results = reader.read(new StringReader("AAAAAAAAAA\nBBBBBBBBBB")).getAll();
     assertEquals(1, results.size());
   }
 
@@ -116,7 +116,7 @@ class TestStrategiesAndHandlers {
         .build();
 
     assertThrows(FixedFormatException.class, () ->
-        reader.readAsResult(new StringReader("AAAAAAAAAA\nBBBBBBBBBB")));
+        reader.read(new StringReader("AAAAAAAAAA\nBBBBBBBBBB")));
   }
 
   @Test
@@ -128,7 +128,7 @@ class TestStrategiesAndHandlers {
         .unmatchStrategy((lineNumber, line) -> captured.add(lineNumber + ":" + line))
         .build();
 
-    reader.readAsResult(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
+    reader.read(new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
 
     assertEquals(1, captured.size());
     assertEquals("2:BBBBBBBBBB", captured.get(0));
@@ -148,7 +148,7 @@ class TestStrategiesAndHandlers {
           .build();
 
       assertDoesNotThrow(() ->
-          reader.readAsResult(new StringReader("AAAAAAAAAA\nBBBBBBBBBB")));
+          reader.read(new StringReader("AAAAAAAAAA\nBBBBBBBBBB")));
 
       assertEquals(1, appender.list.size(), "Expected exactly one WARN log entry");
       ILoggingEvent event = appender.list.get(0);
@@ -167,7 +167,7 @@ class TestStrategiesAndHandlers {
         .build();
 
     assertThrows(FixedFormatException.class, () ->
-        reader.readAsResult(new StringReader("AAAAAAAAAA\nBBBBBBBBBB")));
+        reader.read(new StringReader("AAAAAAAAAA\nBBBBBBBBBB")));
   }
 
   @Test
@@ -178,7 +178,7 @@ class TestStrategiesAndHandlers {
         .manager(failOnLine(2))
         .build();
 
-    List<Object> results = reader.readAsResult(new StringReader(THREE_LINES)).getAll();
+    List<Object> results = reader.read(new StringReader(THREE_LINES)).getAll();
     assertEquals(2, results.size(), "Bad line should be skipped; two good lines emitted");
   }
 
@@ -192,7 +192,7 @@ class TestStrategiesAndHandlers {
         .manager(failOnLine(2))
         .build();
 
-    List<Object> results = reader.readAsResult(new StringReader(THREE_LINES)).getAll();
+    List<Object> results = reader.read(new StringReader(THREE_LINES)).getAll();
     assertEquals(2, results.size(), "Record for bad line must not be emitted");
     assertEquals(1, captured.size());
     assertTrue(captured.get(0).startsWith("2:"));
@@ -207,6 +207,6 @@ class TestStrategiesAndHandlers {
         .build();
 
     assertThrows(FixedFormatException.class, () ->
-        reader.readAsResult(new StringReader(THREE_LINES)));
+        reader.read(new StringReader(THREE_LINES)));
   }
 }

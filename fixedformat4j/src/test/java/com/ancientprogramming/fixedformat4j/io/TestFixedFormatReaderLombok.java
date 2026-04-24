@@ -35,7 +35,7 @@ class TestFixedFormatReaderLombok {
   @Test
   void readsLombokRecordFromReader() {
     List<LombokRecord> results = reader()
-        .readAsResult(new StringReader(TEST_DATA))
+        .read(new StringReader(TEST_DATA))
         .get(LombokRecord.class);
     assertEquals(1, results.size());
     assertEquals("Jacob", results.get(0).getName());
@@ -46,7 +46,7 @@ class TestFixedFormatReaderLombok {
   @Test
   void readsMultipleLombokRecordsFromReader() {
     List<LombokRecord> results = reader()
-        .readAsResult(new StringReader(TEST_DATA + "\n" + TEST_DATA))
+        .read(new StringReader(TEST_DATA + "\n" + TEST_DATA))
         .get(LombokRecord.class);
     assertEquals(2, results.size());
     assertEquals("Jacob", results.get(0).getName());
@@ -59,7 +59,7 @@ class TestFixedFormatReaderLombok {
     Files.writeString(file, TEST_DATA, StandardCharsets.UTF_8);
 
     List<LombokRecord> results = reader()
-        .readAsResult(file.toFile())
+        .read(file.toFile())
         .get(LombokRecord.class);
     assertEquals(1, results.size());
     assertEquals("Jacob", results.get(0).getName());
@@ -71,7 +71,7 @@ class TestFixedFormatReaderLombok {
     Files.writeString(file, TEST_DATA, StandardCharsets.UTF_8);
 
     List<LombokRecord> results = reader()
-        .readAsResult(file)
+        .read(file)
         .get(LombokRecord.class);
     assertEquals(1, results.size());
     assertEquals("Jacob", results.get(0).getName());
@@ -86,7 +86,7 @@ class TestFixedFormatReaderLombok {
 
     String input = TEST_DATA + "\nOther     0000119990101N0000000001";
     List<LombokRecord> results = reader
-        .readAsResult(new StringReader(input))
+        .read(new StringReader(input))
         .get(LombokRecord.class);
 
     assertEquals(1, results.size());
@@ -103,7 +103,7 @@ class TestFixedFormatReaderLombok {
 
     String input = TEST_DATA + "\nOther     0000119990101N0000000001";
     List<LombokRecord> results = reader
-        .readAsResult(new StringReader(input))
+        .read(new StringReader(input))
         .get(LombokRecord.class);
 
     assertEquals(1, results.size());

@@ -102,7 +102,7 @@ Mappings are evaluated in registration order. The `multiMatchStrategy` controls 
 
 ## Reading as ReadResult
 
-`readAsResult` is the recommended collect-then-process method for heterogeneous files. It reads all records eagerly and returns a `ReadResult` — a type-safe, class-keyed container that eliminates casts at the call site.
+`read` is the recommended collect-then-process method for heterogeneous files. It reads all records eagerly and returns a `ReadResult` — a type-safe, class-keyed container that eliminates casts at the call site.
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
@@ -110,7 +110,7 @@ FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(DetailRecord.class, regex("^DTL"))
     .build();
 
-ReadResult result = reader.readAsResult(Path.of("data.txt"));
+ReadResult result = reader.read(Path.of("data.txt"));
 
 List<HeaderRecord> headers = result.get(HeaderRecord.class); // no cast
 List<DetailRecord> details = result.get(DetailRecord.class); // no cast
@@ -131,7 +131,7 @@ Overloads are available for `File`, `Path`, `InputStream`, and `Reader`. All def
 
 ## Typed handler dispatch
 
-`process` is the push-style alternative to `readAsResult`. Instead of collecting records and querying the result, you supply a `HandlerRegistry` at call time; `process` parses each line and immediately dispatches the record to the matching handler.
+`process` is the push-style alternative to `read`. Instead of collecting records and querying the result, you supply a `HandlerRegistry` at call time; `process` parses each line and immediately dispatches the record to the matching handler.
 
 Supply handlers via a `HandlerRegistry` at the call site:
 
@@ -146,7 +146,7 @@ reader.process(Path.of("data.txt"), new HandlerRegistry()
     .on(DetailRecord.class, detail -> System.out.println("Detail: " + detail.getOrderId())));
 ```
 
-Classes not registered in the `HandlerRegistry` are silently ignored — they are still parsed and routed, but no handler is invoked. Because the registry is supplied per call, the same reader instance is safe to use from multiple threads with independent registries. The same source-type overloads (`File`, `Path`, `InputStream`, `Reader`) are available as for `readAsResult`.
+Classes not registered in the `HandlerRegistry` are silently ignored — they are still parsed and routed, but no handler is invoked. Because the registry is supplied per call, the same reader instance is safe to use from multiple threads with independent registries. The same source-type overloads (`File`, `Path`, `InputStream`, `Reader`) are available as for `read`.
 
 
 ---

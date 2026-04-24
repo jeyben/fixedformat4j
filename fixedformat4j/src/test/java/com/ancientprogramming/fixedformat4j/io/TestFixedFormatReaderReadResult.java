@@ -34,7 +34,7 @@ class TestFixedFormatReaderReadResult {
 
   @Test
   void getReturnsCastFreeTypedListForEachClass() {
-    ReadResult result = multiTypeReader().readAsResult(
+    ReadResult result = multiTypeReader().read(
         new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
 
     List<TenCharRecord> tens = result.get(TenCharRecord.class);
@@ -48,7 +48,7 @@ class TestFixedFormatReaderReadResult {
 
   @Test
   void getAllReturnsFlatListInEncounterOrder() {
-    ReadResult result = multiTypeReader().readAsResult(
+    ReadResult result = multiTypeReader().read(
         new StringReader("AAAAAAAAAA\nBBBBBBBBBB\nAAAAAAAAAAAA"));
 
     List<Object> all = result.getAll();
@@ -60,7 +60,7 @@ class TestFixedFormatReaderReadResult {
 
   @Test
   void containsChecksPresenceByClass() {
-    ReadResult result = multiTypeReader().readAsResult(
+    ReadResult result = multiTypeReader().read(
         new StringReader("AAAAAAAAAA"));
 
     assertTrue(result.contains(TenCharRecord.class));
@@ -69,7 +69,7 @@ class TestFixedFormatReaderReadResult {
 
   @Test
   void classesReturnsRegisteredClassesWithRecords() {
-    ReadResult result = multiTypeReader().readAsResult(
+    ReadResult result = multiTypeReader().read(
         new StringReader("AAAAAAAAAA\nBBBBBBBBBB"));
 
     assertTrue(result.classes().contains(TenCharRecord.class));
@@ -77,8 +77,8 @@ class TestFixedFormatReaderReadResult {
   }
 
   @Test
-  void readAsResultExcludesClassesWithNoMatches() {
-    ReadResult result = multiTypeReader().readAsResult(
+  void readExcludesClassesWithNoMatches() {
+    ReadResult result = multiTypeReader().read(
         new StringReader("AAAAAAAAAA"));
 
     assertEquals(1, result.classes().size());
@@ -87,66 +87,66 @@ class TestFixedFormatReaderReadResult {
   }
 
   @Test
-  void readAsResultWorksWithInputStream() {
+  void readWorksWithInputStream() {
     ByteArrayInputStream is = new ByteArrayInputStream(
         "AAAAAAAAAA\nBBBBBBBBBB".getBytes(StandardCharsets.UTF_8));
 
-    ReadResult result = multiTypeReader().readAsResult(is);
+    ReadResult result = multiTypeReader().read(is);
 
     assertEquals(1, result.get(TenCharRecord.class).size());
     assertEquals(1, result.get(FiveCharRecord.class).size());
   }
 
   @Test
-  void readAsResultWorksWithInputStreamAndCharset() {
+  void readWorksWithInputStreamAndCharset() {
     ByteArrayInputStream is = new ByteArrayInputStream(
         "AAAAAAAAAA\nBBBBBBBBBB".getBytes(StandardCharsets.ISO_8859_1));
 
-    ReadResult result = multiTypeReader().readAsResult(is, StandardCharsets.ISO_8859_1);
+    ReadResult result = multiTypeReader().read(is, StandardCharsets.ISO_8859_1);
 
     assertEquals(1, result.get(TenCharRecord.class).size());
     assertEquals(1, result.get(FiveCharRecord.class).size());
   }
 
   @Test
-  void readAsResultWorksWithFile() throws IOException {
+  void readWorksWithFile() throws IOException {
     Path file = tempDir.resolve("data.txt");
     Files.writeString(file, "AAAAAAAAAA\nBBBBBBBBBB", StandardCharsets.UTF_8);
 
-    ReadResult result = multiTypeReader().readAsResult(file.toFile());
+    ReadResult result = multiTypeReader().read(file.toFile());
 
     assertEquals(1, result.get(TenCharRecord.class).size());
     assertEquals(1, result.get(FiveCharRecord.class).size());
   }
 
   @Test
-  void readAsResultWorksWithFileAndCharset() throws IOException {
+  void readWorksWithFileAndCharset() throws IOException {
     Path file = tempDir.resolve("data.txt");
     Files.write(file, "AAAAAAAAAA\nBBBBBBBBBB".getBytes(StandardCharsets.ISO_8859_1));
 
-    ReadResult result = multiTypeReader().readAsResult(file.toFile(), StandardCharsets.ISO_8859_1);
+    ReadResult result = multiTypeReader().read(file.toFile(), StandardCharsets.ISO_8859_1);
 
     assertEquals(1, result.get(TenCharRecord.class).size());
     assertEquals(1, result.get(FiveCharRecord.class).size());
   }
 
   @Test
-  void readAsResultWorksWithPath() throws IOException {
+  void readWorksWithPath() throws IOException {
     Path file = tempDir.resolve("data.txt");
     Files.writeString(file, "AAAAAAAAAA\nBBBBBBBBBB", StandardCharsets.UTF_8);
 
-    ReadResult result = multiTypeReader().readAsResult(file);
+    ReadResult result = multiTypeReader().read(file);
 
     assertEquals(1, result.get(TenCharRecord.class).size());
     assertEquals(1, result.get(FiveCharRecord.class).size());
   }
 
   @Test
-  void readAsResultWorksWithPathAndCharset() throws IOException {
+  void readWorksWithPathAndCharset() throws IOException {
     Path file = tempDir.resolve("data.txt");
     Files.write(file, "AAAAAAAAAA\nBBBBBBBBBB".getBytes(StandardCharsets.ISO_8859_1));
 
-    ReadResult result = multiTypeReader().readAsResult(file, StandardCharsets.ISO_8859_1);
+    ReadResult result = multiTypeReader().read(file, StandardCharsets.ISO_8859_1);
 
     assertEquals(1, result.get(TenCharRecord.class).size());
     assertEquals(1, result.get(FiveCharRecord.class).size());

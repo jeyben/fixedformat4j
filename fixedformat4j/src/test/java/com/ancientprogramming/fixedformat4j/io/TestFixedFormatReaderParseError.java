@@ -52,7 +52,7 @@ class TestFixedFormatReaderParseError {
         .manager(countingManager)
         .build();
 
-    reader.readAsResult(new StringReader("line1     \nline2     \nline3     "));
+    reader.read(new StringReader("line1     \nline2     \nline3     "));
     assertEquals(2, goodLines.get(), "Two good lines should have been processed");
   }
 
@@ -67,7 +67,7 @@ class TestFixedFormatReaderParseError {
         .manager(failOnSecondCall())
         .build();
 
-    reader.readAsResult(new StringReader("line1     \nline2     "));
+    reader.read(new StringReader("line1     \nline2     "));
     assertEquals(1, captured.size());
     assertTrue(captured.get(0).startsWith("2:line2     "));
   }
@@ -80,7 +80,7 @@ class TestFixedFormatReaderParseError {
         .manager(failOnSecondCall())
         .build();
 
-    List<Object> results = reader.readAsResult(new StringReader("line1     \nline2     ")).getAll();
+    List<Object> results = reader.read(new StringReader("line1     \nline2     ")).getAll();
     assertEquals(1, results.size());
   }
 }

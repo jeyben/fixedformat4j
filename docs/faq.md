@@ -68,7 +68,7 @@ public class PayrollService {
   }
 
   public List<DetailRecord> load(Path file) {
-    return reader.readAsResult(file).get(DetailRecord.class);
+    return reader.read(file).get(DetailRecord.class);
   }
 }
 ```
@@ -255,7 +255,7 @@ FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(DetailRecord.class, regex("^D"))
     .build();
 
-ReadResult result = reader.readAsResult(Path.of("data.txt"));
+ReadResult result = reader.read(Path.of("data.txt"));
 List<HeaderRecord> headers = result.get(HeaderRecord.class);
 List<DetailRecord> details = result.get(DetailRecord.class);
 ```

@@ -66,7 +66,7 @@ class TestFixedFormatReaderBuilder {
         .manager(FixedFormatManagerImpl.create())
         .build();
     List<TenCharRecord> results = reader
-        .readAsResult(new StringReader("hello     "))
+        .read(new StringReader("hello     "))
         .get(TenCharRecord.class);
     assertEquals(1, results.size());
     assertEquals("hello", results.get(0).getValue());

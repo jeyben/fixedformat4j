@@ -39,7 +39,7 @@ import static java.lang.String.format;
  * <p>Each physical line is treated as exactly one record (or unmatched). If a file contains
  * multiple records packed within a single line, split the line before passing it to this reader.</p>
  *
- * <p>Records are collected eagerly via {@link #readAsResult} or dispatched via
+ * <p>Records are collected eagerly via {@link #read} or dispatched via
  * {@link #process(Reader, HandlerRegistry)}. All input-source overloads default to
  * {@link java.nio.charset.StandardCharsets#UTF_8}; explicit {@link Charset} overloads are
  * provided for every source type.</p>
@@ -52,7 +52,7 @@ import static java.lang.String.format;
  *     .addMapping(MyRecord.class, regex(".*"))
  *     .build();
  *
- * List<MyRecord> records = reader.readAsResult(new File("data.txt")).get(MyRecord.class);
+ * List<MyRecord> records = reader.read(new File("data.txt")).get(MyRecord.class);
  * }</pre>
  *
  * <p>Quick start — heterogeneous file:</p>
@@ -62,7 +62,7 @@ import static java.lang.String.format;
  *     .addMapping(DetailRecord.class, regex("^DTL"))
  *     .build();
  *
- * ReadResult result = reader.readAsResult(Path.of("data.txt"));
+ * ReadResult result = reader.read(Path.of("data.txt"));
  * List<HeaderRecord> headers = result.get(HeaderRecord.class);
  * List<DetailRecord> details = result.get(DetailRecord.class);
  * }</pre>
@@ -98,7 +98,7 @@ public class FixedFormatReader {
         builder.manager);
   }
 
-  // --- readAsResult ---
+  // --- read ---
 
   /**
    * Eagerly reads all records from {@code reader} and returns a {@link ReadResult} that
@@ -113,7 +113,7 @@ public class FixedFormatReader {
    * line processor carries no mutable per-call state.</p>
    *
    * <pre>{@code
-   * ReadResult result = reader.readAsResult(source);
+   * ReadResult result = reader.read(source);
    * List<HeaderRecord> headers = result.get(HeaderRecord.class); // no cast
    * }</pre>
    *
@@ -121,7 +121,7 @@ public class FixedFormatReader {
    * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
-  public ReadResult readAsResult(Reader reader) {
+  public ReadResult read(Reader reader) {
     Objects.requireNonNull(reader, "reader must not be null");
     Map<Class<?>, List<Object>> data = new LinkedHashMap<>();
     for (RecordMapping<?> mapping : mappings) {
@@ -144,8 +144,8 @@ public class FixedFormatReader {
    * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
-  public ReadResult readAsResult(InputStream inputStream) {
-    return readAsResult(inputStream, StandardCharsets.UTF_8);
+  public ReadResult read(InputStream inputStream) {
+    return read(inputStream, StandardCharsets.UTF_8);
   }
 
   /**
@@ -157,11 +157,11 @@ public class FixedFormatReader {
    * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
-  public ReadResult readAsResult(InputStream inputStream, Charset charset) {
+  public ReadResult read(InputStream inputStream, Charset charset) {
     Objects.requireNonNull(inputStream, "inputStream must not be null");
     Objects.requireNonNull(charset, "charset must not be null");
     try (InputStreamReader r = new InputStreamReader(inputStream, charset)) {
-      return readAsResult(r);
+      return read(r);
     } catch (IOException e) {
       throw new FixedFormatIOException("IO error reading input stream", e);
     }
@@ -175,8 +175,8 @@ public class FixedFormatReader {
    * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
-  public ReadResult readAsResult(File file) {
-    return readAsResult(file, StandardCharsets.UTF_8);
+  public ReadResult read(File file) {
+    return read(file, StandardCharsets.UTF_8);
   }
 
   /**
@@ -188,11 +188,11 @@ public class FixedFormatReader {
    * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
-  public ReadResult readAsResult(File file, Charset charset) {
+  public ReadResult read(File file, Charset charset) {
     Objects.requireNonNull(file, "file must not be null");
     Objects.requireNonNull(charset, "charset must not be null");
     try (InputStreamReader r = new InputStreamReader(new FileInputStream(file), charset)) {
-      return readAsResult(r);
+      return read(r);
     } catch (FileNotFoundException e) {
       throw new FixedFormatIOException(format("File not found: %s", file), e);
     } catch (IOException e) {
@@ -208,8 +208,8 @@ public class FixedFormatReader {
    * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
-  public ReadResult readAsResult(Path path) {
-    return readAsResult(path, StandardCharsets.UTF_8);
+  public ReadResult read(Path path) {
+    return read(path, StandardCharsets.UTF_8);
   }
 
   /**
@@ -221,11 +221,11 @@ public class FixedFormatReader {
    * @return a {@link ReadResult} grouping records by their matched class; never {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
-  public ReadResult readAsResult(Path path, Charset charset) {
+  public ReadResult read(Path path, Charset charset) {
     Objects.requireNonNull(path, "path must not be null");
     Objects.requireNonNull(charset, "charset must not be null");
     try (InputStreamReader r = new InputStreamReader(Files.newInputStream(path), charset)) {
-      return readAsResult(r);
+      return read(r);
     } catch (IOException e) {
       throw new FixedFormatIOException(format("Cannot open path: %s", path), e);
     }
