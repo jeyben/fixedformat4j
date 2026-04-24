@@ -43,7 +43,7 @@ public final class TypedReadResult {
   private final Map<Class<?>, List<Object>> data;
   private final List<Object> all;
 
-  TypedReadResult(Map<Class<?>, List<Object>> data, List<Object> all) {
+  public TypedReadResult(Map<Class<?>, List<Object>> data, List<Object> all) {
     this.data = Collections.unmodifiableMap(data);
     this.all = Collections.unmodifiableList(all);
   }

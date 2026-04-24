@@ -1,7 +1,7 @@
 package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
-import com.ancientprogramming.fixedformat4j.io.pattern.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
 import org.junit.jupiter.api.Test;
 
 import java.io.Reader;
@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
+import com.ancientprogramming.fixedformat4j.io.read.MultiMatchStrategy;
 
 class TestFixedFormatReaderMultiMatch {
 

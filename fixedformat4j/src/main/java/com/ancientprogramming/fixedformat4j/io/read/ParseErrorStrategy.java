@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io.strategy;
+package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import org.slf4j.Logger;

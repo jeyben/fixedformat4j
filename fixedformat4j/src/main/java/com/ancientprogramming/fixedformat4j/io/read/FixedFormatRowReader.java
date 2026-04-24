@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatIOException;
 import com.ancientprogramming.fixedformat4j.io.row.ParsedRow;
 import com.ancientprogramming.fixedformat4j.io.row.Row;
 import com.ancientprogramming.fixedformat4j.io.row.UnmatchedRow;
-import com.ancientprogramming.fixedformat4j.io.strategy.PartialChunkStrategy;
-import com.ancientprogramming.fixedformat4j.io.strategy.UnmatchStrategy;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -29,25 +27,23 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 /**
- * Reads fixed-format files where multiple records are packed end-to-end within a single physical
- * line, and returns every chunk as an ordered {@link List} of {@link Row} entries for
- * read-edit-write round trips.
+ * Reads a fixed-format file or stream line by line and returns every line as an ordered
+ * {@link List} of {@link Row} entries, preserving the exact line order of the source.
  *
- * <p>Matched chunks become {@link ParsedRow} entries; unmatched chunks become
- * {@link UnmatchedRow} entries (holding the raw chunk text). Physical lines rejected by the
- * {@link PackedRecordRowReaderBuilder#includeLines(Predicate) includeLines} predicate become a
- * single {@link UnmatchedRow} holding the entire raw line. Partial trailing chunks are handled
- * by the configured {@link PartialChunkStrategy}; chunks resolved to
- * {@link Optional#empty()} are silently dropped.</p>
+ * <p>Lines that match a registered pattern are parsed into a {@link ParsedRow}; lines that
+ * do not match any pattern become an {@link UnmatchedRow}. No line is ever dropped — there is
+ * no concept of an "unmatched line strategy" in this reader.</p>
+ *
+ * <p>This reader is designed for <em>read-edit-write</em> round trips: read the file with
+ * {@link #readAsRows}, mutate the records you care about, then write everything back with
+ * {@link com.ancientprogramming.fixedformat4j.io.write.FixedFormatWriter}, which preserves unmatched lines (comments, blanks, separators)
+ * verbatim.</p>
  *
  * <p>Quick start:</p>
  * <pre>{@code
- * PackedRecordRowReader reader = PackedRecordRowReader.builder()
- *     .recordWidth(128)
+ * FixedFormatRowReader reader = FixedFormatRowReader.builder()
  *     .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"))
  *     .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
  *     .build();
@@ -59,39 +55,31 @@ import java.util.function.Predicate;
  *     .map(r -> (ParsedRow<DetailRecord>) r)
  *     .forEach(pr -> pr.getRecord().setAmount(pr.getRecord().getAmount() * 2));
  *
- * // FixedFormatWriter writes one row per line, effectively unpacking the packed structure
- * new FixedFormatWriter(new FixedFormatManagerImpl()).write(rows, new File("data-updated.txt"));
+ * new com.ancientprogramming.fixedformat4j.io.write.FixedFormatWriter(new com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl()).write(rows, new File("data-updated.txt"));
  * }</pre>
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.9.0
- * @see PackedRecordRowReaderBuilder
- * @see PackedRecordReader
- * @see FixedFormatWriter
+ * @see com.ancientprogramming.fixedformat4j.io.write.FixedFormatWriter
+ * @see FixedFormatReader
  */
-public class PackedRecordRowReader {
+public class FixedFormatRowReader {
 
-  private final int recordWidth;
   private final FixedFormatLineProcessor processor;
-  private final PartialChunkStrategy partialChunkStrategy;
-  private final Predicate<String> lineFilter;
 
-  PackedRecordRowReader(PackedRecordRowReaderBuilder builder) {
-    this.recordWidth = builder.recordWidth;
-    this.partialChunkStrategy = builder.partialChunkStrategy;
-    this.lineFilter = builder.lineFilter;
+  FixedFormatRowReader(FixedFormatRowReaderBuilder builder) {
     this.processor = new FixedFormatLineProcessor(
         List.copyOf(builder.mappings),
         builder.multiMatchStrategy,
         UnmatchStrategy.skip(),  // never invoked — row reader uses the 4-arg processLine
         builder.parseErrorStrategy,
-        line -> true,  // line filter applied in sliceLine; processor sees full chunks
+        builder.lineFilter,
         builder.manager);
   }
 
   /**
    * Eagerly reads all lines from {@code reader} and returns an ordered list of {@link Row}
-   * entries preserving the exact chunk order of the source.
+   * entries preserving the exact line order of the source.
    *
    * @param reader the source of lines; wrapped in a {@link BufferedReader} if not already one
    * @return an ordered, mutable list of {@link Row} entries; never {@code null}
@@ -104,7 +92,9 @@ public class PackedRecordRowReader {
     try (buffered) {
       String line;
       while ((line = buffered.readLine()) != null) {
-        sliceLine(line, ++lineCounter[0], rows);
+        processor.processLine(line, ++lineCounter[0],
+            (clazz, record) -> rows.add(toParsedRow(clazz, record)),
+            raw -> rows.add(new UnmatchedRow(raw)));
       }
     } catch (IOException e) {
       throw new FixedFormatIOException("IO error reading line " + (lineCounter[0] + 1), e);
@@ -196,47 +186,19 @@ public class PackedRecordRowReader {
   }
 
   /**
-   * Returns a new builder for constructing a {@link PackedRecordRowReader}.
+   * Returns a new builder for constructing a {@link FixedFormatRowReader}.
    *
    * @return a fresh builder instance
    */
-  public static PackedRecordRowReaderBuilder builder() {
-    return new PackedRecordRowReaderBuilder();
-  }
-
-  private void sliceLine(String line, long lineNumber, List<Row> rows) {
-    if (!lineFilter.test(line)) {
-      rows.add(new UnmatchedRow(line));
-      return;
-    }
-    int offset = 0;
-    int chunkIndex = 0;
-    while (offset < line.length()) {
-      chunkIndex++;
-      int remaining = line.length() - offset;
-      if (remaining >= recordWidth) {
-        String chunk = line.substring(offset, offset + recordWidth);
-        offset += recordWidth;
-        processor.processLine(chunk, lineNumber,
-            (clazz, record) -> rows.add(toParsedRow(clazz, record)),
-            rawChunk -> rows.add(new UnmatchedRow(rawChunk)));
-      } else {
-        String partial = line.substring(offset);
-        offset = line.length();
-        Optional<String> resolved = partialChunkStrategy.resolve(
-            lineNumber, chunkIndex, partial, recordWidth);
-        resolved.ifPresent(padded -> processor.processLine(padded, lineNumber,
-            (clazz, record) -> rows.add(toParsedRow(clazz, record)),
-            rawChunk -> rows.add(new UnmatchedRow(rawChunk))));
-      }
-    }
+  public static FixedFormatRowReaderBuilder builder() {
+    return new FixedFormatRowReaderBuilder();
   }
 
   private static BufferedReader toBuffered(Reader reader) {
     return reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader);
   }
 
-  // Safe: record was produced by manager.load(clazz, chunk), so it is an instance of clazz.
+  // Safe: record was produced by manager.load(clazz, line), so it is an instance of clazz.
   @SuppressWarnings({"unchecked", "rawtypes"})
   private static <T> ParsedRow<T> toParsedRow(Class<?> clazz, Object record) {
     return new ParsedRow(clazz, record);

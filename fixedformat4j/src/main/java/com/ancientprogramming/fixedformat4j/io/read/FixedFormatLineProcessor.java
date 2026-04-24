@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
-import com.ancientprogramming.fixedformat4j.io.strategy.ParseErrorStrategy;
-import com.ancientprogramming.fixedformat4j.io.strategy.UnmatchStrategy;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -80,7 +78,7 @@ class FixedFormatLineProcessor {
    * <p>Unlike the single-callback overload, this variant:</p>
    * <ul>
    *   <li>Calls {@code unmatchedCallback} instead of the configured {@link UnmatchStrategy}
-   *       so that all unmatched lines are captured as {@link UnmatchedRow} entries.</li>
+   *       so that all unmatched lines are captured as {@link com.ancientprogramming.fixedformat4j.io.row.UnmatchedRow} entries.</li>
    *   <li>Calls {@code unmatchedCallback} also for lines rejected by the line filter, so
    *       no line is silently dropped and the original file can be reconstructed exactly.</li>
    * </ul>

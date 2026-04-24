@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io.pattern;
+package com.ancientprogramming.fixedformat4j.io.read;
 
 /**
  * Strategy interface for deciding whether a line in a fixed-format file should be loaded

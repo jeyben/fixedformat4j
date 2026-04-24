@@ -1,7 +1,7 @@
 package com.ancientprogramming.fixedformat4j.io;
 
-import com.ancientprogramming.fixedformat4j.io.pattern.FixedFormatMatchPattern;
-import com.ancientprogramming.fixedformat4j.io.pattern.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.FixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
 import com.ancientprogramming.fixedformat4j.io.row.ParsedRow;
 import com.ancientprogramming.fixedformat4j.io.row.Row;
 import com.ancientprogramming.fixedformat4j.io.row.UnmatchedRow;
@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.ancientprogramming.fixedformat4j.io.read.FixedFormatRowReader;
 
 class TestFixedFormatRowReader {
 

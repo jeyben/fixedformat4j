@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatIOException;
+import com.ancientprogramming.fixedformat4j.io.TypedReadResult;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -77,7 +78,7 @@ import java.util.stream.StreamSupport;
  * }</pre>
  *
  * <p>For read-edit-write round trips where unmatched lines must be preserved verbatim,
- * use {@link FixedFormatRowReader} together with {@link FixedFormatWriter} instead.</p>
+ * use {@link FixedFormatRowReader} together with {@link com.ancientprogramming.fixedformat4j.io.write.FixedFormatWriter} instead.</p>
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0

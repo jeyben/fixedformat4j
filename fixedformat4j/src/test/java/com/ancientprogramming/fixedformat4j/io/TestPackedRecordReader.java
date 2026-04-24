@@ -1,10 +1,10 @@
 package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
-import com.ancientprogramming.fixedformat4j.io.pattern.FixedFormatMatchPattern;
-import com.ancientprogramming.fixedformat4j.io.pattern.RegexFixedFormatMatchPattern;
-import com.ancientprogramming.fixedformat4j.io.strategy.PartialChunkStrategy;
-import com.ancientprogramming.fixedformat4j.io.strategy.UnmatchStrategy;
+import com.ancientprogramming.fixedformat4j.io.read.FixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.PartialChunkStrategy;
+import com.ancientprogramming.fixedformat4j.io.read.UnmatchStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.ancientprogramming.fixedformat4j.io.read.PackedRecordReader;
 
 class TestPackedRecordReader {
 

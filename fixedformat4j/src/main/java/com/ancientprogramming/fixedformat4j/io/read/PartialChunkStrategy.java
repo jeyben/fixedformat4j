@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io.strategy;
+package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 
@@ -36,7 +36,7 @@ import java.util.Optional;
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.9.0
- * @see com.ancientprogramming.fixedformat4j.io.PackedRecordReader
+ * @see PackedRecordReader
  */
 @FunctionalInterface
 public interface PartialChunkStrategy {

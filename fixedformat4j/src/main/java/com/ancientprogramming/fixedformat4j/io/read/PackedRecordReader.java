@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatIOException;
-import com.ancientprogramming.fixedformat4j.io.strategy.PartialChunkStrategy;
+import com.ancientprogramming.fixedformat4j.io.TypedReadResult;
 
 import java.io.*;
 import java.nio.charset.Charset;

@@ -2,11 +2,12 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
-import com.ancientprogramming.fixedformat4j.io.pattern.FixedFormatMatchPattern;
-import com.ancientprogramming.fixedformat4j.io.pattern.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.FixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.ancientprogramming.fixedformat4j.io.read.ClassPatternMapping;
 
 class TestClassPatternMapping {
 

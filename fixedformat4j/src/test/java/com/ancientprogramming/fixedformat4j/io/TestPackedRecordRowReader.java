@@ -2,12 +2,12 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
-import com.ancientprogramming.fixedformat4j.io.pattern.FixedFormatMatchPattern;
-import com.ancientprogramming.fixedformat4j.io.pattern.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.FixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
 import com.ancientprogramming.fixedformat4j.io.row.ParsedRow;
 import com.ancientprogramming.fixedformat4j.io.row.Row;
 import com.ancientprogramming.fixedformat4j.io.row.UnmatchedRow;
-import com.ancientprogramming.fixedformat4j.io.strategy.PartialChunkStrategy;
+import com.ancientprogramming.fixedformat4j.io.read.PartialChunkStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -21,6 +21,8 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.ancientprogramming.fixedformat4j.io.read.PackedRecordRowReader;
+import com.ancientprogramming.fixedformat4j.io.write.FixedFormatWriter;
 
 class TestPackedRecordRowReader {
 

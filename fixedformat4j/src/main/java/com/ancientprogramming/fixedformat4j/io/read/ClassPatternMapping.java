@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.read;
 
 import com.ancientprogramming.fixedformat4j.annotation.Record;
-import com.ancientprogramming.fixedformat4j.io.pattern.FixedFormatMatchPattern;
 
 import java.util.function.Consumer;
 
