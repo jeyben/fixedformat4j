@@ -58,7 +58,6 @@ import java.util.function.BiConsumer;
  * FixedFormatReader reader = FixedFormatReader.builder()
  *     .addMapping(HeaderRecord.class, regex("^HDR"))
  *     .addMapping(DetailRecord.class, regex("^DTL"))
- *     .unmatchStrategy(UnmatchStrategy.skip())
  *     .build();
  *
  * ReadResult result = reader.readAsResult(Path.of("data.txt"));

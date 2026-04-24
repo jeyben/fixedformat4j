@@ -33,7 +33,7 @@ public class FixedFormatReaderBuilder {
 
   final List<RecordMapping<?>> mappings = new ArrayList<>();
   MultiMatchStrategy multiMatchStrategy = MultiMatchStrategy.firstMatch();
-  UnmatchStrategy unmatchStrategy = UnmatchStrategy.skip();
+  UnmatchStrategy unmatchStrategy = UnmatchStrategy.throwException();
   ParseErrorStrategy parseErrorStrategy = ParseErrorStrategy.throwException();
   Predicate<String> lineFilter = line -> true;
   FixedFormatManager manager = FixedFormatManagerImpl.create();
@@ -70,7 +70,7 @@ public class FixedFormatReaderBuilder {
 
   /**
    * Sets the strategy applied when no pattern matches a line.
-   * Defaults to {@link UnmatchStrategy#skip()}.
+   * Defaults to {@link UnmatchStrategy#throwException()}.
    *
    * @param strategy the unmatched strategy to use; must not be {@code null}
    * @return this builder

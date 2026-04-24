@@ -48,7 +48,6 @@ public FixedFormatReader payrollReader() {
   return FixedFormatReader.builder()
       .addMapping(HeaderRecord.class, regex("^HDR"))
       .addMapping(DetailRecord.class, regex("^DTL"))
-      .unmatchStrategy(UnmatchStrategy.skip())
       .build();
 }
 ```

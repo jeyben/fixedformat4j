@@ -77,7 +77,16 @@ FixedFormatReader reader = FixedFormatReader.builder()
     .build();
 ```
 
-**Heterogeneous file:**
+**Heterogeneous file (strict — throw on any unrecognised line):**
+
+```java
+FixedFormatReader reader = FixedFormatReader.builder()
+    .addMapping(HeaderRecord.class, regex("^HDR"))
+    .addMapping(DetailRecord.class, regex("^DTL"))
+    .build();
+```
+
+**Heterogeneous file (lenient — skip and log unrecognised lines):**
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
@@ -99,7 +108,6 @@ Mappings are evaluated in registration order. The `multiMatchStrategy` controls 
 FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(HeaderRecord.class, regex("^HDR"))
     .addMapping(DetailRecord.class, regex("^DTL"))
-    .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 
 ReadResult result = reader.readAsResult(Path.of("data.txt"));
@@ -131,7 +139,6 @@ Supply handlers via a `HandlerRegistry` at the call site:
 FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(HeaderRecord.class, regex("^HDR"))
     .addMapping(DetailRecord.class, regex("^DTL"))
-    .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 
 reader.process(Path.of("data.txt"), new HandlerRegistry()
@@ -177,8 +184,8 @@ Implement `MultiMatchStrategy` directly for custom resolution logic:
 
 | Factory method | Behaviour |
 |---|---|
-| `UnmatchStrategy.skip()` *(default)* | Silently ignore the line. Useful for header, footer, or comment lines. |
-| `UnmatchStrategy.throwException()` | Throw `FixedFormatException` with the line number and raw content. |
+| `UnmatchStrategy.throwException()` *(default)* | Throw `FixedFormatException` with the line number and raw content. |
+| `UnmatchStrategy.skip()` | Skip the line and log a WARN via SLF4J. Useful when some record types are intentionally ignored. |
 | Lambda | Invoke any custom logic; throw to abort, return to continue. |
 
 ```java
@@ -205,7 +212,7 @@ FixedFormatReader.builder()
     .build();
 ```
 
-**Note:** `ParseErrorStrategy.skipAndLog()` only logs if an SLF4J binding is present at runtime. For guaranteed error visibility, use a custom lambda that writes to your preferred output.
+**Note:** `UnmatchStrategy.skip()` and `ParseErrorStrategy.skipAndLog()` only log if an SLF4J binding is present at runtime. For guaranteed error visibility, use a custom lambda that writes to your preferred output.
 
 ---
 

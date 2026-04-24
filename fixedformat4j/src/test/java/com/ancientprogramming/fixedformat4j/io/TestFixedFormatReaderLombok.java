@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
+import com.ancientprogramming.fixedformat4j.io.read.UnmatchStrategy;
 
 class TestFixedFormatReaderLombok {
 
@@ -80,6 +81,7 @@ class TestFixedFormatReaderLombok {
   void patternMatchesOnlyLombokLines() {
     FixedFormatReader reader = FixedFormatReader.builder()
         .addMapping(LombokRecord.class, Pattern.compile("^Jacob").asPredicate())
+        .unmatchStrategy(UnmatchStrategy.skip())
         .build();
 
     String input = TEST_DATA + "\nOther     0000119990101N0000000001";

@@ -578,7 +578,6 @@ public class OrderDetail {
 FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(OrderHeader.class, regex("^HDR"))
     .addMapping(OrderDetail.class, regex("^DTL"))
-    .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 ```
 
@@ -601,7 +600,6 @@ System.out.println(details.size());      // 2
 FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(OrderHeader.class, regex("^HDR"))
     .addMapping(OrderDetail.class, regex("^DTL"))
-    .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 
 reader.process(new File("orders.txt"), new HandlerRegistry()

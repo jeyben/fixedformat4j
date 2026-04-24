@@ -1,10 +1,16 @@
 package com.ancientprogramming.fixedformat4j.io;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
+import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
+import com.ancientprogramming.fixedformat4j.io.read.MultiMatchStrategy;
 import com.ancientprogramming.fixedformat4j.io.read.ParseErrorStrategy;
 import com.ancientprogramming.fixedformat4j.io.read.UnmatchStrategy;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -14,8 +20,6 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
-import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
-import com.ancientprogramming.fixedformat4j.io.read.MultiMatchStrategy;
 
 class TestStrategiesAndHandlers {
 
@@ -128,6 +132,42 @@ class TestStrategiesAndHandlers {
 
     assertEquals(1, captured.size());
     assertEquals("2:BBBBBBBBBB", captured.get(0));
+  }
+
+  @Test
+  void unmatchedSkipLogsWarnWithLineNumberAndContent() {
+    ch.qos.logback.classic.Logger logger =
+        (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(UnmatchStrategy.class);
+    ListAppender<ILoggingEvent> appender = new ListAppender<>();
+    appender.start();
+    logger.addAppender(appender);
+    try {
+      FixedFormatReader reader = FixedFormatReader.builder()
+          .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+          .unmatchStrategy(UnmatchStrategy.skip())
+          .build();
+
+      assertDoesNotThrow(() ->
+          reader.readAsResult(new StringReader("AAAAAAAAAA\nBBBBBBBBBB")));
+
+      assertEquals(1, appender.list.size(), "Expected exactly one WARN log entry");
+      ILoggingEvent event = appender.list.get(0);
+      assertEquals(Level.WARN, event.getLevel());
+      assertTrue(event.getFormattedMessage().contains("2"), "Message must include line number");
+      assertTrue(event.getFormattedMessage().contains("BBBBBBBBBB"), "Message must include line content");
+    } finally {
+      logger.detachAppender(appender);
+    }
+  }
+
+  @Test
+  void defaultUnmatchStrategyThrowsOnUnmatchedLine() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+        .build();
+
+    assertThrows(FixedFormatException.class, () ->
+        reader.readAsResult(new StringReader("AAAAAAAAAA\nBBBBBBBBBB")));
   }
 
   @Test
