@@ -49,9 +49,9 @@ title: Changelog
   Every shape accepts `Reader`, `InputStream`, `File`, or `Path`; file/stream overloads default to UTF-8.
 
   Three configurable strategies: `MultiMatchStrategy` (`firstMatch` / `throwOnAmbiguity` /
-  `allMatches`), `UnmatchedLineStrategy` (`skip` / `throwException`), and `ParseErrorStrategy`
+  `allMatches`), `UnmatchStrategy` (`skip` / `throwException`), and `ParseErrorStrategy`
   (`throwException` / `skipAndLog`). An `includeLines(Predicate<String>)` pre-filter runs
-  before pattern matching and bypasses `UnmatchedLineStrategy`.
+  before pattern matching and bypasses `UnmatchStrategy`.
 
   `FixedFormatIOException` (extends `FixedFormatException`) is thrown on underlying `IOException`.
 

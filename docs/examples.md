@@ -576,7 +576,7 @@ public class OrderDetail {
 FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(OrderHeader.class, new RegexFixedFormatMatchPattern("^HDR"))
     .addMapping(OrderDetail.class, new RegexFixedFormatMatchPattern("^DTL"))
-    .unmatchedLineStrategy(UnmatchedLineStrategy.SKIP)
+    .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 ```
 
@@ -602,7 +602,7 @@ FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(OrderDetail.class, new RegexFixedFormatMatchPattern("^DTL"),
         detail -> System.out.printf("Order %d: %s — %d cents%n",
             detail.getOrderId(), detail.getProduct(), detail.getAmountCents()))
-    .unmatchedLineStrategy(UnmatchedLineStrategy.SKIP)
+    .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 
 reader.processAll(new File("orders.txt"));

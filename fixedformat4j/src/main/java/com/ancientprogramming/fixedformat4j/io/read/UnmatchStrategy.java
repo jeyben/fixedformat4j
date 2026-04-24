@@ -18,18 +18,16 @@ package com.ancientprogramming.fixedformat4j.io.read;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 
 /**
- * Strategy invoked when no pattern matches a text segment.
+ * Strategy invoked when no pattern matches a line.
  *
- * <p>A "segment" is any string of text that is tried against registered patterns — it may be
- * a full physical line (in {@link FixedFormatReader}) or a fixed-width chunk extracted from a
- * line (in {@link PackedRecordReader}). Two built-in strategies are provided as static factory
- * methods: {@link #skip()} and {@link #throwException()}.</p>
+ * <p>Two built-in strategies are provided as static factory methods: {@link #skip()} and
+ * {@link #throwException()}.</p>
  *
  * <p>Because this is a {@link FunctionalInterface}, a lambda can be passed wherever an
  * {@code UnmatchStrategy} is expected:</p>
  * <pre>{@code
- * .unmatchStrategy((lineNumber, segment) ->
- *     System.err.println("Unmatched segment at line " + lineNumber + ": " + segment))
+ * .unmatchStrategy((lineNumber, line) ->
+ *     System.err.println("Unmatched line " + lineNumber + ": " + line))
  * }</pre>
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
@@ -39,35 +37,35 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 public interface UnmatchStrategy {
 
   /**
-   * Handles a segment that matched no registered pattern.
+   * Handles a line that matched no registered pattern.
    *
    * <p>Implementations may throw a {@link FixedFormatException} to abort processing, or
-   * return normally to silently skip the segment.</p>
+   * return normally to silently skip the line.</p>
    *
    * @param lineNumber the 1-based line number within the source being read
-   * @param segment    the raw content of the unmatched segment, without trailing line-ending characters
+   * @param line       the raw content of the unmatched line, without trailing line-ending characters
    */
-  void handle(long lineNumber, String segment);
+  void handle(long lineNumber, String line);
 
   /**
-   * Returns a strategy that silently ignores unmatched segments.
-   * Useful for files where header, footer, comment lines, or padding chunks are expected.
+   * Returns a strategy that silently ignores unmatched lines.
+   * Useful for files where header, footer, or comment lines are expected.
    *
    * @return a no-op strategy; never {@code null}
    */
   static UnmatchStrategy skip() {
-    return (lineNumber, segment) -> {};
+    return (lineNumber, line) -> {};
   }
 
   /**
-   * Returns a strategy that throws {@link FixedFormatException} when a segment is unmatched,
+   * Returns a strategy that throws {@link FixedFormatException} when a line is unmatched,
    * including the line number and raw content in the exception message.
    *
    * @return a fail-fast strategy; never {@code null}
    */
   static UnmatchStrategy throwException() {
-    return (lineNumber, segment) -> {
-      throw new FixedFormatException("No pattern matched line " + lineNumber + ": " + segment);
+    return (lineNumber, line) -> {
+      throw new FixedFormatException("No pattern matched line " + lineNumber + ": " + line);
     };
   }
 }

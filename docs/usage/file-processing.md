@@ -80,7 +80,7 @@ FixedFormatReader reader = FixedFormatReader.builder()
 FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"))
     .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
-    .unmatchedLineStrategy(UnmatchedLineStrategy.SKIP)
+    .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 ```
 
@@ -134,7 +134,7 @@ The stream is sequential and ordered. The same `File`, `Path`, `InputStream`, an
 FixedFormatReader reader = FixedFormatReader.builder()
     .addMapping(HeaderRecord.class, new RegexFixedFormatMatchPattern("^HDR"))
     .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"))
-    .unmatchedLineStrategy(UnmatchedLineStrategy.SKIP)
+    .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 
 TypedReadResult result = reader.readAsTypedResult(Path.of("data.txt"));
@@ -168,7 +168,7 @@ FixedFormatReader reader = FixedFormatReader.builder()
         header -> System.out.println("Header: " + header.getDate()))
     .addMapping(DetailRecord.class, new RegexFixedFormatMatchPattern("^DTL"),
         detail -> System.out.println("Detail: " + detail.getOrderId()))
-    .unmatchedLineStrategy(UnmatchedLineStrategy.SKIP)
+    .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 
 reader.processAll(Path.of("data.txt"));
@@ -238,14 +238,14 @@ Implement `MultiMatchStrategy` directly for custom resolution logic:
 
 | Factory method | Behaviour |
 |---|---|
-| `UnmatchedLineStrategy.skip()` *(default)* | Silently ignore the line. Useful for header, footer, or comment lines. |
-| `UnmatchedLineStrategy.throwException()` | Throw `FixedFormatException` with the line number and raw content. |
+| `UnmatchStrategy.skip()` *(default)* | Silently ignore the line. Useful for header, footer, or comment lines. |
+| `UnmatchStrategy.throwException()` | Throw `FixedFormatException` with the line number and raw content. |
 | Lambda | Invoke any custom logic; throw to abort, return to continue. |
 
 ```java
 FixedFormatReader.builder()
     .addMapping(EmployeeRecord.class, new RegexFixedFormatMatchPattern("^EMP"))
-    .unmatchedLineStrategy((lineNumber, line) ->
+    .unmatchStrategy((lineNumber, line) ->
         System.err.println("Unmatched line " + lineNumber + ": " + line))
     .build();
 ```
