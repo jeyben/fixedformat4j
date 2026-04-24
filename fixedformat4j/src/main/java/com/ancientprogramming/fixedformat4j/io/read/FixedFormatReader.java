@@ -248,6 +248,7 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void process(Reader reader, HandlerRegistry registry) {
+    if (registry == null) throw new IllegalArgumentException("registry must not be null");
     readWithMappingCallback(reader,
         (mapping, record) -> registry.dispatch(mapping.getRecordClass(), record));
   }

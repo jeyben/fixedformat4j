@@ -158,6 +158,16 @@ class TestFixedFormatReaderProcess {
   }
 
   @Test
+  void throwsIllegalArgumentWhenRegistryIsNull() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .build();
+
+    assertThrows(IllegalArgumentException.class, () ->
+        reader.process(new StringReader("AAAAAAAAAA"), null));
+  }
+
+  @Test
   void processAndReadAsResultAreIndependent() {
     List<TenCharRecord> fromHandler = new ArrayList<>();
 
