@@ -1,6 +1,7 @@
 package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.read.MultiMatchStrategy;
 import com.ancientprogramming.fixedformat4j.io.read.RegexFixedFormatMatchPattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -128,6 +129,21 @@ class TestFixedFormatReaderProcessAll {
 
     assertEquals(1, tens.size());
     assertEquals(1, fives.size());
+  }
+
+  @Test
+  void onlyHandlerForMatchedMappingFiresWhenTwoMappingsShareSameClass() {
+    List<String> fired = new ArrayList<>();
+
+    FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, A_PATTERN, r -> fired.add("handlerA"))
+        .addMapping(TenCharRecord.class, B_PATTERN, r -> fired.add("handlerB"))
+        .multiMatchStrategy(MultiMatchStrategy.firstMatch())
+        .build()
+        .processAll(new StringReader("AAAAAAAAAA"));
+
+    assertEquals(List.of("handlerA"), fired,
+        "Only the handler for the matched mapping should fire; handlerB must not be called");
   }
 
   @Test

@@ -140,7 +140,7 @@ public class FixedFormatReader {
           if (line == null) {
             return false;
           }
-          processor.processLine(line, ++lineCounter[0], (clazz, record) -> pending.add(record));
+          processor.processLine(line, ++lineCounter[0], (mapping, record) -> pending.add(record));
         }
         action.accept(pending.poll());
         return true;
@@ -473,6 +473,12 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void readWithCallback(Reader reader, BiConsumer<Class<?>, Object> callback) {
+    readWithMappingCallback(reader,
+        (mapping, record) -> callback.accept(mapping.getRecordClass(), record));
+  }
+
+  private void readWithMappingCallback(Reader reader,
+                                       BiConsumer<ClassPatternMapping<?>, Object> callback) {
     BufferedReader buffered = toBuffered(reader);
     long[] lineCounter = {0L};
     try (buffered) {
@@ -670,11 +676,11 @@ public class FixedFormatReader {
    * reader.processAll(source); // handlers receive HeaderRecord / DetailRecord directly
    * }</pre>
    *
-   * @param reader the source of lines
+   * @param reader the source of lines; closed when this method returns
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void processAll(Reader reader) {
-    readWithCallback(reader, processor::fireHandler);
+    readWithMappingCallback(reader, processor::fireHandler);
   }
 
   /**
@@ -697,7 +703,7 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void processAll(InputStream inputStream, Charset charset) {
-    readWithCallback(inputStream, charset, processor::fireHandler);
+    processAll(new InputStreamReader(inputStream, charset));
   }
 
   /**
@@ -720,7 +726,11 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if the file is not found or an IO error occurs
    */
   public void processAll(File file, Charset charset) {
-    readWithCallback(file, charset, processor::fireHandler);
+    try {
+      processAll(new InputStreamReader(new FileInputStream(file), charset));
+    } catch (FileNotFoundException e) {
+      throw new FixedFormatIOException("File not found: " + file, e);
+    }
   }
 
   /**
@@ -743,7 +753,11 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
   public void processAll(Path path, Charset charset) {
-    readWithCallback(path, charset, processor::fireHandler);
+    try {
+      processAll(new InputStreamReader(Files.newInputStream(path), charset));
+    } catch (IOException e) {
+      throw new FixedFormatIOException("Cannot open path: " + path, e);
+    }
   }
 
   // --- factory ---

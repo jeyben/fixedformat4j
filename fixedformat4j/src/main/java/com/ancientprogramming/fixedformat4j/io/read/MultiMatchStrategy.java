@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
  */
+@FunctionalInterface
 public interface MultiMatchStrategy {
 
   /**

@@ -55,7 +55,7 @@ class FixedFormatLineProcessor {
     this.manager = manager;
   }
 
-  void processLine(String line, long lineNumber, BiConsumer<Class<?>, Object> emit) {
+  void processLine(String line, long lineNumber, BiConsumer<ClassPatternMapping<?>, Object> emit) {
     if (!lineFilter.test(line)) {
       return;
     }
@@ -70,7 +70,7 @@ class FixedFormatLineProcessor {
     for (ClassPatternMapping<?> mapping : toProcess) {
       Object record = parseRecord(mapping, line, lineNumber);
       if (record != null) {
-        emit.accept(mapping.getRecordClass(), record);
+        emit.accept(mapping, record);
       }
     }
   }
@@ -95,17 +95,15 @@ class FixedFormatLineProcessor {
 
   // Called from FixedFormatReader.processAll via method reference (processor::fireHandler).
   // Safe: records dispatched under key K were loaded via manager.load(K, line), i.e. are K instances.
-  void fireHandler(Class<?> clazz, Object record) {
-    doFireHandler(clazz, record);
+  void fireHandler(ClassPatternMapping<?> mapping, Object record) {
+    doFireHandler(mapping, record);
   }
 
   // Wildcard capture allows the typed Consumer<R> cast to be verified by the compiler.
   @SuppressWarnings("unchecked")
-  private <R> void doFireHandler(Class<R> clazz, Object record) {
-    for (ClassPatternMapping<?> mapping : mappings) {
-      if (mapping.getRecordClass() == clazz && mapping.getHandler() != null) {
-        ((Consumer<R>) mapping.getHandler()).accept((R) record);
-      }
+  private <R> void doFireHandler(ClassPatternMapping<R> mapping, Object record) {
+    if (mapping.getHandler() != null) {
+      mapping.getHandler().accept((R) record);
     }
   }
 }
