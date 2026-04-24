@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.pattern;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 

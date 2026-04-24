@@ -17,6 +17,9 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatIOException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
+import com.ancientprogramming.fixedformat4j.io.row.ParsedRow;
+import com.ancientprogramming.fixedformat4j.io.row.Row;
+import com.ancientprogramming.fixedformat4j.io.row.UnmatchedRow;
 
 import java.io.*;
 import java.nio.charset.Charset;

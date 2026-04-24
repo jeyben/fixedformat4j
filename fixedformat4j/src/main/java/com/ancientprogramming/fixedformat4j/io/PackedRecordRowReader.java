@@ -16,6 +16,11 @@
 package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatIOException;
+import com.ancientprogramming.fixedformat4j.io.row.ParsedRow;
+import com.ancientprogramming.fixedformat4j.io.row.Row;
+import com.ancientprogramming.fixedformat4j.io.row.UnmatchedRow;
+import com.ancientprogramming.fixedformat4j.io.strategy.PartialChunkStrategy;
+import com.ancientprogramming.fixedformat4j.io.strategy.UnmatchStrategy;
 
 import java.io.*;
 import java.nio.charset.Charset;

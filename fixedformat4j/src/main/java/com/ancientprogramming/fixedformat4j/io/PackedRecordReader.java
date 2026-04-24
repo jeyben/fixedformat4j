@@ -16,6 +16,7 @@
 package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatIOException;
+import com.ancientprogramming.fixedformat4j.io.strategy.PartialChunkStrategy;
 
 import java.io.*;
 import java.nio.charset.Charset;

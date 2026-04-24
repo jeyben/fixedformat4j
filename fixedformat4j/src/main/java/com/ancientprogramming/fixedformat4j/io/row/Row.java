@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.row;
 
 /**
- * A single line from a fixed-format file, as returned by {@link FixedFormatReader#readAsRows}.
+ * A single line from a fixed-format file, as returned by {@link com.ancientprogramming.fixedformat4j.io.FixedFormatReader#readAsRows}.
  *
  * <p>Each line is represented as either a {@link ParsedRow} (the line matched a registered
  * {@link com.ancientprogramming.fixedformat4j.annotation.Record} class and was parsed) or an
  * {@link UnmatchedRow} (the line did not match any registered pattern and is held verbatim).</p>
  *
  * <p>The ordered {@code List<Row>} returned by {@code readAsRows} preserves the original line
- * order of the file, enabling a read-edit-write round trip via {@link FixedFormatWriter}.</p>
+ * order of the file, enabling a read-edit-write round trip via {@link com.ancientprogramming.fixedformat4j.io.FixedFormatWriter}.</p>
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.9.0

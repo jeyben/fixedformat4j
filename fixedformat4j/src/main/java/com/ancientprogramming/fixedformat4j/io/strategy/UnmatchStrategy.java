@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.strategy;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 
 /**
- * Strategy invoked when no {@link ClassPatternMapping} pattern matches a text segment.
+ * Strategy invoked when no pattern matches a text segment.
  *
  * <p>A "segment" is any string of text that is tried against registered patterns — it may be
- * a full physical line (in {@link FixedFormatReader}) or a fixed-width chunk extracted from a
- * line (in {@link PackedRecordReader}). Two built-in strategies are provided as static factory
- * methods: {@link #skip()} and {@link #throwException()}.</p>
+ * a full physical line (in {@link com.ancientprogramming.fixedformat4j.io.FixedFormatReader})
+ * or a fixed-width chunk extracted from a line
+ * (in {@link com.ancientprogramming.fixedformat4j.io.PackedRecordReader}). Two built-in
+ * strategies are provided as static factory methods: {@link #skip()} and
+ * {@link #throwException()}.</p>
  *
  * <p>Because this is a {@link FunctionalInterface}, a lambda can be passed wherever an
  * {@code UnmatchStrategy} is expected:</p>

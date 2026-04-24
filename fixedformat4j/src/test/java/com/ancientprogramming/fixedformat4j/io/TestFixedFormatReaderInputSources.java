@@ -1,5 +1,6 @@
 package com.ancientprogramming.fixedformat4j.io;
 
+import com.ancientprogramming.fixedformat4j.io.pattern.RegexFixedFormatMatchPattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

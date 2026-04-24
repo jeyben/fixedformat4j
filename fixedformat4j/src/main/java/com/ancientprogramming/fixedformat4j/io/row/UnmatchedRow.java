@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.row;
 
 import java.util.Objects;
 
@@ -22,9 +22,9 @@ import java.util.Objects;
  * {@link com.ancientprogramming.fixedformat4j.annotation.Record} pattern and is therefore
  * held verbatim as the raw line string (without the trailing newline).
  *
- * <p>When written back via {@link FixedFormatWriter}, the raw line is emitted unchanged,
- * preserving comment lines, blank lines, header separators, and any other non-record content
- * in the original file.</p>
+ * <p>When written back via {@link com.ancientprogramming.fixedformat4j.io.FixedFormatWriter},
+ * the raw line is emitted unchanged, preserving comment lines, blank lines, header separators,
+ * and any other non-record content in the original file.</p>
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.9.0

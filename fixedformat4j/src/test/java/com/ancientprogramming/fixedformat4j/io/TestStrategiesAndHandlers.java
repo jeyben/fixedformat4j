@@ -2,6 +2,10 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
+import com.ancientprogramming.fixedformat4j.io.pattern.FixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.pattern.RegexFixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.strategy.ParseErrorStrategy;
+import com.ancientprogramming.fixedformat4j.io.strategy.UnmatchStrategy;
 import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;

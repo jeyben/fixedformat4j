@@ -16,6 +16,7 @@
 package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.annotation.Record;
+import com.ancientprogramming.fixedformat4j.io.pattern.FixedFormatMatchPattern;
 
 import java.util.function.Consumer;
 

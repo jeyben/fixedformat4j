@@ -1,4 +1,4 @@
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.pattern;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import org.junit.jupiter.api.Test;

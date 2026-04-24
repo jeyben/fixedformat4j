@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.row;
 
 import java.util.Objects;
 
@@ -24,7 +24,7 @@ import java.util.Objects;
  *
  * <p>The record is mutable: callers may update fields directly via the record's own setters,
  * or replace the entire record object with {@link #setRecord(Object)}. Both approaches are
- * reflected when the row list is written back via {@link FixedFormatWriter}.</p>
+ * reflected when the row list is written back via {@link com.ancientprogramming.fixedformat4j.io.FixedFormatWriter}.</p>
  *
  * <pre>{@code
  * rows.stream()

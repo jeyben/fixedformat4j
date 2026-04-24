@@ -17,6 +17,9 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
+import com.ancientprogramming.fixedformat4j.io.pattern.FixedFormatMatchPattern;
+import com.ancientprogramming.fixedformat4j.io.row.UnmatchedRow;
+import com.ancientprogramming.fixedformat4j.io.strategy.ParseErrorStrategy;
 
 import java.util.ArrayList;
 import java.util.List;

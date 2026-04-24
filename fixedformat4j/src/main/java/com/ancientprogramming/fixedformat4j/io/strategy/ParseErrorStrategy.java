@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.strategy;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import org.slf4j.Logger;
@@ -77,7 +77,7 @@ public interface ParseErrorStrategy {
    */
   static ParseErrorStrategy skipAndLog() {
     return (wrapped, line, lineNumber) ->
-        LOG.warn("Skipping line {}: {} \u2014 {}", lineNumber, line,
+        LOG.warn("Skipping line {}: {} — {}", lineNumber, line,
             wrapped.getCause() != null ? wrapped.getCause().getMessage() : wrapped.getMessage());
   }
 }
