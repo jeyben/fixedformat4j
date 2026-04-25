@@ -64,7 +64,7 @@ public class FixedFormatUtil {
       LOG.debug("The record field was not as long as expected by the instructions. Expected field to be {} long but it was {}.", length, record.length());
     } else {
       result = null;
-      LOG.info(format("Could not fetch data from record as the recordlength[%s] was shorter than or equal to the requested offset[%s] of the request data. Returning null", record.length(), offset));
+      LOG.debug("Could not fetch data from record as the recordlength[{}] was shorter than or equal to the requested offset[{}] of the request data. Returning null", record.length(), offset);
     }
     LOG.debug("fetched '{}' from record", result);
     return result;
