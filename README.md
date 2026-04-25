@@ -189,6 +189,7 @@ Full documentation is available at **https://jeyben.github.io/fixedformat4j/**:
 - [Quick Start](https://jeyben.github.io/fixedformat4j/quickstart) — step-by-step walkthrough
 - [Annotations reference](https://jeyben.github.io/fixedformat4j/usage/annotations) — every annotation attribute explained
 - [Examples](https://jeyben.github.io/fixedformat4j/examples) — financial records, booleans, file processing, custom formatters
+- [File Processing](https://jeyben.github.io/fixedformat4j/usage/file-processing) — reading files and streams with `FixedFormatReader`
 - [Nested Records](https://jeyben.github.io/fixedformat4j/usage/nested-records) — embedding one record inside another
 - [FAQ](https://jeyben.github.io/fixedformat4j/faq)
 - [Changelog](https://jeyben.github.io/fixedformat4j/changelog)
