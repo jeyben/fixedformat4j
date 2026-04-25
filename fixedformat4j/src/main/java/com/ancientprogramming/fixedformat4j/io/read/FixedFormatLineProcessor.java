@@ -32,6 +32,9 @@ import java.util.function.Predicate;
  * <p>Matches each line against a {@link RecordMappingIndex}, applies multi-match
  * and unmatched-line strategies, parses the line into a record, and emits the result via a
  * callback.</p>
+ *
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
+ * @since 1.8.0
  */
 class FixedFormatLineProcessor {
 

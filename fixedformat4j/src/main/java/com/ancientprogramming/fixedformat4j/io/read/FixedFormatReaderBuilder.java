@@ -28,6 +28,9 @@ import java.util.function.Predicate;
  *
  * <p>Obtain an instance via {@link FixedFormatReader#builder()}.
  * At minimum, one mapping must be added via {@link #addMapping} before calling {@link #build()}.</p>
+ *
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
+ * @since 1.8.0
  */
 public class FixedFormatReaderBuilder {
 

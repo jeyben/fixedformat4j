@@ -34,6 +34,9 @@ import java.util.Objects;
  *
  * <p>{@link #findMatches(String)} returns matched mappings ordered by depth descending then by
  * registration order — so the most detailed match is first and ties fall back to insertion order.</p>
+ *
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
+ * @since 1.8.0
  */
 final class RecordMappingIndex {
 
