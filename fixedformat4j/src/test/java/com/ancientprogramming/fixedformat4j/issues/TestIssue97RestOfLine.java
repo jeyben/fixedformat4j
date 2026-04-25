@@ -251,11 +251,20 @@ public class TestIssue97RestOfLine {
 
   @Test
   void validate_repeatingField_effectiveRangeOverlapsRestOfLine_throwsFixedFormatException() {
-    // items field: offset=1, length=5, count=3 → effective end offset = 1 + 2*5 = 11
+    // items field: offset=1, length=5, count=3 → effective end offset = 1 + 3*5 - 1 = 15
     // REST_OF_LINE at offset=6 falls inside that range
-    // Before the fix only the start offset (1) was recorded, so 1 < 6 passed incorrectly
     assertThrows(FixedFormatException.class,
         () -> manager.load(RepeatingOverlapRecord.class, "something"));
+  }
+
+  @Test
+  void validate_repeatingField_restOfLineInsideLastElement_throwsFixedFormatException() {
+    // items field: offset=1, length=5, count=3 → last element occupies offsets 11–15
+    // REST_OF_LINE at offset=13 starts inside that last element.
+    // The old formula (start of last element = 1+(3-1)*5 = 11) recorded 11 < 13 → incorrectly passed.
+    // The correct formula (end of last element = 1+3*5-1 = 15) records 15 >= 13 → correctly rejects.
+    assertThrows(FixedFormatException.class,
+        () -> manager.load(RepeatingInnerOverlapRecord.class, "something"));
   }
 
   @Test
@@ -416,6 +425,21 @@ public class TestIssue97RestOfLine {
     private String tail;
 
     @Field(offset = 1, length = Field.REST_OF_LINE)
+    public String getTail() { return tail; }
+    public void setTail(String tail) { this.tail = tail; }
+  }
+
+  @Record
+  public static class RepeatingInnerOverlapRecord {
+    private List<String> items;
+    private String tail;
+
+    @Field(offset = 1, length = 5, count = 3)
+    public List<String> getItems() { return items; }
+    public void setItems(List<String> items) { this.items = items; }
+
+    // offset=13 starts inside the last element (offsets 11–15) of the repeating field above
+    @Field(offset = 13, length = Field.REST_OF_LINE)
     public String getTail() { return tail; }
     public void setTail(String tail) { this.tail = tail; }
   }

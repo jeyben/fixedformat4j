@@ -15,6 +15,7 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
+import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.annotation.EnumFormat;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatEnum;
@@ -243,7 +244,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       throw new FixedFormatException(format(
           "@Field(length = -1) cannot be combined with count > 1 on %s", getterRef));
     }
-    if (fieldAnnotation.align() != com.ancientprogramming.fixedformat4j.annotation.Align.INHERIT) {
+    if (fieldAnnotation.align() != Align.INHERIT) {
       throw new FixedFormatException(format(
           "@Field(length = -1): 'align' is not applicable when length = -1 on %s", getterRef));
     }
@@ -274,7 +275,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
             + desc.target.getter.getName() + "()";
       } else {
         int effectiveEndOffset = desc.isRepeating
-            ? desc.fieldAnnotation.offset() + (desc.fieldAnnotation.count() - 1) * desc.fieldAnnotation.length()
+            ? desc.fieldAnnotation.offset() + desc.fieldAnnotation.count() * desc.fieldAnnotation.length() - 1
             : desc.fieldAnnotation.offset();
         maxOtherOffset = Math.max(maxOtherOffset, effectiveEndOffset);
       }
