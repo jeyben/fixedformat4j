@@ -2,6 +2,7 @@
   "permissions": {
     "allow": [
       "Bash(gh pr edit:*)",
+      "Bash(gh pr create:*)",
       "Bash(git push:*)"
     ]
   }
