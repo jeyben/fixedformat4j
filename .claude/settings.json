@@ -3,7 +3,9 @@
     "allow": [
       "Bash(gh pr edit:*)",
       "Bash(gh pr create:*)",
-      "Bash(git push:*)"
+      "Bash(git push -u origin claude/*)",
+      "Bash(git push origin HEAD:claude/*)",
+      "Bash(git push origin claude/*)"
     ]
   }
 }
