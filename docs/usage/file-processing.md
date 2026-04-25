@@ -106,6 +106,131 @@ ordered list (see [Strategies](#strategies) below).
 
 ---
 
+## Worked example: heterogeneous file with a catch-all
+
+Real fixed-format files often combine three routing needs in one file: short literal
+type codes (`X1`, `X2`), record types whose unique identity spans multiple
+non-contiguous columns (a major code at offsets 0–3 plus a sub-type at offsets 7–8
+for `K`-records), and a long tail of "everything else" that should still be parsed
+but doesn't warrant per-type classes. This example shows how to express all three
+in one builder.
+
+**The file**
+
+Suppose `data.txt` looks like this (each line is 33 characters; `x` marks payload
+columns whose values do not affect routing):
+
+```
+X1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+K400xxx01xxxxxxxxxxxxxxxxxxxxxxxx
+K400xxx02xxxxxxxxxxxxxxxxxxxxxxxx
+K410xxx01xxxxxxxxxxxxxxxxxxxxxxxx
+X2xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+K410xxx03xxxxxxxxxxxxxxxxxxxxxxxx
+SC410xxx03xxxxxxxxxxxxxxxxxxxxxxx
+FC412xxx02xxxxxxxxxxxxxxxxxxxxxxx
+SC411xxx03xxxxxxxxxxxxxxxxxxxxxxx
+SC412xxx03xxxxxxxxxxxxxxxxxxxxxxx
+FC412xxx03xxxxxxxxxxxxxxxxxxxxxxx
+```
+
+The routing intent:
+
+- `X1` and `X2` are unique header-style records — one class each.
+- Each `K`-record is uniquely identified by its major code (cols 0–3) and sub-type
+  (cols 7–8), with three wildcard payload columns in between. `K40001`, `K40002`,
+  `K41001`, and `K41003` each get their own class.
+- Anything else — `SC*`, `FC*`, and any future type code — belongs in a single
+  `OtherRecord` catch-all class.
+
+**The record classes**
+
+Each class is a normal `@Record`-annotated POJO. `@Field` getters are elided for
+brevity:
+
+```java
+@Record(length = 33) public class X1Record     { /* @Field getters */ }
+@Record(length = 33) public class X2Record     { /* @Field getters */ }
+@Record(length = 33) public class K40001Record { /* @Field getters */ }
+@Record(length = 33) public class K40002Record { /* @Field getters */ }
+@Record(length = 33) public class K41001Record { /* @Field getters */ }
+@Record(length = 33) public class K41003Record { /* @Field getters */ }
+@Record(length = 33) public class OtherRecord  { /* @Field getters */ }
+```
+
+**The builder**
+
+```java
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
+
+FixedFormatReader reader = FixedFormatReader.builder()
+    .addMapping(X1Record.class,     LinePattern.prefix("X1"))
+    .addMapping(X2Record.class,     LinePattern.prefix("X2"))
+    .addMapping(K40001Record.class, LinePattern.positional(new int[]{0, 1, 2, 3, 7, 8}, "K40001"))
+    .addMapping(K40002Record.class, LinePattern.positional(new int[]{0, 1, 2, 3, 7, 8}, "K40002"))
+    .addMapping(K41001Record.class, LinePattern.positional(new int[]{0, 1, 2, 3, 7, 8}, "K41001"))
+    .addMapping(K41003Record.class, LinePattern.positional(new int[]{0, 1, 2, 3, 7, 8}, "K41003"))
+    .addMapping(OtherRecord.class,  LinePattern.matchAll())
+    .build();
+```
+
+**Why this works**
+
+For every line the reader returns *all* matching mappings ordered by depth
+descending (most detailed first), with registration order as the tiebreaker. The
+default `MultiMatchStrategy.firstMatch()` then picks the head of that list:
+
+| Line                | Matches (depth desc)                          | `firstMatch` picks |
+|---------------------|----------------------------------------------|--------------------|
+| `X1xxxxx…`          | X1Record (depth 2), OtherRecord (depth 0)    | **X1Record**       |
+| `K400xxx01…`        | K40001Record (depth 6), OtherRecord (depth 0) | **K40001Record**  |
+| `K410xxx03…`        | K41003Record (depth 6), OtherRecord (depth 0) | **K41003Record**  |
+| `SC410xxx03…`       | OtherRecord (depth 0)                         | **OtherRecord**   |
+| `FC412xxx02…`       | OtherRecord (depth 0)                         | **OtherRecord**   |
+| any unknown line    | OtherRecord (depth 0)                         | **OtherRecord**   |
+
+So the catch-all wins only when no specific pattern matches — exactly the desired
+routing.
+
+**Why no `unmatchStrategy` is configured**
+
+Each line goes through this pipeline: `excludeLines` → `findMatches` → **if the
+matched list is empty**, `unmatchStrategy.handle(...)` fires; otherwise
+`multiMatchStrategy.resolve(...)` runs and the line is parsed.
+`LinePattern.matchAll()` always matches, so for *every* line the matched list
+contains at least the `OtherRecord` mapping. The unmatched branch is unreachable;
+configuring `unmatchStrategy` here would have no observable effect.
+
+This is a deliberate choice between two alternatives:
+
+- **Catch-all class** (this example) — register `LinePattern.matchAll()` against a
+  fallback record class. Unknown lines are parsed and grouped into that class.
+  `unmatchStrategy` is not configured because it cannot fire.
+- **No catch-all class** — omit the `LinePattern.matchAll()` mapping. Unknown
+  lines now produce an empty matched list, triggering `unmatchStrategy`: default
+  `throwException()` aborts processing; `UnmatchStrategy.skip()` drops the line
+  with a WARN log; a custom lambda does whatever you like.
+
+These are alternatives, not layers — pick one.
+
+**Why no `multiMatchStrategy` is configured**
+
+The default `firstMatch()` picks the most detailed match per line, which is what
+this idiom needs. The other built-ins do not fit: `throwOnAmbiguity()` would throw
+on every recognised line because every line *also* matches `matchAll()`;
+`allMatches()` would emit a redundant `OtherRecord` alongside every specific
+record.
+
+**Performance note**
+
+All four K-positional patterns share the same `positions` array
+`{0, 1, 2, 3, 7, 8}`, so they live in one hash bucket inside the reader's
+internal index. Per-line K-routing is a single hash lookup against the 6-character
+extracted key (`"K40001"`, `"K41003"`, …) regardless of how many K-variants you
+register. Adding `K42007`, `K43012`, … later is free.
+
+---
+
 ## Reading as ReadResult
 
 `read` is the recommended collect-then-process method for heterogeneous files. It reads all records eagerly and returns a `ReadResult` — a type-safe, class-keyed container that eliminates casts at the call site.
@@ -193,6 +318,12 @@ Implement `MultiMatchStrategy` directly for custom resolution logic:
 | `UnmatchStrategy.throwException()` *(default)* | Throw `FixedFormatException` with the line number and raw content. |
 | `UnmatchStrategy.skip()` | Skip the line and log a WARN via SLF4J. Useful when some record types are intentionally ignored. |
 | Lambda | Invoke any custom logic; throw to abort, return to continue. |
+
+> **Note:** `UnmatchStrategy` only fires when *no* registered `LinePattern`
+> matches a line. If you register a `LinePattern.matchAll()` catch-all (see the
+> [worked example](#worked-example-heterogeneous-file-with-a-catch-all)) every
+> line matches and the unmatched branch is unreachable — pick the catch-all *or*
+> the unmatched strategy, not both.
 
 ```java
 FixedFormatReader.builder()
