@@ -77,6 +77,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
         doValidateRestOfLineField(desc.target, desc.fieldAnnotation);
       }
       doValidateRestOfLineIsLastField(clazz, descriptors);
+      doValidateRestOfLineRecordLength(clazz, descriptors);
       return Boolean.TRUE;
     }
   };
@@ -272,7 +273,10 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
         restOfLineGetter = desc.target.getter.getDeclaringClass().getName() + "."
             + desc.target.getter.getName() + "()";
       } else {
-        maxOtherOffset = Math.max(maxOtherOffset, desc.fieldAnnotation.offset());
+        int effectiveEndOffset = desc.isRepeating
+            ? desc.fieldAnnotation.offset() + (desc.fieldAnnotation.count() - 1) * desc.fieldAnnotation.length()
+            : desc.fieldAnnotation.offset();
+        maxOtherOffset = Math.max(maxOtherOffset, effectiveEndOffset);
       }
     }
 
@@ -283,6 +287,19 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
           "@Field(length = -1) on %s must be the last field (highest offset) in the record,"
               + " but another field at offset %d comes after or at the same position",
           restOfLineGetter, maxOtherOffset));
+    }
+  }
+
+  private static void doValidateRestOfLineRecordLength(Class<?> clazz, List<FieldDescriptor> descriptors) {
+    boolean hasRestOfLine = descriptors.stream()
+        .anyMatch(desc -> desc.fieldAnnotation.length() == Field.REST_OF_LINE);
+    if (!hasRestOfLine) return;
+    Record record = clazz.getAnnotation(Record.class);
+    if (record != null && record.length() != -1) {
+      throw new FixedFormatException(format(
+          "@Field(length = -1) is not compatible with @Record(length = %d) on %s "
+              + "because record-level padding would corrupt the verbatim round-trip",
+          record.length(), clazz.getName()));
     }
   }
 

@@ -249,6 +249,23 @@ public class TestIssue97RestOfLine {
         () -> manager.load(MultipleRestOfLineRecord.class, "abc123"));
   }
 
+  @Test
+  void validate_repeatingField_effectiveRangeOverlapsRestOfLine_throwsFixedFormatException() {
+    // items field: offset=1, length=5, count=3 → effective end offset = 1 + 2*5 = 11
+    // REST_OF_LINE at offset=6 falls inside that range
+    // Before the fix only the start offset (1) was recorded, so 1 < 6 passed incorrectly
+    assertThrows(FixedFormatException.class,
+        () -> manager.load(RepeatingOverlapRecord.class, "something"));
+  }
+
+  @Test
+  void validate_restOfLine_withExplicitRecordLength_throwsFixedFormatException() {
+    // @Record(length = 10) causes padding after the REST_OF_LINE field on export,
+    // silently corrupting the verbatim round-trip — must be rejected at validation time
+    assertThrows(FixedFormatException.class,
+        () -> manager.load(FixedLengthWithRestOfLineRecord.class, "abc"));
+  }
+
   // ---------------------------------------------------------------------------
   // Record definitions — valid
   // ---------------------------------------------------------------------------
@@ -378,5 +395,28 @@ public class TestIssue97RestOfLine {
     @Field(offset = 2, length = Field.REST_OF_LINE)
     public String getSecond() { return second; }
     public void setSecond(String second) { this.second = second; }
+  }
+
+  @Record
+  public static class RepeatingOverlapRecord {
+    private List<String> items;
+    private String tail;
+
+    @Field(offset = 1, length = 5, count = 3)
+    public List<String> getItems() { return items; }
+    public void setItems(List<String> items) { this.items = items; }
+
+    @Field(offset = 6, length = Field.REST_OF_LINE)
+    public String getTail() { return tail; }
+    public void setTail(String tail) { this.tail = tail; }
+  }
+
+  @Record(length = 10)
+  public static class FixedLengthWithRestOfLineRecord {
+    private String tail;
+
+    @Field(offset = 1, length = Field.REST_OF_LINE)
+    public String getTail() { return tail; }
+    public void setTail(String tail) { this.tail = tail; }
   }
 }

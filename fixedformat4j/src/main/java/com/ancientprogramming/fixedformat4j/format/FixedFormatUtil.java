@@ -51,7 +51,7 @@ public class FixedFormatUtil {
         result = record.substring(offset);
       } else {
         result = null;
-        LOG.info(format("Could not fetch rest-of-line data: recordlength[%s] is shorter than the requested offset[%s]. Returning null", record.length(), offset));
+        LOG.debug(format("Could not fetch rest-of-line data: recordlength[%s] is shorter than the requested offset[%s]. Returning null", record.length(), offset));
       }
       if (LOG.isDebugEnabled()) {
         LOG.debug(format("fetched '%s' from record", result));
