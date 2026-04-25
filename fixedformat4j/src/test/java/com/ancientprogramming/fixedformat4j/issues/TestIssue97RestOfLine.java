@@ -268,6 +268,14 @@ public class TestIssue97RestOfLine {
   }
 
   @Test
+  void validate_singleField_restOfLineInsideFieldRange_throwsFixedFormatException() {
+    // @Field(offset=1, length=10) occupies bytes 1–10; REST_OF_LINE at offset=5 is inside it.
+    // effectiveEndOffset = 1 + 10 - 1 = 10, which is >= 5 → correctly rejected.
+    assertThrows(FixedFormatException.class,
+        () -> manager.load(OverlappingSingleFieldRecord.class, "data"));
+  }
+
+  @Test
   void validate_restOfLine_withExplicitRecordLength_throwsFixedFormatException() {
     // @Record(length = 10) causes padding after the REST_OF_LINE field on export,
     // silently corrupting the verbatim round-trip — must be rejected at validation time
@@ -425,6 +433,21 @@ public class TestIssue97RestOfLine {
     private String tail;
 
     @Field(offset = 1, length = Field.REST_OF_LINE)
+    public String getTail() { return tail; }
+    public void setTail(String tail) { this.tail = tail; }
+  }
+
+  @Record
+  public static class OverlappingSingleFieldRecord {
+    private String prefix;
+    private String tail;
+
+    @Field(offset = 1, length = 10)
+    public String getPrefix() { return prefix; }
+    public void setPrefix(String prefix) { this.prefix = prefix; }
+
+    // offset=5 falls inside the prefix field (bytes 1–10)
+    @Field(offset = 5, length = Field.REST_OF_LINE)
     public String getTail() { return tail; }
     public void setTail(String tail) { this.tail = tail; }
   }

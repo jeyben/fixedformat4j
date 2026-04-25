@@ -53,9 +53,7 @@ public class FixedFormatUtil {
         result = null;
         LOG.debug("Could not fetch rest-of-line data: recordlength[{}] is shorter than the requested offset[{}]. Returning null", record.length(), offset);
       }
-      if (LOG.isDebugEnabled()) {
-        LOG.debug(format("fetched '%s' from record", result));
-      }
+      LOG.debug("fetched '{}' from record", result);
       return result;
     }
     if (record.length() >= offset + length) {
@@ -63,16 +61,12 @@ public class FixedFormatUtil {
     } else if (record.length() > offset) {
       //the field does contain data, but is not as long as the instructions tells.
       result = record.substring(offset, record.length());
-      if (LOG.isDebugEnabled()) {
-        LOG.info(format("The record field was not as long as expected by the instructions. Expected field to be %s long but it was %s.", length, record.length()));
-      }
+      LOG.debug("The record field was not as long as expected by the instructions. Expected field to be {} long but it was {}.", length, record.length());
     } else {
       result = null;
       LOG.info(format("Could not fetch data from record as the recordlength[%s] was shorter than or equal to the requested offset[%s] of the request data. Returning null", record.length(), offset));
     }
-    if (LOG.isDebugEnabled()) {
-      LOG.debug(format("fetched '%s' from record", result));
-    }
+    LOG.debug("fetched '{}' from record", result);
     return result;
   }
 

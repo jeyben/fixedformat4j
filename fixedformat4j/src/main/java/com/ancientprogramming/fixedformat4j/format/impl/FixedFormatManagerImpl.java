@@ -276,7 +276,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       } else {
         int effectiveEndOffset = desc.isRepeating
             ? desc.fieldAnnotation.offset() + desc.fieldAnnotation.count() * desc.fieldAnnotation.length() - 1
-            : desc.fieldAnnotation.offset();
+            : desc.fieldAnnotation.offset() + desc.fieldAnnotation.length() - 1;
         maxOtherOffset = Math.max(maxOtherOffset, effectiveEndOffset);
       }
     }
