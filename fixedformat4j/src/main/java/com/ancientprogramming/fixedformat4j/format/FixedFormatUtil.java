@@ -39,7 +39,7 @@ public class FixedFormatUtil {
    * @param instructions the field's formatting instructions (supplies the field length)
    * @param context      the format context (supplies the 1-based field offset)
    * @return the extracted field substring, or {@code null} if {@code record} is shorter than
-   *         the requested offset
+   * the requested offset
    */
   public static String fetchData(String record, FormatInstructions instructions, FormatContext<?> context) {
     String result;
@@ -60,7 +60,7 @@ public class FixedFormatUtil {
       result = record.substring(offset, offset + length);
     } else if (record.length() > offset) {
       //the field does contain data, but is not as long as the instructions tells.
-      result = record.substring(offset, record.length());
+      result = record.substring(offset);
       LOG.debug("The record field was not as long as expected by the instructions. Expected field to be {} long but it was {}.", length, record.length());
     } else {
       result = null;

@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import static java.lang.String.format;
 
@@ -84,7 +85,7 @@ import static java.lang.String.format;
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
  */
-public class FixedFormatReader {
+public final class FixedFormatReader {
 
   private final List<RecordMapping<?>> mappings;
   private final FixedFormatLineProcessor processor;
@@ -125,13 +126,15 @@ public class FixedFormatReader {
    */
   public ReadResult read(Reader reader) {
     Objects.requireNonNull(reader, "reader must not be null");
+    // Seed in registration order so result.classes() iterates by registration, not encounter,
+    // order. Empty entries are stripped before returning.
     Map<Class<?>, List<Object>> data = new LinkedHashMap<>();
     for (RecordMapping<?> mapping : mappings) {
       data.put(mapping.getRecordClass(), new ArrayList<>());
     }
     List<Object> all = new ArrayList<>();
-    readWithMappingCallback(reader, (mapping, record) -> {
-      data.get(mapping.getRecordClass()).add(record);
+    readWithMappingCallback(reader, (clazz, record) -> {
+      data.get(clazz).add(record);
       all.add(record);
     });
     data.entrySet().removeIf(e -> e.getValue().isEmpty());
@@ -160,13 +163,7 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public ReadResult read(InputStream inputStream, Charset charset) {
-    Objects.requireNonNull(inputStream, "inputStream must not be null");
-    Objects.requireNonNull(charset, "charset must not be null");
-    try (InputStreamReader r = new InputStreamReader(inputStream, charset)) {
-      return read(r);
-    } catch (IOException e) {
-      throw new FixedFormatIOException("IO error reading input stream", e);
-    }
+    return withReader(inputStream, charset, this::read);
   }
 
   /**
@@ -191,17 +188,11 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
   public ReadResult read(Path path, Charset charset) {
-    Objects.requireNonNull(path, "path must not be null");
-    Objects.requireNonNull(charset, "charset must not be null");
-    try (InputStreamReader r = new InputStreamReader(Files.newInputStream(path), charset)) {
-      return read(r);
-    } catch (IOException e) {
-      throw new FixedFormatIOException(format("Cannot open path: %s", path), e);
-    }
+    return withReader(path, charset, this::read);
   }
 
   private void readWithMappingCallback(Reader reader,
-                                       BiConsumer<RecordMapping<?>, Object> callback) {
+                                       BiConsumer<Class<?>, Object> callback) {
     BufferedReader buffered = toBuffered(reader);
     long[] lineCounter = {0L};
     try (buffered) {
@@ -242,8 +233,7 @@ public class FixedFormatReader {
   public void process(Reader reader, HandlerRegistry registry) {
     Objects.requireNonNull(reader, "reader must not be null");
     Objects.requireNonNull(registry, "registry must not be null");
-    readWithMappingCallback(reader,
-        (mapping, record) -> registry.dispatch(mapping.getRecordClass(), record));
+    readWithMappingCallback(reader, registry::dispatch);
   }
 
   /**
@@ -268,14 +258,8 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void process(InputStream inputStream, Charset charset, HandlerRegistry registry) {
-    Objects.requireNonNull(inputStream, "inputStream must not be null");
-    Objects.requireNonNull(charset, "charset must not be null");
     Objects.requireNonNull(registry, "registry must not be null");
-    try (InputStreamReader r = new InputStreamReader(inputStream, charset)) {
-      process(r, registry);
-    } catch (IOException e) {
-      throw new FixedFormatIOException("IO error reading input stream", e);
-    }
+    withReader(inputStream, charset, r -> { process(r, registry); return null; });
   }
 
   /**
@@ -300,14 +284,8 @@ public class FixedFormatReader {
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
   public void process(Path path, Charset charset, HandlerRegistry registry) {
-    Objects.requireNonNull(path, "path must not be null");
-    Objects.requireNonNull(charset, "charset must not be null");
     Objects.requireNonNull(registry, "registry must not be null");
-    try (InputStreamReader r = new InputStreamReader(Files.newInputStream(path), charset)) {
-      process(r, registry);
-    } catch (IOException e) {
-      throw new FixedFormatIOException(format("Cannot open path: %s", path), e);
-    }
+    withReader(path, charset, r -> { process(r, registry); return null; });
   }
 
   // --- factory ---
@@ -323,5 +301,25 @@ public class FixedFormatReader {
 
   private static BufferedReader toBuffered(Reader reader) {
     return reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader);
+  }
+
+  private static <R> R withReader(InputStream inputStream, Charset charset, Function<Reader, R> body) {
+    Objects.requireNonNull(inputStream, "inputStream must not be null");
+    Objects.requireNonNull(charset, "charset must not be null");
+    try (InputStreamReader r = new InputStreamReader(inputStream, charset)) {
+      return body.apply(r);
+    } catch (IOException e) {
+      throw new FixedFormatIOException("IO error reading input stream", e);
+    }
+  }
+
+  private static <R> R withReader(Path path, Charset charset, Function<Reader, R> body) {
+    Objects.requireNonNull(path, "path must not be null");
+    Objects.requireNonNull(charset, "charset must not be null");
+    try (InputStreamReader r = new InputStreamReader(Files.newInputStream(path), charset)) {
+      return body.apply(r);
+    } catch (IOException e) {
+      throw new FixedFormatIOException(format("Cannot open path: %s", path), e);
+    }
   }
 }

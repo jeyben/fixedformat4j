@@ -363,7 +363,9 @@ public class TestIssue67EnumSupport {
   public void invalidOrdinal_throwsFixedFormatException() {
     FixedFormatException ex = assertThrows(FixedFormatException.class,
         () -> manager.load(NumericRecord.class, "99"));
-    assertTrue(ex.getMessage().contains("out of range"),
-        "message should mention out of range: " + ex.getMessage());
+    Throwable cause = ex.getCause();
+    assertNotNull(cause, "expected wrapped cause carrying the EnumFormatter detail");
+    assertTrue(cause.getMessage().contains("out of range"),
+        "cause should mention out of range: " + cause.getMessage());
   }
 }

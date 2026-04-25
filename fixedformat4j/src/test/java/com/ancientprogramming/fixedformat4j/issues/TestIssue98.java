@@ -18,10 +18,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * 128 characters rather than throwing StringIndexOutOfBoundsException.
  * The guard lives in RecordMappingIndex.findMatches() and these tests pin it.
  */
-class TestIssue98 {
+public class TestIssue98 {
 
   @Record(length = 50)
-  static class HeaderRecord {
+  public static class HeaderRecord {
     private String prefix;
 
     @Field(offset = 1, length = 3)
@@ -31,7 +31,7 @@ class TestIssue98 {
 
   /** Represents a long sub-type record identified at position 127 (0-indexed). */
   @Record(length = 128)
-  static class SubTypeRecord {
+  public static class SubTypeRecord {
     private String marker;
 
     @Field(offset = 128, length = 1)
@@ -40,7 +40,7 @@ class TestIssue98 {
   }
 
   @Record(length = 50)
-  static class CatchAllRecord {
+  public static class CatchAllRecord {
     private String data;
 
     @Field(offset = 1, length = 3)

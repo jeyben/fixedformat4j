@@ -112,7 +112,7 @@ public final class LinePattern {
   }
 
   int[] positions() {
-    return positions.clone();
+    return positions;
   }
 
   String literal() {

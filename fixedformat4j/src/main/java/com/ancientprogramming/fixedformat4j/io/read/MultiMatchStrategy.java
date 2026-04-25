@@ -45,8 +45,9 @@ public interface MultiMatchStrategy {
 
   /**
    * Resolves which mappings should be used to parse a line that matched more than one pattern.
+   * Not invoked when only one mapping matches — single matches bypass this strategy entirely.
    *
-   * @param matched    all mappings whose pattern matched the line; never empty
+   * @param matched    all mappings whose pattern matched the line; size is always &gt; 1
    * @param lineNumber the 1-based line number
    * @return the subset of {@code matched} to use for parsing; may be empty to skip the line;
    *         never {@code null}

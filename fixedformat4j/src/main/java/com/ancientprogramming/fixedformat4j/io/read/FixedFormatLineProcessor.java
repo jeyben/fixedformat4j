@@ -32,6 +32,9 @@ import java.util.function.Predicate;
  * <p>Matches each line against a {@link RecordMappingIndex}, applies multi-match
  * and unmatched-line strategies, parses the line into a record, and emits the result via a
  * callback.</p>
+ *
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
+ * @since 1.8.0
  */
 class FixedFormatLineProcessor {
 
@@ -59,7 +62,7 @@ class FixedFormatLineProcessor {
     this.manager = manager;
   }
 
-  void processLine(String line, long lineNumber, BiConsumer<RecordMapping<?>, Object> emit) {
+  void processLine(String line, long lineNumber, BiConsumer<Class<?>, Object> emit) {
     if (exclusionFilter.test(line)) {
       LOG.debug("Excluding line {}: {}", lineNumber, line);
       return;
@@ -75,13 +78,12 @@ class FixedFormatLineProcessor {
     for (RecordMapping<?> mapping : toProcess) {
       Object record = parseRecord(mapping, line, lineNumber);
       if (record != null) {
-        emit.accept(mapping, record);
+        emit.accept(mapping.getRecordClass(), record);
       }
     }
   }
 
-  // Wildcard capture: RecordMapping<?> → RecordMapping<R>, enabling type-safe load.
-  private <R> Object parseRecord(RecordMapping<R> mapping, String line, long lineNumber) {
+  private Object parseRecord(RecordMapping<?> mapping, String line, long lineNumber) {
     try {
       return manager.load(mapping.getRecordClass(), line);
     } catch (FixedFormatException e) {

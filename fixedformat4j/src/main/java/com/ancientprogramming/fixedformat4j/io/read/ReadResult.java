@@ -26,11 +26,8 @@ import java.util.Set;
  * without casts at the call site.
  *
  * <p>The type safety relies on the invariant that every record stored under key {@code K}
- * is an instance of {@code K}. This invariant is maintained automatically when the result
- * is produced by {@link com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader#read}.
- * Callers who construct a {@code ReadResult} directly are responsible for upholding it;
- * violations will not be detected at construction time and will manifest as
- * {@link ClassCastException} at the call site of {@link #get}.</p>
+ * is an instance of {@code K}. The package-private constructor ensures this is maintained
+ * automatically by {@link com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader#read}.</p>
  *
  * <pre>{@code
  * ReadResult result = reader.read(path);
@@ -46,7 +43,7 @@ public final class ReadResult {
   private final Map<Class<?>, List<Object>> data;
   private final List<Object> all;
 
-  public ReadResult(Map<Class<?>, List<Object>> data, List<Object> all) {
+  ReadResult(Map<Class<?>, List<Object>> data, List<Object> all) {
     this.data = Collections.unmodifiableMap(data);
     this.all = Collections.unmodifiableList(all);
   }

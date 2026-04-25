@@ -33,13 +33,15 @@ import static java.lang.String.format;
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
  */
-public class RecordMapping<T> {
+public final class RecordMapping<T> {
 
   private final Class<T> recordClass;
   private final LinePattern pattern;
 
   /**
-   * Creates a new mapping.
+   * Creates a new mapping. Package-private: instances are produced by
+   * {@link FixedFormatReaderBuilder#addMapping(Class, LinePattern)} and surface to user code only
+   * through {@link MultiMatchStrategy#resolve(java.util.List, long)}.
    *
    * @param recordClass the class to instantiate when {@code pattern} matches; must be
    *                    annotated with {@link com.ancientprogramming.fixedformat4j.annotation.Record}
@@ -47,7 +49,7 @@ public class RecordMapping<T> {
    * @throws IllegalArgumentException if {@code recordClass} is not annotated with {@code @Record}
    * @throws NullPointerException     if {@code recordClass} or {@code pattern} is null
    */
-  public RecordMapping(Class<T> recordClass, LinePattern pattern) {
+  RecordMapping(Class<T> recordClass, LinePattern pattern) {
     Objects.requireNonNull(recordClass, "recordClass must not be null");
     Objects.requireNonNull(pattern, "pattern must not be null");
     if (recordClass.getAnnotation(Record.class) == null) {

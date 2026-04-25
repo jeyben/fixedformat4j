@@ -17,7 +17,6 @@ package com.ancientprogramming.fixedformat4j.io.read;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +33,9 @@ import java.util.Objects;
  *
  * <p>{@link #findMatches(String)} returns matched mappings ordered by depth descending then by
  * registration order — so the most detailed match is first and ties fall back to insertion order.</p>
+ *
+ * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
+ * @since 1.8.0
  */
 final class RecordMappingIndex {
 
@@ -42,9 +44,9 @@ final class RecordMappingIndex {
           .thenComparingInt(im -> im.sequence);
 
   private final List<IndexedMapping> matchAll;
-  private final Collection<Bucket> buckets;
+  private final List<Bucket> buckets;
 
-  private RecordMappingIndex(List<IndexedMapping> matchAll, Collection<Bucket> buckets) {
+  private RecordMappingIndex(List<IndexedMapping> matchAll, List<Bucket> buckets) {
     this.matchAll = matchAll;
     this.buckets = buckets;
   }
@@ -61,9 +63,7 @@ final class RecordMappingIndex {
       }
     }
     hits.addAll(matchAll);
-    if (hits.size() > 1) {
-      hits.sort(BY_DEPTH_DESC_THEN_SEQUENCE);
-    }
+    hits.sort(BY_DEPTH_DESC_THEN_SEQUENCE);
     List<RecordMapping<?>> result = new ArrayList<>(hits.size());
     for (IndexedMapping im : hits) {
       result.add(im.mapping);
