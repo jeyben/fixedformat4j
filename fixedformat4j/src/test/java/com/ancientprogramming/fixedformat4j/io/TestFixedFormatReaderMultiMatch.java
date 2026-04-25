@@ -1,12 +1,13 @@
 package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
 import org.junit.jupiter.api.Test;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
@@ -19,10 +20,10 @@ class TestFixedFormatReaderMultiMatch {
   }
 
   @Test
-  void firstMatchWinsWhenTwoPatternsMatch() {
+  void firstMatchEmitsOneRecordWhenTwoPatternsMatch() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
-        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
+        .addMapping(TenCharRecord.class, LinePattern.prefix("A"))
+        .addMapping(TenCharRecord.class, LinePattern.matchAll())
         .multiMatchStrategy(MultiMatchStrategy.firstMatch())
         .build();
 
@@ -31,10 +32,36 @@ class TestFixedFormatReaderMultiMatch {
   }
 
   @Test
+  void firstMatchPicksDeeperPatternEvenWhenRegisteredLater() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(FiveCharRecord.class, LinePattern.matchAll())     // depth 0, registered first
+        .addMapping(TenCharRecord.class, LinePattern.prefix("A"))     // depth 1, registered second
+        .multiMatchStrategy(MultiMatchStrategy.firstMatch())
+        .build();
+
+    List<Object> all = reader.read(readerOf("AAAAAAAAAA")).getAll();
+    assertEquals(1, all.size());
+    assertInstanceOf(TenCharRecord.class, all.get(0));
+  }
+
+  @Test
+  void firstMatchUsesRegistrationOrderAmongSameDepthMatches() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, LinePattern.matchAll())   // depth 0, registered first
+        .addMapping(FiveCharRecord.class, LinePattern.matchAll())   // depth 0, registered second
+        .multiMatchStrategy(MultiMatchStrategy.firstMatch())
+        .build();
+
+    List<Object> all = reader.read(readerOf("AAAAAAAAAA")).getAll();
+    assertEquals(1, all.size());
+    assertInstanceOf(TenCharRecord.class, all.get(0));
+  }
+
+  @Test
   void throwsOnAmbiguityWhenTwoPatternsMatch() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
-        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
+        .addMapping(TenCharRecord.class, LinePattern.prefix("A"))
+        .addMapping(TenCharRecord.class, LinePattern.matchAll())
         .multiMatchStrategy(MultiMatchStrategy.throwOnAmbiguity())
         .build();
 
@@ -47,8 +74,8 @@ class TestFixedFormatReaderMultiMatch {
   @Test
   void noAmbiguityExceptionWhenOnlyOnePatternMatches() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
-        .addMapping(TenCharRecord.class, Pattern.compile("^B").asPredicate())
+        .addMapping(TenCharRecord.class, LinePattern.prefix("A"))
+        .addMapping(TenCharRecord.class, LinePattern.prefix("B"))
         .multiMatchStrategy(MultiMatchStrategy.throwOnAmbiguity())
         .build();
 
@@ -60,8 +87,8 @@ class TestFixedFormatReaderMultiMatch {
   void customStrategyNotCalledWhenOnlyOnePatternMatches() {
     AtomicBoolean called = new AtomicBoolean(false);
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
-        .addMapping(TenCharRecord.class, Pattern.compile("^B").asPredicate())
+        .addMapping(TenCharRecord.class, LinePattern.prefix("A"))
+        .addMapping(TenCharRecord.class, LinePattern.prefix("B"))
         .multiMatchStrategy((matched, lineNumber) -> {
           called.set(true);
           return matched;
@@ -75,8 +102,8 @@ class TestFixedFormatReaderMultiMatch {
   @Test
   void allMatchesEmitsTwoObjectsForOneMatchingLine() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
-        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
+        .addMapping(TenCharRecord.class, LinePattern.prefix("A"))
+        .addMapping(TenCharRecord.class, LinePattern.matchAll())
         .multiMatchStrategy(MultiMatchStrategy.allMatches())
         .build();
 

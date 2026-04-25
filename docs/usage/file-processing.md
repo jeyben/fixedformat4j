@@ -43,25 +43,28 @@ public class EmployeeRecord {
 
 ## Defining patterns
 
-A `Predicate<String>` decides whether a line belongs to a particular record class.
-The `LinePredicates.regex(String)` factory (designed for static import) is the most
-concise option — it compiles the regular expression once and applies it with `find()`
-semantics (partial-line match):
+A `LinePattern` decides whether a line belongs to a particular record class. Three
+factory methods cover the common cases:
 
 ```java
-import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
 
-Predicate<String> employeePattern = regex("^EMP");  // lines starting with "EMP"
-Predicate<String> anyLine         = regex(".*");     // every line
+// Lines whose first three characters are "EMP"
+LinePattern employeePattern = LinePattern.prefix("EMP");
+
+// Every line
+LinePattern anyLine = LinePattern.matchAll();
+
+// Lines whose characters at positions 0..3 are "K400" AND at positions 7..8 are "01"
+LinePattern transactionPattern =
+    LinePattern.positional(new int[]{0, 1, 2, 3, 7, 8}, "K40001");
 ```
 
-Pass any `Predicate<String>` for custom discrimination logic — for example, testing
-a fixed-width type code in a specific column:
+`prefix(literal)` is shorthand for `positional(new int[]{0, 1, ..., literal.length() - 1}, literal)`.
 
-```java
-Predicate<String> headerPattern =
-    line -> line.length() >= 3 && "HDR".equals(line.substring(0, 3));
-```
+Patterns are restricted to position-and-literal matching on purpose: it lets the
+reader bucket all registered mappings into hash tables at build time, so per-line
+routing is near O(1) regardless of how many record types you register.
 
 ---
 
@@ -73,7 +76,7 @@ Use the fluent builder to configure the reader. At least one mapping must be add
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, regex(".*"))
+    .addMapping(EmployeeRecord.class, LinePattern.matchAll())
     .build();
 ```
 
@@ -81,8 +84,8 @@ FixedFormatReader reader = FixedFormatReader.builder()
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, regex("^HDR"))
-    .addMapping(DetailRecord.class, regex("^DTL"))
+    .addMapping(HeaderRecord.class, LinePattern.prefix("HDR"))
+    .addMapping(DetailRecord.class, LinePattern.prefix("DTL"))
     .build();
 ```
 
@@ -90,13 +93,195 @@ FixedFormatReader reader = FixedFormatReader.builder()
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, regex("^HDR"))
-    .addMapping(DetailRecord.class, regex("^DTL"))
+    .addMapping(HeaderRecord.class, LinePattern.prefix("HDR"))
+    .addMapping(DetailRecord.class, LinePattern.prefix("DTL"))
     .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 ```
 
-Mappings are evaluated in registration order. The `multiMatchStrategy` controls what happens if more than one pattern matches (see [Strategies](#strategies) below).
+When more than one pattern matches a line, the reader orders matches by **most
+detailed first** (depth = number of positions in the pattern), then by registration
+order as the tiebreaker. The `multiMatchStrategy` then chooses how to use that
+ordered list (see [Strategies](#strategies) below).
+
+---
+
+## Worked example: heterogeneous file with a catch-all
+
+Real fixed-format files often combine three routing needs in one file: short literal
+type codes (`X1`, `X2`), record types whose unique identity spans multiple
+non-contiguous columns (a major code at offsets 0–3 plus a sub-type at offsets 7–8
+for `K`-records), and a long tail of "everything else" that should still be parsed
+but doesn't warrant per-type classes. This example shows how to express all three
+in one builder.
+
+**The file**
+
+Suppose `data.txt` looks like this (each line is 33 characters; `x` marks payload
+columns whose values do not affect routing):
+
+```
+X1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+K400xxx01xxxxxxxxxxxxxxxxxxxxxxxx
+K400xxx02xxxxxxxxxxxxxxxxxxxxxxxx
+K410xxx01xxxxxxxxxxxxxxxxxxxxxxxx
+X2xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+K410xxx03xxxxxxxxxxxxxxxxxxxxxxxx
+SC410xxx03xxxxxxxxxxxxxxxxxxxxxxx
+FC412xxx02xxxxxxxxxxxxxxxxxxxxxxx
+SC411xxx03xxxxxxxxxxxxxxxxxxxxxxx
+SC412xxx03xxxxxxxxxxxxxxxxxxxxxxx
+FC412xxx03xxxxxxxxxxxxxxxxxxxxxxx
+```
+
+The routing intent:
+
+- `X1` and `X2` are unique header-style records — one class each.
+- Each `K`-record is uniquely identified by its major code (cols 0–3) and sub-type
+  (cols 7–8), with three wildcard payload columns in between. `K40001`, `K40002`,
+  `K41001`, and `K41003` each get their own class.
+- Anything else — `SC*`, `FC*`, and any future type code — belongs in a single
+  `OtherRecord` catch-all class.
+
+**The record classes**
+
+Each class is a normal `@Record`-annotated POJO. `@Field` getters are elided for
+brevity:
+
+```java
+@Record(length = 33) public class X1Record     { /* @Field getters */ }
+@Record(length = 33) public class X2Record     { /* @Field getters */ }
+@Record(length = 33) public class K40001Record { /* @Field getters */ }
+@Record(length = 33) public class K40002Record { /* @Field getters */ }
+@Record(length = 33) public class K41001Record { /* @Field getters */ }
+@Record(length = 33) public class K41003Record { /* @Field getters */ }
+@Record(length = 33) public class OtherRecord  { /* @Field getters */ }
+```
+
+**The builder**
+
+```java
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
+
+FixedFormatReader reader = FixedFormatReader.builder()
+    .addMapping(X1Record.class,     LinePattern.prefix("X1"))
+    .addMapping(X2Record.class,     LinePattern.prefix("X2"))
+    .addMapping(K40001Record.class, LinePattern.positional(new int[]{0, 1, 2, 3, 7, 8}, "K40001"))
+    .addMapping(K40002Record.class, LinePattern.positional(new int[]{0, 1, 2, 3, 7, 8}, "K40002"))
+    .addMapping(K41001Record.class, LinePattern.positional(new int[]{0, 1, 2, 3, 7, 8}, "K41001"))
+    .addMapping(K41003Record.class, LinePattern.positional(new int[]{0, 1, 2, 3, 7, 8}, "K41003"))
+    .addMapping(OtherRecord.class,  LinePattern.matchAll())
+    .build();
+```
+
+**Why this works**
+
+For every line the reader returns *all* matching mappings ordered by depth
+descending (most detailed first), with registration order as the tiebreaker. The
+default `MultiMatchStrategy.firstMatch()` then picks the head of that list:
+
+| Line                | Matches (depth desc)                          | `firstMatch` picks |
+|---------------------|----------------------------------------------|--------------------|
+| `X1xxxxx…`          | X1Record (depth 2), OtherRecord (depth 0)    | **X1Record**       |
+| `K400xxx01…`        | K40001Record (depth 6), OtherRecord (depth 0) | **K40001Record**  |
+| `K410xxx03…`        | K41003Record (depth 6), OtherRecord (depth 0) | **K41003Record**  |
+| `SC410xxx03…`       | OtherRecord (depth 0)                         | **OtherRecord**   |
+| `FC412xxx02…`       | OtherRecord (depth 0)                         | **OtherRecord**   |
+| any unknown line    | OtherRecord (depth 0)                         | **OtherRecord**   |
+
+So the catch-all wins only when no specific pattern matches — exactly the desired
+routing.
+
+**Why no `unmatchStrategy` is configured**
+
+Each line goes through this pipeline: `excludeLines` → `findMatches` → **if the
+matched list is empty**, `unmatchStrategy.handle(...)` fires; otherwise
+`multiMatchStrategy.resolve(...)` runs and the line is parsed.
+`LinePattern.matchAll()` always matches, so for *every* line the matched list
+contains at least the `OtherRecord` mapping. The unmatched branch is unreachable;
+configuring `unmatchStrategy` here would have no observable effect.
+
+This is a deliberate choice between two alternatives:
+
+- **Catch-all class** (this example) — register `LinePattern.matchAll()` against a
+  fallback record class. Unknown lines are parsed and grouped into that class.
+  `unmatchStrategy` is not configured because it cannot fire.
+- **No catch-all class** — omit the `LinePattern.matchAll()` mapping. Unknown
+  lines now produce an empty matched list, triggering `unmatchStrategy`: default
+  `throwException()` aborts processing; `UnmatchStrategy.skip()` drops the line
+  with a WARN log; a custom lambda does whatever you like.
+
+These are alternatives, not layers — pick one.
+
+**Why no `multiMatchStrategy` is configured**
+
+The default `firstMatch()` picks the most detailed match per line, which is what
+this idiom needs. The other built-ins do not fit: `throwOnAmbiguity()` would throw
+on every recognised line because every line *also* matches `matchAll()`;
+`allMatches()` would emit a redundant `OtherRecord` alongside every specific
+record.
+
+**Performance note**
+
+All four K-positional patterns share the same `positions` array
+`{0, 1, 2, 3, 7, 8}`, so they live in one hash bucket inside the reader's
+internal index. Per-line K-routing is a single hash lookup against the 6-character
+extracted key (`"K40001"`, `"K41003"`, …) regardless of how many K-variants you
+register. Adding `K42007`, `K43012`, … later is free.
+
+**Consuming the result in encounter order**
+
+`reader.read(path).getAll()` returns every parsed record in the order it
+appeared in the file:
+
+| index | class           | source line                           |
+|-------|-----------------|---------------------------------------|
+| 0     | `X1Record`      | `X1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`   |
+| 1     | `K40001Record`  | `K400xxx01xxxxxxxxxxxxxxxxxxxxxxxx`   |
+| 2     | `K40002Record`  | `K400xxx02xxxxxxxxxxxxxxxxxxxxxxxx`   |
+| 3     | `K41001Record`  | `K410xxx01xxxxxxxxxxxxxxxxxxxxxxxx`   |
+| 4     | `X2Record`      | `X2xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`   |
+| 5     | `K41003Record`  | `K410xxx03xxxxxxxxxxxxxxxxxxxxxxxx`   |
+| 6–10  | `OtherRecord`   | `SC410…`, `FC412…`, `SC411…`, …       |
+
+Iterate the list and dispatch on type:
+
+```java
+List<Object> all = reader.read(Path.of("data.txt")).getAll();
+
+for (Object record : all) {
+    if (record instanceof X1Record) {
+        handleX1((X1Record) record);
+    } else if (record instanceof X2Record) {
+        handleX2((X2Record) record);
+    } else if (record instanceof K40001Record) {
+        handleK40001((K40001Record) record);
+    } else if (record instanceof K40002Record) {
+        handleK40002((K40002Record) record);
+    } else if (record instanceof K41001Record) {
+        handleK41001((K41001Record) record);
+    } else if (record instanceof K41003Record) {
+        handleK41003((K41003Record) record);
+    } else if (record instanceof OtherRecord) {
+        handleOther((OtherRecord) record);
+    }
+}
+```
+
+If the goal is per-record, per-type processing in encounter order, prefer
+`process(... HandlerRegistry)` — same ordering, no casts:
+
+```java
+reader.process(Path.of("data.txt"), new HandlerRegistry()
+    .on(X1Record.class,     this::handleX1)
+    .on(K40001Record.class, this::handleK40001)
+    // …one .on(...) per class…
+    .on(OtherRecord.class,  this::handleOther));
+```
+
+Use `getAll()` when you need a `List` for batch operations (count, filter,
+transform a collection at once); use `process(...)` when you want per-record,
+per-type processing in encounter order.
 
 ---
 
@@ -106,8 +291,8 @@ Mappings are evaluated in registration order. The `multiMatchStrategy` controls 
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, regex("^HDR"))
-    .addMapping(DetailRecord.class, regex("^DTL"))
+    .addMapping(HeaderRecord.class, LinePattern.prefix("HDR"))
+    .addMapping(DetailRecord.class, LinePattern.prefix("DTL"))
     .build();
 
 ReadResult result = reader.read(Path.of("data.txt"));
@@ -137,8 +322,8 @@ Supply handlers via a `HandlerRegistry` at the call site:
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, regex("^HDR"))
-    .addMapping(DetailRecord.class, regex("^DTL"))
+    .addMapping(HeaderRecord.class, LinePattern.prefix("HDR"))
+    .addMapping(DetailRecord.class, LinePattern.prefix("DTL"))
     .build();
 
 reader.process(Path.of("data.txt"), new HandlerRegistry()
@@ -159,9 +344,9 @@ All three strategy types are interfaces. The built-in behaviours are available a
 
 | Factory method | Behaviour |
 |---|---|
-| `MultiMatchStrategy.firstMatch()` *(default)* | Use the first matching mapping in registration order; ignore the rest. |
+| `MultiMatchStrategy.firstMatch()` *(default)* | Use the most detailed match (largest depth); break ties by registration order. |
 | `MultiMatchStrategy.throwOnAmbiguity()` | Throw `FixedFormatException` listing the line number and all matching class names. |
-| `MultiMatchStrategy.allMatches()` | Emit one record per matching mapping, in registration order. |
+| `MultiMatchStrategy.allMatches()` | Emit one record per matching mapping, ordered most detailed first, ties by registration order. |
 
 ```java
 FixedFormatReader.builder()
@@ -188,9 +373,15 @@ Implement `MultiMatchStrategy` directly for custom resolution logic:
 | `UnmatchStrategy.skip()` | Skip the line and log a WARN via SLF4J. Useful when some record types are intentionally ignored. |
 | Lambda | Invoke any custom logic; throw to abort, return to continue. |
 
+> **Note:** `UnmatchStrategy` only fires when *no* registered `LinePattern`
+> matches a line. If you register a `LinePattern.matchAll()` catch-all (see the
+> [worked example](#worked-example-heterogeneous-file-with-a-catch-all)) every
+> line matches and the unmatched branch is unreachable — pick the catch-all *or*
+> the unmatched strategy, not both.
+
 ```java
 FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, regex("^EMP"))
+    .addMapping(EmployeeRecord.class, LinePattern.prefix("EMP"))
     .unmatchStrategy((lineNumber, line) ->
         System.err.println("Unmatched line " + lineNumber + ": " + line))
     .build();
@@ -206,7 +397,7 @@ FixedFormatReader.builder()
 
 ```java
 FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, regex(".*"))
+    .addMapping(EmployeeRecord.class, LinePattern.matchAll())
     .parseErrorStrategy((wrapped, line, lineNumber) ->
         System.err.println("Parse error on line " + lineNumber + ": " + wrapped.getMessage()))
     .build();
@@ -222,7 +413,7 @@ Use `excludeLines` to drop lines before pattern matching. Lines for which the pr
 
 ```java
 FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, regex(".*"))
+    .addMapping(EmployeeRecord.class, LinePattern.matchAll())
     .excludeLines(line -> line.isBlank() || line.startsWith("#"))
     .build();
 ```

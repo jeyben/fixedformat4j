@@ -9,9 +9,10 @@ title: FAQ
 Yes. Since 1.8.0, `FixedFormatReader` provides built-in file processing. Supply a `HandlerRegistry` to `process` — each record is parsed and dispatched immediately without loading the whole file into memory:
 
 ```java
-// import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
+
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(MyRecord.class, regex(".*"))
+    .addMapping(MyRecord.class, LinePattern.matchAll())
     .build();
 
 reader.process(Path.of("large.txt"),
@@ -42,12 +43,13 @@ Because the bean is registered against the `FixedFormatManager` interface, it is
 **Registering `FixedFormatReader`:**
 
 ```java
-// import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
+
 @Bean
 public FixedFormatReader payrollReader() {
   return FixedFormatReader.builder()
-      .addMapping(HeaderRecord.class, regex("^HDR"))
-      .addMapping(DetailRecord.class, regex("^DTL"))
+      .addMapping(HeaderRecord.class, LinePattern.prefix("HDR"))
+      .addMapping(DetailRecord.class, LinePattern.prefix("DTL"))
       .build();
 }
 ```
@@ -246,13 +248,14 @@ while ((line = reader.readLine()) != null) {
 }
 ```
 
-Since 1.8.0, `FixedFormatReader` handles this pattern directly — register each record class with a `Predicate<String>` and let the reader route lines automatically:
+Since 1.8.0, `FixedFormatReader` handles this pattern directly — register each record class with a `LinePattern` and let the reader route lines automatically:
 
 ```java
-// import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
+
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, regex("^H"))
-    .addMapping(DetailRecord.class, regex("^D"))
+    .addMapping(HeaderRecord.class, LinePattern.prefix("H"))
+    .addMapping(DetailRecord.class, LinePattern.prefix("D"))
     .build();
 
 ReadResult result = reader.read(Path.of("data.txt"));

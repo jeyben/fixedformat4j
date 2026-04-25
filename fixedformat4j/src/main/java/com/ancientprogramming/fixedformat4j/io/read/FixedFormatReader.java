@@ -38,7 +38,7 @@ import static java.lang.String.format;
 /**
  * Reads a fixed-format file or stream line by line, routes each line to one or more
  * {@link com.ancientprogramming.fixedformat4j.annotation.Record}-annotated classes via
- * {@link java.util.function.Predicate} discriminators, and produces parsed record objects.
+ * {@link LinePattern} discriminators, and produces parsed record objects.
  *
  * <p>Each physical line is treated as exactly one record (or unmatched). If a file contains
  * multiple records packed within a single line, split the line before passing it to this reader.</p>
@@ -50,10 +50,8 @@ import static java.lang.String.format;
  *
  * <p>Quick start — single record type:</p>
  * <pre>{@code
- * import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
- *
  * FixedFormatReader reader = FixedFormatReader.builder()
- *     .addMapping(MyRecord.class, regex(".*"))
+ *     .addMapping(MyRecord.class, LinePattern.matchAll())
  *     .build();
  *
  * List<MyRecord> records = reader.read(Path.of("data.txt")).get(MyRecord.class);
@@ -62,8 +60,8 @@ import static java.lang.String.format;
  * <p>Quick start — heterogeneous file:</p>
  * <pre>{@code
  * FixedFormatReader reader = FixedFormatReader.builder()
- *     .addMapping(HeaderRecord.class, regex("^HDR"))
- *     .addMapping(DetailRecord.class, regex("^DTL"))
+ *     .addMapping(HeaderRecord.class, LinePattern.prefix("HDR"))
+ *     .addMapping(DetailRecord.class, LinePattern.prefix("DTL"))
  *     .build();
  *
  * ReadResult result = reader.read(Path.of("data.txt"));
@@ -74,8 +72,8 @@ import static java.lang.String.format;
  * <p>Quick start — typed handlers (no casts anywhere):</p>
  * <pre>{@code
  * FixedFormatReader reader = FixedFormatReader.builder()
- *     .addMapping(HeaderRecord.class, regex("^HDR"))
- *     .addMapping(DetailRecord.class, regex("^DTL"))
+ *     .addMapping(HeaderRecord.class, LinePattern.prefix("HDR"))
+ *     .addMapping(DetailRecord.class, LinePattern.prefix("DTL"))
  *     .build();
  *
  * reader.process(Path.of("data.txt"), new HandlerRegistry()
@@ -94,7 +92,7 @@ public class FixedFormatReader {
   FixedFormatReader(FixedFormatReaderBuilder builder) {
     this.mappings = List.copyOf(builder.mappings);
     this.processor = new FixedFormatLineProcessor(
-        this.mappings,
+        builder.buildIndex(),
         builder.multiMatchStrategy,
         builder.unmatchStrategy,
         builder.parseErrorStrategy,

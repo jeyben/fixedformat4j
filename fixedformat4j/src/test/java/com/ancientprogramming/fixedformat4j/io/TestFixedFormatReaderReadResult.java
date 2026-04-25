@@ -1,5 +1,6 @@
 package com.ancientprogramming.fixedformat4j.io;
 
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
 import com.ancientprogramming.fixedformat4j.io.read.ReadResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -11,8 +12,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
@@ -22,8 +21,8 @@ class TestFixedFormatReaderReadResult {
   @TempDir
   Path tempDir;
 
-  private static final Predicate<String> A_PATTERN = Pattern.compile("^A").asPredicate();
-  private static final Predicate<String> B_PATTERN = Pattern.compile("^B").asPredicate();
+  private static final LinePattern A_PATTERN = LinePattern.prefix("A");
+  private static final LinePattern B_PATTERN = LinePattern.prefix("B");
 
   private FixedFormatReader multiTypeReader() {
     return FixedFormatReader.builder()

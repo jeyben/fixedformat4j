@@ -18,14 +18,13 @@ package com.ancientprogramming.fixedformat4j.io.read;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 
 import java.util.Objects;
-import java.util.function.Predicate;
 
 import static java.lang.String.format;
 
 /**
- * Immutable pair of a {@link Predicate} and the
+ * Immutable pair of a {@link LinePattern} and the
  * {@link com.ancientprogramming.fixedformat4j.annotation.Record}-annotated class to
- * instantiate when the predicate matches a line.
+ * instantiate when the pattern matches a line.
  *
  * <p>The constructor validates that {@code recordClass} carries the {@code @Record} annotation
  * so that misconfigured mappings fail fast at reader-build time rather than at parse time.</p>
@@ -37,17 +36,18 @@ import static java.lang.String.format;
 public class RecordMapping<T> {
 
   private final Class<T> recordClass;
-  private final Predicate<String> pattern;
+  private final LinePattern pattern;
 
   /**
    * Creates a new mapping.
    *
    * @param recordClass the class to instantiate when {@code pattern} matches; must be
    *                    annotated with {@link com.ancientprogramming.fixedformat4j.annotation.Record}
-   * @param pattern     the predicate that decides which lines are parsed as {@code recordClass}
+   * @param pattern     the line pattern that decides which lines are parsed as {@code recordClass}
    * @throws IllegalArgumentException if {@code recordClass} is not annotated with {@code @Record}
+   * @throws NullPointerException     if {@code recordClass} or {@code pattern} is null
    */
-  public RecordMapping(Class<T> recordClass, Predicate<String> pattern) {
+  public RecordMapping(Class<T> recordClass, LinePattern pattern) {
     Objects.requireNonNull(recordClass, "recordClass must not be null");
     Objects.requireNonNull(pattern, "pattern must not be null");
     if (recordClass.getAnnotation(Record.class) == null) {
@@ -68,12 +68,12 @@ public class RecordMapping<T> {
   }
 
   /**
-   * Returns the predicate used to decide whether a line should be parsed as
+   * Returns the line pattern used to decide whether a line should be parsed as
    * {@link #getRecordClass()}.
    *
-   * @return the line predicate; never {@code null}
+   * @return the line pattern; never {@code null}
    */
-  public Predicate<String> getPattern() {
+  public LinePattern getPattern() {
     return pattern;
   }
 }

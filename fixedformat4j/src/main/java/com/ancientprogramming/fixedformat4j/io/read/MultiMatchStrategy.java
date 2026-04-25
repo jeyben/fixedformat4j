@@ -26,6 +26,11 @@ import static java.lang.String.format;
  * Strategy that decides which mappings to use when more than one
  * {@link RecordMapping} matches the same line.
  *
+ * <p>The {@code matched} list passed to {@link #resolve} is ordered "most detailed first,
+ * then registration order" — depth equals the number of positions declared by a
+ * {@link LinePattern}, and {@link LinePattern#matchAll()} therefore appears last among
+ * matches.</p>
+ *
  * <p>Three built-in strategies are provided as static factory methods:
  * {@link #firstMatch()}, {@link #throwOnAmbiguity()}, and {@link #allMatches()}.</p>
  *
@@ -49,8 +54,9 @@ public interface MultiMatchStrategy {
   List<RecordMapping<?>> resolve(List<RecordMapping<?>> matched, long lineNumber);
 
   /**
-   * Returns a strategy that uses the first matching mapping in registration order and ignores
-   * the rest. This is the default strategy used by {@link FixedFormatReader}.
+   * Returns a strategy that uses the most detailed matching mapping and ignores the rest.
+   * Ties (mappings with equal depth) are broken by registration order. This is the default
+   * strategy used by {@link FixedFormatReader}.
    *
    * @return a first-match strategy; never {@code null}
    */
@@ -79,7 +85,7 @@ public interface MultiMatchStrategy {
 
   /**
    * Returns a strategy that loads the line once per matching mapping and emits one record
-   * object per match, in registration order.
+   * object per match, ordered most detailed first with registration order as the tiebreaker.
    *
    * @return an all-matches strategy; never {@code null}
    */

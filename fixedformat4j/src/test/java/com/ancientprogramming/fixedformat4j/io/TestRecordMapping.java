@@ -2,10 +2,8 @@ package com.ancientprogramming.fixedformat4j.io;
 
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
 import org.junit.jupiter.api.Test;
-
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.RecordMapping;
@@ -23,7 +21,7 @@ class TestRecordMapping {
 
   static class NotARecord {}
 
-  private final Predicate<String> anyPattern = Pattern.compile(".*").asPredicate();
+  private final LinePattern anyPattern = LinePattern.matchAll();
 
   @Test
   void returnsRecordClass() {

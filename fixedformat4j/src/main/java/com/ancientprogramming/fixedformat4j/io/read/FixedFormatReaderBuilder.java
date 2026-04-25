@@ -42,15 +42,19 @@ public class FixedFormatReaderBuilder {
 
   /**
    * Registers a mapping that routes lines matching {@code pattern} to {@code clazz}.
-   * Mappings are evaluated in registration order.
+   * When more than one mapping matches a line, the resolution order is "most detailed first,
+   * then registration order" — see {@link MultiMatchStrategy} for details.
    *
    * @param clazz   the {@code @Record}-annotated class to instantiate when {@code pattern} matches
-   * @param pattern the pattern that decides which lines are parsed as {@code clazz}
+   * @param pattern the {@link LinePattern} that decides which lines are parsed as {@code clazz};
+   *                construct via {@link LinePattern#prefix(String)},
+   *                {@link LinePattern#positional(int[], String)}, or
+   *                {@link LinePattern#matchAll()}
    * @return this builder
    * @throws NullPointerException     if {@code clazz} or {@code pattern} is {@code null}
    * @throws IllegalArgumentException if {@code clazz} is not annotated with {@code @Record}
    */
-  public <R> FixedFormatReaderBuilder addMapping(Class<R> clazz, Predicate<String> pattern) {
+  public <R> FixedFormatReaderBuilder addMapping(Class<R> clazz, LinePattern pattern) {
     mappings.add(new RecordMapping<>(clazz, pattern));
     return this;
   }
@@ -137,5 +141,13 @@ public class FixedFormatReaderBuilder {
       throw new IllegalArgumentException("At least one mapping must be provided");
     }
     return new FixedFormatReader(this);
+  }
+
+  RecordMappingIndex buildIndex() {
+    RecordMappingIndex.Builder ib = RecordMappingIndex.builder();
+    for (RecordMapping<?> mapping : mappings) {
+      ib.add(mapping.getPattern(), mapping);
+    }
+    return ib.build();
   }
 }
