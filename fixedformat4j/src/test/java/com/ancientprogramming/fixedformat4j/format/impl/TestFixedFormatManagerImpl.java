@@ -16,6 +16,7 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.Field;
+import com.ancientprogramming.fixedformat4j.annotation.Fields;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
@@ -440,5 +441,334 @@ public class TestFixedFormatManagerImpl {
     @FixedFormatPattern("yyyyjj")
     public LocalDateTime getEventDateTime() { return eventDateTime; }
     public void setEventDateTime(LocalDateTime eventDateTime) { this.eventDateTime = eventDateTime; }
+  }
+
+  // --- Cluster B: load() edge paths ---
+
+  @Test
+  public void testLoad_fieldsAnnotation_onlyFirstFieldUsed() {
+    // @Fields with two offsets having DISTINCT data — only offset=1 should be loaded
+    TwoFieldsDifferentRecord rec = manager.load(TwoFieldsDifferentRecord.class, "ABCDEF");
+    assertEquals("ABC", rec.getValue(),
+        "Only the first @Field in @Fields should be loaded; got: " + rec.getValue());
+  }
+
+  @Test
+  public void testLoad_nullCharAllMatch_fieldIsNull() {
+    NullCharStringRecord rec = manager.load(NullCharStringRecord.class, "     ");
+    assertNull(rec.getText(), "All nullChars in slice → field should be null");
+  }
+
+  @Test
+  public void testLoad_nullCharPartialMatch_fieldIsParsed() {
+    NullCharStringRecord rec = manager.load(NullCharStringRecord.class, "hel  ");
+    assertNotNull(rec.getText(), "Partial nullChar match → field should not be null");
+    assertEquals("hel", rec.getText());
+  }
+
+  @Test
+  public void testLoad_nullCharInactive_spacesLoadNormally() {
+    NoNullCharStringRecord rec = manager.load(NoNullCharStringRecord.class, "     ");
+    // No nullChar → formatter strips trailing spaces → empty string (not null)
+    assertEquals("", rec.getText());
+  }
+
+  @Test
+  public void testLoad_readOnlyField_doesNotThrow() {
+    ReadOnlyFieldRecord rec = manager.load(ReadOnlyFieldRecord.class, "hello");
+    assertNotNull(rec, "Load of record with read-only field should not throw");
+    assertNull(rec.getText(), "Read-only field has no setter — value stays at default null");
+  }
+
+  @Test
+  public void testLoad_nestedRecord_recursivelyLoadedValue() {
+    // Asserts that the recursively-loaded value is correct, not just that load didn't throw
+    NestedContainerRecord rec = manager.load(NestedContainerRecord.class, "HELLO");
+    assertNotNull(rec.getInner(), "Nested @Record field should be loaded recursively");
+    assertEquals("HELLO", rec.getInner().getText(),
+        "Recursively-loaded value should match the data slice");
+  }
+
+  @Test
+  public void testLoad_nestedRecord_roundTrip() {
+    NestedContainerRecord outer = new NestedContainerRecord();
+    NestedInnerRecord inner = new NestedInnerRecord();
+    inner.setText("WORLD");
+    outer.setInner(inner);
+    String exported = manager.export(outer);
+    NestedContainerRecord loaded = manager.load(NestedContainerRecord.class, exported);
+    assertNotNull(loaded.getInner());
+    assertEquals("WORLD", loaded.getInner().getText());
+  }
+
+  // --- Cluster C: export() edge paths ---
+
+  @Test
+  public void testExport_nestedRecord_nullValue_outputsPadding() {
+    NullableNestedRecord rec = new NullableNestedRecord();
+    // inner == null → isNestedRecord=true, valueObject=null → padding only
+    String exported = manager.export(rec);
+    assertEquals("     ", exported,
+        "Null nested @Record field should export as padding chars");
+  }
+
+  @Test
+  public void testExport_nestedRecord_nonNullValue_recursivelyExported() {
+    NullableNestedRecord rec = new NullableNestedRecord();
+    NestedInnerRecord inner = new NestedInnerRecord();
+    inner.setText("HI");
+    rec.setInner(inner);
+    String exported = manager.export(rec);
+    assertEquals("HI   ", exported,
+        "Non-null nested @Record field should be recursively exported");
+  }
+
+  @Test
+  public void testExport_nullValue_nullCharActive_outputsNullChar() {
+    NullCharExportRecord rec = new NullCharExportRecord();
+    // value == null, nullChar='0' active → "00000"
+    String exported = manager.export(rec);
+    assertEquals("00000", exported,
+        "Null value with active nullChar should export as repeated nullChar");
+  }
+
+  @Test
+  public void testExport_nullValue_nullCharInactive_outputsDefault() {
+    NoNullCharExportRecord rec = new NoNullCharExportRecord();
+    // value == null, no nullChar → formatter handles null → "     " (space-padded)
+    String exported = manager.export(rec);
+    assertEquals("     ", exported,
+        "Null value without nullChar should export as formatter default (space padding)");
+  }
+
+  @Test
+  public void testExport_recordLengthExactBoundary_noPaddingAdded() {
+    // Record length == exported string length: the padding while-loop must NOT execute
+    ExactLengthRecord rec = new ExactLengthRecord();
+    rec.setName("hello");
+    String exported = manager.export(rec);
+    assertEquals("hello", exported);
+    assertEquals(5, exported.length());
+  }
+
+  @Test
+  public void testExport_recordLengthUnbounded_noExtraPadding() {
+    // @Record with default length=-1: no padding loop runs after export
+    UnboundedRecord rec = new UnboundedRecord();
+    rec.setName("hi");
+    String exported = manager.export(rec);
+    // field length=5, "hi" left-padded → "hi   "
+    assertEquals("hi   ", exported);
+  }
+
+  @Test
+  public void testExport_repeatingField_delegatesToRepeatingFieldSupport() {
+    RepeatingFieldRecord rec = new RepeatingFieldRecord();
+    rec.setCodes(new String[]{"AAA", "BBB", "CCC"});
+    rec.setAmounts(new Integer[]{42, 99});
+    String exported = manager.export(rec);
+    assertEquals("AAA  BBB  CCC  0004200099", exported);
+  }
+
+  // --- Cluster D: appendData boundaries ---
+
+  @Test
+  public void testAppendData_fieldAtOffset1_noGapPaddingNeeded() {
+    // zeroBasedOffset=0, result.length()==0 → while-loop does not execute
+    GaplessRecord rec = new GaplessRecord();
+    rec.setData("AB");
+    String exported = manager.export(rec);
+    assertEquals("AB   ", exported);
+  }
+
+  @Test
+  public void testAppendData_fieldAtOffset5_gapIsPadded() {
+    // zeroBasedOffset=4, result starts as "", while-loop pads 4 spaces
+    GapAtOffset5Record rec = new GapAtOffset5Record();
+    rec.setData("XY");
+    String exported = manager.export(rec);
+    // 4 spaces (gap) + "XY " (field, left-padded to 3 chars)
+    assertEquals("    XY ", exported);
+  }
+
+  @Test
+  public void testAppendData_twoNonAdjacentFields_gapFilledWithPadding() {
+    // field A at offset 1 (length 3), field B at offset 8 (length 3)
+    // gap between offset 4 and 7 should be filled with paddingChar
+    TwoGapFieldsRecord rec = new TwoGapFieldsRecord();
+    rec.setA("AA");
+    rec.setB("BB");
+    String exported = manager.export(rec);
+    // "AA " + 4 spaces gap + "BB "
+    assertEquals("AA     BB ", exported);
+  }
+
+  @Test
+  public void testAppendData_exportWithTemplate_fieldsOverwriteTemplate() {
+    // Uses export(template, record) to test that appendData replaces template chars
+    TwoGapFieldsRecord rec = new TwoGapFieldsRecord();
+    rec.setA("AA");
+    rec.setB("BB");
+    String exported = manager.export("xxxxxxxxxx", rec);
+    // template "xxxxxxxxxx", field A at 0-2 → "AA x", field B at 7-9 → "BB "
+    assertEquals("AA xxxx BB ", exported);
+  }
+
+  // --- Cluster B/C: record annotation properties verified via behavior ---
+
+  @Test
+  public void testRecordAnnotation_paddingChar_usedForFieldGaps() {
+    StarPaddedRecord rec = new StarPaddedRecord();
+    rec.setData("AB");
+    String exported = manager.export(rec);
+    // Field at offset 5 (length 3), record paddingChar='*'
+    // gap = "****" (4 stars) + field "AB " (left-padded to 3)
+    // Wait, the field paddingChar default is ' '. But the GAP uses record.paddingChar().
+    // The formatter pads the field value with fieldAnnotation.paddingChar() = ' ' (default).
+    // appendData uses record.paddingChar()='*' for gap padding.
+    // So: "****" (gap from appendData while-loop) + "AB " (formatted field, space-padded)
+    assertEquals("****AB ", exported);
+  }
+
+  // --- Inner record classes for edge case tests ---
+
+  @Record
+  public static class TwoFieldsDifferentRecord {
+    private String value;
+
+    @Fields({@Field(offset = 1, length = 3), @Field(offset = 4, length = 3)})
+    public String getValue() { return value; }
+    public void setValue(String v) { this.value = v; }
+  }
+
+  @Record
+  public static class NullCharStringRecord {
+    private String text;
+
+    @Field(offset = 1, length = 5, nullChar = ' ')
+    public String getText() { return text; }
+    public void setText(String text) { this.text = text; }
+  }
+
+  @Record
+  public static class NoNullCharStringRecord {
+    private String text;
+
+    @Field(offset = 1, length = 5)
+    public String getText() { return text; }
+    public void setText(String text) { this.text = text; }
+  }
+
+  @Record
+  public static class ReadOnlyFieldRecord {
+    private String text;
+
+    @Field(offset = 1, length = 5)
+    public String getText() { return text; }
+    // No setter — setterHandle will be null in FieldDescriptor
+  }
+
+  @Record
+  public static class NestedInnerRecord {
+    private String text;
+
+    @Field(offset = 1, length = 5)
+    public String getText() { return text; }
+    public void setText(String text) { this.text = text; }
+  }
+
+  @Record
+  public static class NestedContainerRecord {
+    private NestedInnerRecord inner;
+
+    @Field(offset = 1, length = 5)
+    public NestedInnerRecord getInner() { return inner; }
+    public void setInner(NestedInnerRecord inner) { this.inner = inner; }
+  }
+
+  @Record
+  public static class NullableNestedRecord {
+    private NestedInnerRecord inner;
+
+    @Field(offset = 1, length = 5)
+    public NestedInnerRecord getInner() { return inner; }
+    public void setInner(NestedInnerRecord inner) { this.inner = inner; }
+  }
+
+  @Record
+  public static class NullCharExportRecord {
+    private Integer value;
+
+    @Field(offset = 1, length = 5, nullChar = '0')
+    public Integer getValue() { return value; }
+    public void setValue(Integer value) { this.value = value; }
+  }
+
+  @Record
+  public static class NoNullCharExportRecord {
+    private String value;
+
+    @Field(offset = 1, length = 5)
+    public String getValue() { return value; }
+    public void setValue(String value) { this.value = value; }
+  }
+
+  @Record(length = 5)
+  public static class ExactLengthRecord {
+    private String name;
+
+    @Field(offset = 1, length = 5)
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+  }
+
+  @Record
+  public static class UnboundedRecord {
+    private String name;
+
+    @Field(offset = 1, length = 5)
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+  }
+
+  @Record
+  public static class GaplessRecord {
+    private String data;
+
+    @Field(offset = 1, length = 5)
+    public String getData() { return data; }
+    public void setData(String data) { this.data = data; }
+  }
+
+  @Record
+  public static class GapAtOffset5Record {
+    private String data;
+
+    @Field(offset = 5, length = 3)
+    public String getData() { return data; }
+    public void setData(String data) { this.data = data; }
+  }
+
+  @Record
+  public static class TwoGapFieldsRecord {
+    private String a;
+    private String b;
+
+    @Field(offset = 1, length = 3)
+    public String getA() { return a; }
+    public void setA(String a) { this.a = a; }
+
+    @Field(offset = 8, length = 3)
+    public String getB() { return b; }
+    public void setB(String b) { this.b = b; }
+  }
+
+  @Record(paddingChar = '*')
+  public static class StarPaddedRecord {
+    private String data;
+
+    @Field(offset = 5, length = 3)
+    public String getData() { return data; }
+    public void setData(String data) { this.data = data; }
   }
 }
