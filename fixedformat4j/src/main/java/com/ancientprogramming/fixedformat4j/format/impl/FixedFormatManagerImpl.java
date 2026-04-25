@@ -15,6 +15,7 @@
  */
 package com.ancientprogramming.fixedformat4j.format.impl;
 
+import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.annotation.EnumFormat;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatEnum;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
 import static java.lang.String.format;
@@ -68,11 +70,15 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   private static final ClassValue<Boolean> VALIDATED_CLASSES = new ClassValue<Boolean>() {
     @Override
     protected Boolean computeValue(Class<?> clazz) {
-      for (FieldDescriptor desc : ClassMetadataCache.INSTANCE.get(clazz)) {
+      List<FieldDescriptor> descriptors = ClassMetadataCache.INSTANCE.get(clazz);
+      for (FieldDescriptor desc : descriptors) {
         doValidateFieldPattern(desc.target, desc.fieldAnnotation);
         doValidateEnumFieldLength(desc.target, desc.fieldAnnotation);
         doValidateFieldNullChar(desc.target, desc.fieldAnnotation);
+        doValidateRestOfLineField(desc.target, desc.fieldAnnotation);
       }
+      doValidateRestOfLineIsLastField(clazz, descriptors);
+      doValidateRestOfLineRecordLength(clazz, descriptors);
       return Boolean.TRUE;
     }
   };
@@ -193,6 +199,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   @SuppressWarnings({"unchecked", "rawtypes"})
   private static void doValidateEnumFieldLength(AnnotationTarget target, Field fieldAnnotation) {
+    if (fieldAnnotation.length() == Field.REST_OF_LINE) return;
     FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
     Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
     if (!datatype.isEnum()) {
@@ -218,6 +225,82 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
           "Enum [%s] has values with max length %d, which exceeds @Field length %d on %s.%s()",
           datatype.getName(), maxLength, fieldAnnotation.length(),
           target.getter.getDeclaringClass().getName(), target.getter.getName()));
+    }
+  }
+
+  private static void doValidateRestOfLineField(AnnotationTarget target, Field fieldAnnotation) {
+    if (fieldAnnotation.length() != Field.REST_OF_LINE) return;
+
+    FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
+    Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
+    String getterRef = target.getter.getDeclaringClass().getName() + "." + target.getter.getName() + "()";
+
+    if (!String.class.equals(datatype)) {
+      throw new FixedFormatException(format(
+          "@Field(length = -1) is only supported for String fields, but %s returns %s",
+          getterRef, datatype.getName()));
+    }
+    if (fieldAnnotation.count() != 1) {
+      throw new FixedFormatException(format(
+          "@Field(length = -1) cannot be combined with count > 1 on %s", getterRef));
+    }
+    if (fieldAnnotation.align() != Align.INHERIT) {
+      throw new FixedFormatException(format(
+          "@Field(length = -1): 'align' is not applicable when length = -1 on %s", getterRef));
+    }
+    if (fieldAnnotation.paddingChar() != ' ') {
+      throw new FixedFormatException(format(
+          "@Field(length = -1): 'paddingChar' is not applicable when length = -1 on %s", getterRef));
+    }
+    if (fieldAnnotation.nullChar() != Field.UNSET_NULL_CHAR) {
+      throw new FixedFormatException(format(
+          "@Field(length = -1): 'nullChar' is not applicable when length = -1 on %s", getterRef));
+    }
+  }
+
+  private static void doValidateRestOfLineIsLastField(Class<?> clazz, List<FieldDescriptor> descriptors) {
+    int restOfLineOffset = -1;
+    String restOfLineGetter = null;
+    int maxOtherOffset = Integer.MIN_VALUE;
+
+    for (FieldDescriptor desc : descriptors) {
+      if (desc.fieldAnnotation.length() == Field.REST_OF_LINE) {
+        if (restOfLineOffset != -1) {
+          throw new FixedFormatException(format(
+              "Only one @Field(length = -1) is allowed per record class %s, but found multiple",
+              clazz.getName()));
+        }
+        restOfLineOffset = desc.fieldAnnotation.offset();
+        restOfLineGetter = desc.target.getter.getDeclaringClass().getName() + "."
+            + desc.target.getter.getName() + "()";
+      } else {
+        int effectiveEndOffset = desc.isRepeating
+            ? desc.fieldAnnotation.offset() + desc.fieldAnnotation.count() * desc.fieldAnnotation.length() - 1
+            : desc.fieldAnnotation.offset() + desc.fieldAnnotation.length() - 1;
+        maxOtherOffset = Math.max(maxOtherOffset, effectiveEndOffset);
+      }
+    }
+
+    if (restOfLineOffset == -1) return;
+
+    if (maxOtherOffset >= restOfLineOffset) {
+      throw new FixedFormatException(format(
+          "@Field(length = -1) on %s must be the last field (highest offset) in the record,"
+              + " but another field at offset %d comes after or at the same position",
+          restOfLineGetter, maxOtherOffset));
+    }
+  }
+
+  private static void doValidateRestOfLineRecordLength(Class<?> clazz, List<FieldDescriptor> descriptors) {
+    boolean hasRestOfLine = descriptors.stream()
+        .anyMatch(desc -> desc.fieldAnnotation.length() == Field.REST_OF_LINE);
+    if (!hasRestOfLine) return;
+    Record record = clazz.getAnnotation(Record.class);
+    if (record != null && record.length() != -1) {
+      throw new FixedFormatException(format(
+          "@Field(length = -1) is not compatible with @Record(length = %d) on %s "
+              + "because record-level padding would corrupt the verbatim round-trip",
+          record.length(), clazz.getName()));
     }
   }
 

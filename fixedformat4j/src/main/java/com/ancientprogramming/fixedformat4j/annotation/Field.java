@@ -43,6 +43,31 @@ public @interface Field {
   char UNSET_NULL_CHAR = '\0';
 
   /**
+   * Sentinel value for {@link #length()} meaning "from {@code offset} to the end of the line"
+   * (rest-of-line field).
+   * <p>
+   * On load, all characters from the field's {@code offset} to the end of the line are captured
+   * verbatim with no padding removal. When the line ends exactly at {@code offset}, the result is
+   * the empty string {@code ""}; when the offset is beyond the line end, the result is {@code null}.
+   * <p>
+   * On export, the stored value is written as-is with no padding or truncation. A {@code null}
+   * value exports as the empty string.
+   * <p>
+   * Constraints enforced at validation time:
+   * <ul>
+   *   <li>The field type must be {@link String}.</li>
+   *   <li>{@link #count()} must be {@code 1} (repeating is not supported).</li>
+   *   <li>This field must have the highest {@link #offset()} in the record class.</li>
+   *   <li>{@link #align()}, {@link #paddingChar()}, and {@link #nullChar()} must keep their
+   *       default values; specifying explicit non-default values is rejected with a clear
+   *       exception.</li>
+   * </ul>
+   *
+   * @since 1.8.0
+   */
+  int REST_OF_LINE = -1;
+
+  /**
    * A one based offset to insert data at in a record.
    * @return the offset as an int
    */
