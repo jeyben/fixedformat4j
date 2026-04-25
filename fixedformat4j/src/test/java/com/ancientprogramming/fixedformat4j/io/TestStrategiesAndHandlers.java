@@ -6,6 +6,7 @@ import ch.qos.logback.core.read.ListAppender;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
 import com.ancientprogramming.fixedformat4j.io.read.MultiMatchStrategy;
 import com.ancientprogramming.fixedformat4j.io.read.ParseErrorStrategy;
 import com.ancientprogramming.fixedformat4j.io.read.UnmatchStrategy;
@@ -16,14 +17,12 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class TestStrategiesAndHandlers {
 
-  private static final Predicate<String> ANY = Pattern.compile(".*").asPredicate();
+  private static final LinePattern ANY = LinePattern.matchAll();
   private static final String THREE_LINES = "line1     \nline2     \nline3     ";
 
   @SuppressWarnings("unchecked")
@@ -100,7 +99,7 @@ class TestStrategiesAndHandlers {
   @Test
   void unmatchedSkipDoesNotEmitRecordOrThrow() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+        .addMapping(TenCharRecord.class, LinePattern.prefix("A"))
         .unmatchStrategy(UnmatchStrategy.skip())
         .build();
 
@@ -111,7 +110,7 @@ class TestStrategiesAndHandlers {
   @Test
   void unmatchedThrowExceptionThrowsOnUnmatchedLine() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+        .addMapping(TenCharRecord.class, LinePattern.prefix("A"))
         .unmatchStrategy(UnmatchStrategy.throwException())
         .build();
 
@@ -124,7 +123,7 @@ class TestStrategiesAndHandlers {
     List<String> captured = new ArrayList<>();
 
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+        .addMapping(TenCharRecord.class, LinePattern.prefix("A"))
         .unmatchStrategy((lineNumber, line) -> captured.add(lineNumber + ":" + line))
         .build();
 
@@ -143,7 +142,7 @@ class TestStrategiesAndHandlers {
     logger.addAppender(appender);
     try {
       FixedFormatReader reader = FixedFormatReader.builder()
-          .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+          .addMapping(TenCharRecord.class, LinePattern.prefix("A"))
           .unmatchStrategy(UnmatchStrategy.skip())
           .build();
 
@@ -163,7 +162,7 @@ class TestStrategiesAndHandlers {
   @Test
   void defaultUnmatchStrategyThrowsOnUnmatchedLine() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+        .addMapping(TenCharRecord.class, LinePattern.prefix("A"))
         .build();
 
     assertThrows(FixedFormatException.class, () ->
@@ -213,7 +212,7 @@ class TestStrategiesAndHandlers {
   @Test
   void excludeLinesSilentlySkipsMatchedLinesBeforePatternMatching() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+        .addMapping(TenCharRecord.class, LinePattern.prefix("A"))
         .excludeLines(line -> line.isBlank())
         .build();
 
@@ -225,7 +224,7 @@ class TestStrategiesAndHandlers {
   @Test
   void withoutExcludeLinesBlankLineTriggerUnmatchStrategy() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, Pattern.compile("^A").asPredicate())
+        .addMapping(TenCharRecord.class, LinePattern.prefix("A"))
         .build();
 
     assertThrows(FixedFormatException.class, () ->

@@ -3,14 +3,13 @@ package com.ancientprogramming.fixedformat4j.io;
 import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
 import com.ancientprogramming.fixedformat4j.io.read.ParseErrorStrategy;
 import com.ancientprogramming.fixedformat4j.io.read.UnmatchStrategy;
 import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
@@ -28,7 +27,7 @@ class TestFixedFormatReaderBuilder {
     public void setData(String data) { this.data = data; }
   }
 
-  private final Predicate<String> anyPattern = Pattern.compile(".*").asPredicate();
+  private final LinePattern anyPattern = LinePattern.matchAll();
 
   @Test
   void buildsSuccessfullyWithOneMapping() {

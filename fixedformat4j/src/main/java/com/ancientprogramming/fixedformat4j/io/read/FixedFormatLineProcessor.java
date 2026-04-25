@@ -25,12 +25,11 @@ import static java.lang.String.format;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Core line-routing engine for {@link FixedFormatReader}.
  *
- * <p>Matches each line against registered {@link RecordMapping}s, applies multi-match
+ * <p>Matches each line against a {@link RecordMappingIndex}, applies multi-match
  * and unmatched-line strategies, parses the line into a record, and emits the result via a
  * callback.</p>
  */
@@ -38,7 +37,7 @@ class FixedFormatLineProcessor {
 
   private static final Logger LOG = LoggerFactory.getLogger(FixedFormatLineProcessor.class);
 
-  private final List<RecordMapping<?>> mappings;
+  private final RecordMappingIndex index;
   private final MultiMatchStrategy multiMatchStrategy;
   private final UnmatchStrategy unmatchStrategy;
   private final ParseErrorStrategy parseErrorStrategy;
@@ -46,13 +45,13 @@ class FixedFormatLineProcessor {
   private final FixedFormatManager manager;
 
   FixedFormatLineProcessor(
-      List<RecordMapping<?>> mappings,
+      RecordMappingIndex index,
       MultiMatchStrategy multiMatchStrategy,
       UnmatchStrategy unmatchStrategy,
       ParseErrorStrategy parseErrorStrategy,
       Predicate<String> exclusionFilter,
       FixedFormatManager manager) {
-    this.mappings = List.copyOf(mappings);
+    this.index = index;
     this.multiMatchStrategy = multiMatchStrategy;
     this.unmatchStrategy = unmatchStrategy;
     this.parseErrorStrategy = parseErrorStrategy;
@@ -65,7 +64,7 @@ class FixedFormatLineProcessor {
       LOG.debug("Excluding line {}: {}", lineNumber, line);
       return;
     }
-    List<RecordMapping<?>> matched = findMatches(line);
+    List<RecordMapping<?>> matched = index.findMatches(line);
     if (matched.isEmpty()) {
       unmatchStrategy.handle(lineNumber, line);
       return;
@@ -91,12 +90,6 @@ class FixedFormatLineProcessor {
       parseErrorStrategy.handle(wrapped, line, lineNumber);
       return null;
     }
-  }
-
-  private List<RecordMapping<?>> findMatches(String line) {
-    return mappings.stream()
-        .filter(m -> m.getPattern().test(line))
-        .collect(Collectors.toList());
   }
 
 }

@@ -1,5 +1,6 @@
 package com.ancientprogramming.fixedformat4j.io;
 
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
 import com.ancientprogramming.fixedformat4j.issues.LombokRecord;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -11,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
@@ -28,7 +28,7 @@ class TestFixedFormatReaderLombok {
 
   private FixedFormatReader reader() {
     return FixedFormatReader.builder()
-        .addMapping(LombokRecord.class, Pattern.compile(".*").asPredicate())
+        .addMapping(LombokRecord.class, LinePattern.matchAll())
         .build();
   }
 
@@ -68,7 +68,7 @@ class TestFixedFormatReaderLombok {
   @Test
   void patternMatchesOnlyLombokLines() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(LombokRecord.class, Pattern.compile("^Jacob").asPredicate())
+        .addMapping(LombokRecord.class, LinePattern.prefix("Jacob"))
         .unmatchStrategy(UnmatchStrategy.skip())
         .build();
 
@@ -85,7 +85,7 @@ class TestFixedFormatReaderLombok {
   void unmatchedLineForwardedToLambdaStrategy() {
     List<String> captured = new ArrayList<>();
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(LombokRecord.class, Pattern.compile("^Jacob").asPredicate())
+        .addMapping(LombokRecord.class, LinePattern.prefix("Jacob"))
         .unmatchStrategy((lineNumber, line) -> captured.add(lineNumber + ":" + line))
         .build();
 

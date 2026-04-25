@@ -34,11 +34,15 @@ title: Changelog
 
 ### New features
 
-- **`FixedFormatReader` — file and stream processing** ([#82](https://github.com/jeyben/fixedformat4j/issues/82)) —
+- **`FixedFormatReader` — file and stream processing** ([#82](https://github.com/jeyben/fixedformat4j/issues/82),
+  [#95](https://github.com/jeyben/fixedformat4j/issues/95)) —
   Reads fixed-format records from files, streams, or `Reader`s line-by-line, routing each line
-  to one or more `@Record`-annotated classes via `Predicate<String>` discriminators.
-  The `LinePredicates.regex(String)` factory compiles a regular expression once with
-  `Matcher.find()` semantics; pass any `Predicate<String>` for custom logic. `FixedFormatReader` is unparameterized.
+  to one or more `@Record`-annotated classes via `LinePattern` discriminators. Three factories cover
+  the common cases: `LinePattern.prefix("HDR")`, `LinePattern.positional(int[], String)` for
+  multi-position checks (e.g. type code at offset 0..2 plus a sub-type at offset 7..8), and
+  `LinePattern.matchAll()` for catch-all routing. Patterns are bucketed into hash tables at build
+  time, so per-line routing is near O(1) regardless of how many record types are registered.
+  `FixedFormatReader` is unparameterized.
 
   Two output shapes:
   - `read()` — returns `ReadResult`, a type-safe class-keyed container; `get(Class<R>)` returns `List<R>` with no cast required. Also provides `getAll()`, `contains(Class<?>)`, and `classes()`.
@@ -58,10 +62,11 @@ title: Changelog
   `FixedFormatIOException` (extends `FixedFormatException`) is thrown on underlying `IOException`.
 
   ```java
-  // import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
+  import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
+
   FixedFormatReader reader = FixedFormatReader.builder()
-      .addMapping(HeaderRecord.class, regex("^HDR"))
-      .addMapping(DetailRecord.class, regex("^DTL"))
+      .addMapping(HeaderRecord.class, LinePattern.prefix("HDR"))
+      .addMapping(DetailRecord.class, LinePattern.prefix("DTL"))
       .build();
 
   ReadResult result = reader.read(Path.of("data.txt"));

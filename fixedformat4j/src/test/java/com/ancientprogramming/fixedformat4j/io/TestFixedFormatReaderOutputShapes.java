@@ -1,26 +1,22 @@
 package com.ancientprogramming.fixedformat4j.io;
 
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
 import com.ancientprogramming.fixedformat4j.io.read.ReadResult;
 import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
 
 class TestFixedFormatReaderOutputShapes {
 
-  private static final Predicate<String> A_PATTERN = Pattern.compile("^A").asPredicate();
-  private static final Predicate<String> B_PATTERN = Pattern.compile("^B").asPredicate();
-
   private FixedFormatReader multiTypeReader() {
     return FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, A_PATTERN)
-        .addMapping(FiveCharRecord.class, B_PATTERN)
+        .addMapping(TenCharRecord.class, LinePattern.prefix("A"))
+        .addMapping(FiveCharRecord.class, LinePattern.prefix("B"))
         .build();
   }
 
@@ -55,7 +51,7 @@ class TestFixedFormatReaderOutputShapes {
   @Test
   void readGetReturnsTypedRecordsInOrder() {
     FixedFormatReader reader = FixedFormatReader.builder()
-        .addMapping(TenCharRecord.class, Pattern.compile(".*").asPredicate())
+        .addMapping(TenCharRecord.class, LinePattern.matchAll())
         .build();
 
     List<TenCharRecord> results = reader

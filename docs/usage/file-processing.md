@@ -43,25 +43,28 @@ public class EmployeeRecord {
 
 ## Defining patterns
 
-A `Predicate<String>` decides whether a line belongs to a particular record class.
-The `LinePredicates.regex(String)` factory (designed for static import) is the most
-concise option — it compiles the regular expression once and applies it with `find()`
-semantics (partial-line match):
+A `LinePattern` decides whether a line belongs to a particular record class. Three
+factory methods cover the common cases:
 
 ```java
-import static com.ancientprogramming.fixedformat4j.io.read.LinePredicates.regex;
+import com.ancientprogramming.fixedformat4j.io.read.LinePattern;
 
-Predicate<String> employeePattern = regex("^EMP");  // lines starting with "EMP"
-Predicate<String> anyLine         = regex(".*");     // every line
+// Lines whose first three characters are "EMP"
+LinePattern employeePattern = LinePattern.prefix("EMP");
+
+// Every line
+LinePattern anyLine = LinePattern.matchAll();
+
+// Lines whose characters at positions 0..3 are "K400" AND at positions 7..8 are "01"
+LinePattern transactionPattern =
+    LinePattern.positional(new int[]{0, 1, 2, 3, 7, 8}, "K40001");
 ```
 
-Pass any `Predicate<String>` for custom discrimination logic — for example, testing
-a fixed-width type code in a specific column:
+`prefix(literal)` is shorthand for `positional(new int[]{0, 1, ..., literal.length() - 1}, literal)`.
 
-```java
-Predicate<String> headerPattern =
-    line -> line.length() >= 3 && "HDR".equals(line.substring(0, 3));
-```
+Patterns are restricted to position-and-literal matching on purpose: it lets the
+reader bucket all registered mappings into hash tables at build time, so per-line
+routing is near O(1) regardless of how many record types you register.
 
 ---
 
@@ -73,7 +76,7 @@ Use the fluent builder to configure the reader. At least one mapping must be add
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, regex(".*"))
+    .addMapping(EmployeeRecord.class, LinePattern.matchAll())
     .build();
 ```
 
@@ -81,8 +84,8 @@ FixedFormatReader reader = FixedFormatReader.builder()
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, regex("^HDR"))
-    .addMapping(DetailRecord.class, regex("^DTL"))
+    .addMapping(HeaderRecord.class, LinePattern.prefix("HDR"))
+    .addMapping(DetailRecord.class, LinePattern.prefix("DTL"))
     .build();
 ```
 
@@ -90,13 +93,16 @@ FixedFormatReader reader = FixedFormatReader.builder()
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, regex("^HDR"))
-    .addMapping(DetailRecord.class, regex("^DTL"))
+    .addMapping(HeaderRecord.class, LinePattern.prefix("HDR"))
+    .addMapping(DetailRecord.class, LinePattern.prefix("DTL"))
     .unmatchStrategy(UnmatchStrategy.skip())
     .build();
 ```
 
-Mappings are evaluated in registration order. The `multiMatchStrategy` controls what happens if more than one pattern matches (see [Strategies](#strategies) below).
+When more than one pattern matches a line, the reader orders matches by **most
+detailed first** (depth = number of positions in the pattern), then by registration
+order as the tiebreaker. The `multiMatchStrategy` then chooses how to use that
+ordered list (see [Strategies](#strategies) below).
 
 ---
 
@@ -106,8 +112,8 @@ Mappings are evaluated in registration order. The `multiMatchStrategy` controls 
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, regex("^HDR"))
-    .addMapping(DetailRecord.class, regex("^DTL"))
+    .addMapping(HeaderRecord.class, LinePattern.prefix("HDR"))
+    .addMapping(DetailRecord.class, LinePattern.prefix("DTL"))
     .build();
 
 ReadResult result = reader.read(Path.of("data.txt"));
@@ -137,8 +143,8 @@ Supply handlers via a `HandlerRegistry` at the call site:
 
 ```java
 FixedFormatReader reader = FixedFormatReader.builder()
-    .addMapping(HeaderRecord.class, regex("^HDR"))
-    .addMapping(DetailRecord.class, regex("^DTL"))
+    .addMapping(HeaderRecord.class, LinePattern.prefix("HDR"))
+    .addMapping(DetailRecord.class, LinePattern.prefix("DTL"))
     .build();
 
 reader.process(Path.of("data.txt"), new HandlerRegistry()
@@ -159,9 +165,9 @@ All three strategy types are interfaces. The built-in behaviours are available a
 
 | Factory method | Behaviour |
 |---|---|
-| `MultiMatchStrategy.firstMatch()` *(default)* | Use the first matching mapping in registration order; ignore the rest. |
+| `MultiMatchStrategy.firstMatch()` *(default)* | Use the most detailed match (largest depth); break ties by registration order. |
 | `MultiMatchStrategy.throwOnAmbiguity()` | Throw `FixedFormatException` listing the line number and all matching class names. |
-| `MultiMatchStrategy.allMatches()` | Emit one record per matching mapping, in registration order. |
+| `MultiMatchStrategy.allMatches()` | Emit one record per matching mapping, ordered most detailed first, ties by registration order. |
 
 ```java
 FixedFormatReader.builder()
@@ -190,7 +196,7 @@ Implement `MultiMatchStrategy` directly for custom resolution logic:
 
 ```java
 FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, regex("^EMP"))
+    .addMapping(EmployeeRecord.class, LinePattern.prefix("EMP"))
     .unmatchStrategy((lineNumber, line) ->
         System.err.println("Unmatched line " + lineNumber + ": " + line))
     .build();
@@ -206,7 +212,7 @@ FixedFormatReader.builder()
 
 ```java
 FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, regex(".*"))
+    .addMapping(EmployeeRecord.class, LinePattern.matchAll())
     .parseErrorStrategy((wrapped, line, lineNumber) ->
         System.err.println("Parse error on line " + lineNumber + ": " + wrapped.getMessage()))
     .build();
@@ -222,7 +228,7 @@ Use `excludeLines` to drop lines before pattern matching. Lines for which the pr
 
 ```java
 FixedFormatReader.builder()
-    .addMapping(EmployeeRecord.class, regex(".*"))
+    .addMapping(EmployeeRecord.class, LinePattern.matchAll())
     .excludeLines(line -> line.isBlank() || line.startsWith("#"))
     .build();
 ```
