@@ -78,8 +78,10 @@ public class EnumFormatter extends AbstractFixedFormatter<Enum> {
       }
       Enum<?>[] constants = enumClass.getEnumConstants();
       if (ordinal < 0 || ordinal >= constants.length) {
+        IllegalArgumentException cause = new IllegalArgumentException(
+            String.format("Ordinal %d is out of range for enum %s (valid range: 0..%d)", ordinal, enumClass.getName(), constants.length - 1));
         throw new FixedFormatException(
-            String.format("Ordinal [%d] is out of range for enum [%s] with %d constants", ordinal, enumClass.getName(), constants.length));
+            String.format("Ordinal [%d] is out of range for enum [%s] with %d constants", ordinal, enumClass.getName(), constants.length), cause);
       }
       return constants[ordinal];
     } else {
