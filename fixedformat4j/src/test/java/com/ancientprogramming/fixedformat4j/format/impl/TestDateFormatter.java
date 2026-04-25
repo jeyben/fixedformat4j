@@ -16,6 +16,7 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.Align;
+import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
@@ -98,6 +99,45 @@ public class TestDateFormatter {
     Date original = getDateTime(2012, 9, 12, 11, 11, 0);
     String formatted = formatter.format(original, instr);
     assertEquals(original, formatter.parse(formatted, instr));
+  }
+
+  @Test
+  public void testInvalidDateStringThrowsFixedFormatExceptionWithMessage() {
+    FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
+        formatter.parse("NOTADATE", new FormatInstructions(8, Align.LEFT, ' ',
+            new FixedFormatPatternData("yyyyMMdd"), null, null, null)));
+    assertTrue(ex.getMessage().contains("NOTADATE"),
+        "message should contain the bad input: " + ex.getMessage());
+    assertTrue(ex.getMessage().contains("yyyyMMdd"),
+        "message should contain the pattern: " + ex.getMessage());
+  }
+
+  @Test
+  public void testNonSpacePaddingChar_leftAlign_roundTrip() {
+    FormatInstructions instr = new FormatInstructions(12, Align.LEFT, '*',
+        new FixedFormatPatternData("yyyyMMdd"), null, null, null);
+    Date original = getDate(2026, 4, 15);
+    String formatted = formatter.format(original, instr);
+    assertEquals("20260415****", formatted);
+    assertEquals(original, formatter.parse(formatted, instr));
+  }
+
+  @Test
+  public void testNonSpacePaddingChar_rightAlign_roundTrip() {
+    FormatInstructions instr = new FormatInstructions(12, Align.RIGHT, '*',
+        new FixedFormatPatternData("yyyyMMdd"), null, null, null);
+    Date original = getDate(2026, 4, 15);
+    String formatted = formatter.format(original, instr);
+    assertEquals("****20260415", formatted);
+    assertEquals(original, formatter.parse(formatted, instr));
+  }
+
+  @Test
+  public void testRoundTripWithNonZeroDateComponents() {
+    FormatInstructions instr = new FormatInstructions(14, Align.LEFT, '0',
+        new FixedFormatPatternData("yyyyMMddHHmmss"), null, null, null);
+    Date original = getDateTime(2026, 4, 15, 13, 45, 22);
+    assertEquals(original, formatter.parse(formatter.format(original, instr), instr));
   }
 
   public Date getDate(int year, int month, int day) {

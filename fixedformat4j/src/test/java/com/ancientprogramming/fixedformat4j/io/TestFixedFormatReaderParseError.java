@@ -83,4 +83,67 @@ class TestFixedFormatReaderParseError {
     List<Object> results = reader.read(new StringReader("line1     \nline2     ")).getAll();
     assertEquals(1, results.size());
   }
+
+  @Test
+  void throwExceptionStrategy_rethrowsOnBadLine() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, LinePattern.matchAll())
+        .parseErrorStrategy(ParseErrorStrategy.throwException())
+        .manager(failOnSecondCall())
+        .build();
+
+    assertThrows(FixedFormatException.class, () ->
+        reader.read(new StringReader("line1     \nline2     ")));
+  }
+
+  @Test
+  void throwExceptionStrategy_doesNotContinuePastBadLine() {
+    AtomicInteger processedCount = new AtomicInteger(0);
+    FixedFormatManager countingManager = new FixedFormatManager() {
+      private final AtomicInteger calls = new AtomicInteger(0);
+      @Override public <T> T load(Class<T> clazz, String data) {
+        int call = calls.incrementAndGet();
+        if (call == 1) throw new FixedFormatException("bad first line");
+        processedCount.incrementAndGet();
+        return null;
+      }
+      @Override public <T> String export(T instance) { return ""; }
+      @Override public <T> String export(String template, T instance) { return ""; }
+    };
+
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, LinePattern.matchAll())
+        .parseErrorStrategy(ParseErrorStrategy.throwException())
+        .manager(countingManager)
+        .build();
+
+    assertThrows(FixedFormatException.class, () ->
+        reader.read(new StringReader("line1     \nline2     \nline3     ")));
+    assertEquals(0, processedCount.get(), "no lines should be processed after throwException fires");
+  }
+
+  @Test
+  void skipAndLogStrategy_readResultContainsOnlySuccessfulRecords() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, LinePattern.matchAll())
+        .parseErrorStrategy(ParseErrorStrategy.skipAndLog())
+        .manager(failOnSecondCall())
+        .build();
+
+    List<Object> results = reader.read(new StringReader("line1     \nline2     \nline3     ")).getAll();
+    assertEquals(2, results.size());
+  }
+
+  @Test
+  void throwExceptionStrategy_wrapsExceptionFromManager() {
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, LinePattern.matchAll())
+        .parseErrorStrategy(ParseErrorStrategy.throwException())
+        .manager(failOnSecondCall())
+        .build();
+
+    FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
+        reader.read(new StringReader("line1     \nline2     ")));
+    assertNotNull(ex, "exception should not be null");
+  }
 }
