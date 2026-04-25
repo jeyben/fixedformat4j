@@ -83,8 +83,7 @@ class FixedFormatLineProcessor {
     }
   }
 
-  // Wildcard capture: RecordMapping<?> → RecordMapping<R>, enabling type-safe load.
-  private <R> Object parseRecord(RecordMapping<R> mapping, String line, long lineNumber) {
+  private Object parseRecord(RecordMapping<?> mapping, String line, long lineNumber) {
     try {
       return manager.load(mapping.getRecordClass(), line);
     } catch (FixedFormatException e) {

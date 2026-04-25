@@ -32,7 +32,7 @@ import java.util.function.Predicate;
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
  */
-public class FixedFormatReaderBuilder {
+public final class FixedFormatReaderBuilder {
 
   final List<RecordMapping<?>> mappings = new ArrayList<>();
   MultiMatchStrategy multiMatchStrategy = MultiMatchStrategy.firstMatch();

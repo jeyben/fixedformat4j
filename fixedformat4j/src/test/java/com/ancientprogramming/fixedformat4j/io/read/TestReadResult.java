@@ -1,12 +1,13 @@
-package com.ancientprogramming.fixedformat4j.io;
+package com.ancientprogramming.fixedformat4j.io.read;
 
-import com.ancientprogramming.fixedformat4j.io.read.ReadResult;
+import com.ancientprogramming.fixedformat4j.io.FiveCharRecord;
+import com.ancientprogramming.fixedformat4j.io.TenCharRecord;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
