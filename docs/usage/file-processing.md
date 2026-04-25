@@ -229,6 +229,60 @@ internal index. Per-line K-routing is a single hash lookup against the 6-charact
 extracted key (`"K40001"`, `"K41003"`, …) regardless of how many K-variants you
 register. Adding `K42007`, `K43012`, … later is free.
 
+**Consuming the result in encounter order**
+
+`reader.read(path).getAll()` returns every parsed record in the order it
+appeared in the file:
+
+| index | class           | source line                           |
+|-------|-----------------|---------------------------------------|
+| 0     | `X1Record`      | `X1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`   |
+| 1     | `K40001Record`  | `K400xxx01xxxxxxxxxxxxxxxxxxxxxxxx`   |
+| 2     | `K40002Record`  | `K400xxx02xxxxxxxxxxxxxxxxxxxxxxxx`   |
+| 3     | `K41001Record`  | `K410xxx01xxxxxxxxxxxxxxxxxxxxxxxx`   |
+| 4     | `X2Record`      | `X2xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`   |
+| 5     | `K41003Record`  | `K410xxx03xxxxxxxxxxxxxxxxxxxxxxxx`   |
+| 6–10  | `OtherRecord`   | `SC410…`, `FC412…`, `SC411…`, …       |
+
+Iterate the list and dispatch on type:
+
+```java
+List<Object> all = reader.read(Path.of("data.txt")).getAll();
+
+for (Object record : all) {
+    if (record instanceof X1Record) {
+        handleX1((X1Record) record);
+    } else if (record instanceof X2Record) {
+        handleX2((X2Record) record);
+    } else if (record instanceof K40001Record) {
+        handleK40001((K40001Record) record);
+    } else if (record instanceof K40002Record) {
+        handleK40002((K40002Record) record);
+    } else if (record instanceof K41001Record) {
+        handleK41001((K41001Record) record);
+    } else if (record instanceof K41003Record) {
+        handleK41003((K41003Record) record);
+    } else if (record instanceof OtherRecord) {
+        handleOther((OtherRecord) record);
+    }
+}
+```
+
+If the goal is per-record, per-type processing in encounter order, prefer
+`process(... HandlerRegistry)` — same ordering, no casts:
+
+```java
+reader.process(Path.of("data.txt"), new HandlerRegistry()
+    .on(X1Record.class,     this::handleX1)
+    .on(K40001Record.class, this::handleK40001)
+    // …one .on(...) per class…
+    .on(OtherRecord.class,  this::handleOther));
+```
+
+Use `getAll()` when you need a `List` for batch operations (count, filter,
+transform a collection at once); use `process(...)` when you want per-record,
+per-type processing in encounter order.
+
 ---
 
 ## Reading as ReadResult
