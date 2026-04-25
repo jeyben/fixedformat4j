@@ -62,7 +62,7 @@ class FixedFormatLineProcessor {
     this.manager = manager;
   }
 
-  void processLine(String line, long lineNumber, BiConsumer<RecordMapping<?>, Object> emit) {
+  void processLine(String line, long lineNumber, BiConsumer<Class<?>, Object> emit) {
     if (exclusionFilter.test(line)) {
       LOG.debug("Excluding line {}: {}", lineNumber, line);
       return;
@@ -78,7 +78,7 @@ class FixedFormatLineProcessor {
     for (RecordMapping<?> mapping : toProcess) {
       Object record = parseRecord(mapping, line, lineNumber);
       if (record != null) {
-        emit.accept(mapping, record);
+        emit.accept(mapping.getRecordClass(), record);
       }
     }
   }

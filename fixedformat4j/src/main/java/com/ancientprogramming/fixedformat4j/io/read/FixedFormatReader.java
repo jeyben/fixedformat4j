@@ -85,7 +85,7 @@ import static java.lang.String.format;
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.8.0
  */
-public class FixedFormatReader {
+public final class FixedFormatReader {
 
   private final List<RecordMapping<?>> mappings;
   private final FixedFormatLineProcessor processor;
@@ -133,8 +133,8 @@ public class FixedFormatReader {
       data.put(mapping.getRecordClass(), new ArrayList<>());
     }
     List<Object> all = new ArrayList<>();
-    readWithMappingCallback(reader, (mapping, record) -> {
-      data.get(mapping.getRecordClass()).add(record);
+    readWithMappingCallback(reader, (clazz, record) -> {
+      data.get(clazz).add(record);
       all.add(record);
     });
     data.entrySet().removeIf(e -> e.getValue().isEmpty());
@@ -192,7 +192,7 @@ public class FixedFormatReader {
   }
 
   private void readWithMappingCallback(Reader reader,
-                                       BiConsumer<RecordMapping<?>, Object> callback) {
+                                       BiConsumer<Class<?>, Object> callback) {
     BufferedReader buffered = toBuffered(reader);
     long[] lineCounter = {0L};
     try (buffered) {
@@ -233,8 +233,7 @@ public class FixedFormatReader {
   public void process(Reader reader, HandlerRegistry registry) {
     Objects.requireNonNull(reader, "reader must not be null");
     Objects.requireNonNull(registry, "registry must not be null");
-    readWithMappingCallback(reader,
-        (mapping, record) -> registry.dispatch(mapping.getRecordClass(), record));
+    readWithMappingCallback(reader, registry::dispatch);
   }
 
   /**
