@@ -45,6 +45,19 @@ public class FixedFormatUtil {
     String result;
     int offset = context.getOffset() - 1;
     int length = instructions.getLength();
+    if (length == -1) {
+      // rest-of-line: capture from offset to end of line verbatim
+      if (offset <= record.length()) {
+        result = record.substring(offset);
+      } else {
+        result = null;
+        LOG.info(format("Could not fetch rest-of-line data: recordlength[%s] is shorter than the requested offset[%s]. Returning null", record.length(), offset));
+      }
+      if (LOG.isDebugEnabled()) {
+        LOG.debug(format("fetched '%s' from record", result));
+      }
+      return result;
+    }
     if (record.length() >= offset + length) {
       result = record.substring(offset, offset + length);
     } else if (record.length() > offset) {

@@ -32,7 +32,11 @@ public abstract class AbstractFixedFormatter<T> implements FixedFormatter<T> {
   public T parse(String value, FormatInstructions instructions) {
     T result = null;
     if (value != null) {
-      result = asObject(stripPadding(value, instructions), instructions);
+      if (instructions.getLength() == -1) {
+        result = asObject(value, instructions);
+      } else {
+        result = asObject(stripPadding(value, instructions), instructions);
+      }
     }
     return result;
   }
@@ -59,6 +63,10 @@ public abstract class AbstractFixedFormatter<T> implements FixedFormatter<T> {
    * in {@code instructions}.
    */
   public String format(T value, FormatInstructions instructions) {
+    if (instructions.getLength() == -1) {
+      String raw = asString(value, instructions);
+      return raw != null ? raw : "";
+    }
     return instructions.getAlignment().apply(asString(value, instructions), instructions.getLength(), instructions.getPaddingChar());
   }
 
