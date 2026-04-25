@@ -1,11 +1,13 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.Align;
+import com.ancientprogramming.fixedformat4j.annotation.EnumFormat;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FormatContext;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
+import com.ancientprogramming.fixedformat4j.format.data.FixedFormatEnumData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatNumberData;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * Tests ByTypeFormatter dispatch to each known type formatter.
  */
 public class TestByTypeFormatter {
+
+  enum Season { SPRING, SUMMER, AUTUMN, WINTER }
 
   private ByTypeFormatter formatterFor(Class<?> type) {
     return new ByTypeFormatter(new FormatContext(1, type, ByTypeFormatter.class));
@@ -181,5 +185,103 @@ public class TestByTypeFormatter {
     ByTypeFormatter f = formatterFor(UUID.class);
     FormatInstructions instr = strInstr(36);
     assertThrows(FixedFormatException.class, () -> f.parse("some-uuid-string--------------------", instr));
+  }
+
+  @Test
+  public void testUnknownTypeExceptionMessageContainsTypeName() {
+    ByTypeFormatter f = formatterFor(UUID.class);
+    FixedFormatException ex = assertThrows(FixedFormatException.class,
+        () -> f.parse("some-uuid-string--------------------", strInstr(36)));
+    assertTrue(ex.getMessage().contains("UUID"),
+        "exception message should name the unsupported type: " + ex.getMessage());
+  }
+
+  // --- Format assertions (so type-swap mutations die) ---
+
+  @Test
+  public void testIntegerFormatterFormat() {
+    ByTypeFormatter f = formatterFor(Integer.class);
+    assertEquals("00042", f.format(42, numInstr(5)));
+  }
+
+  @Test
+  public void testLongFormatterFormat() {
+    ByTypeFormatter f = formatterFor(Long.class);
+    assertEquals("0000000123", f.format(123L, numInstr(10)));
+  }
+
+  @Test
+  public void testShortFormatterFormat() {
+    ByTypeFormatter f = formatterFor(Short.class);
+    assertEquals("00003", f.format((short) 3, numInstr(5)));
+  }
+
+  @Test
+  public void testBooleanFormatterFormat() {
+    ByTypeFormatter f = formatterFor(Boolean.class);
+    FormatInstructions instr = new FormatInstructions(1, Align.LEFT, ' ', null,
+        new FixedFormatBooleanData("T", "F"), null, null);
+    assertEquals("T", f.format(true, instr));
+    assertEquals("F", f.format(false, instr));
+  }
+
+  @Test
+  public void testCharacterFormatterFormat() {
+    ByTypeFormatter f = formatterFor(Character.class);
+    FormatInstructions instr = new FormatInstructions(1, Align.LEFT, ' ', null, null, null, null);
+    assertEquals("X", f.format('X', instr));
+  }
+
+  @Test
+  public void testDoubleFormatterFormat() {
+    ByTypeFormatter f = formatterFor(Double.class);
+    FormatInstructions instr = new FormatInstructions(5, Align.RIGHT, '0', null, null,
+        FixedFormatNumberData.DEFAULT,
+        new FixedFormatDecimalData(2, false, '.', RoundingMode.UNNECESSARY));
+    assertEquals("00123", f.format(1.23, instr));
+  }
+
+  @Test
+  public void testBigDecimalFormatterFormat() {
+    ByTypeFormatter f = formatterFor(BigDecimal.class);
+    FormatInstructions instr = new FormatInstructions(5, Align.RIGHT, '0', null, null,
+        FixedFormatNumberData.DEFAULT,
+        new FixedFormatDecimalData(2, false, '.', RoundingMode.UNNECESSARY));
+    assertEquals("00123", f.format(new BigDecimal("1.23"), instr));
+  }
+
+  // --- Enum dispatch ---
+
+  @Test
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public void testDispatchesToEnumFormatter_parse() {
+    ByTypeFormatter f = new ByTypeFormatter(new FormatContext(1, Season.class, ByTypeFormatter.class));
+    FormatInstructions instr = new FormatInstructions(10, Align.LEFT, ' ', null, null, null, null,
+        new FixedFormatEnumData(EnumFormat.LITERAL));
+    assertEquals(Season.SUMMER, f.parse("SUMMER    ", instr));
+  }
+
+  @Test
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public void testDispatchesToEnumFormatter_format() {
+    ByTypeFormatter f = new ByTypeFormatter(new FormatContext(1, Season.class, ByTypeFormatter.class));
+    FormatInstructions instr = new FormatInstructions(10, Align.LEFT, ' ', null, null, null, null,
+        new FixedFormatEnumData(EnumFormat.LITERAL));
+    assertEquals("WINTER    ", f.format(Season.WINTER, instr));
+  }
+
+  @Test
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public void testEnumTypeRoutesToEnumFormatter() {
+    ByTypeFormatter f = new ByTypeFormatter(new FormatContext(1, Season.class, ByTypeFormatter.class));
+    assertTrue(f.actualFormatter(Season.class) instanceof EnumFormatter,
+        "enum type should route to EnumFormatter");
+  }
+
+  @Test
+  public void testStringTypeRoutesToStringFormatter() {
+    ByTypeFormatter f = formatterFor(String.class);
+    assertTrue(f.actualFormatter(String.class) instanceof StringFormatter,
+        "String type should route to StringFormatter");
   }
 }

@@ -176,6 +176,54 @@ public class TestLocalDateFormatter {
     assertEquals(original, formatter.parse(formatted, instr));
   }
 
+  // --- Message assertions for exception paths ---
+
+  @Test
+  public void testInvalidDateStringExceptionContainsBadInput() {
+    FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
+        formatter.parse("NOTADATE", instructions(8, "yyyyMMdd")));
+    assertTrue(ex.getMessage().contains("NOTADATE"),
+        "message should contain bad input: " + ex.getMessage());
+  }
+
+  @Test
+  public void testInvalidDateStringExceptionContainsPattern() {
+    FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
+        formatter.parse("NOTADATE", instructions(8, "yyyyMMdd")));
+    assertTrue(ex.getMessage().contains("yyyyMMdd"),
+        "message should contain pattern: " + ex.getMessage());
+  }
+
+  @Test
+  public void testInvalidDateStringExceptionContainsTypeName() {
+    FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
+        formatter.parse("NOTADATE", instructions(8, "yyyyMMdd")));
+    assertTrue(ex.getMessage().contains(LocalDate.class.getName()),
+        "message should contain type name: " + ex.getMessage());
+  }
+
+  // --- Non-space padding char ---
+
+  @Test
+  public void testStarPaddingChar_leftAlign_roundTrip() {
+    FormatInstructions instr = new FormatInstructions(12, Align.LEFT, '*',
+        new FixedFormatPatternData("yyyyMMdd"), null, null, null);
+    LocalDate original = LocalDate.of(2026, 4, 15);
+    String formatted = formatter.format(original, instr);
+    assertEquals("20260415****", formatted);
+    assertEquals(original, formatter.parse(formatted, instr));
+  }
+
+  @Test
+  public void testStarPaddingChar_rightAlign_roundTrip() {
+    FormatInstructions instr = new FormatInstructions(12, Align.RIGHT, '*',
+        new FixedFormatPatternData("yyyyMMdd"), null, null, null);
+    LocalDate original = LocalDate.of(2026, 4, 15);
+    String formatted = formatter.format(original, instr);
+    assertEquals("****20260415", formatted);
+    assertEquals(original, formatter.parse(formatted, instr));
+  }
+
   // --- Concurrency ---
 
   @Test

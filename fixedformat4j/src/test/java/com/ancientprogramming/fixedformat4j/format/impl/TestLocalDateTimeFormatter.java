@@ -135,6 +135,54 @@ public class TestLocalDateTimeFormatter {
     );
   }
 
+  // --- Message assertions for exception paths ---
+
+  @Test
+  public void testInvalidDateTimeStringExceptionContainsPattern() {
+    FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
+        formatter.parse("NOT-A-DATE-------T-", instructions(19, "yyyy-MM-dd'T'HH:mm:ss")));
+    assertTrue(ex.getMessage().contains("yyyy-MM-dd"),
+        "message should contain pattern: " + ex.getMessage());
+  }
+
+  @Test
+  public void testInvalidDateTimeStringExceptionContainsTypeName() {
+    FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
+        formatter.parse("NOT-A-DATE-------T-", instructions(19, "yyyy-MM-dd'T'HH:mm:ss")));
+    assertTrue(ex.getMessage().contains(LocalDateTime.class.getName()),
+        "message should contain type name: " + ex.getMessage());
+  }
+
+  @Test
+  public void testInvalidDateTimeStringExceptionContainsBadInput() {
+    FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
+        formatter.parse("NOT-A-DATE-------T-", instructions(19, "yyyy-MM-dd'T'HH:mm:ss")));
+    assertTrue(ex.getMessage().contains("NOT-A-DATE-------T-"),
+        "message should contain bad input: " + ex.getMessage());
+  }
+
+  // --- Non-space padding char ---
+
+  @Test
+  public void testStarPaddingChar_leftAlign_roundTrip() {
+    FormatInstructions instr = new FormatInstructions(21, Align.LEFT, '*',
+        new FixedFormatPatternData("yyyy-MM-dd'T'HH:mm:ss"), null, null, null);
+    LocalDateTime original = LocalDateTime.of(2026, 4, 15, 10, 30, 0);
+    String formatted = formatter.format(original, instr);
+    assertEquals("2026-04-15T10:30:00**", formatted);
+    assertEquals(original, formatter.parse(formatted, instr));
+  }
+
+  @Test
+  public void testStarPaddingChar_rightAlign_roundTrip() {
+    FormatInstructions instr = new FormatInstructions(21, Align.RIGHT, '*',
+        new FixedFormatPatternData("yyyy-MM-dd'T'HH:mm:ss"), null, null, null);
+    LocalDateTime original = LocalDateTime.of(2026, 4, 15, 10, 30, 0);
+    String formatted = formatter.format(original, instr);
+    assertEquals("**2026-04-15T10:30:00", formatted);
+    assertEquals(original, formatter.parse(formatted, instr));
+  }
+
   // --- Issue 33: paddingChar appears inside date pattern value ---
 
   @Test
