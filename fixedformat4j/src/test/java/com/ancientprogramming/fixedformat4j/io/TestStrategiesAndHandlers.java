@@ -255,4 +255,60 @@ class TestStrategiesAndHandlers {
       logger.detachAppender(appender);
     }
   }
+
+  // --- ParseErrorStrategy unit tests ---
+
+  @Test
+  void throwExceptionRethrowsSameInstance() {
+    ParseErrorStrategy strategy = ParseErrorStrategy.throwException();
+    FixedFormatException original = new FixedFormatException("original");
+
+    FixedFormatException thrown = assertThrows(FixedFormatException.class, () ->
+        strategy.handle(original, "bad line", 1));
+
+    assertSame(original, thrown, "throwException must rethrow the identical exception instance");
+  }
+
+  @Test
+  void skipAndLogWithCauseLogsCauseMessage() {
+    ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger)
+        LoggerFactory.getLogger(ParseErrorStrategy.class);
+    ListAppender<ILoggingEvent> appender = new ListAppender<>();
+    appender.start();
+    logger.addAppender(appender);
+    try {
+      RuntimeException cause = new RuntimeException("root cause detail");
+      FixedFormatException wrapped = new FixedFormatException("wrapper message", cause);
+
+      assertDoesNotThrow(() ->
+          ParseErrorStrategy.skipAndLog().handle(wrapped, "bad line", 5));
+
+      assertEquals(1, appender.list.size());
+      String msg = appender.list.get(0).getFormattedMessage();
+      assertTrue(msg.contains("root cause detail"), "Log must contain cause message");
+    } finally {
+      logger.detachAppender(appender);
+    }
+  }
+
+  @Test
+  void skipAndLogWithoutCauseLogsWrappedMessage() {
+    ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger)
+        LoggerFactory.getLogger(ParseErrorStrategy.class);
+    ListAppender<ILoggingEvent> appender = new ListAppender<>();
+    appender.start();
+    logger.addAppender(appender);
+    try {
+      FixedFormatException wrapped = new FixedFormatException("the wrapped message");
+
+      assertDoesNotThrow(() ->
+          ParseErrorStrategy.skipAndLog().handle(wrapped, "bad line", 3));
+
+      assertEquals(1, appender.list.size());
+      String msg = appender.list.get(0).getFormattedMessage();
+      assertTrue(msg.contains("the wrapped message"), "Log must contain wrapped exception message");
+    } finally {
+      logger.detachAppender(appender);
+    }
+  }
 }

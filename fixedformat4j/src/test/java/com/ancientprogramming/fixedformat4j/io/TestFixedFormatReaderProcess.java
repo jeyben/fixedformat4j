@@ -17,6 +17,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
+import com.ancientprogramming.fixedformat4j.io.read.ReadResult;
 
 class TestFixedFormatReaderProcess {
 
@@ -215,5 +216,51 @@ class TestFixedFormatReaderProcess {
 
     assertEquals(1, fromHandler.size());
     assertEquals(1, fromResult.size());
+  }
+
+  // --- LinkedHashMap registration order + removeIf ---
+
+  @Test
+  void readResultClassesPreservesRegistrationOrder() {
+    // TenCharRecord registered first, FiveCharRecord second.
+    // Input encounters the B line (FiveCharRecord) before the A line (TenCharRecord).
+    // classes() must follow registration order regardless of encounter order.
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .addMapping(FiveCharRecord.class, B_PATTERN)
+        .build();
+
+    ReadResult result = reader.read(new StringReader("BBBBBBBBBB" + "\n" + "AAAAAAAAAA"));
+
+    List<Class<?>> classes = new ArrayList<>(result.classes());
+    assertEquals(TenCharRecord.class, classes.get(0));
+    assertEquals(FiveCharRecord.class, classes.get(1));
+  }
+
+  @Test
+  void readResultExcludesClassesWithNoMatches() {
+    // FiveCharRecord registered but no B-prefixed lines in input —
+    // removeIf strips the empty entry so it does not appear in classes().
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .addMapping(FiveCharRecord.class, B_PATTERN)
+        .build();
+
+    ReadResult result = reader.read(new StringReader("AAAAAAAAAA"));
+
+    assertFalse(result.contains(FiveCharRecord.class));
+    assertEquals(1, result.classes().size());
+  }
+
+  @Test
+  void throwsNullPointerWhenRegistryIsNullForPathNoCharset(@TempDir Path tmp) throws IOException {
+    Path file = tmp.resolve("data.txt");
+    Files.writeString(file, "AAAAAAAAAA", StandardCharsets.UTF_8);
+    FixedFormatReader reader = FixedFormatReader.builder()
+        .addMapping(TenCharRecord.class, A_PATTERN)
+        .build();
+
+    assertThrows(NullPointerException.class, () ->
+        reader.process(file, (HandlerRegistry) null));
   }
 }

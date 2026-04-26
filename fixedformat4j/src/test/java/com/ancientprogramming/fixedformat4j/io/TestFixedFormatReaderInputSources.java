@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.ancientprogramming.fixedformat4j.exception.FixedFormatIOException;
 import com.ancientprogramming.fixedformat4j.io.read.FixedFormatReader;
 
 class TestFixedFormatReaderInputSources {
@@ -126,6 +127,84 @@ class TestFixedFormatReaderInputSources {
         .build()
         .process(is, new HandlerRegistry().on(TenCharRecord.class, r -> values.add(r.getValue())));
     assertTrue(is.closed, "InputStream should be closed after process");
+  }
+
+  // --- NPE message content ---
+
+  @Test
+  void readNullReader_npeMessageNamesParameter() {
+    NullPointerException ex = assertThrows(NullPointerException.class, () ->
+        reader().read((java.io.Reader) null));
+    assertTrue(ex.getMessage().contains("reader"));
+  }
+
+  @Test
+  void readNullInputStream_npeMessageNamesParameter() {
+    NullPointerException ex = assertThrows(NullPointerException.class, () ->
+        reader().read((InputStream) null));
+    assertTrue(ex.getMessage().contains("inputStream"));
+  }
+
+  @Test
+  void readNullPath_npeMessageNamesParameter() {
+    NullPointerException ex = assertThrows(NullPointerException.class, () ->
+        reader().read((Path) null));
+    assertTrue(ex.getMessage().contains("path"));
+  }
+
+  // --- Charset default ---
+
+  @Test
+  void readInputStreamDefaultsToUtf8() {
+    // U+00C0 ('À') encodes as 0xC3 0x80 in UTF-8 (2 bytes, 1 char).
+    // Under ISO-8859-1 those same bytes decode as 'Ã' + U+0080, so the trimmed value differs.
+    String line = "À         "; // 10 chars
+    byte[] utf8Bytes = line.getBytes(StandardCharsets.UTF_8);
+    List<TenCharRecord> results = reader().read(new ByteArrayInputStream(utf8Bytes))
+        .get(TenCharRecord.class);
+    assertEquals(1, results.size());
+    assertEquals("À", results.get(0).getValue().trim());
+  }
+
+  // --- Path error message ---
+
+  @Test
+  void nonExistentPathThrowsWithPathInMessage() {
+    Path missing = Path.of("/nonexistent/path/does/not/exist_fixedformat4j.txt");
+    FixedFormatIOException ex = assertThrows(FixedFormatIOException.class, () ->
+        reader().read(missing));
+    assertTrue(ex.getMessage().contains("nonexistent"));
+  }
+
+  // --- IO error line counter ---
+
+  @Test
+  void ioErrorMidReadMessageContainsCorrectLineNumber() {
+    // Subclassing BufferedReader: toBuffered() returns it as-is (instanceof check).
+    BufferedReader failingOnLine3 = new BufferedReader(new StringReader("")) {
+      private int callCount = 0;
+      @Override
+      public String readLine() throws IOException {
+        callCount++;
+        if (callCount == 1) return "line1     ";
+        if (callCount == 2) return "line2     ";
+        throw new IOException("simulated mid-read error");
+      }
+    };
+    FixedFormatIOException ex = assertThrows(FixedFormatIOException.class, () ->
+        reader().read(failingOnLine3));
+    assertEquals("IO error reading line 3", ex.getMessage());
+  }
+
+  // --- toBuffered early return ---
+
+  @Test
+  void readFromAlreadyBufferedReaderWorks() {
+    // Passing a BufferedReader directly exercises the instanceof early-return in toBuffered()
+    BufferedReader buffered = new BufferedReader(new StringReader("hello     \nworld     "));
+    List<TenCharRecord> results = reader().read(buffered).get(TenCharRecord.class);
+    assertEquals(2, results.size());
+    assertEquals("world     ", results.get(1).getValue());
   }
 
 }
