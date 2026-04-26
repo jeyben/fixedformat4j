@@ -3,6 +3,7 @@ name: Nightly Build
 on:
   push:
     branches: ['**']
+  pull_request:
   schedule:
     - cron: '0 2 * * *'   # 02:00 UTC every day
   workflow_dispatch:
