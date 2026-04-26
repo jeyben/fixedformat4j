@@ -610,8 +610,9 @@ public class TestFixedFormatManagerImpl {
     rec.setA("AA");
     rec.setB("BB");
     String exported = manager.export("xxxxxxxxxx", rec);
-    // template "xxxxxxxxxx", field A at 0-2 → "AA x", field B at 7-9 → "BB "
-    assertEquals("AA xxxx BB ", exported);
+    // template "xxxxxxxxxx" (10 chars), field A at indices 0-2 → "AA ",
+    // gap at indices 3-6 stays "xxxx", field B at indices 7-9 → "BB "
+    assertEquals("AA xxxxBB ", exported);
   }
 
   // --- Cluster B/C: record annotation properties verified via behavior ---
