@@ -224,6 +224,52 @@ public class TestLocalDateFormatter {
     assertEquals(original, formatter.parse(formatted, instr));
   }
 
+  // --- Restoration: date value ends in padding char ---
+
+  @Test
+  public void zeroPaddingRoundTrip_dateEndsInPaddingChar_dayTen() {
+    // "20241010" ends in '0' — stripping trailing zeros removes the last digit of the date value,
+    // requiring the restoration branch in AbstractPatternFormatter.stripPadding to re-add it.
+    FormatInstructions instr = new FormatInstructions(12, Align.LEFT, '0', new FixedFormatPatternData("yyyyMMdd"), null, null, null);
+    LocalDate original = LocalDate.of(2024, 10, 10);
+    String formatted = formatter.format(original, instr);
+    assertEquals(original, formatter.parse(formatted, instr));
+  }
+
+  @Test
+  public void zeroPaddingRoundTrip_dateEndsInPaddingChar_dayTwenty() {
+    FormatInstructions instr = new FormatInstructions(12, Align.LEFT, '0', new FixedFormatPatternData("yyyyMMdd"), null, null, null);
+    LocalDate original = LocalDate.of(2024, 3, 20);
+    String formatted = formatter.format(original, instr);
+    assertEquals(original, formatter.parse(formatted, instr));
+  }
+
+  // --- Direct computeFormattedLengthForPattern coverage ---
+  // The ClassValue cache in AbstractPatternFormatter is pre-populated during PIT's coverage scan,
+  // so mutations in computeFormattedLengthForPattern are unreachable via the normal parse path.
+  // Calling the method directly bypasses the cache and lets PIT exercise the mutated bytecode.
+
+  private static final class DirectFormatter extends LocalDateFormatter {
+    int length(String pattern) { return computeFormattedLengthForPattern(pattern); }
+  }
+
+  private static final DirectFormatter DIRECT = new DirectFormatter();
+
+  @Test
+  public void computeFormattedLengthForPattern_compactPattern_returnsEight() {
+    assertEquals(8, DIRECT.length("yyyyMMdd"));
+  }
+
+  @Test
+  public void computeFormattedLengthForPattern_dashPattern_returnsTen() {
+    assertEquals(10, DIRECT.length("yyyy-MM-dd"));
+  }
+
+  @Test
+  public void computeFormattedLengthForPattern_yearOnly_returnsFour() {
+    assertEquals(4, DIRECT.length("yyyy"));
+  }
+
   // --- Concurrency ---
 
   @Test

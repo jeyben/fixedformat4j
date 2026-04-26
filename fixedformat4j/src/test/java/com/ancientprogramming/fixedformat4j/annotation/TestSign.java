@@ -45,6 +45,18 @@ public class TestSign {
   }
 
   @Test
+  public void testRemoveSign_negativeZeroWithSpacePadding_stripsSign_prepend() {
+    // valueWithoutSign after padding removal is "0" (not empty) — exercises the "0".equals branch
+    assertEquals("0", Sign.PREPEND.remove("-0", new FormatInstructions(2, Align.LEFT, ' ', null, null, FixedFormatNumberData.DEFAULT, null)));
+  }
+
+  @Test
+  public void testRemoveSign_negativeZeroWithSpacePadding_stripsSign_append() {
+    // valueWithoutSign after padding removal is "0" (not empty) — exercises the "0".equals branch
+    assertEquals("0", Sign.APPEND.remove("0-", new FormatInstructions(2, Align.LEFT, ' ', null, null, FixedFormatNumberData.DEFAULT, null)));
+  }
+
+  @Test
   public void testSignPrepend() {
     assertEquals("+000000000", Sign.PREPEND.apply("", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));
     assertEquals("+000000000", Sign.PREPEND.apply("0", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));

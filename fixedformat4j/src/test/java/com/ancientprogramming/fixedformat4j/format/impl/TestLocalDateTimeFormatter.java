@@ -183,6 +183,32 @@ public class TestLocalDateTimeFormatter {
     assertEquals(original, formatter.parse(formatted, instr));
   }
 
+  // --- Direct computeFormattedLengthForPattern coverage ---
+  // The ClassValue cache in AbstractPatternFormatter is pre-populated during PIT's coverage scan,
+  // so mutations in computeFormattedLengthForPattern are unreachable via the normal parse path.
+  // Calling the method directly bypasses the cache and lets PIT exercise the mutated bytecode.
+
+  private static final class DirectFormatter extends LocalDateTimeFormatter {
+    int length(String pattern) { return computeFormattedLengthForPattern(pattern); }
+  }
+
+  private static final DirectFormatter DIRECT = new DirectFormatter();
+
+  @Test
+  public void computeFormattedLengthForPattern_isoPattern_returnsNineteen() {
+    assertEquals(19, DIRECT.length("yyyy-MM-dd'T'HH:mm:ss"));
+  }
+
+  @Test
+  public void computeFormattedLengthForPattern_compactPattern_returnsFourteen() {
+    assertEquals(14, DIRECT.length("yyyyMMddHHmmss"));
+  }
+
+  @Test
+  public void computeFormattedLengthForPattern_spaceSeparated_returnsNineteen() {
+    assertEquals(19, DIRECT.length("yyyy-MM-dd HH:mm:ss"));
+  }
+
   // --- Issue 33: paddingChar appears inside date pattern value ---
 
   @Test
@@ -201,6 +227,24 @@ public class TestLocalDateTimeFormatter {
   public void allZeroFieldWithZeroPaddingParsesToNull() {
     FormatInstructions instr = new FormatInstructions(20, Align.LEFT, '0', new FixedFormatPatternData("yyyyMMddHHmmss"), null, null, null);
     assertNull(formatter.parse("00000000000000000000", instr));
+  }
+
+  @Test
+  public void zeroPaddingRoundTrip_datetimeEndsInPaddingChar_secondsTen() {
+    // "20260310143010" ends in '0' — requires restoration branch in AbstractPatternFormatter.stripPadding.
+    FormatInstructions instr = new FormatInstructions(20, Align.LEFT, '0', new FixedFormatPatternData("yyyyMMddHHmmss"), null, null, null);
+    LocalDateTime original = LocalDateTime.of(2026, 3, 10, 14, 30, 10);
+    String formatted = formatter.format(original, instr);
+    assertEquals(original, formatter.parse(formatted, instr));
+  }
+
+  @Test
+  public void zeroPaddingRoundTrip_datetimeEndsInPaddingChar_minutesThirty() {
+    // "20261020000030" ends in '0' — another trailing-zero scenario.
+    FormatInstructions instr = new FormatInstructions(20, Align.LEFT, '0', new FixedFormatPatternData("yyyyMMddHHmmss"), null, null, null);
+    LocalDateTime original = LocalDateTime.of(2026, 10, 20, 0, 0, 30);
+    String formatted = formatter.format(original, instr);
+    assertEquals(original, formatter.parse(formatted, instr));
   }
 
   @Test
