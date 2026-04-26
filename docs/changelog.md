@@ -4,6 +4,22 @@ title: Changelog
 
 # Changelog
 
+## Journey since 1.4.0
+
+After many years of inactivity, fixedformat4j was revived with the 1.4.0 release. Here is a summary of everything that has improved since then:
+
+- **`LocalDate` and `LocalDateTime` support** — both are now built-in types in `ByTypeFormatter` with type-specific default patterns and eager pattern validation.
+- **Repeating fields via `@Field(count)`** — map a list of same-format fields with a single annotation; optional `strictCount` enforces list size on export.
+- **Field-level `@Field` / `@Fields` annotations** — place annotations directly on a Java field instead of its getter; works with plain POJOs and Lombok (`@Getter`/`@Setter`).
+- **Date padding bug fixed** — date formatters no longer over-strip padding characters that appear inside the formatted value ([#33](https://github.com/jeyben/fixedformat4j/issues/33)).
+- **Maven Central distribution** — no GitHub account or personal access token required; standard `<dependency>` block just works.
+- **Negative decimal fix** — parsing trailing-sign negatives with implicit decimals (e.g. `000000001-`) no longer throws `NumberFormatException`.
+- **Modernised build** — Java 11, SLF4J, commons-lang3, JUnit 5 with comprehensive test coverage.
+- **PIT mutation testing** — live quality badges and a published mutation report on every release.
+- **New documentation site** — full Markdown docs at [jeyben.github.io/fixedformat4j](https://jeyben.github.io/fixedformat4j/) (Quick Start, Annotations reference, Examples, FAQ, Changelog).
+
+---
+
 ## [Unreleased] — 1.8.0
 
 ### Breaking changes
