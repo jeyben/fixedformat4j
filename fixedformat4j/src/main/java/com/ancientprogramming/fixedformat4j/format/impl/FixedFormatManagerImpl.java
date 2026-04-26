@@ -32,7 +32,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -361,38 +360,4 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     return recordAnno;
   }
 
-  /**
-   * Reads a single non-repeating field from {@code data} and returns the parsed value.
-   * Protected for backward-compatibility with subclasses; the main load path uses the
-   * {@link ClassMetadataCache} directly.
-   *
-   * @deprecated Internal use only. Will be made private in a future release.
-   */
-  @Deprecated
-  @SuppressWarnings({"unchecked"})
-  protected <T> Object readDataAccordingFieldAnnotation(Class<T> clazz, String data, Method getter, java.lang.reflect.AnnotatedElement annotationSource, Field fieldAnno) throws ParseException {
-    repeatingFieldSupport.validateCount(getter, fieldAnno);
-
-    if (fieldAnno.count() > 1) {
-      return repeatingFieldSupport.read(clazz, data, getter, annotationSource, fieldAnno);
-    }
-
-    FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
-    Class<?> datatype = instructionsBuilder.datatype(getter, fieldAnno);
-    FormatContext<?> context = instructionsBuilder.context(datatype, fieldAnno);
-    FixedFormatter<?> formatter = com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance(context.getFormatter(), context);
-    FormatInstructions formatdata = instructionsBuilder.build(annotationSource, fieldAnno, datatype, getter.getDeclaringClass());
-
-    String dataToParse = fetchData(data, formatdata, context);
-
-    java.lang.annotation.Annotation recordAnno = datatype.getAnnotation(Record.class);
-    if (recordAnno != null) {
-      return load(datatype, dataToParse);
-    }
-    try {
-      return formatter.parse(dataToParse, formatdata);
-    } catch (RuntimeException e) {
-      throw new ParseException(data, dataToParse, clazz, getter, context, formatdata, e);
-    }
-  }
 }
