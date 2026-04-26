@@ -8,6 +8,14 @@ title: Changelog
 
 ### Breaking changes
 
+- **Removed deprecated `protected FixedFormatManagerImpl#readDataAccordingFieldAnnotation`** ([#109](https://github.com/jeyben/fixedformat4j/issues/109)) —
+  The method was deprecated since #77 (1.7.0) and was never on the live `load()` path, which has used
+  `ClassMetadataCache` exclusively since that release. Only consumers that `extend FixedFormatManagerImpl`
+  and override or call this method are affected; consumers using the `FixedFormatManager` interface are
+  unaffected.
+
+  **Migration:** subclassers should drive parsing through `FixedFormatManager#load(Class, String)` instead.
+
 - **`@Record(align)` now uses `RecordAlign` instead of `Align`** ([#81](https://github.com/jeyben/fixedformat4j/issues/81)) —
   A new two-value enum `RecordAlign { LEFT, RIGHT }` replaces `Align` as the type of `@Record#align()`.
   Because `Align` includes the `INHERIT` sentinel, which has no meaning at the record level, the old
