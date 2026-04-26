@@ -204,7 +204,7 @@ class TestFixedFormatReaderInputSources {
     BufferedReader buffered = new BufferedReader(new StringReader("hello     \nworld     "));
     List<TenCharRecord> results = reader().read(buffered).get(TenCharRecord.class);
     assertEquals(2, results.size());
-    assertEquals("world     ", results.get(1).getValue());
+    assertEquals("world", results.get(1).getValue());
   }
 
 }
