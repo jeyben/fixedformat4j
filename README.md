@@ -9,7 +9,7 @@
 
 **[Documentation](https://jeyben.github.io/fixedformat4j/)** — [Quick Start](https://jeyben.github.io/fixedformat4j/quickstart) · [Annotations](https://jeyben.github.io/fixedformat4j/usage/annotations) · [Examples](https://jeyben.github.io/fixedformat4j/examples) · [Changelog](https://jeyben.github.io/fixedformat4j/changelog) · [Benchmarks](https://jeyben.github.io/fixedformat4j/benchmarks)
 
-A lightweight, non-intrusive Java library for reading and writing fixed-width flat-file records using annotations. **Dramatically faster since 1.7.0** — field metadata caching and `MethodHandle` dispatch deliver 1.6× to 13.8× throughput gains over earlier releases, depending on record size and field types, verified by JMH microbenchmarks.
+A lightweight, non-intrusive Java library for reading and writing fixed-width flat-file records using annotations. **Originally published in 2008 and actively maintained ever since.** **Dramatically faster since 1.7.0** — field metadata caching and `MethodHandle` dispatch deliver 1.6× to 13.8× throughput gains over earlier releases, depending on record size and field types, verified by JMH microbenchmarks.
 
 ## Why FixedFormat4J?
 
@@ -19,7 +19,20 @@ Fixed-width flat files are the lingua franca of banking, payroll, EDI, and gover
 EMP004232SMITH               0000185000CR20260418003
 ```
 
-That single line encodes: employee ID (`00423`), department code (`2`), name (`SMITH               `), net pay in implied cents (`0000185000` = $1,850.00), direction (`CR`), pay date (`20260418`), region code (`003`). With FixedFormat4J you describe that layout once — as annotations on a plain Java class — and never write parsing or formatting code again:
+That single line encodes: employee ID (`00423`), department code (`2`), name (`SMITH               `), net pay in implied cents (`0000185000` = $1,850.00), direction (`CR`), pay date (`20260418`), region code (`003`).
+
+**Without FixedFormat4J** you write the parsing by hand for every field — and a symmetric block of `String.format` calls for export:
+
+```java
+String name       = line.substring(9, 29).trim();
+BigDecimal netPay = new BigDecimal(line.substring(29, 39))
+                        .movePointLeft(2);
+LocalDate payDate = LocalDate.parse(line.substring(40, 48),
+                        DateTimeFormatter.ofPattern("yyyyMMdd"));
+// Repeat for every field. Off-by-one errors guaranteed.
+```
+
+**With FixedFormat4J** you declare the layout once — as annotations on a plain Java class — and never write parsing or formatting code again:
 
 ```java
 @Getter @Setter @NoArgsConstructor
@@ -54,6 +67,20 @@ public FixedFormatManager fixedFormatManager() {
 ```
 
 For every annotation attribute, type, and advanced option see the [Annotations reference](https://jeyben.github.io/fixedformat4j/usage/annotations).
+
+## Compared to alternatives
+
+|                        | FixedFormat4J              | BeanIO            | FlatWorm          | Manual `substring` |
+|------------------------|----------------------------|-------------------|-------------------|--------------------|
+| Configuration          | Java annotations           | XML schema file   | XML schema file   | none               |
+| External schema file   | no                         | yes               | yes               | no                 |
+| Spring integration     | drop-in `@Bean`            | separate module   | manual            | manual             |
+| Enum support           | built-in (`@FixedFormatEnum`) | built-in       | limited           | manual             |
+| Custom formatters      | yes (`FixedFormatter<T>`)  | yes               | limited           | n/a                |
+| Lombok support         | yes (field annotations)    | no                | no                | no                 |
+| Active maintenance     | yes                        | limited           | no                | n/a                |
+
+FixedFormat4J's annotation-only approach means no external schema files to version, no XML to keep in sync with your Java classes, and no framework-specific integration layer to pull in.
 
 ## Latest release — 1.7.2 (2026-04-20)
 
@@ -178,6 +205,69 @@ System.out.println(exported);
 
 Every field is re-padded to its declared length using the configured alignment and padding character.
 
+### 5. Read a file line by line
+
+`FixedFormatReader` (since 1.8.0) reads files and streams directly, routing each line to the right record class:
+
+```java
+// Homogeneous file — every line is the same record type
+FixedFormatReader reader = FixedFormatReader.builder()
+    .addMapping(EmployeeRecord.class, LinePattern.matchAll())
+    .build();
+
+List<EmployeeRecord> records = reader.read(Path.of("employees.txt"))
+    .get(EmployeeRecord.class);
+```
+
+```java
+// Heterogeneous file — route lines by prefix
+FixedFormatReader reader = FixedFormatReader.builder()
+    .addMapping(HeaderRecord.class, LinePattern.prefix("HDR"))
+    .addMapping(DetailRecord.class, LinePattern.prefix("DTL"))
+    .build();
+
+ReadResult result = reader.read(Path.of("payroll.txt"));
+List<HeaderRecord> headers = result.get(HeaderRecord.class);
+List<DetailRecord> details = result.get(DetailRecord.class);
+```
+
+See [File Processing](https://jeyben.github.io/fixedformat4j/usage/file-processing) for the full API including streaming `process()`, charset overloads, and per-line error strategies.
+
+### Writing the same field at multiple offsets
+
+`@Fields` groups multiple `@Field` annotations on a single getter, writing the same value at two or more positions — useful for legacy formats that duplicate a field:
+
+```java
+@Fields({
+    @Field(offset = 11, length = 8),
+    @Field(offset = 19, length = 8)
+})
+public Date getDateData() { return dateData; }
+```
+
+## Supported types
+
+`ByTypeFormatter` maps Java types to the right formatter automatically. All of the following work out of the box — no `formatter =` attribute required:
+
+| Java type | Supplementary annotation | Notes |
+|---|---|---|
+| `String` | — | padded or trimmed to declared length |
+| `Integer` / `int` | `@FixedFormatNumber` | sign handling, zero-padding |
+| `Long` / `long` | `@FixedFormatNumber` | |
+| `Short` / `short` | `@FixedFormatNumber` | |
+| `Double` / `double` | `@FixedFormatDecimal` | |
+| `Float` / `float` | `@FixedFormatDecimal` | |
+| `BigDecimal` | `@FixedFormatDecimal` | implied decimals, optional delimiter |
+| `Boolean` / `boolean` | `@FixedFormatBoolean` | configurable `trueValue` / `falseValue` literals |
+| `Character` / `char` | — | single character |
+| `LocalDate` | `@FixedFormatPattern` | e.g. `"yyyyMMdd"` |
+| `LocalDateTime` | `@FixedFormatPattern` | e.g. `"yyyyMMddHHmmss"` |
+| `java.util.Date` | `@FixedFormatPattern` | legacy date support |
+| Any `Enum` | `@FixedFormatEnum` | `LITERAL` (name) or `NUMERIC` (ordinal) |
+| Nested `@Record` class | — | recursive load / export |
+
+For any type not in this table, implement `FixedFormatter<T>` and reference it via `formatter =` on `@Field`.
+
 ## Documentation
 
 Full documentation is available at **https://jeyben.github.io/fixedformat4j/**:
@@ -205,6 +295,15 @@ To run benchmarks locally (requires Java 11 and `1.6.1` on Maven Central):
 ```
 
 Results are written to `docs/assets/benchmarks/` as JMH JSON.
+
+## Contributing
+
+1. Fork the repository and create a feature branch.
+2. **Write a failing test first** — TDD is required; see [CLAUDE.md](CLAUDE.md) for the full workflow.
+3. Run `export JAVA_HOME=$(/usr/libexec/java_home -v 11) && mvn test` to verify everything passes.
+4. Open a pull request against `master`.
+
+Bug reports and feature requests are welcome as [GitHub issues](https://github.com/jeyben/fixedformat4j/issues).
 
 ## License
 
