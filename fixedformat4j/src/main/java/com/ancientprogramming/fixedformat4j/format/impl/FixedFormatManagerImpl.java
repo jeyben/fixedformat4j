@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
@@ -136,7 +137,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
    * {@inheritDoc}
    */
   public <T> String export(String template, T fixedFormatRecord) {
-    StringBuffer result = new StringBuffer(template);
+    StringBuilder result = new StringBuilder(template);
     Record record = getAndAssertRecordAnnotation(fixedFormatRecord.getClass());
     validatePatterns(fixedFormatRecord.getClass());
 
@@ -160,9 +161,9 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       if (valueObject != null && valueObject.getClass().getAnnotation(Record.class) != null) {
         formatted = export(valueObject);
       } else if (desc.isNestedRecord) {
-        formatted = StringUtils.repeat(String.valueOf(desc.fieldAnnotation.paddingChar()), desc.fieldAnnotation.length());
+        formatted = StringUtils.repeat(desc.fieldAnnotation.paddingChar(), desc.fieldAnnotation.length());
       } else if (valueObject == null && NullCharSupport.isNullCharActive(desc.formatInstructions)) {
-        formatted = StringUtils.repeat(String.valueOf(desc.formatInstructions.getNullChar()), desc.formatInstructions.getLength());
+        formatted = StringUtils.repeat(desc.formatInstructions.getNullChar(), desc.formatInstructions.getLength());
       } else {
         formatted = ((FixedFormatter<Object>) desc.formatter).format(valueObject, desc.formatInstructions);
       }
@@ -173,8 +174,8 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       foundData.put(desc.fieldAnnotation.offset(), formatted);
     }
 
-    for (Integer offset : foundData.keySet()) {
-      appendData(result, record.paddingChar(), offset, foundData.get(offset));
+    for (Map.Entry<Integer, String> entry : foundData.entrySet()) {
+      appendData(result, record.paddingChar(), entry.getKey(), entry.getValue());
     }
 
     if (record.length() != -1) {
@@ -340,14 +341,17 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     PatternValidator.validate(datatype, pattern);
   }
 
-  private void appendData(StringBuffer result, Character paddingChar, Integer offset, String data) {
+  private void appendData(StringBuilder result, Character paddingChar, Integer offset, String data) {
     int zeroBasedOffset = offset - 1;
     while (result.length() < zeroBasedOffset) {
       result.append(paddingChar);
     }
     int length = data.length();
     if (result.length() < zeroBasedOffset + length) {
-      result.append(StringUtils.leftPad("", (zeroBasedOffset + length) - result.length(), paddingChar));
+      int needed = (zeroBasedOffset + length) - result.length();
+      for (int i = 0; i < needed; i++) {
+        result.append(paddingChar);
+      }
     }
     result.replace(zeroBasedOffset, zeroBasedOffset + length, data);
   }
