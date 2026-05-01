@@ -20,6 +20,33 @@ After many years of inactivity, fixedformat4j was revived with the 1.4.0 release
 
 ---
 
+## 1.8.1 (unreleased)
+
+### Performance improvements
+
+- **Concrete formatters resolved at cache-build time** —
+  `ClassMetadataCache` now stores the concrete formatter instance (`StringFormatter`,
+  `IntegerFormatter`, `DateFormatter`, etc.) directly in the cached `FieldDescriptor`, rather than
+  a `ByTypeFormatter` wrapper. Previously, every `load()` / `export()` call invoked
+  `getConstructor().newInstance()` via reflection to create a fresh concrete formatter for each
+  field. The hot-path call is now a direct virtual dispatch with no reflection overhead.
+  `ByTypeFormatter` and its public `actualFormatter()` method are unchanged; they continue to drive
+  type resolution at cache-build time and remain available for custom formatters that extend
+  `ByTypeFormatter`.
+
+  **No API or behaviour change.**
+
+- **`DateFormatter` caches `SimpleDateFormat` per thread per pattern** —
+  `DateFormatter.getFormatter(pattern)` previously constructed a new `SimpleDateFormat` on every
+  call. `SimpleDateFormat` is not thread-safe so a static singleton is not viable, but a
+  `ThreadLocal<Map<String, SimpleDateFormat>>` gives per-thread reuse at zero synchronization cost.
+  For workloads that repeatedly parse or format `Date` fields with the same pattern, this
+  eliminates a significant source of object allocation.
+
+  **No API or behaviour change.**
+
+---
+
 ## 1.8.0 (2026-05-01)
 
 ### Breaking changes
