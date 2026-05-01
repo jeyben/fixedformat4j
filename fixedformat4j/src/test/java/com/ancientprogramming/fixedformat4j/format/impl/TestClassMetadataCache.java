@@ -96,6 +96,17 @@ class TestClassMetadataCache {
   }
 
   @Test
+  void noDescriptorCachesAByTypeFormatterInstance() {
+    ClassMetadataCache cache = new ClassMetadataCache();
+    for (FieldDescriptor d : cache.get(MyRecord.class)) {
+      if (d.formatter != null) {
+        assertFalse(d.formatter instanceof ByTypeFormatter,
+            d.target.getter.getName() + ": formatter should be a concrete type, not ByTypeFormatter");
+      }
+    }
+  }
+
+  @Test
   void fieldWithCustomFormatterIsNotMarkedAsNestedRecord() {
     ClassMetadataCache cache = new ClassMetadataCache();
     List<FieldDescriptor> descriptors = cache.get(MyOtherRecord.class);

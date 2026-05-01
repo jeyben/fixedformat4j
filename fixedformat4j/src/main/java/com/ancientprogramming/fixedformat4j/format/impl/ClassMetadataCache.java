@@ -90,14 +90,22 @@ class ClassMetadataCache {
 
     FormatContext<?> context = isRepeating ? null : instructionsBuilder.context(datatype, fieldAnnotation);
     FormatInstructions formatInstructions = isRepeating ? null : instructionsBuilder.build(target.annotationSource, fieldAnnotation, datatype, clazz);
-    FixedFormatter<?> formatter = (isRepeating || isNestedRecord) ? null
+    FixedFormatter<?> rawFormatter = (isRepeating || isNestedRecord) ? null
         : getFixedFormatterInstance(context.getFormatter(), context);
+    FixedFormatter<?> formatter = resolveConcreteFormatter(rawFormatter, datatype);
 
     Method setter = resolveSetter(clazz, target.getter, datatype, scanner);
     MethodHandle setterHandle = toHandle(setter);
 
     return new FieldDescriptor(target, setter, setterHandle, fieldAnnotation, datatype, context,
         formatInstructions, formatter, isRepeating, isNestedRecord, isLoadField);
+  }
+
+  private FixedFormatter<?> resolveConcreteFormatter(FixedFormatter<?> candidate, Class<?> datatype) {
+    if (candidate instanceof ByTypeFormatter) {
+      return ((ByTypeFormatter) candidate).actualFormatter(datatype);
+    }
+    return candidate;
   }
 
   private Method resolveSetter(Class<?> clazz, Method getter, Class<?> datatype, AnnotationScanner scanner) {

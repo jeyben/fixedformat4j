@@ -23,6 +23,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Formatter for {@link java.util.Date} data.
@@ -32,6 +34,9 @@ import java.util.Date;
  * @since 1.0.0
  */
 public class DateFormatter extends AbstractPatternFormatter<Date> {
+
+  private static final ThreadLocal<Map<String, SimpleDateFormat>> FORMATTER_CACHE =
+      ThreadLocal.withInitial(HashMap::new);
 
   @Override
   protected int computeFormattedLengthForPattern(String pattern) {
@@ -62,6 +67,6 @@ public class DateFormatter extends AbstractPatternFormatter<Date> {
   }
 
   DateFormat getFormatter(String pattern) {
-    return new SimpleDateFormat(pattern);
+    return FORMATTER_CACHE.get().computeIfAbsent(pattern, SimpleDateFormat::new);
   }
 }
