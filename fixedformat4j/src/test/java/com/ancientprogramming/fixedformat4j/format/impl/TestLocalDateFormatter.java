@@ -251,9 +251,18 @@ public class TestLocalDateFormatter {
 
   private static final class DirectFormatter extends LocalDateFormatter {
     int length(String pattern) { return computeFormattedLengthForPattern(pattern); }
+    java.time.format.DateTimeFormatter dtf(String pattern) { return formatterForPattern(pattern); }
   }
 
   private static final DirectFormatter DIRECT = new DirectFormatter();
+
+  @Test
+  void formatterForPatternReturnsSameInstanceForSamePattern() {
+    assertSame(DIRECT.dtf("yyyyMMdd"), DIRECT.dtf("yyyyMMdd"),
+        "same pattern should return cached DateTimeFormatter instance");
+    assertNotSame(DIRECT.dtf("yyyyMMdd"), DIRECT.dtf("yyyy-MM-dd"),
+        "different patterns should return different instances");
+  }
 
   @Test
   public void computeFormattedLengthForPattern_compactPattern_returnsEight() {

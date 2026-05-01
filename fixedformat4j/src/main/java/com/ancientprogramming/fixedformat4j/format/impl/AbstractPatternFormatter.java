@@ -18,6 +18,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -53,6 +54,15 @@ public abstract class AbstractPatternFormatter<T> extends AbstractFixedFormatter
         }
       };
 
+  // DateTimeFormatter is immutable and thread-safe — shared across all threads, no ThreadLocal needed.
+  private static final ClassValue<ConcurrentHashMap<String, DateTimeFormatter>> FORMATTER_CACHE =
+      new ClassValue<ConcurrentHashMap<String, DateTimeFormatter>>() {
+        @Override
+        protected ConcurrentHashMap<String, DateTimeFormatter> computeValue(Class<?> type) {
+          return new ConcurrentHashMap<>();
+        }
+      };
+
   /**
    * Strips padding, then re-applies it when the padding character overlaps with
    * characters that are significant in the date/time pattern.
@@ -81,6 +91,11 @@ public abstract class AbstractPatternFormatter<T> extends AbstractFixedFormatter
   protected final int formattedLengthForPattern(String pattern) {
     return PATTERN_LENGTH_CACHE.get(getClass())
         .computeIfAbsent(pattern, this::computeFormattedLengthForPattern);
+  }
+
+  protected final DateTimeFormatter formatterForPattern(String pattern) {
+    return FORMATTER_CACHE.get(getClass())
+        .computeIfAbsent(pattern, DateTimeFormatter::ofPattern);
   }
 
   /**

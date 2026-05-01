@@ -50,6 +50,7 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
     final DecimalFormat format;
     final char decimalSeparator;
     final char groupingSeparator;
+    final String zeroString;
 
     DecimalFormatState(int decimals) {
       format = new DecimalFormat();
@@ -58,6 +59,7 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
       DecimalFormatSymbols symbols = format.getDecimalFormatSymbols();
       decimalSeparator = symbols.getDecimalSeparator();
       groupingSeparator = symbols.getGroupingSeparator();
+      zeroString = "0" + decimalSeparator + "0";
     }
   }
 
@@ -82,9 +84,8 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
     }
 
     DecimalFormatState state = getDecimalFormatState(decimals);
-    String zeroString = "0" + state.decimalSeparator + "0";
 
-    String rawString = roundedValue != null ? state.format.format(roundedValue) : zeroString;
+    String rawString = roundedValue != null ? state.format.format(roundedValue) : state.zeroString;
     if (LOG.isDebugEnabled()) {
       LOG.debug("rawString: {} - G[{}] D[{}]", rawString, state.groupingSeparator, state.decimalSeparator);
     }

@@ -36,7 +36,7 @@ public class LocalDateFormatter extends AbstractPatternFormatter<LocalDate> {
 
   @Override
   protected int computeFormattedLengthForPattern(String pattern) {
-    return DateTimeFormatter.ofPattern(pattern).format(LocalDate.of(1970, 1, 1)).length();
+    return formatterForPattern(pattern).format(LocalDate.of(1970, 1, 1)).length();
   }
 
   /** {@inheritDoc} */
@@ -46,7 +46,7 @@ public class LocalDateFormatter extends AbstractPatternFormatter<LocalDate> {
     }
     String pattern = instructions.getFixedFormatPatternData().getPattern();
     try {
-      return LocalDate.parse(string, DateTimeFormatter.ofPattern(pattern));
+      return LocalDate.parse(string, formatterForPattern(pattern));
     } catch (DateTimeParseException e) {
       throw new FixedFormatException(String.format("Could not parse value[%s] by pattern[%s] to %s", string, pattern, LocalDate.class.getName()));
     }
@@ -57,7 +57,6 @@ public class LocalDateFormatter extends AbstractPatternFormatter<LocalDate> {
     if (date == null) {
       return null;
     }
-    String pattern = instructions.getFixedFormatPatternData().getPattern();
-    return DateTimeFormatter.ofPattern(pattern).format(date);
+    return formatterForPattern(instructions.getFixedFormatPatternData().getPattern()).format(date);
   }
 }

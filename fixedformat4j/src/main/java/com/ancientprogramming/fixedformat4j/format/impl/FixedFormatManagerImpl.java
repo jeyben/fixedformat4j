@@ -141,9 +141,10 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     Record record = getAndAssertRecordAnnotation(fixedFormatRecord.getClass());
     validatePatterns(fixedFormatRecord.getClass());
 
-    HashMap<Integer, String> foundData = new HashMap<Integer, String>();
+    List<FieldDescriptor> descriptors = ClassMetadataCache.INSTANCE.get(fixedFormatRecord.getClass());
+    HashMap<Integer, String> foundData = new HashMap<>(descriptors.size() * 2);
 
-    for (FieldDescriptor desc : ClassMetadataCache.INSTANCE.get(fixedFormatRecord.getClass())) {
+    for (FieldDescriptor desc : descriptors) {
       if (desc.isRepeating) {
         repeatingFieldSupport.export(fixedFormatRecord, desc.target, desc.fieldAnnotation, foundData);
         continue;

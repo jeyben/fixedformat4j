@@ -36,6 +36,32 @@ After many years of inactivity, fixedformat4j was revived with the 1.4.0 release
 
   **No API or behaviour change.**
 
+- **`DateTimeFormatter` cached per pattern in `AbstractPatternFormatter`** —
+  `LocalDateFormatter` and `LocalDateTimeFormatter` previously called `DateTimeFormatter.ofPattern(pattern)`
+  on every parse and format call. `DateTimeFormatter` is immutable and thread-safe, so a single instance
+  per pattern can be shared across all threads. A `ClassValue<ConcurrentHashMap<String, DateTimeFormatter>>`
+  in `AbstractPatternFormatter` caches each formatter on first use; subsequent calls return the cached
+  instance with no lock contention. For workloads that repeatedly parse or format date/time fields this
+  eliminates the most expensive part of each call.
+
+  **No API or behaviour change.**
+
+- **`export()` pre-fetches the descriptor list and right-sizes `foundData`** —
+  `FixedFormatManagerImpl.export()` previously called `ClassMetadataCache.INSTANCE.get(class)` twice
+  (once for the loop, once implicitly for the map) and created the `foundData` HashMap with the default
+  initial capacity of 16. The descriptor list is now fetched once and its size used to pre-size the map
+  at `size × 2` (load factor 0.5), eliminating all resize operations for records of any size.
+
+  **No API or behaviour change.**
+
+- **`zeroString` pre-computed in `DecimalFormatState`** —
+  `AbstractDecimalFormatter.asString()` previously rebuilt `"0" + state.decimalSeparator + "0"` on every
+  call. The value is now computed once in the `DecimalFormatState` constructor (which is itself invoked at
+  most once per thread per decimals count via `ThreadLocal`) and stored in the `final String zeroString`
+  field.
+
+  **No API or behaviour change.**
+
 - **`DateFormatter` caches `SimpleDateFormat` per thread per pattern** —
   `DateFormatter.getFormatter(pattern)` previously constructed a new `SimpleDateFormat` on every
   call. `SimpleDateFormat` is not thread-safe so a static singleton is not viable, but a

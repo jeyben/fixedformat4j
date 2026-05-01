@@ -20,7 +20,6 @@ import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 /**
@@ -36,7 +35,7 @@ public class LocalDateTimeFormatter extends AbstractPatternFormatter<LocalDateTi
 
   @Override
   protected int computeFormattedLengthForPattern(String pattern) {
-    return DateTimeFormatter.ofPattern(pattern).format(LocalDateTime.of(1970, 1, 1, 0, 0, 0)).length();
+    return formatterForPattern(pattern).format(LocalDateTime.of(1970, 1, 1, 0, 0, 0)).length();
   }
 
   /** {@inheritDoc} */
@@ -46,7 +45,7 @@ public class LocalDateTimeFormatter extends AbstractPatternFormatter<LocalDateTi
     }
     String pattern = instructions.getFixedFormatPatternData().getPattern();
     try {
-      return LocalDateTime.parse(string, DateTimeFormatter.ofPattern(pattern));
+      return LocalDateTime.parse(string, formatterForPattern(pattern));
     } catch (DateTimeParseException e) {
       throw new FixedFormatException(String.format("Could not parse value[%s] by pattern[%s] to %s", string, pattern, LocalDateTime.class.getName()));
     }
@@ -57,7 +56,6 @@ public class LocalDateTimeFormatter extends AbstractPatternFormatter<LocalDateTi
     if (dateTime == null) {
       return null;
     }
-    String pattern = instructions.getFixedFormatPatternData().getPattern();
-    return DateTimeFormatter.ofPattern(pattern).format(dateTime);
+    return formatterForPattern(instructions.getFixedFormatPatternData().getPattern()).format(dateTime);
   }
 }
