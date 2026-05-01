@@ -43,6 +43,14 @@
     <module>samples</module>
   </modules>
 
+  <profiles>
+    <profile>
+      <id>all</id>
+      <modules>
+        <module>benchmarks</module>
+      </modules>
+    </profile>
+  </profiles>
   <build>
     <defaultGoal>install</defaultGoal>
     <plugins>
