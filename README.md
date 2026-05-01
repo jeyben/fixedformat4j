@@ -82,7 +82,7 @@ For every annotation attribute, type, and advanced option see the [Annotations r
 
 FixedFormat4J's annotation-only approach means no external schema files to version, no XML to keep in sync with your Java classes, and no framework-specific integration layer to pull in.
 
-## Latest release — 1.7.2 (2026-04-20)
+## Latest release — 1.8.0 (2026-05-01)
 
 See the [Changelog](https://jeyben.github.io/fixedformat4j/changelog) for what's new.
 
@@ -98,20 +98,20 @@ FixedFormat4J is published to **Maven Central**. No repository configuration or 
 <dependency>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j</artifactId>
-  <version>1.7.2</version>
+  <version>1.8.0</version>
 </dependency>
 ```
 
 **Gradle (Groovy DSL)**
 
 ```groovy
-implementation 'com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.2'
+implementation 'com.ancientprogramming.fixedformat4j:fixedformat4j:1.8.0'
 ```
 
 **Gradle (Kotlin DSL)**
 
 ```kotlin
-implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.2")
+implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.8.0")
 ```
 
 **Ivy**
@@ -119,7 +119,7 @@ implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.2")
 ```xml
 <dependency org="com.ancientprogramming.fixedformat4j"
             name="fixedformat4j"
-            rev="1.7.2"/>
+            rev="1.8.0"/>
 ```
 
 Requires **Java 11 or later**. If you want log output, add an [SLF4J binding](https://www.slf4j.org/manual.html#swapping) such as `logback-classic`; without one the library still works, just silently.

@@ -20,7 +20,7 @@ After many years of inactivity, fixedformat4j was revived with the 1.4.0 release
 
 ---
 
-## [Unreleased] — 1.8.0
+## 1.8.0 (2026-05-01)
 
 ### Breaking changes
 

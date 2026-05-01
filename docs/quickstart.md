@@ -21,7 +21,7 @@ The latest version is always available on [Maven Central](https://search.maven.o
 <dependency>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j</artifactId>
-  <version>1.7.1</version>
+  <version>1.8.0</version>
 </dependency>
 ```
 
@@ -30,13 +30,13 @@ The latest version is always available on [Maven Central](https://search.maven.o
 Groovy DSL (`build.gradle`):
 
 ```groovy
-implementation 'com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1'
+implementation 'com.ancientprogramming.fixedformat4j:fixedformat4j:1.8.0'
 ```
 
 Kotlin DSL (`build.gradle.kts`):
 
 ```kotlin
-implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1")
+implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.8.0")
 ```
 
 #### Ivy
@@ -44,7 +44,7 @@ implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1")
 ```xml
 <dependency org="com.ancientprogramming.fixedformat4j"
             name="fixedformat4j"
-            rev="1.7.1"/>
+            rev="1.8.0"/>
 ```
 
 ## Step 2 — Annotate your record class

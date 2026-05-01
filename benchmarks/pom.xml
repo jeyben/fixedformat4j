@@ -10,7 +10,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <benchmark.target.version>1.7.3-SNAPSHOT</benchmark.target.version>
+    <benchmark.target.version>1.8.0</benchmark.target.version>
     <jmh.version>1.37</jmh.version>
   </properties>
 

@@ -4,7 +4,7 @@ title: Get fixedformat4j
 
 # Get the latest version of fixedformat4j
 
-fixedformat4j 1.7.1 is published to **Maven Central**.
+fixedformat4j 1.8.0 is published to **Maven Central**.
 
 ## Requirements
 
@@ -24,7 +24,7 @@ Add to your `pom.xml`:
 <dependency>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j</artifactId>
-  <version>1.7.1</version>
+  <version>1.8.0</version>
 </dependency>
 ```
 
@@ -33,13 +33,13 @@ Add to your `pom.xml`:
 Groovy DSL (`build.gradle`):
 
 ```groovy
-implementation 'com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1'
+implementation 'com.ancientprogramming.fixedformat4j:fixedformat4j:1.8.0'
 ```
 
 Kotlin DSL (`build.gradle.kts`):
 
 ```kotlin
-implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.7.1")
+implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.8.0")
 ```
 
 ### Ivy
@@ -49,7 +49,7 @@ Add to your `ivy.xml` dependencies block:
 ```xml
 <dependency org="com.ancientprogramming.fixedformat4j"
             name="fixedformat4j"
-            rev="1.7.1"/>
+            rev="1.8.0"/>
 ```
 
 ## Logging
