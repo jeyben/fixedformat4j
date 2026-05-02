@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       versions:
-        description: "Space-separated list of versions (e.g. '1.6.1 1.7.0')"
+        description: "Space-separated list of versions (e.g. '1.6.1 1.8.0')"
         required: true
-        default: "1.6.1 1.7.0"
+        default: "1.5.0 1.6.1 1.7.2 1.8.0 master"
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
