@@ -20,56 +20,17 @@ After many years of inactivity, fixedformat4j was revived with the 1.4.0 release
 
 ---
 
-## 1.8.1 (unreleased)
+## 1.8.1 (2026-05-05)
 
 ### Performance improvements
 
-- **Concrete formatters resolved at cache-build time** —
-  `ClassMetadataCache` now stores the concrete formatter instance (`StringFormatter`,
-  `IntegerFormatter`, `DateFormatter`, etc.) directly in the cached `FieldDescriptor`, rather than
-  a `ByTypeFormatter` wrapper. Previously, every `load()` / `export()` call invoked
-  `getConstructor().newInstance()` via reflection to create a fresh concrete formatter for each
-  field. The hot-path call is now a direct virtual dispatch with no reflection overhead.
-  `ByTypeFormatter` and its public `actualFormatter()` method are unchanged; they continue to drive
-  type resolution at cache-build time and remain available for custom formatters that extend
-  `ByTypeFormatter`.
+`load()` and `export()` are measurably faster, especially for workloads that process many records or hit the same record class repeatedly:
 
-  **No API or behaviour change.**
+- **Less reflection per call** — formatter instances are resolved once at cache-warm time instead of being created fresh on every field operation.
+- **Date and time fields are cheaper** — `DateTimeFormatter` and `SimpleDateFormat` instances are cached and reused, eliminating the most expensive allocation in date parsing and formatting.
+- **Tighter memory use** — internal maps are pre-sized and constant string values are pre-computed at startup rather than rebuilt on every operation.
 
-- **`DateTimeFormatter` cached per pattern in `AbstractPatternFormatter`** —
-  `LocalDateFormatter` and `LocalDateTimeFormatter` previously called `DateTimeFormatter.ofPattern(pattern)`
-  on every parse and format call. `DateTimeFormatter` is immutable and thread-safe, so a single instance
-  per pattern can be shared across all threads. A `ClassValue<ConcurrentHashMap<String, DateTimeFormatter>>`
-  in `AbstractPatternFormatter` caches each formatter on first use; subsequent calls return the cached
-  instance with no lock contention. For workloads that repeatedly parse or format date/time fields this
-  eliminates the most expensive part of each call.
-
-  **No API or behaviour change.**
-
-- **`export()` pre-fetches the descriptor list and right-sizes `foundData`** —
-  `FixedFormatManagerImpl.export()` previously called `ClassMetadataCache.INSTANCE.get(class)` twice
-  (once for the loop, once implicitly for the map) and created the `foundData` HashMap with the default
-  initial capacity of 16. The descriptor list is now fetched once and its size used to pre-size the map
-  at `size × 2` (load factor 0.5), eliminating all resize operations for records of any size.
-
-  **No API or behaviour change.**
-
-- **`zeroString` pre-computed in `DecimalFormatState`** —
-  `AbstractDecimalFormatter.asString()` previously rebuilt `"0" + state.decimalSeparator + "0"` on every
-  call. The value is now computed once in the `DecimalFormatState` constructor (which is itself invoked at
-  most once per thread per decimals count via `ThreadLocal`) and stored in the `final String zeroString`
-  field.
-
-  **No API or behaviour change.**
-
-- **`DateFormatter` caches `SimpleDateFormat` per thread per pattern** —
-  `DateFormatter.getFormatter(pattern)` previously constructed a new `SimpleDateFormat` on every
-  call. `SimpleDateFormat` is not thread-safe so a static singleton is not viable, but a
-  `ThreadLocal<Map<String, SimpleDateFormat>>` gives per-thread reuse at zero synchronization cost.
-  For workloads that repeatedly parse or format `Date` fields with the same pattern, this
-  eliminates a significant source of object allocation.
-
-  **No API or behaviour change.**
+**No API or behaviour change.** Existing annotated record classes, custom formatters, and serialized fixed-width data are unaffected. Upgrade by bumping the version number.
 
 ---
 

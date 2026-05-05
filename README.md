@@ -82,7 +82,7 @@ For every annotation attribute, type, and advanced option see the [Annotations r
 
 FixedFormat4J's annotation-only approach means no external schema files to version, no XML to keep in sync with your Java classes, and no framework-specific integration layer to pull in.
 
-## Latest release — 1.8.0 (2026-05-01)
+## Latest release — 1.8.1 (2026-05-05)
 
 See the [Changelog](https://jeyben.github.io/fixedformat4j/changelog) for what's new.
 
@@ -98,20 +98,20 @@ FixedFormat4J is published to **Maven Central**. No repository configuration or 
 <dependency>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j</artifactId>
-  <version>1.8.0</version>
+  <version>1.8.1</version>
 </dependency>
 ```
 
 **Gradle (Groovy DSL)**
 
 ```groovy
-implementation 'com.ancientprogramming.fixedformat4j:fixedformat4j:1.8.0'
+implementation 'com.ancientprogramming.fixedformat4j:fixedformat4j:1.8.1'
 ```
 
 **Gradle (Kotlin DSL)**
 
 ```kotlin
-implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.8.0")
+implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.8.1")
 ```
 
 **Ivy**
@@ -119,7 +119,7 @@ implementation("com.ancientprogramming.fixedformat4j:fixedformat4j:1.8.0")
 ```xml
 <dependency org="com.ancientprogramming.fixedformat4j"
             name="fixedformat4j"
-            rev="1.8.0"/>
+            rev="1.8.1"/>
 ```
 
 Requires **Java 11 or later**. If you want log output, add an [SLF4J binding](https://www.slf4j.org/manual.html#swapping) such as `logback-classic`; without one the library still works, just silently.
@@ -207,7 +207,7 @@ Every field is re-padded to its declared length using the configured alignment a
 
 ### 5. Read a file line by line
 
-`FixedFormatReader` (since 1.8.0) reads files and streams directly, routing each line to the right record class:
+`FixedFormatReader` (since 1.8.1) reads files and streams directly, routing each line to the right record class:
 
 ```java
 // Homogeneous file — every line is the same record type
