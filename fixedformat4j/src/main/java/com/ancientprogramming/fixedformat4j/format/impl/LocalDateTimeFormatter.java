@@ -24,7 +24,7 @@ import java.time.format.DateTimeParseException;
 
 /**
  * Formatter for {@link java.time.LocalDateTime} data.
- * The formatting and parsing is performed using {@link DateTimeFormatter}.
+ * The formatting and parsing is performed using {@link java.time.format.DateTimeFormatter}.
  * The pattern is configured via {@link com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern}.
  * The default pattern is {@code yyyy-MM-dd'T'HH:mm:ss} (ISO-8601 local date-time).
  *

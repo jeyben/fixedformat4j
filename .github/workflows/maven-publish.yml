@@ -67,7 +67,7 @@ jobs:
         run: |
           mvn -B versions:set -DnewVersion=$RELEASE_VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
           git add -A
-          git commit -m "Release $RELEASE_VERSION"
+          git diff --staged --quiet || git commit -m "Release $RELEASE_VERSION"
 
       - name: Create signed release tag
         if: github.event_name == 'release'

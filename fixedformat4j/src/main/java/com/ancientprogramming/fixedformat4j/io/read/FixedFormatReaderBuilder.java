@@ -48,6 +48,7 @@ public final class FixedFormatReaderBuilder {
    * When more than one mapping matches a line, the resolution order is "most detailed first,
    * then registration order" — see {@link MultiMatchStrategy} for details.
    *
+   * @param <R>     the type of record to load when {@code pattern} matches
    * @param clazz   the {@code @Record}-annotated class to instantiate when {@code pattern} matches
    * @param pattern the {@link LinePattern} that decides which lines are parsed as {@code clazz};
    *                construct via {@link LinePattern#prefix(String)},
