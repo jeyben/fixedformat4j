@@ -22,10 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -40,36 +36,6 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
 
   private static final Pattern ALL_ZEROS = Pattern.compile("^0+$");
 
-  /**
-   * Holds a cached {@link DecimalFormat} together with the locale-specific separator
-   * characters captured once at construction time. {@link DecimalFormat} is not thread-safe
-   * and {@link DecimalFormatSymbols#getDecimalSeparator()} / {@link DecimalFormatSymbols#getGroupingSeparator()}
-   * return a defensive copy on every call — caching both here avoids per-call allocation.
-   */
-  static final class DecimalFormatState {
-    final DecimalFormat format;
-    final char decimalSeparator;
-    final char groupingSeparator;
-    final String zeroString;
-
-    DecimalFormatState(int decimals) {
-      format = new DecimalFormat();
-      format.setDecimalSeparatorAlwaysShown(true);
-      format.setMaximumFractionDigits(decimals);
-      DecimalFormatSymbols symbols = format.getDecimalFormatSymbols();
-      decimalSeparator = symbols.getDecimalSeparator();
-      groupingSeparator = symbols.getGroupingSeparator();
-      zeroString = "0" + decimalSeparator + "0";
-    }
-  }
-
-  private static final ThreadLocal<Map<Integer, DecimalFormatState>> FORMAT_CACHE =
-      ThreadLocal.withInitial(HashMap::new);
-
-  static DecimalFormatState getDecimalFormatState(int decimals) {
-    return FORMAT_CACHE.get().computeIfAbsent(decimals, DecimalFormatState::new);
-  }
-
   /** {@inheritDoc} */
   public String asString(T obj, FormatInstructions instructions) {
     BigDecimal roundedValue = null;
@@ -83,7 +49,7 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
       }
     }
 
-    DecimalFormatState state = getDecimalFormatState(decimals);
+    DecimalFormatCache.State state = DecimalFormatCache.get(decimals);
 
     String rawString = roundedValue != null ? state.format.format(roundedValue) : state.zeroString;
     if (LOG.isDebugEnabled()) {
@@ -108,6 +74,11 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
       LOG.debug("result[{}]", result);
     }
     return result;
+  }
+
+  protected final String resolveDecimalString(String string, FormatInstructions instructions) {
+    String toConvert = getStringToConvert(string, instructions);
+    return "".equals(toConvert) ? "0" : toConvert;
   }
 
   protected String getStringToConvert(String string, FormatInstructions instructions) {

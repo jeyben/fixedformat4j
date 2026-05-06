@@ -32,11 +32,7 @@ public class ShortFormatter extends AbstractNumberFormatter<Short> {
 
   /** {@inheritDoc} */
   public String asString(Short obj, FormatInstructions instructions) {
-    String result = null;
-    if (obj != null) {
-      result = Short.toString(obj);
-    }
-    return result;
+    return valueOrNull(obj);
   }
 
 }
