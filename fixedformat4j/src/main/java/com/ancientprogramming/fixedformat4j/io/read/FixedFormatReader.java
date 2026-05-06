@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.lang.String.format;
 
@@ -286,6 +288,155 @@ public final class FixedFormatReader {
   public void process(Path path, Charset charset, HandlerRegistry registry) {
     Objects.requireNonNull(registry, "registry must not be null");
     withReader(path, charset, r -> { process(r, registry); return null; });
+  }
+
+  // --- openStream ---
+
+  /**
+   * Returns a lazy {@link Stream} of parsed records backed by {@code reader}.
+   *
+   * <p>The caller is responsible for closing the stream. The underlying reader is closed
+   * automatically when the stream is closed. Always use {@code try}-with-resources:</p>
+   * <pre>{@code
+   * try (Stream<Object> s = reader.openStream(source)) {
+   *     s.forEach(this::handleRecord);
+   * }
+   * }</pre>
+   *
+   * @param reader the source of lines; closed when the returned stream is closed
+   * @return a lazy, ordered, non-null stream of parsed record objects
+   * @throws NullPointerException if {@code reader} is {@code null}
+   */
+  public Stream<Object> openStream(Reader reader) {
+    Objects.requireNonNull(reader, "reader must not be null");
+    BufferedReader buffered = toBuffered(reader);
+    return StreamSupport.stream(new FixedFormatSpliterator(buffered, processor), false)
+        .onClose(() -> {
+          try {
+            buffered.close();
+          } catch (IOException e) {
+            throw new FixedFormatIOException("IO error closing stream", e);
+          }
+        });
+  }
+
+  /**
+   * Returns a lazy {@link Stream} of parsed records from {@code inputStream} using UTF-8 encoding.
+   *
+   * <p>The caller must close the returned stream (via {@code try}-with-resources).
+   * Closing the stream closes the underlying input stream.</p>
+   *
+   * @param inputStream the source stream; closed when the returned stream is closed
+   * @return a lazy, ordered, non-null stream of parsed record objects
+   * @throws NullPointerException if {@code inputStream} is {@code null}
+   */
+  public Stream<Object> openStream(InputStream inputStream) {
+    return openStream(inputStream, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Returns a lazy {@link Stream} of parsed records from {@code inputStream} using the given charset.
+   *
+   * <p>The caller must close the returned stream (via {@code try}-with-resources).
+   * Closing the stream closes the underlying input stream.</p>
+   *
+   * @param inputStream the source stream; closed when the returned stream is closed
+   * @param charset     the character encoding to apply
+   * @return a lazy, ordered, non-null stream of parsed record objects
+   * @throws NullPointerException if {@code inputStream} or {@code charset} is {@code null}
+   */
+  public Stream<Object> openStream(InputStream inputStream, Charset charset) {
+    Objects.requireNonNull(inputStream, "inputStream must not be null");
+    Objects.requireNonNull(charset, "charset must not be null");
+    return openStream(new InputStreamReader(inputStream, charset));
+  }
+
+  /**
+   * Returns a lazy {@link Stream} of parsed records from {@code path} using UTF-8 encoding.
+   *
+   * <p>The caller must close the returned stream (via {@code try}-with-resources).
+   * Closing the stream closes the underlying file.</p>
+   *
+   * @param path the path to read
+   * @return a lazy, ordered, non-null stream of parsed record objects
+   * @throws NullPointerException   if {@code path} is {@code null}
+   * @throws FixedFormatIOException if the path cannot be opened
+   */
+  public Stream<Object> openStream(Path path) {
+    return openStream(path, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Returns a lazy {@link Stream} of parsed records from {@code path} using the given charset.
+   *
+   * <p>The caller must close the returned stream (via {@code try}-with-resources).
+   * Closing the stream closes the underlying file.</p>
+   *
+   * @param path    the path to read
+   * @param charset the character encoding to apply
+   * @return a lazy, ordered, non-null stream of parsed record objects
+   * @throws NullPointerException   if {@code path} or {@code charset} is {@code null}
+   * @throws FixedFormatIOException if the path cannot be opened
+   */
+  public Stream<Object> openStream(Path path, Charset charset) {
+    Objects.requireNonNull(path, "path must not be null");
+    Objects.requireNonNull(charset, "charset must not be null");
+    try {
+      return openStream(new InputStreamReader(Files.newInputStream(path), charset));
+    } catch (IOException e) {
+      throw new FixedFormatIOException(format("Cannot open path: %s", path), e);
+    }
+  }
+
+  /**
+   * Returns a lazy {@link Stream} of parsed records of type {@code clazz} from {@code reader}.
+   *
+   * <p>Lines that produce a record of a different type are silently filtered out.
+   * The caller must close the returned stream (via {@code try}-with-resources).</p>
+   *
+   * @param <T>    the record type
+   * @param reader the source of lines; closed when the returned stream is closed
+   * @param clazz  the type to retain; records of other types are discarded
+   * @return a lazy, ordered, non-null stream of {@code T} records
+   * @throws NullPointerException if {@code reader} or {@code clazz} is {@code null}
+   */
+  @SuppressWarnings("unchecked")
+  public <T> Stream<T> openStream(Reader reader, Class<T> clazz) {
+    Objects.requireNonNull(clazz, "clazz must not be null");
+    return openStream(reader).filter(clazz::isInstance).map(r -> (T) r);
+  }
+
+  /**
+   * Returns a lazy {@link Stream} of parsed records of type {@code clazz} from {@code inputStream}
+   * using UTF-8 encoding.
+   *
+   * @param <T>         the record type
+   * @param inputStream the source stream; closed when the returned stream is closed
+   * @param clazz       the type to retain; records of other types are discarded
+   * @return a lazy, ordered, non-null stream of {@code T} records
+   * @throws NullPointerException if {@code inputStream} or {@code clazz} is {@code null}
+   */
+  @SuppressWarnings("unchecked")
+  public <T> Stream<T> openStream(InputStream inputStream, Class<T> clazz) {
+    Objects.requireNonNull(clazz, "clazz must not be null");
+    return openStream(inputStream).filter(clazz::isInstance).map(r -> (T) r);
+  }
+
+  /**
+   * Returns a lazy {@link Stream} of parsed records of type {@code clazz} from {@code path}
+   * using UTF-8 encoding.
+   *
+   * @param <T>   the record type
+   * @param path  the path to read
+   * @param clazz the type to retain; records of other types are discarded
+   * @return a lazy, ordered, non-null stream of {@code T} records
+   * @throws NullPointerException   if {@code path} or {@code clazz} is {@code null}
+   * @throws FixedFormatIOException if the path cannot be opened
+   */
+  @SuppressWarnings("unchecked")
+  public <T> Stream<T> openStream(Path path, Class<T> clazz) {
+    Objects.requireNonNull(clazz, "clazz must not be null");
+    return openStream(path).filter(clazz::isInstance).map(r -> (T) r);
   }
 
   // --- factory ---
