@@ -20,6 +20,19 @@ After many years of inactivity, fixedformat4j was revived with the 1.4.0 release
 
 ---
 
+## [Unreleased] 1.8.2
+
+### Refactoring
+
+- **`FieldValidator` extracted** — six validation methods moved out of `FixedFormatManagerImpl` into a dedicated package-private class; the manager now has a single responsibility (load/export orchestration).
+- **`DecimalFormatCache` extracted** — `DecimalFormat` thread-local caching infrastructure separated from `AbstractDecimalFormatter`, keeping formatting logic and caching concerns in separate classes.
+- **Reduced boilerplate in number formatters** — duplicate `asString()` bodies in `IntegerFormatter`, `ShortFormatter`, and `LongFormatter` collapsed via a shared `valueOrNull()` helper on `AbstractNumberFormatter`.
+- **Reduced boilerplate in decimal formatters** — duplicate `asObject()` pattern in `DoubleFormatter`, `FloatFormatter`, and `BigDecimalFormatter` collapsed via a shared `resolveDecimalString()` helper on `AbstractDecimalFormatter`.
+
+No API or behaviour change. All existing annotated record classes, custom formatters, and serialized fixed-width data are unaffected.
+
+---
+
 ## 1.8.1 (2026-05-05)
 
 ### Performance improvements

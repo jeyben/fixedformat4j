@@ -54,4 +54,8 @@ public abstract class AbstractNumberFormatter<T> extends AbstractFixedFormatter<
     public String format(T obj, FormatInstructions instructions) {
       return instructions.getFixedFormatNumberData().getSigning().apply(asString(obj, instructions), instructions);
     }
+
+  protected final String valueOrNull(T obj) {
+    return obj != null ? String.valueOf(obj) : null;
+  }
 }
