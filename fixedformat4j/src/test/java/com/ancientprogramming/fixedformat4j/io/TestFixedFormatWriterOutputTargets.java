@@ -153,6 +153,13 @@ class TestFixedFormatWriterOutputTargets {
   }
 
   @Test
+  void throwsNullPointerWhenWriterIsNullForStream() {
+    assertThrows(NullPointerException.class, () ->
+        WRITER.write((Writer) null, List.of().stream())
+    );
+  }
+
+  @Test
   void throwsNullPointerWhenIterableRecordsIsNullForWriter() {
     assertThrows(NullPointerException.class, () ->
         WRITER.write(new StringWriter(), (Iterable<?>) null)
@@ -170,6 +177,20 @@ class TestFixedFormatWriterOutputTargets {
   void throwsNullPointerWhenOutputStreamIsNull() {
     assertThrows(NullPointerException.class, () ->
         WRITER.write((OutputStream) null, List.of())
+    );
+  }
+
+  @Test
+  void throwsNullPointerWhenOutputStreamIsNullForStream() {
+    assertThrows(NullPointerException.class, () ->
+        WRITER.write((OutputStream) null, List.of().stream())
+    );
+  }
+
+  @Test
+  void throwsNullPointerWhenStreamRecordsIsNullForOutputStream() {
+    assertThrows(NullPointerException.class, () ->
+        WRITER.write(new ByteArrayOutputStream(), (java.util.stream.Stream<?>) null)
     );
   }
 
@@ -198,6 +219,13 @@ class TestFixedFormatWriterOutputTargets {
   void throwsNullPointerWhenPathIsNull() {
     assertThrows(NullPointerException.class, () ->
         WRITER.write((Path) null, List.of())
+    );
+  }
+
+  @Test
+  void throwsNullPointerWhenPathIsNullForStream() {
+    assertThrows(NullPointerException.class, () ->
+        WRITER.write((Path) null, List.of().stream())
     );
   }
 
@@ -237,6 +265,14 @@ class TestFixedFormatWriterOutputTargets {
   }
 
   // --- IO error handling ---
+
+  @Test
+  void wrapsIoExceptionWhenPathCannotBeOpenedForIterable(@TempDir Path dir) {
+    Path nonExistentDir = dir.resolve("missing-dir/out.txt");
+    assertThrows(FixedFormatIOException.class, () ->
+        WRITER.write(nonExistentDir, List.of(record("hello")))
+    );
+  }
 
   @Test
   void wrapsIoExceptionWhenPathCannotBeOpenedForIterableWithCharset(@TempDir Path dir) {
