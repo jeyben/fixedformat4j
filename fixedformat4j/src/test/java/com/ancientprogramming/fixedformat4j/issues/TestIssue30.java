@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class TestIssue30 {
 
-  private final FixedFormatManager manager = new FixedFormatManagerImpl();
+  private final FixedFormatManager manager = FixedFormatManagerImpl.create();
 
   // ---------------------------------------------------------------------------
   // Record-level RIGHT alignment: fields inherit it when no align= is specified

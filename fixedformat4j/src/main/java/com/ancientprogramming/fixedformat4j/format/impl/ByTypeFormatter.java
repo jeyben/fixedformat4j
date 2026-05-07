@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +43,7 @@ import java.util.Map;
  */
 public class ByTypeFormatter implements FixedFormatter<Object> {
   private final FormatContext<?> context;
+  private final Map<Class<?>, Class<? extends FixedFormatter<?>>> customRegistry;
 
   private static final Map<Class<? extends Serializable>, Class<? extends FixedFormatter<?>>> KNOWN_FORMATTERS = new HashMap<>();
 
@@ -74,7 +76,16 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
    * @param context the format context describing the field's offset, data type, and formatter class
    */
   public ByTypeFormatter(FormatContext<?> context) {
+    this(context, Collections.emptyMap());
+  }
+
+  ByTypeFormatter(FormatContext<?> context, Map<Class<?>, Class<? extends FixedFormatter<?>>> customRegistry) {
     this.context = context;
+    this.customRegistry = customRegistry != null ? customRegistry : Collections.emptyMap();
+  }
+
+  FormatContext<?> getContext() {
+    return context;
   }
 
   /** {@inheritDoc} */
@@ -105,7 +116,10 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
       return new EnumFormatter(context);
     }
 
-    Class<? extends FixedFormatter<?>> formatterClass = KNOWN_FORMATTERS.get(dataType);
+    Class<? extends FixedFormatter<?>> formatterClass = customRegistry.get(dataType);
+    if (formatterClass == null) {
+      formatterClass = KNOWN_FORMATTERS.get(dataType);
+    }
 
     if (formatterClass != null) {
       try {

@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  */
 public class TestIssue29Repeating {
 
-  private final FixedFormatManager manager = new FixedFormatManagerImpl();
+  private final FixedFormatManager manager = FixedFormatManagerImpl.create();
 
   // ---------------------------------------------------------------------------
   // Load: all-nullChar element slice -> null element in list

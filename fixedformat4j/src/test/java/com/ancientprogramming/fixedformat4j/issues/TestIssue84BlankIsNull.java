@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 public class TestIssue84BlankIsNull {
 
-  private final FixedFormatManager manager = new FixedFormatManagerImpl();
+  private final FixedFormatManager manager = FixedFormatManagerImpl.create();
 
   // ---------------------------------------------------------------------------
   // Space-padded reference type -> all-spaces is null

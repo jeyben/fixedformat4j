@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TestIssue10 {
 
-  FixedFormatManager fixedFormatManager = new FixedFormatManagerImpl();
+  FixedFormatManager fixedFormatManager = FixedFormatManagerImpl.create();
 
   @Test
   public void testParseExceptionContainsDetails() {

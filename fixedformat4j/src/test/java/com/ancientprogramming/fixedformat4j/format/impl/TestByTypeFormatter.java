@@ -3,6 +3,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import com.ancientprogramming.fixedformat4j.annotation.Align;
 import com.ancientprogramming.fixedformat4j.annotation.EnumFormat;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
+import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatContext;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
@@ -16,7 +17,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -283,5 +286,65 @@ public class TestByTypeFormatter {
     ByTypeFormatter f = formatterFor(String.class);
     assertTrue(f.actualFormatter(String.class) instanceof StringFormatter,
         "String type should route to StringFormatter");
+  }
+
+  // --- Custom registry tests ---
+
+  public static class UppercaseStringFormatter extends StringFormatter {
+    @Override
+    public String asObject(String value, FormatInstructions instructions) {
+      return value.trim().toUpperCase();
+    }
+  }
+
+  public static class UUIDFormatter extends AbstractFixedFormatter<UUID> {
+    @Override
+    public UUID asObject(String value, FormatInstructions instructions) {
+      return UUID.fromString(value.trim());
+    }
+    @Override
+    public String asString(UUID value, FormatInstructions instructions) {
+      return value.toString();
+    }
+  }
+
+  private ByTypeFormatter formatterWithRegistry(Class<?> type, Map<Class<?>, Class<? extends com.ancientprogramming.fixedformat4j.format.FixedFormatter<?>>> registry) {
+    return new ByTypeFormatter(new FormatContext(1, type, ByTypeFormatter.class), registry);
+  }
+
+  @Test
+  public void customRegistry_emptyMap_builtInStillResolves() {
+    ByTypeFormatter f = formatterWithRegistry(String.class, Collections.emptyMap());
+    assertTrue(f.actualFormatter(String.class) instanceof StringFormatter);
+  }
+
+  @Test
+  public void customRegistry_overridesBuiltIn_customFormatterReturned() {
+    Map<Class<?>, Class<? extends com.ancientprogramming.fixedformat4j.format.FixedFormatter<?>>> registry =
+        Collections.singletonMap(String.class, UppercaseStringFormatter.class);
+    ByTypeFormatter f = formatterWithRegistry(String.class, registry);
+    assertTrue(f.actualFormatter(String.class) instanceof UppercaseStringFormatter);
+  }
+
+  @Test
+  public void customRegistry_doesNotAffectUnregisteredType() {
+    Map<Class<?>, Class<? extends com.ancientprogramming.fixedformat4j.format.FixedFormatter<?>>> registry =
+        Collections.singletonMap(UUID.class, UUIDFormatter.class);
+    ByTypeFormatter f = formatterWithRegistry(Integer.class, registry);
+    assertTrue(f.actualFormatter(Integer.class) instanceof IntegerFormatter);
+  }
+
+  @Test
+  public void customRegistry_unknownTypeWithNoEntry_throwsFixedFormatException() {
+    ByTypeFormatter f = formatterWithRegistry(UUID.class, Collections.emptyMap());
+    assertThrows(FixedFormatException.class, () -> f.actualFormatter(UUID.class));
+  }
+
+  @Test
+  public void customRegistry_customTypeRegistered_resolves() {
+    Map<Class<?>, Class<? extends com.ancientprogramming.fixedformat4j.format.FixedFormatter<?>>> registry =
+        Collections.singletonMap(UUID.class, UUIDFormatter.class);
+    ByTypeFormatter f = formatterWithRegistry(UUID.class, registry);
+    assertTrue(f.actualFormatter(UUID.class) instanceof UUIDFormatter);
   }
 }

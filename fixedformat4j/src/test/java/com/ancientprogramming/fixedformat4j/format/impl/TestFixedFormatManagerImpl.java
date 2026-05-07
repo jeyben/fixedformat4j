@@ -53,7 +53,7 @@ public class TestFixedFormatManagerImpl {
 
   @BeforeEach
   public void setUp() {
-    manager = new FixedFormatManagerImpl();
+    manager = FixedFormatManagerImpl.create();
   }
 
   @Test

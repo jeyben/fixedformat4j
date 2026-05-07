@@ -3,6 +3,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
@@ -18,7 +19,7 @@ class TestClassMetadataCacheConcurrency {
 
   @Test
   void sameConcurrentAccessReturnsSameListInstance() throws Exception {
-    ClassMetadataCache cache = new ClassMetadataCache();
+    ClassMetadataCache cache = new ClassMetadataCache(Collections.emptyMap());
     CyclicBarrier barrier = new CyclicBarrier(THREAD_COUNT);
     ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
     List<Future<List<FieldDescriptor>>> futures = new ArrayList<>();
@@ -42,7 +43,7 @@ class TestClassMetadataCacheConcurrency {
 
   @Test
   void eachDescriptorHasNonNullFormatterUnderConcurrentAccess() throws Exception {
-    ClassMetadataCache cache = new ClassMetadataCache();
+    ClassMetadataCache cache = new ClassMetadataCache(Collections.emptyMap());
     CyclicBarrier barrier = new CyclicBarrier(THREAD_COUNT);
     ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
     List<Future<Boolean>> futures = new ArrayList<>();
@@ -67,7 +68,7 @@ class TestClassMetadataCacheConcurrency {
     Class<?>[] classes = {MyRecord.class, MultibleFieldsRecord.class, RepeatingFieldRecord.class};
     int[] expectedCounts  = {10, 4, 2};
 
-    ClassMetadataCache cache = new ClassMetadataCache();
+    ClassMetadataCache cache = new ClassMetadataCache(Collections.emptyMap());
     CyclicBarrier barrier = new CyclicBarrier(THREAD_COUNT);
     ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
     List<Future<int[]>> futures = new ArrayList<>();

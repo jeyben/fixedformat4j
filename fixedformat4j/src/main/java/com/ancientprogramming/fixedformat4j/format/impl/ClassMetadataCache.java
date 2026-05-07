@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
 import static java.lang.String.format;
@@ -38,7 +39,13 @@ import static java.lang.String.format;
  */
 class ClassMetadataCache {
 
-  static final ClassMetadataCache INSTANCE = new ClassMetadataCache();
+  static final ClassMetadataCache INSTANCE = new ClassMetadataCache(Collections.emptyMap());
+
+  private final Map<Class<?>, Class<? extends com.ancientprogramming.fixedformat4j.format.FixedFormatter<?>>> customRegistry;
+
+  ClassMetadataCache(Map<Class<?>, Class<? extends com.ancientprogramming.fixedformat4j.format.FixedFormatter<?>>> customRegistry) {
+    this.customRegistry = customRegistry != null ? customRegistry : Collections.emptyMap();
+  }
 
   private final ClassValue<List<FieldDescriptor>> cache = new ClassValue<List<FieldDescriptor>>() {
     @Override
@@ -54,7 +61,7 @@ class ClassMetadataCache {
   private List<FieldDescriptor> build(Class<?> clazz) {
     AnnotationScanner scanner = new AnnotationScanner();
     FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
-    RepeatingFieldSupport repeatingFieldSupport = new RepeatingFieldSupport();
+    RepeatingFieldSupport repeatingFieldSupport = new RepeatingFieldSupport(customRegistry);
 
     List<FieldDescriptor> result = new ArrayList<>();
     for (AnnotationTarget target : scanner.scan(clazz)) {
@@ -103,7 +110,8 @@ class ClassMetadataCache {
 
   private FixedFormatter<?> resolveConcreteFormatter(FixedFormatter<?> candidate, Class<?> datatype) {
     if (candidate instanceof ByTypeFormatter) {
-      return ((ByTypeFormatter) candidate).actualFormatter(datatype);
+      ByTypeFormatter btf = new ByTypeFormatter(((ByTypeFormatter) candidate).getContext(), customRegistry);
+      return btf.actualFormatter(datatype);
     }
     return candidate;
   }

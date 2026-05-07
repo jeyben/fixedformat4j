@@ -28,7 +28,7 @@ class TestFixedFormatManagerConcurrency {
 
   @BeforeEach
   void setUp() {
-    manager = new FixedFormatManagerImpl();
+    manager = FixedFormatManagerImpl.create();
 
     Calendar someDay = Calendar.getInstance();
     someDay.set(2008, 4, 14, 0, 0, 0);

@@ -4,7 +4,9 @@ import com.ancientprogramming.fixedformat4j.annotation.Field;
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,7 +15,7 @@ class TestClassMetadataCache {
 
   @Test
   void cacheReturnsSameListInstanceOnSecondCall() {
-    ClassMetadataCache cache = new ClassMetadataCache();
+    ClassMetadataCache cache = new ClassMetadataCache(Collections.emptyMap());
     List<FieldDescriptor> first = cache.get(MyRecord.class);
     List<FieldDescriptor> second = cache.get(MyRecord.class);
     assertSame(first, second);
@@ -21,13 +23,13 @@ class TestClassMetadataCache {
 
   @Test
   void myRecordProducesTenDescriptors() {
-    ClassMetadataCache cache = new ClassMetadataCache();
+    ClassMetadataCache cache = new ClassMetadataCache(Collections.emptyMap());
     assertEquals(10, cache.get(MyRecord.class).size());
   }
 
   @Test
   void eachSimpleFieldDescriptorHasNonNullMetadata() {
-    ClassMetadataCache cache = new ClassMetadataCache();
+    ClassMetadataCache cache = new ClassMetadataCache(Collections.emptyMap());
     for (FieldDescriptor d : cache.get(MyRecord.class)) {
       String name = d.target.getter.getName();
       assertNotNull(d.target, name + ": target");
@@ -44,7 +46,7 @@ class TestClassMetadataCache {
 
   @Test
   void allSimpleFieldDescriptorsAreMarkedAsLoadFields() {
-    ClassMetadataCache cache = new ClassMetadataCache();
+    ClassMetadataCache cache = new ClassMetadataCache(Collections.emptyMap());
     for (FieldDescriptor d : cache.get(MyRecord.class)) {
       assertTrue(d.isLoadField, d.target.getter.getName() + " should be a load field");
     }
@@ -52,7 +54,7 @@ class TestClassMetadataCache {
 
   @Test
   void fieldsAnnotationExpandsIntoMultipleDescriptors() {
-    ClassMetadataCache cache = new ClassMetadataCache();
+    ClassMetadataCache cache = new ClassMetadataCache(Collections.emptyMap());
     List<FieldDescriptor> descriptors = cache.get(MultibleFieldsRecord.class);
     long count = descriptors.stream()
         .filter(d -> d.target.getter.getName().equals("getDateData"))
@@ -62,7 +64,7 @@ class TestClassMetadataCache {
 
   @Test
   void onlyFirstFieldsAnnotationDescriptorIsLoadField() {
-    ClassMetadataCache cache = new ClassMetadataCache();
+    ClassMetadataCache cache = new ClassMetadataCache(Collections.emptyMap());
     List<FieldDescriptor> dateDescriptors = cache.get(MultibleFieldsRecord.class).stream()
         .filter(d -> d.target.getter.getName().equals("getDateData"))
         .collect(Collectors.toList());
@@ -73,7 +75,7 @@ class TestClassMetadataCache {
 
   @Test
   void repeatingFieldDescriptorHasNullContextAndInstructions() {
-    ClassMetadataCache cache = new ClassMetadataCache();
+    ClassMetadataCache cache = new ClassMetadataCache(Collections.emptyMap());
     FieldDescriptor repeating = cache.get(RepeatingFieldRecord.class).stream()
         .filter(d -> d.isRepeating)
         .findFirst()
@@ -85,7 +87,7 @@ class TestClassMetadataCache {
 
   @Test
   void nestedRecordFieldDescriptorHasNullFormatter() {
-    ClassMetadataCache cache = new ClassMetadataCache();
+    ClassMetadataCache cache = new ClassMetadataCache(Collections.emptyMap());
     FieldDescriptor nested = cache.get(NestedRecordHolder.class).stream()
         .filter(d -> d.isNestedRecord)
         .findFirst()
@@ -97,7 +99,7 @@ class TestClassMetadataCache {
 
   @Test
   void noDescriptorCachesAByTypeFormatterInstance() {
-    ClassMetadataCache cache = new ClassMetadataCache();
+    ClassMetadataCache cache = new ClassMetadataCache(Collections.emptyMap());
     for (FieldDescriptor d : cache.get(MyRecord.class)) {
       if (d.formatter != null) {
         assertFalse(d.formatter instanceof ByTypeFormatter,
@@ -108,12 +110,38 @@ class TestClassMetadataCache {
 
   @Test
   void fieldWithCustomFormatterIsNotMarkedAsNestedRecord() {
-    ClassMetadataCache cache = new ClassMetadataCache();
+    ClassMetadataCache cache = new ClassMetadataCache(Collections.emptyMap());
     List<FieldDescriptor> descriptors = cache.get(MyOtherRecord.class);
     assertEquals(1, descriptors.size());
     FieldDescriptor d = descriptors.get(0);
     assertFalse(d.isNestedRecord, "custom formatter field should not be isNestedRecord");
     assertNotNull(d.formatter, "custom formatter field should have a cached formatter");
+  }
+
+  // --- Custom registry tests ---
+
+  @Record
+  static class StringFieldRecord {
+    private String value;
+    @Field(offset = 1, length = 10)
+    public String getValue() { return value; }
+    public void setValue(String value) { this.value = value; }
+  }
+
+  @Test
+  void customRegistry_emptyMap_resolvesConcretFormatterAsUsual() {
+    ClassMetadataCache cache = new ClassMetadataCache(Collections.emptyMap());
+    FieldDescriptor d = cache.get(StringFieldRecord.class).get(0);
+    assertTrue(d.formatter instanceof StringFormatter);
+  }
+
+  @Test
+  void customRegistry_overridesBuiltIn_formatterInDescriptorIsCustom() {
+    Map<Class<?>, Class<? extends com.ancientprogramming.fixedformat4j.format.FixedFormatter<?>>> registry =
+        Collections.singletonMap(String.class, TestByTypeFormatter.UppercaseStringFormatter.class);
+    ClassMetadataCache cache = new ClassMetadataCache(registry);
+    FieldDescriptor d = cache.get(StringFieldRecord.class).get(0);
+    assertTrue(d.formatter instanceof TestByTypeFormatter.UppercaseStringFormatter);
   }
 
   @Record
