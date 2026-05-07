@@ -98,7 +98,8 @@ public final class FixedFormatWriter {
    * Writes all records from {@code records} to {@code out} using the default charset.
    *
    * @param out     the output stream; closed when this method returns
-   * @param records the records to write
+   * @param records the records to write; each element must be annotated with
+   *                {@link com.ancientprogramming.fixedformat4j.annotation.Record}
    * @throws NullPointerException   if {@code out} or {@code records} is {@code null}
    * @throws FixedFormatIOException if an IO error occurs while writing or closing
    * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
@@ -113,7 +114,8 @@ public final class FixedFormatWriter {
    *
    * @param out     the output stream; closed when this method returns
    * @param charset the character encoding to apply
-   * @param records the records to write
+   * @param records the records to write; each element must be annotated with
+   *                {@link com.ancientprogramming.fixedformat4j.annotation.Record}
    * @throws NullPointerException   if {@code out}, {@code charset}, or {@code records} is
    *                                {@code null}
    * @throws FixedFormatIOException if an IO error occurs while writing or closing
@@ -130,7 +132,8 @@ public final class FixedFormatWriter {
    * truncating any existing file.
    *
    * @param path    the path to write to; created or truncated
-   * @param records the records to write
+   * @param records the records to write; each element must be annotated with
+   *                {@link com.ancientprogramming.fixedformat4j.annotation.Record}
    * @throws NullPointerException   if {@code path} or {@code records} is {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
@@ -146,7 +149,8 @@ public final class FixedFormatWriter {
    *
    * @param path    the path to write to; created or truncated
    * @param charset the character encoding to apply
-   * @param records the records to write
+   * @param records the records to write; each element must be annotated with
+   *                {@link com.ancientprogramming.fixedformat4j.annotation.Record}
    * @throws NullPointerException   if {@code path}, {@code charset}, or {@code records} is
    *                                {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
@@ -167,7 +171,9 @@ public final class FixedFormatWriter {
    * the stream lifecycle. The writer is closed when this method returns.</p>
    *
    * @param writer  the write target; closed when this method returns
-   * @param records a stream of records to write; consumed but not closed
+   * @param records a stream of records to write; each element must be annotated with
+   *                {@link com.ancientprogramming.fixedformat4j.annotation.Record}; consumed but
+   *                not closed
    * @throws NullPointerException   if {@code writer} or {@code records} is {@code null}
    * @throws FixedFormatIOException if an IO error occurs while writing or closing
    * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
@@ -186,7 +192,9 @@ public final class FixedFormatWriter {
    * returns.</p>
    *
    * @param out     the output stream; closed when this method returns
-   * @param records a stream of records to write; consumed but not closed
+   * @param records a stream of records to write; each element must be annotated with
+   *                {@link com.ancientprogramming.fixedformat4j.annotation.Record}; consumed but
+   *                not closed
    * @throws NullPointerException   if {@code out} or {@code records} is {@code null}
    * @throws FixedFormatIOException if an IO error occurs while writing or closing
    * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
@@ -204,7 +212,9 @@ public final class FixedFormatWriter {
    *
    * @param out     the output stream; closed when this method returns
    * @param charset the character encoding to apply
-   * @param records a stream of records to write; consumed but not closed
+   * @param records a stream of records to write; each element must be annotated with
+   *                {@link com.ancientprogramming.fixedformat4j.annotation.Record}; consumed but
+   *                not closed
    * @throws NullPointerException   if {@code out}, {@code charset}, or {@code records} is
    *                                {@code null}
    * @throws FixedFormatIOException if an IO error occurs while writing or closing
@@ -223,7 +233,9 @@ public final class FixedFormatWriter {
    * <p>The stream is consumed but not closed.</p>
    *
    * @param path    the path to write to; created or truncated
-   * @param records a stream of records to write; consumed but not closed
+   * @param records a stream of records to write; each element must be annotated with
+   *                {@link com.ancientprogramming.fixedformat4j.annotation.Record}; consumed but
+   *                not closed
    * @throws NullPointerException   if {@code path} or {@code records} is {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
@@ -241,7 +253,9 @@ public final class FixedFormatWriter {
    *
    * @param path    the path to write to; created or truncated
    * @param charset the character encoding to apply
-   * @param records a stream of records to write; consumed but not closed
+   * @param records a stream of records to write; each element must be annotated with
+   *                {@link com.ancientprogramming.fixedformat4j.annotation.Record}; consumed but
+   *                not closed
    * @throws NullPointerException   if {@code path}, {@code charset}, or {@code records} is
    *                                {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs

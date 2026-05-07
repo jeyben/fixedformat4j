@@ -6,6 +6,8 @@ import com.ancientprogramming.fixedformat4j.io.write.FixedFormatWriter;
 import com.ancientprogramming.fixedformat4j.io.write.FixedFormatWriterBuilder;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -83,5 +85,20 @@ class TestFixedFormatWriterBuilder {
     writer.write(sw, List.of(record));
 
     assertTrue(sw.toString().endsWith("\r\n"), "output must use CRLF separator");
+  }
+
+  @Test
+  void customCharsetIsAppliedWhenWritingToOutputStream() throws IOException {
+    FixedFormatWriter writer = FixedFormatWriter.builder()
+        .charset(StandardCharsets.ISO_8859_1)
+        .lineSeparator("\n")
+        .build();
+
+    TenCharRecord record = new TenCharRecord();
+    record.setValue("hello");
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    writer.write(baos, List.of(record));
+
+    assertEquals("hello     \n", baos.toString(StandardCharsets.ISO_8859_1.name()));
   }
 }
