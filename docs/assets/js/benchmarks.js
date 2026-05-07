@@ -36,14 +36,14 @@
     return benchmark.split('.').pop();
   }
 
-  function buildChart(canvasId, title, versionData, mode, filterPrefix) {
+  function buildChart(canvasId, title, versionData, mode, filter) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
 
     const benchmarkNames = [...new Set(
       versionData.flatMap(vd =>
         vd.data
-          .filter(r => r.mode === mode && shortName(r.benchmark).toLowerCase().startsWith(filterPrefix))
+          .filter(r => r.mode === mode && filter(shortName(r.benchmark)))
           .map(r => shortName(r.benchmark))
       )
     )].sort();
@@ -94,8 +94,17 @@
     });
   }
 
-  buildChart('chart-load-thrpt',  'load() — Throughput',   loaded, 'thrpt', 'load');
-  buildChart('chart-export-thrpt', 'export() — Throughput', loaded, 'thrpt', 'export');
-  buildChart('chart-load-avgt',   'load() — Avg Time',     loaded, 'avgt',  'load');
-  buildChart('chart-export-avgt', 'export() — Avg Time',   loaded, 'avgt',  'export');
+  const singleLoad   = n => n.toLowerCase().startsWith('load')   && !n.toLowerCase().endsWith('document');
+  const singleExport = n => n.toLowerCase().startsWith('export') && !n.toLowerCase().endsWith('document');
+  const docLoad      = n => n.toLowerCase() === 'loaddocument';
+  const docExport    = n => n.toLowerCase() === 'exportdocument';
+
+  buildChart('chart-load-thrpt',      'load() — Throughput',                    loaded, 'thrpt', singleLoad);
+  buildChart('chart-export-thrpt',    'export() — Throughput',                  loaded, 'thrpt', singleExport);
+  buildChart('chart-load-avgt',       'load() — Avg Time',                      loaded, 'avgt',  singleLoad);
+  buildChart('chart-export-avgt',     'export() — Avg Time',                    loaded, 'avgt',  singleExport);
+  buildChart('chart-load-doc-thrpt',  'loadDocument() — Throughput (100 records)',  loaded, 'thrpt', docLoad);
+  buildChart('chart-export-doc-thrpt','exportDocument() — Throughput (100 records)',loaded, 'thrpt', docExport);
+  buildChart('chart-load-doc-avgt',   'loadDocument() — Avg Time (100 records)',    loaded, 'avgt',  docLoad);
+  buildChart('chart-export-doc-avgt', 'exportDocument() — Avg Time (100 records)',  loaded, 'avgt',  docExport);
 })();
