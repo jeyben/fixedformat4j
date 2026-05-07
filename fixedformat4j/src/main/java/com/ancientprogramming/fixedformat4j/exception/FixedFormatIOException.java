@@ -18,7 +18,7 @@ package com.ancientprogramming.fixedformat4j.exception;
 import java.io.IOException;
 
 /**
- * Thrown when an {@link java.io.IOException} occurs while reading a fixed-format file.
+ * Thrown when an {@link java.io.IOException} occurs while reading or writing a fixed-format file.
  * Wraps the original IOException so callers can catch IO failures distinctly from parse
  * failures in stream pipelines.
  *

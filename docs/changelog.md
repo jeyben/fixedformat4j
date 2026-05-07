@@ -8,6 +8,38 @@ title: Changelog
 
 ### New features
 
+- **`FixedFormatWriter` — write-side IO symmetry** ([#114](https://github.com/jeyben/fixedformat4j/issues/114)) —
+  Adds `FixedFormatWriter`, a new type in `com.ancientprogramming.fixedformat4j.io.write` that
+  provides the same ergonomic, fluent API for writing fixed-format files that `FixedFormatReader`
+  provides for reading. The writer owns resource management (opening, flushing, closing) and line
+  delimiting; formatting of each record is still delegated to `FixedFormatManager.export()`.
+
+  Obtain an instance via the builder:
+
+  ```java
+  FixedFormatWriter writer = FixedFormatWriter.builder()
+      .charset(StandardCharsets.ISO_8859_1)   // optional; default UTF-8
+      .lineSeparator("\r\n")                   // optional; default System.lineSeparator()
+      .build();
+  ```
+
+  Three target types are supported; `OutputStream` and `Path` additionally accept an explicit
+  `Charset` argument (default is UTF-8):
+
+  - **`Writer`** — `write(Writer, Iterable<?>)` / `write(Writer, Stream<?>)`
+  - **`OutputStream`** — `write(OutputStream, Iterable<?>)` / `write(OutputStream, Stream<?>)` + explicit-charset overloads
+  - **`Path`** — `write(Path, Iterable<?>)` / `write(Path, Stream<?>)` + explicit-charset overloads
+
+  Both `Iterable<?>` (covers any `List`, `Set`, or custom collection) and `Stream<?>` (lazy, avoids
+  materialising all records in memory) are accepted as record sources. For `Stream<?>` inputs the
+  writer consumes but does **not** close the stream — the caller retains ownership.
+
+  Heterogeneous mixed-type lists are supported out of the box: each element's runtime type is used
+  to locate the `@Record` annotation, so `List.of(header, detail1, footer)` works without extra
+  configuration.
+
+  Instances are thread-safe; all fields are `final` and each `write` call is independent.
+
 - **`FixedFormatReader.openStream()` — lazy stream processing** ([#115](https://github.com/jeyben/fixedformat4j/issues/115)) —
   Adds `openStream()` methods to `FixedFormatReader` that return a lazy `Stream` backed by a
   `Spliterator`, so callers can process arbitrarily large files with bounded memory. Records are
