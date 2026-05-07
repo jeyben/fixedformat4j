@@ -4,23 +4,36 @@ title: Changelog
 
 # Changelog
 
-## Journey since 1.4.0
+## [Unreleased] 1.9.0
 
-After many years of inactivity, fixedformat4j was revived with the 1.4.0 release. Here is a summary of everything that has improved since then:
+### New features
 
-- **`LocalDate` and `LocalDateTime` support** — both are now built-in types in `ByTypeFormatter` with type-specific default patterns and eager pattern validation.
-- **Repeating fields via `@Field(count)`** — map a list of same-format fields with a single annotation; optional `strictCount` enforces list size on export.
-- **Field-level `@Field` / `@Fields` annotations** — place annotations directly on a Java field instead of its getter; works with plain POJOs and Lombok (`@Getter`/`@Setter`).
-- **Date padding bug fixed** — date formatters no longer over-strip padding characters that appear inside the formatted value ([#33](https://github.com/jeyben/fixedformat4j/issues/33)).
-- **Maven Central distribution** — no GitHub account or personal access token required; standard `<dependency>` block just works.
-- **Negative decimal fix** — parsing trailing-sign negatives with implicit decimals (e.g. `000000001-`) no longer throws `NumberFormatException`.
-- **Modernised build** — Java 11, SLF4J, commons-lang3, JUnit 5 with comprehensive test coverage.
-- **PIT mutation testing** — live quality badges and a published mutation report on every release.
-- **New documentation site** — full Markdown docs at [jeyben.github.io/fixedformat4j](https://jeyben.github.io/fixedformat4j/) (Quick Start, Annotations reference, Examples, FAQ, Changelog).
+- **`FixedFormatReader.openStream()` — lazy stream processing** ([#115](https://github.com/jeyben/fixedformat4j/issues/115)) —
+  Adds `openStream()` methods to `FixedFormatReader` that return a lazy `Stream` backed by a
+  `Spliterator`, so callers can process arbitrarily large files with bounded memory. Records are
+  read and parsed one at a time on demand rather than loading the entire file into a `List` upfront.
 
----
+  The `open` prefix signals that the caller owns the stream lifecycle and must close it via
+  `try`-with-resources — closing the stream automatically closes the underlying reader or file.
 
-## [Unreleased] 1.8.2
+  Two overload families are provided:
+
+  - **Untyped** — `openStream(Reader)`, `openStream(InputStream)`, `openStream(InputStream, Charset)`,
+    `openStream(Path)`, `openStream(Path, Charset)` — return `Stream<Object>`
+  - **Typed** — `openStream(Reader, Class<T>)`, `openStream(InputStream, Class<T>)`,
+    `openStream(Path, Class<T>)` — filter to records of the requested type and return `Stream<T>`
+    without requiring a cast at the call site
+
+  All configured strategies (`MultiMatchStrategy`, `UnmatchStrategy`, `ParseErrorStrategy`) and the
+  `excludeLines` filter apply identically to the streaming path.
+
+  ```java
+  // Process a large file record by record — only one line in memory at a time
+  try (Stream<DetailRecord> s = reader.openStream(Path.of("data.txt"), DetailRecord.class)) {
+      s.filter(r -> r.getAmount() > 0)
+       .forEach(this::process);
+  }
+  ```
 
 ### Refactoring
 
@@ -29,7 +42,7 @@ After many years of inactivity, fixedformat4j was revived with the 1.4.0 release
 - **Reduced boilerplate in number formatters** — duplicate `asString()` bodies in `IntegerFormatter`, `ShortFormatter`, and `LongFormatter` collapsed via a shared `valueOrNull()` helper on `AbstractNumberFormatter`.
 - **Reduced boilerplate in decimal formatters** — duplicate `asObject()` pattern in `DoubleFormatter`, `FloatFormatter`, and `BigDecimalFormatter` collapsed via a shared `resolveDecimalString()` helper on `AbstractDecimalFormatter`.
 
-No API or behaviour change. All existing annotated record classes, custom formatters, and serialized fixed-width data are unaffected.
+No behaviour change for existing annotated record classes, custom formatters, or serialized fixed-width data.
 
 ---
 
@@ -126,6 +139,27 @@ No API or behaviour change. All existing annotated record classes, custom format
   ```
 
   See [File processing](usage/file-processing) for a complete guide.
+
+- **`@Field(length = -1)` — rest-of-line field** ([#97](https://github.com/jeyben/fixedformat4j/issues/97)) —
+  A `String` field may now declare `length = -1` to capture everything from its `offset` to the
+  end of the line, regardless of how long that line is. This is useful for free-text trailers,
+  comments, or variable-length payloads appended after a fixed-width prefix.
+
+  Constraints validated at startup: only `String` return type, `count = 1`, no `align`, no
+  `paddingChar` override, no `nullChar`. The `@Field(length = -1)` field must be the last field
+  (highest `offset`) in the record. Combining `@Record(length = …)` with a rest-of-line field is
+  rejected because record-level padding would corrupt the verbatim round-trip.
+
+  ```java
+  @Record
+  public class LogRecord {
+      @Field(offset = 1, length = 3)
+      public String getLevel() { … }          // e.g. "INF", "ERR"
+
+      @Field(offset = 4, length = -1)
+      public String getMessage() { … }        // captures remainder of each line
+  }
+  ```
 
 ### Bug fixes
 
