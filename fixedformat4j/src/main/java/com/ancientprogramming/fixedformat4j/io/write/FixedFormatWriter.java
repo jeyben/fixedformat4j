@@ -76,7 +76,7 @@ public final class FixedFormatWriter {
 
   /**
    * Writes all records from {@code records} to {@code writer}, appending
-   * {@link FixedFormatWriterBuilder#lineSeparator} after each one.
+   * {@link FixedFormatWriterBuilder#lineSeparator(String)} after each one.
    *
    * <p>The writer is closed when this method returns, even if an exception is thrown.</p>
    *
@@ -85,6 +85,8 @@ public final class FixedFormatWriter {
    *                {@link com.ancientprogramming.fixedformat4j.annotation.Record}
    * @throws NullPointerException   if {@code writer} or {@code records} is {@code null}
    * @throws FixedFormatIOException if an IO error occurs while writing or closing
+   * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
+   *         in {@code records} is not annotated with {@code @Record}
    */
   public void write(Writer writer, Iterable<?> records) {
     Objects.requireNonNull(writer, "writer must not be null");
@@ -160,6 +162,8 @@ public final class FixedFormatWriter {
    * @param records a stream of records to write; consumed but not closed
    * @throws NullPointerException   if {@code writer} or {@code records} is {@code null}
    * @throws FixedFormatIOException if an IO error occurs while writing or closing
+   * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
+   *         in {@code records} is not annotated with {@code @Record}
    */
   public void write(Writer writer, Stream<?> records) {
     Objects.requireNonNull(writer, "writer must not be null");
@@ -253,7 +257,7 @@ public final class FixedFormatWriter {
         bw.write(lineSeparator);
       }
     } catch (IOException e) {
-      throw new FixedFormatIOException("IO error writing record", e);
+      throw new FixedFormatIOException("IO error writing or closing fixed-format output", e);
     }
   }
 
@@ -267,7 +271,7 @@ public final class FixedFormatWriter {
     return new OutputStreamWriter(out, charset);
   }
 
-  private BufferedWriter openWriter(Path path, Charset charset) {
+  private static BufferedWriter openWriter(Path path, Charset charset) {
     Objects.requireNonNull(path,    "path must not be null");
     Objects.requireNonNull(charset, "charset must not be null");
     try {
