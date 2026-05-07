@@ -23,11 +23,12 @@ title: Changelog
       .build();
   ```
 
-  Three target types are supported, each with UTF-8 and explicit-charset overloads:
+  Three target types are supported; `OutputStream` and `Path` additionally accept an explicit
+  `Charset` argument (default is UTF-8):
 
   - **`Writer`** — `write(Writer, Iterable<?>)` / `write(Writer, Stream<?>)`
-  - **`OutputStream`** — `write(OutputStream, Iterable<?>)` / `write(OutputStream, Stream<?>)`
-  - **`Path`** — `write(Path, Iterable<?>)` / `write(Path, Stream<?>)`
+  - **`OutputStream`** — `write(OutputStream, Iterable<?>)` / `write(OutputStream, Stream<?>)` + explicit-charset overloads
+  - **`Path`** — `write(Path, Iterable<?>)` / `write(Path, Stream<?>)` + explicit-charset overloads
 
   Both `Iterable<?>` (covers any `List`, `Set`, or custom collection) and `Stream<?>` (lazy, avoids
   materialising all records in memory) are accepted as record sources. For `Stream<?>` inputs the
