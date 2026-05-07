@@ -188,6 +188,13 @@ class TestFixedFormatWriterOutputTargets {
   }
 
   @Test
+  void throwsNullPointerWhenIterableRecordsIsNullForOutputStream() {
+    assertThrows(NullPointerException.class, () ->
+        WRITER.write(new ByteArrayOutputStream(), (Iterable<?>) null)
+    );
+  }
+
+  @Test
   void throwsNullPointerWhenStreamRecordsIsNullForOutputStream() {
     assertThrows(NullPointerException.class, () ->
         WRITER.write(new ByteArrayOutputStream(), (java.util.stream.Stream<?>) null)
@@ -205,6 +212,13 @@ class TestFixedFormatWriterOutputTargets {
   void throwsNullPointerWhenOutputStreamCharsetIsNullForStream() {
     assertThrows(NullPointerException.class, () ->
         WRITER.write(new ByteArrayOutputStream(), null, List.of().stream())
+    );
+  }
+
+  @Test
+  void throwsNullPointerWhenIterableRecordsIsNullForOutputStreamWithCharset() {
+    assertThrows(NullPointerException.class, () ->
+        WRITER.write(new ByteArrayOutputStream(), StandardCharsets.UTF_8, (Iterable<?>) null)
     );
   }
 
@@ -240,6 +254,13 @@ class TestFixedFormatWriterOutputTargets {
   void throwsNullPointerWhenPathCharsetIsNullForStream(@TempDir Path dir) {
     assertThrows(NullPointerException.class, () ->
         WRITER.write(dir.resolve("out.txt"), null, List.of().stream())
+    );
+  }
+
+  @Test
+  void throwsNullPointerWhenIterableRecordsIsNullForPathWithCharset(@TempDir Path dir) {
+    assertThrows(NullPointerException.class, () ->
+        WRITER.write(dir.resolve("out.txt"), StandardCharsets.UTF_8, (Iterable<?>) null)
     );
   }
 
