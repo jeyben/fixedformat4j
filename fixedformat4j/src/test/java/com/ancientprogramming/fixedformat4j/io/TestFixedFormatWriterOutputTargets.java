@@ -96,6 +96,13 @@ class TestFixedFormatWriterOutputTargets {
     assertEquals("hello     \n", baos.toString(StandardCharsets.UTF_8.name()));
   }
 
+  @Test
+  void writesToOutputStreamWithExplicitCharsetStream() throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    WRITER.write(baos, StandardCharsets.ISO_8859_1, List.of(record("hello")).stream());
+    assertEquals("hello     \n", baos.toString(StandardCharsets.ISO_8859_1.name()));
+  }
+
   // --- Path target ---
 
   @Test
@@ -117,6 +124,13 @@ class TestFixedFormatWriterOutputTargets {
     Path file = dir.resolve("out.txt");
     WRITER.write(file, List.of(record("hello")).stream());
     assertEquals("hello     \n", Files.readString(file, StandardCharsets.UTF_8));
+  }
+
+  @Test
+  void writesToPathWithExplicitCharsetStream(@TempDir Path dir) throws IOException {
+    Path file = dir.resolve("out.txt");
+    WRITER.write(file, StandardCharsets.ISO_8859_1, List.of(record("hello")).stream());
+    assertEquals("hello     \n", Files.readString(file, StandardCharsets.ISO_8859_1));
   }
 
   @Test
@@ -167,6 +181,20 @@ class TestFixedFormatWriterOutputTargets {
   }
 
   @Test
+  void throwsNullPointerWhenOutputStreamCharsetIsNullForStream() {
+    assertThrows(NullPointerException.class, () ->
+        WRITER.write(new ByteArrayOutputStream(), null, List.of().stream())
+    );
+  }
+
+  @Test
+  void throwsNullPointerWhenStreamRecordsIsNullForOutputStreamWithCharset() {
+    assertThrows(NullPointerException.class, () ->
+        WRITER.write(new ByteArrayOutputStream(), StandardCharsets.UTF_8, (java.util.stream.Stream<?>) null)
+    );
+  }
+
+  @Test
   void throwsNullPointerWhenPathIsNull() {
     assertThrows(NullPointerException.class, () ->
         WRITER.write((Path) null, List.of())
@@ -177,6 +205,20 @@ class TestFixedFormatWriterOutputTargets {
   void throwsNullPointerWhenPathCharsetIsNull() {
     assertThrows(NullPointerException.class, () ->
         WRITER.write(Path.of("out.txt"), null, List.of())
+    );
+  }
+
+  @Test
+  void throwsNullPointerWhenPathCharsetIsNullForStream(@TempDir Path dir) {
+    assertThrows(NullPointerException.class, () ->
+        WRITER.write(dir.resolve("out.txt"), null, List.of().stream())
+    );
+  }
+
+  @Test
+  void throwsNullPointerWhenStreamRecordsIsNullForPathWithCharset(@TempDir Path dir) {
+    assertThrows(NullPointerException.class, () ->
+        WRITER.write(dir.resolve("out.txt"), StandardCharsets.UTF_8, (java.util.stream.Stream<?>) null)
     );
   }
 
@@ -195,6 +237,30 @@ class TestFixedFormatWriterOutputTargets {
   }
 
   // --- IO error handling ---
+
+  @Test
+  void wrapsIoExceptionWhenPathCannotBeOpenedForIterableWithCharset(@TempDir Path dir) {
+    Path nonExistentDir = dir.resolve("missing-dir/out.txt");
+    assertThrows(FixedFormatIOException.class, () ->
+        WRITER.write(nonExistentDir, StandardCharsets.UTF_8, List.of(record("hello")))
+    );
+  }
+
+  @Test
+  void wrapsIoExceptionWhenPathCannotBeOpenedForStream(@TempDir Path dir) {
+    Path nonExistentDir = dir.resolve("missing-dir/out.txt");
+    assertThrows(FixedFormatIOException.class, () ->
+        WRITER.write(nonExistentDir, List.of(record("hello")).stream())
+    );
+  }
+
+  @Test
+  void wrapsIoExceptionWhenPathCannotBeOpenedForStreamWithCharset(@TempDir Path dir) {
+    Path nonExistentDir = dir.resolve("missing-dir/out.txt");
+    assertThrows(FixedFormatIOException.class, () ->
+        WRITER.write(nonExistentDir, StandardCharsets.UTF_8, List.of(record("hello")).stream())
+    );
+  }
 
   @Test
   void wrapsIoExceptionInFixedFormatIOException() {

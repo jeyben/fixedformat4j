@@ -115,10 +115,8 @@ public final class FixedFormatWriter {
    * @throws FixedFormatIOException if an IO error occurs while writing or closing
    */
   public void write(OutputStream out, Charset charset, Iterable<?> records) {
-    Objects.requireNonNull(out, "out must not be null");
-    Objects.requireNonNull(charset, "charset must not be null");
     Objects.requireNonNull(records, "records must not be null");
-    write(new OutputStreamWriter(out, charset), records);
+    write(openWriter(out, charset), records);
   }
 
   /**
@@ -146,14 +144,8 @@ public final class FixedFormatWriter {
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
   public void write(Path path, Charset charset, Iterable<?> records) {
-    Objects.requireNonNull(path, "path must not be null");
-    Objects.requireNonNull(charset, "charset must not be null");
     Objects.requireNonNull(records, "records must not be null");
-    try {
-      write(Files.newBufferedWriter(path, charset), records);
-    } catch (IOException e) {
-      throw new FixedFormatIOException(format("Cannot open path: %s", path), e);
-    }
+    write(openWriter(path, charset), records);
   }
 
   // --- Stream overloads ---
@@ -187,9 +179,25 @@ public final class FixedFormatWriter {
    * @throws FixedFormatIOException if an IO error occurs while writing or closing
    */
   public void write(OutputStream out, Stream<?> records) {
-    Objects.requireNonNull(out, "out must not be null");
+    write(out, defaultCharset, records);
+  }
+
+  /**
+   * Writes all records from {@code records} to {@code out} using {@code charset}.
+   *
+   * <p>The stream is consumed but not closed. The output stream is closed when this method
+   * returns.</p>
+   *
+   * @param out     the output stream; closed when this method returns
+   * @param charset the character encoding to apply
+   * @param records a stream of records to write; consumed but not closed
+   * @throws NullPointerException   if {@code out}, {@code charset}, or {@code records} is
+   *                                {@code null}
+   * @throws FixedFormatIOException if an IO error occurs while writing or closing
+   */
+  public void write(OutputStream out, Charset charset, Stream<?> records) {
     Objects.requireNonNull(records, "records must not be null");
-    write(new OutputStreamWriter(out, defaultCharset), records);
+    write(openWriter(out, charset), records);
   }
 
   /**
@@ -204,13 +212,25 @@ public final class FixedFormatWriter {
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
    */
   public void write(Path path, Stream<?> records) {
-    Objects.requireNonNull(path, "path must not be null");
+    write(path, defaultCharset, records);
+  }
+
+  /**
+   * Writes all records from {@code records} to {@code path} using {@code charset},
+   * truncating any existing file.
+   *
+   * <p>The stream is consumed but not closed.</p>
+   *
+   * @param path    the path to write to; created or truncated
+   * @param charset the character encoding to apply
+   * @param records a stream of records to write; consumed but not closed
+   * @throws NullPointerException   if {@code path}, {@code charset}, or {@code records} is
+   *                                {@code null}
+   * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
+   */
+  public void write(Path path, Charset charset, Stream<?> records) {
     Objects.requireNonNull(records, "records must not be null");
-    try {
-      write(Files.newBufferedWriter(path, defaultCharset), records);
-    } catch (IOException e) {
-      throw new FixedFormatIOException(format("Cannot open path: %s", path), e);
-    }
+    write(openWriter(path, charset), records);
   }
 
   // --- Factory ---
@@ -239,5 +259,21 @@ public final class FixedFormatWriter {
 
   private static BufferedWriter toBuffered(Writer writer) {
     return writer instanceof BufferedWriter ? (BufferedWriter) writer : new BufferedWriter(writer);
+  }
+
+  private static OutputStreamWriter openWriter(OutputStream out, Charset charset) {
+    Objects.requireNonNull(out,     "out must not be null");
+    Objects.requireNonNull(charset, "charset must not be null");
+    return new OutputStreamWriter(out, charset);
+  }
+
+  private BufferedWriter openWriter(Path path, Charset charset) {
+    Objects.requireNonNull(path,    "path must not be null");
+    Objects.requireNonNull(charset, "charset must not be null");
+    try {
+      return Files.newBufferedWriter(path, charset);
+    } catch (IOException e) {
+      throw new FixedFormatIOException(format("Cannot open path: %s", path), e);
+    }
   }
 }
