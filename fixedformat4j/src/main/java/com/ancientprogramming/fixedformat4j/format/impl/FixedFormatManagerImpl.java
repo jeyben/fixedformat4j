@@ -44,7 +44,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(FixedFormatManagerImpl.class);
 
-  private FixedFormatManagerImpl() {
+  public FixedFormatManagerImpl() {
     this.metadataCache = ClassMetadataCache.INSTANCE;
     this.repeatingFieldSupport = new RepeatingFieldSupport(Collections.emptyMap());
   }
