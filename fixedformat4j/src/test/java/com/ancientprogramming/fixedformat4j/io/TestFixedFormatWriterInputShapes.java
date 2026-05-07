@@ -1,5 +1,6 @@
 package com.ancientprogramming.fixedformat4j.io;
 
+import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.io.write.FixedFormatWriter;
 import org.junit.jupiter.api.Test;
 
@@ -91,5 +92,11 @@ class TestFixedFormatWriterInputShapes {
     StringWriter sw = new StringWriter();
     WRITER.write(sw, List.of(tenChar("hello")));
     assertEquals("hello     \n", sw.toString());
+  }
+
+  @Test
+  void throwsFixedFormatExceptionForNonAnnotatedRecord() {
+    assertThrows(FixedFormatException.class,
+        () -> WRITER.write(new StringWriter(), List.of(new Object())));
   }
 }

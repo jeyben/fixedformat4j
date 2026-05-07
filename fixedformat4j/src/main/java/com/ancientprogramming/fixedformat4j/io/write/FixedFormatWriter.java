@@ -101,6 +101,8 @@ public final class FixedFormatWriter {
    * @param records the records to write
    * @throws NullPointerException   if {@code out} or {@code records} is {@code null}
    * @throws FixedFormatIOException if an IO error occurs while writing or closing
+   * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
+   *         in {@code records} is not annotated with {@code @Record}
    */
   public void write(OutputStream out, Iterable<?> records) {
     write(out, defaultCharset, records);
@@ -115,6 +117,8 @@ public final class FixedFormatWriter {
    * @throws NullPointerException   if {@code out}, {@code charset}, or {@code records} is
    *                                {@code null}
    * @throws FixedFormatIOException if an IO error occurs while writing or closing
+   * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
+   *         in {@code records} is not annotated with {@code @Record}
    */
   public void write(OutputStream out, Charset charset, Iterable<?> records) {
     Objects.requireNonNull(records, "records must not be null");
@@ -129,6 +133,8 @@ public final class FixedFormatWriter {
    * @param records the records to write
    * @throws NullPointerException   if {@code path} or {@code records} is {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
+   * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
+   *         in {@code records} is not annotated with {@code @Record}
    */
   public void write(Path path, Iterable<?> records) {
     write(path, defaultCharset, records);
@@ -144,6 +150,8 @@ public final class FixedFormatWriter {
    * @throws NullPointerException   if {@code path}, {@code charset}, or {@code records} is
    *                                {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
+   * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
+   *         in {@code records} is not annotated with {@code @Record}
    */
   public void write(Path path, Charset charset, Iterable<?> records) {
     Objects.requireNonNull(records, "records must not be null");
@@ -181,6 +189,8 @@ public final class FixedFormatWriter {
    * @param records a stream of records to write; consumed but not closed
    * @throws NullPointerException   if {@code out} or {@code records} is {@code null}
    * @throws FixedFormatIOException if an IO error occurs while writing or closing
+   * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
+   *         in {@code records} is not annotated with {@code @Record}
    */
   public void write(OutputStream out, Stream<?> records) {
     write(out, defaultCharset, records);
@@ -198,6 +208,8 @@ public final class FixedFormatWriter {
    * @throws NullPointerException   if {@code out}, {@code charset}, or {@code records} is
    *                                {@code null}
    * @throws FixedFormatIOException if an IO error occurs while writing or closing
+   * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
+   *         in {@code records} is not annotated with {@code @Record}
    */
   public void write(OutputStream out, Charset charset, Stream<?> records) {
     Objects.requireNonNull(records, "records must not be null");
@@ -214,6 +226,8 @@ public final class FixedFormatWriter {
    * @param records a stream of records to write; consumed but not closed
    * @throws NullPointerException   if {@code path} or {@code records} is {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
+   * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
+   *         in {@code records} is not annotated with {@code @Record}
    */
   public void write(Path path, Stream<?> records) {
     write(path, defaultCharset, records);
@@ -231,6 +245,8 @@ public final class FixedFormatWriter {
    * @throws NullPointerException   if {@code path}, {@code charset}, or {@code records} is
    *                                {@code null}
    * @throws FixedFormatIOException if the path cannot be opened or an IO error occurs
+   * @throws com.ancientprogramming.fixedformat4j.exception.FixedFormatException if any element
+   *         in {@code records} is not annotated with {@code @Record}
    */
   public void write(Path path, Charset charset, Stream<?> records) {
     Objects.requireNonNull(records, "records must not be null");
