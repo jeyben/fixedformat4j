@@ -30,7 +30,7 @@ public class NestedRecordUsage {
   public static void main(String[] args) {
 
 //START-SNIPPET: nestedrecordusage
-    FixedFormatManager manager = new FixedFormatManagerImpl();
+    FixedFormatManager manager = FixedFormatManagerImpl.create();
 
     //load the string into an object representation
     String text = "foo  bar       001232008-10-21";
