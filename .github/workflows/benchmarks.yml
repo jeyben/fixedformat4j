@@ -30,22 +30,37 @@ jobs:
           distribution: temurin
           java-version: 11
 
+      - name: Validate version inputs
+        env:
+          VERSIONS_INPUT: ${{ github.event.inputs.versions }}
+        run: |
+          for V in $VERSIONS_INPUT; do
+            if [[ ! "$V" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "$V" != "master" ]]; then
+              echo "::error::Invalid version token '$V' — expected X.Y.Z or 'master'"
+              exit 1
+            fi
+          done
+
       - name: Clean benchmark data
         run: |
           rm -rf docs/assets/benchmarks/
           mkdir -p docs/assets/benchmarks/
 
       - name: Run benchmarks
+        env:
+          VERSIONS_INPUT: ${{ github.event.inputs.versions }}
         run: |
           chmod +x benchmarks/run.sh
-          ./benchmarks/run.sh ${{ github.event.inputs.versions }}
+          ./benchmarks/run.sh $VERSIONS_INPUT
 
       - name: Commit results
+        env:
+          VERSIONS_INPUT: ${{ github.event.inputs.versions }}
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/assets/benchmarks/
-          git diff --staged --quiet || git commit -m "bench: results for ${{ github.event.inputs.versions }}"
+          git diff --staged --quiet || git commit -m "bench: results for $VERSIONS_INPUT"
           git push
 
       - name: Trigger pages deployment
