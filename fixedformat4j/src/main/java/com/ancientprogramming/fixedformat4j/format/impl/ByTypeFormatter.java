@@ -112,10 +112,7 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
    *         registered for {@code dataType} or the formatter cannot be instantiated
    */
   public FixedFormatter<?> actualFormatter(final Class<?> dataType) {
-    if (dataType != null && dataType.isEnum()) {
-      return new EnumFormatter(context);
-    }
-
+    // Custom registry is consulted first so that registerType() shadows both KNOWN_FORMATTERS and the built-in enum handler
     Class<? extends FixedFormatter<?>> formatterClass = customRegistry.get(dataType);
     if (formatterClass == null) {
       formatterClass = KNOWN_FORMATTERS.get(dataType);
@@ -129,8 +126,12 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
       } catch (Exception e) {
         throw new FixedFormatException(String.format("Could not create instance of[%s]", formatterClass.getName()), e);
       }
-    } else {
-      throw new FixedFormatException(String.format("%s cannot handle datatype[%s]. Provide your own custom FixedFormatter for this datatype.", ByTypeFormatter.class.getName(), dataType.getName()));
     }
+
+    if (dataType != null && dataType.isEnum()) {
+      return new EnumFormatter(context);
+    }
+
+    throw new FixedFormatException(String.format("%s cannot handle datatype[%s]. Provide your own custom FixedFormatter for this datatype.", ByTypeFormatter.class.getName(), dataType.getName()));
   }
 }

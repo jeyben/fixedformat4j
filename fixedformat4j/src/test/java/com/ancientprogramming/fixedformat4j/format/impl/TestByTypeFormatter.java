@@ -288,6 +288,17 @@ public class TestByTypeFormatter {
         "String type should route to StringFormatter");
   }
 
+  @Test
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public void customRegistry_enumType_customFormatterShadowsEnumFormatter() {
+    // registerType(SomeEnum.class, ...) must shadow the built-in EnumFormatter
+    Map<Class<?>, Class<? extends com.ancientprogramming.fixedformat4j.format.FixedFormatter<?>>> registry =
+        Collections.singletonMap(Season.class, UppercaseStringFormatter.class);
+    ByTypeFormatter f = new ByTypeFormatter(new FormatContext(1, Season.class, ByTypeFormatter.class), registry);
+    assertTrue(f.actualFormatter(Season.class) instanceof UppercaseStringFormatter,
+        "custom registry entry for enum type should shadow EnumFormatter");
+  }
+
   // --- Custom registry tests ---
 
   public static class UppercaseStringFormatter extends StringFormatter {
