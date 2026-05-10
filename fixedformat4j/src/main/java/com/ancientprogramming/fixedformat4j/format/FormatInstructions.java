@@ -30,15 +30,15 @@ import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
  */
 public class FormatInstructions {
 
-  private int length;
-  private Align alignment;
-  private char paddingChar;
-  private char nullChar;
-  private FixedFormatPatternData fixedFormatPatternData;
-  private FixedFormatBooleanData fixedFormatBooleanData;
-  private FixedFormatNumberData fixedFormatNumberData;
-  private FixedFormatDecimalData fixedFormatDecimalData;
-  private FixedFormatEnumData fixedFormatEnumData;
+  private final int length;
+  private final Align alignment;
+  private final char paddingChar;
+  private final char nullChar;
+  private final FixedFormatPatternData fixedFormatPatternData;
+  private final FixedFormatBooleanData fixedFormatBooleanData;
+  private final FixedFormatNumberData fixedFormatNumberData;
+  private final FixedFormatDecimalData fixedFormatDecimalData;
+  private final FixedFormatEnumData fixedFormatEnumData;
 
   /**
    * Creates format instructions with enum data defaulting to {@link FixedFormatEnumData#DEFAULT}

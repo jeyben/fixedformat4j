@@ -28,9 +28,9 @@ public class FixedFormatBooleanData {
 
   public static final FixedFormatBooleanData DEFAULT = new FixedFormatBooleanData(TRUE_VALUE, FALSE_VALUE);
 
-  private String trueValue;
+  private final String trueValue;
 
-  private String falseValue;
+  private final String falseValue;
 
   /**
    * Creates a boolean data object with the given string representations for {@code true} and
