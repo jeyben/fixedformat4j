@@ -27,7 +27,7 @@ import com.ancientprogramming.fixedformat4j.format.impl.FixedFormatManagerImpl;
 //START-SNIPPET: basicusage
 public class BasicUsage {
 
-  private static FixedFormatManager manager = new FixedFormatManagerImpl();
+  private static FixedFormatManager manager = FixedFormatManagerImpl.create();
 
   public static void main(String[] args) {
     String string = "string    001232008-05-29";

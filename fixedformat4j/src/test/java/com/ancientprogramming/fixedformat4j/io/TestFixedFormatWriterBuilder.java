@@ -53,11 +53,19 @@ class TestFixedFormatWriterBuilder {
   @Test
   void customManagerIsUsedWhenWriting() {
     boolean[] exportCalled = {false};
-    FixedFormatManager trackingManager = new FixedFormatManagerImpl() {
+    FixedFormatManager delegate = FixedFormatManagerImpl.create();
+    FixedFormatManager trackingManager = new FixedFormatManager() {
+      @Override
+      public <T> T load(Class<T> clazz, String data) { return delegate.load(clazz, data); }
       @Override
       public <T> String export(T instance) {
         exportCalled[0] = true;
-        return super.export(instance);
+        return delegate.export(instance);
+      }
+      @Override
+      public <T> String export(String template, T instance) {
+        exportCalled[0] = true;
+        return delegate.export(template, instance);
       }
     };
 

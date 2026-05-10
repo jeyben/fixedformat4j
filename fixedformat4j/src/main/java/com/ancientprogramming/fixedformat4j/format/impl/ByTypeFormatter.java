@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,12 +37,16 @@ import java.util.Map;
  * {@link EnumFormatter}; use {@link com.ancientprogramming.fixedformat4j.annotation.FixedFormatEnum}
  * to switch between LITERAL and NUMERIC serialization).
  *
+ * <p>When constructed via {@link FixedFormatManagerImpl#builder()} and a custom type registry,
+ * entries in that registry shadow built-in formatters (including the automatic enum handler).
+ * The lookup order in {@link #actualFormatter} is: custom registry → built-in map → enum fallback.
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
 public class ByTypeFormatter implements FixedFormatter<Object> {
   private final FormatContext<?> context;
+  private final Map<Class<?>, Class<? extends FixedFormatter<?>>> customRegistry;
 
   private static final Map<Class<? extends Serializable>, Class<? extends FixedFormatter<?>>> KNOWN_FORMATTERS = new HashMap<>();
 
@@ -74,7 +79,16 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
    * @param context the format context describing the field's offset, data type, and formatter class
    */
   public ByTypeFormatter(FormatContext<?> context) {
+    this(context, Collections.emptyMap());
+  }
+
+  ByTypeFormatter(FormatContext<?> context, Map<Class<?>, Class<? extends FixedFormatter<?>>> customRegistry) {
     this.context = context;
+    this.customRegistry = customRegistry != null ? customRegistry : Collections.emptyMap();
+  }
+
+  FormatContext<?> getContext() {
+    return context;
   }
 
   /** {@inheritDoc} */
@@ -93,7 +107,9 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
 
   /**
    * Looks up and instantiates the typed formatter for the given {@code dataType}.
-   * Enum types are detected dynamically and routed to {@link EnumFormatter}.
+   * The lookup order is: custom registry (if any) → built-in map → {@link EnumFormatter} fallback
+   * for enum subtypes. A custom registry entry for an enum type therefore shadows the automatic
+   * enum handler.
    *
    * @param dataType the Java type of the field value
    * @return a formatter capable of handling {@code dataType}
@@ -101,11 +117,11 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
    *         registered for {@code dataType} or the formatter cannot be instantiated
    */
   public FixedFormatter<?> actualFormatter(final Class<?> dataType) {
-    if (dataType != null && dataType.isEnum()) {
-      return new EnumFormatter(context);
+    // Custom registry is consulted first so that registerType() shadows both KNOWN_FORMATTERS and the built-in enum handler
+    Class<? extends FixedFormatter<?>> formatterClass = customRegistry.get(dataType);
+    if (formatterClass == null) {
+      formatterClass = KNOWN_FORMATTERS.get(dataType);
     }
-
-    Class<? extends FixedFormatter<?>> formatterClass = KNOWN_FORMATTERS.get(dataType);
 
     if (formatterClass != null) {
       try {
@@ -115,8 +131,12 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
       } catch (Exception e) {
         throw new FixedFormatException(String.format("Could not create instance of[%s]", formatterClass.getName()), e);
       }
-    } else {
-      throw new FixedFormatException(String.format("%s cannot handle datatype[%s]. Provide your own custom FixedFormatter for this datatype.", ByTypeFormatter.class.getName(), dataType.getName()));
     }
+
+    if (dataType != null && dataType.isEnum()) {
+      return new EnumFormatter(context);
+    }
+
+    throw new FixedFormatException(String.format("%s cannot handle datatype[%s]. Provide your own custom FixedFormatter for this datatype.", ByTypeFormatter.class.getName(), dataType.getName()));
   }
 }

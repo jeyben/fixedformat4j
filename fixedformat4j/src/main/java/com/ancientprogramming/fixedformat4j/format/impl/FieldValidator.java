@@ -25,6 +25,7 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatPatternData;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -145,7 +146,7 @@ class FieldValidator {
 
     Class<?> typeToCheck;
     if (fieldAnnotation.count() > 1) {
-      typeToCheck = new RepeatingFieldSupport().resolveElementType(target.getter);
+      typeToCheck = new RepeatingFieldSupport(Collections.emptyMap()).resolveElementType(target.getter);
     } else {
       FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
       typeToCheck = instructionsBuilder.datatype(target.getter, fieldAnnotation);

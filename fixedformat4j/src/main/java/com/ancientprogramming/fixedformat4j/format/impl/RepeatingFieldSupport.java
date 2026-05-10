@@ -26,6 +26,9 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
+import java.util.Map;
+
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
 import static java.lang.String.format;
@@ -40,7 +43,12 @@ class RepeatingFieldSupport {
 
   private static final Logger LOG = LoggerFactory.getLogger(RepeatingFieldSupport.class);
 
+  private final Map<Class<?>, Class<? extends com.ancientprogramming.fixedformat4j.format.FixedFormatter<?>>> customRegistry;
   private final FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
+
+  RepeatingFieldSupport(Map<Class<?>, Class<? extends com.ancientprogramming.fixedformat4j.format.FixedFormatter<?>>> customRegistry) {
+    this.customRegistry = customRegistry != null ? customRegistry : Collections.emptyMap();
+  }
 
   // -------------------------------------------------------------------------
   // Read
@@ -53,7 +61,7 @@ class RepeatingFieldSupport {
     FormatInstructions formatdata = instructionsBuilder.build(annotationSource, fieldAnno, elementType, getter.getDeclaringClass());
 
     FormatContext protoContext = new FormatContext(fieldAnno.offset(), elementType, fieldAnno.formatter());
-    FixedFormatter<Object> formatter = (FixedFormatter<Object>) getFixedFormatterInstance(protoContext.getFormatter(), protoContext);
+    FixedFormatter<Object> formatter = (FixedFormatter<Object>) resolveFormatter(protoContext, elementType);
 
     List<Object> elements = new ArrayList<>();
     for (int i = 0; i < count; i++) {
@@ -110,7 +118,7 @@ class RepeatingFieldSupport {
     Class<?> elementType = resolveElementType(target.getter);
     FormatInstructions formatdata = instructionsBuilder.build(target.annotationSource, fieldAnno, elementType, target.getter.getDeclaringClass());
     FormatContext protoContext = new FormatContext(fieldAnno.offset(), elementType, fieldAnno.formatter());
-    FixedFormatter<Object> formatter = (FixedFormatter<Object>) getFixedFormatterInstance(protoContext.getFormatter(), protoContext);
+    FixedFormatter<Object> formatter = (FixedFormatter<Object>) resolveFormatter(protoContext, elementType);
 
     Iterable<?> iterable = value.getClass().isArray() ? arrayToIterable(value, exportCount) : (Collection<?>) value;
 
@@ -130,6 +138,14 @@ class RepeatingFieldSupport {
   // -------------------------------------------------------------------------
   // Validation & utilities — package-private for direct testing
   // -------------------------------------------------------------------------
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private com.ancientprogramming.fixedformat4j.format.FixedFormatter<?> resolveFormatter(FormatContext protoContext, Class<?> elementType) {
+    if (protoContext.getFormatter() == ByTypeFormatter.class) {
+      return new ByTypeFormatter(protoContext, customRegistry).actualFormatter(elementType);
+    }
+    return getFixedFormatterInstance(protoContext.getFormatter(), protoContext);
+  }
 
   void validateCount(Method method, Field fieldAnnotation) {
     int count = fieldAnnotation.count();

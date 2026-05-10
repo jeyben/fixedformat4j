@@ -30,7 +30,7 @@ public class BasicUsageManager {
   public static void main(String[] args) {
 
 //START-SNIPPET: basicusagemanager
-    FixedFormatManager manager = new FixedFormatManagerImpl();
+    FixedFormatManager manager = FixedFormatManagerImpl.create();
 
     //load the string into an object representation
     BasicUsageRecord record = manager.load(BasicUsageRecord.class, "initial string");

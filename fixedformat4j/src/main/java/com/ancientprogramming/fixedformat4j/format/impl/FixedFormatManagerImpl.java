@@ -24,9 +24,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
 import static java.lang.String.format;
@@ -41,6 +44,18 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(FixedFormatManagerImpl.class);
 
+  public FixedFormatManagerImpl() {
+    this.metadataCache = ClassMetadataCache.INSTANCE;
+    this.repeatingFieldSupport = new RepeatingFieldSupport(Collections.emptyMap());
+  }
+
+  private FixedFormatManagerImpl(Map<Class<?>, Class<? extends FixedFormatter<?>>> customRegistry) {
+    this.metadataCache = customRegistry.isEmpty()
+        ? ClassMetadataCache.INSTANCE
+        : new ClassMetadataCache(customRegistry);
+    this.repeatingFieldSupport = new RepeatingFieldSupport(customRegistry);
+  }
+
   /**
    * Returns a new instance of this implementation as a {@link FixedFormatManager}.
    *
@@ -52,16 +67,56 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   /**
-   * Tracks which record classes have already been validated. The sentinel value is stored inside
-   * each {@link Class} object via {@link ClassValue}, so it is automatically GC'd when the
-   * defining classloader becomes unreachable — preventing classloader leaks in hot-reload and
-   * multi-classloader environments. {@link ClassValue#computeValue} is invoked at most once per
-   * class, ensuring validation runs exactly once per class per JVM lifetime.
+   * Returns a builder for constructing a {@code FixedFormatManagerImpl} with a custom type registry.
+   *
+   * @return a new {@code Builder}; never {@code null}
+   * @since 1.9.0
    */
-  private static final ClassValue<Boolean> VALIDATED_CLASSES = new ClassValue<Boolean>() {
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  /**
+   * Builder for {@link FixedFormatManagerImpl} that allows registering custom type-to-formatter
+   * mappings. Custom registrations shadow built-in formatters; last registration wins on duplicates.
+   *
+   * @since 1.9.0
+   */
+  public static final class Builder {
+    private final Map<Class<?>, Class<? extends FixedFormatter<?>>> registry = new LinkedHashMap<>();
+
+    private Builder() {}
+
+    /**
+     * Registers a formatter class for the given type. If the type already has a mapping
+     * (either a prior {@code registerType} call or a built-in), this registration overwrites it.
+     * Last registration wins — no exception is thrown on duplicates.
+     *
+     * @param type           the Java type to map; must not be {@code null}
+     * @param formatterClass the formatter to use for {@code type}; must not be {@code null}
+     * @return this builder, for chaining
+     */
+    public <T> Builder registerType(Class<T> type, Class<? extends FixedFormatter<T>> formatterClass) {
+      Objects.requireNonNull(type, "type must not be null");
+      Objects.requireNonNull(formatterClass, "formatterClass must not be null");
+      registry.put(type, formatterClass);
+      return this;
+    }
+
+    /**
+     * Builds and returns a {@link FixedFormatManager} with the registered type mappings.
+     *
+     * @return a new manager instance; never {@code null}
+     */
+    public FixedFormatManager build() {
+      return new FixedFormatManagerImpl(Collections.unmodifiableMap(new LinkedHashMap<>(registry)));
+    }
+  }
+
+  private final ClassValue<Boolean> validatedClasses = new ClassValue<Boolean>() {
     @Override
     protected Boolean computeValue(Class<?> clazz) {
-      List<FieldDescriptor> descriptors = ClassMetadataCache.INSTANCE.get(clazz);
+      List<FieldDescriptor> descriptors = metadataCache.get(clazz);
       for (FieldDescriptor desc : descriptors) {
         FieldValidator.doValidateFieldPattern(desc.target, desc.fieldAnnotation);
         FieldValidator.doValidateEnumFieldLength(desc.target, desc.fieldAnnotation);
@@ -74,8 +129,9 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     }
   };
 
+  private final ClassMetadataCache metadataCache;
   private final RecordInstantiator recordInstantiator = new RecordInstantiator();
-  private final RepeatingFieldSupport repeatingFieldSupport = new RepeatingFieldSupport();
+  private final RepeatingFieldSupport repeatingFieldSupport;
 
   /**
    * {@inheritDoc}
@@ -86,7 +142,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
     T instance = recordInstantiator.instantiate(fixedFormatRecordClass);
 
-    for (FieldDescriptor desc : ClassMetadataCache.INSTANCE.get(fixedFormatRecordClass)) {
+    for (FieldDescriptor desc : metadataCache.get(fixedFormatRecordClass)) {
       if (!desc.isLoadField) continue;
 
       Object value;
@@ -132,7 +188,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     Record record = getAndAssertRecordAnnotation(fixedFormatRecord.getClass());
     validatePatterns(fixedFormatRecord.getClass());
 
-    List<FieldDescriptor> descriptors = ClassMetadataCache.INSTANCE.get(fixedFormatRecord.getClass());
+    List<FieldDescriptor> descriptors = metadataCache.get(fixedFormatRecord.getClass());
     HashMap<Integer, String> foundData = new HashMap<>(descriptors.size() * 2);
 
     for (FieldDescriptor desc : descriptors) {
@@ -186,7 +242,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
   }
 
   private void validatePatterns(Class<?> recordClass) {
-    VALIDATED_CLASSES.get(recordClass);
+    validatedClasses.get(recordClass);
   }
 
   private static void appendData(StringBuilder result, Character paddingChar, Integer offset, String data) {

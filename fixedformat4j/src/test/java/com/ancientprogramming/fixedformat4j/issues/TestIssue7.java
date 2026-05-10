@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TestIssue7 {
 
-  FixedFormatManager fixedFormatManager = new FixedFormatManagerImpl();
+  FixedFormatManager fixedFormatManager = FixedFormatManagerImpl.create();
 
   @Test
   public void testLoadedNestedRecords() {

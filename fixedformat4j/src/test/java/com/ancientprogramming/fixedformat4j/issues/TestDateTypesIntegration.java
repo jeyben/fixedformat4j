@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TestDateTypesIntegration {
 
-  private final FixedFormatManager manager = new FixedFormatManagerImpl();
+  private final FixedFormatManager manager = FixedFormatManagerImpl.create();
 
   /**
    * Fixed-width string layout (80 chars total):

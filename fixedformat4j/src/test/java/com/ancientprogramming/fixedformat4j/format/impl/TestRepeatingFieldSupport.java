@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestRepeatingFieldSupport {
 
-  private final RepeatingFieldSupport support = new RepeatingFieldSupport();
+  private final RepeatingFieldSupport support = new RepeatingFieldSupport(java.util.Collections.emptyMap());
 
   // =========================================================================
   // validateCountAnnotation
