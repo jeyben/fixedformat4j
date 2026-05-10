@@ -33,6 +33,7 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
+      id-token: write # Required by claude-code-action to exchange an OIDC token for a scoped GitHub App token
       actions: read # Required for Claude to read CI results on PRs
     steps:
       - name: Checkout repository
