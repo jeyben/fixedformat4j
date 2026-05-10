@@ -37,6 +37,10 @@ import java.util.Map;
  * {@link EnumFormatter}; use {@link com.ancientprogramming.fixedformat4j.annotation.FixedFormatEnum}
  * to switch between LITERAL and NUMERIC serialization).
  *
+ * <p>When constructed via {@link FixedFormatManagerImpl#builder()} and a custom type registry,
+ * entries in that registry shadow built-in formatters (including the automatic enum handler).
+ * The lookup order in {@link #actualFormatter} is: custom registry → built-in map → enum fallback.
+ *
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
@@ -104,7 +108,9 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
 
   /**
    * Looks up and instantiates the typed formatter for the given {@code dataType}.
-   * Enum types are detected dynamically and routed to {@link EnumFormatter}.
+   * The lookup order is: custom registry (if any) → built-in map → {@link EnumFormatter} fallback
+   * for enum subtypes. A custom registry entry for an enum type therefore shadows the automatic
+   * enum handler.
    *
    * @param dataType the Java type of the field value
    * @return a formatter capable of handling {@code dataType}

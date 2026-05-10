@@ -134,7 +134,7 @@ class TestFixedFormatManagerImplBuilder {
   // --- Repeating field with custom type ---
 
   @Test
-  void builderManager_repeatingFieldCustomType_works() {
+  void builderManager_repeatingFieldCustomType_loadWorks() {
     FixedFormatManager mgr = FixedFormatManagerImpl.builder()
         .registerType(UUID.class, TestByTypeFormatter.UUIDFormatter.class)
         .build();
@@ -143,6 +143,18 @@ class TestFixedFormatManagerImplBuilder {
     String data = u1.toString() + u2.toString();
     RepeatingUUIDRecord rec = mgr.load(RepeatingUUIDRecord.class, data);
     assertArrayEquals(new UUID[]{u1, u2}, rec.getIds());
+  }
+
+  @Test
+  void builderManager_repeatingFieldCustomType_exportWorks() {
+    FixedFormatManager mgr = FixedFormatManagerImpl.builder()
+        .registerType(UUID.class, TestByTypeFormatter.UUIDFormatter.class)
+        .build();
+    UUID u1 = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+    UUID u2 = UUID.fromString("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
+    RepeatingUUIDRecord rec = new RepeatingUUIDRecord();
+    rec.setIds(new UUID[]{u1, u2});
+    assertEquals(u1.toString() + u2.toString(), mgr.export(rec));
   }
 
   // --- Concurrency ---
