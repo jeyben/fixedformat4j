@@ -41,7 +41,6 @@ import java.util.Map;
  * entries in that registry shadow built-in formatters (including the automatic enum handler).
  * The lookup order in {@link #actualFormatter} is: custom registry → built-in map → enum fallback.
  *
- *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
