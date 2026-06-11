@@ -11,7 +11,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
@@ -40,7 +39,7 @@ class ClassMetadataCache {
 
   static final ClassMetadataCache INSTANCE = new ClassMetadataCache();
 
-  private final ClassValue<List<FieldDescriptor>> cache = new ClassValue<List<FieldDescriptor>>() {
+  private final ClassValue<List<FieldDescriptor>> cache = new ClassValue<>() {
     @Override
     protected List<FieldDescriptor> computeValue(Class<?> clazz) {
       return build(clazz);
@@ -69,7 +68,7 @@ class ClassMetadataCache {
         }
       }
     }
-    return Collections.unmodifiableList(result);
+    return List.copyOf(result);
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})

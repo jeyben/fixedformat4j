@@ -25,7 +25,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -52,29 +51,26 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
    */
   private volatile FixedFormatter<Object> delegate;
 
-  private static final Map<Class<? extends Serializable>, Class<? extends FixedFormatter<?>>> KNOWN_FORMATTERS = new HashMap<>();
-
-  static {
-    KNOWN_FORMATTERS.put(String.class, StringFormatter.class);
-    KNOWN_FORMATTERS.put(short.class, ShortFormatter.class);
-    KNOWN_FORMATTERS.put(Short.class, ShortFormatter.class);
-    KNOWN_FORMATTERS.put(int.class, IntegerFormatter.class);
-    KNOWN_FORMATTERS.put(Integer.class, IntegerFormatter.class);
-    KNOWN_FORMATTERS.put(long.class, LongFormatter.class);
-    KNOWN_FORMATTERS.put(Long.class, LongFormatter.class);
-    KNOWN_FORMATTERS.put(Date.class, DateFormatter.class);
-    KNOWN_FORMATTERS.put(LocalDate.class, LocalDateFormatter.class);
-    KNOWN_FORMATTERS.put(LocalDateTime.class, LocalDateTimeFormatter.class);
-    KNOWN_FORMATTERS.put(char.class, CharacterFormatter.class);
-    KNOWN_FORMATTERS.put(Character.class, CharacterFormatter.class);
-    KNOWN_FORMATTERS.put(boolean.class, BooleanFormatter.class);
-    KNOWN_FORMATTERS.put(Boolean.class, BooleanFormatter.class);
-    KNOWN_FORMATTERS.put(double.class, DoubleFormatter.class);
-    KNOWN_FORMATTERS.put(Double.class, DoubleFormatter.class);
-    KNOWN_FORMATTERS.put(float.class, FloatFormatter.class);
-    KNOWN_FORMATTERS.put(Float.class, FloatFormatter.class);
-    KNOWN_FORMATTERS.put(BigDecimal.class,  BigDecimalFormatter.class);
-  }
+  private static final Map<Class<? extends Serializable>, Class<? extends FixedFormatter<?>>> KNOWN_FORMATTERS = Map.ofEntries(
+      Map.entry(String.class, StringFormatter.class),
+      Map.entry(short.class, ShortFormatter.class),
+      Map.entry(Short.class, ShortFormatter.class),
+      Map.entry(int.class, IntegerFormatter.class),
+      Map.entry(Integer.class, IntegerFormatter.class),
+      Map.entry(long.class, LongFormatter.class),
+      Map.entry(Long.class, LongFormatter.class),
+      Map.entry(Date.class, DateFormatter.class),
+      Map.entry(LocalDate.class, LocalDateFormatter.class),
+      Map.entry(LocalDateTime.class, LocalDateTimeFormatter.class),
+      Map.entry(char.class, CharacterFormatter.class),
+      Map.entry(Character.class, CharacterFormatter.class),
+      Map.entry(boolean.class, BooleanFormatter.class),
+      Map.entry(Boolean.class, BooleanFormatter.class),
+      Map.entry(double.class, DoubleFormatter.class),
+      Map.entry(Double.class, DoubleFormatter.class),
+      Map.entry(float.class, FloatFormatter.class),
+      Map.entry(Float.class, FloatFormatter.class),
+      Map.entry(BigDecimal.class, BigDecimalFormatter.class));
 
   /**
    * Creates a {@code ByTypeFormatter} bound to the given format context.

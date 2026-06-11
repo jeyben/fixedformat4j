@@ -58,7 +58,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
    * multi-classloader environments. {@link ClassValue#computeValue} is invoked at most once per
    * class, ensuring validation runs exactly once per class per JVM lifetime.
    */
-  private static final ClassValue<Boolean> VALIDATED_CLASSES = new ClassValue<Boolean>() {
+  private static final ClassValue<Boolean> VALIDATED_CLASSES = new ClassValue<>() {
     @Override
     protected Boolean computeValue(Class<?> clazz) {
       List<FieldDescriptor> descriptors = ClassMetadataCache.INSTANCE.get(clazz);
@@ -189,7 +189,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     VALIDATED_CLASSES.get(recordClass);
   }
 
-  private static void appendData(StringBuilder result, Character paddingChar, Integer offset, String data) {
+  private static void appendData(StringBuilder result, char paddingChar, int offset, String data) {
     int zeroBasedOffset = offset - 1;
     int end = zeroBasedOffset + data.length();
     while (result.length() < end) {
