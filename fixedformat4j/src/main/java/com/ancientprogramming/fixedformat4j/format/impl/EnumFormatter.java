@@ -70,8 +70,18 @@ public class EnumFormatter extends AbstractFixedFormatter<Enum> {
   @SuppressWarnings({"unchecked", "rawtypes"})
   @Override
   public Enum asObject(String value, FormatInstructions instructions) {
-    if (value == null || value.isEmpty()) {
+    if (value == null) {
       return null;
+    }
+    if (value.isEmpty()) {
+      // In NUMERIC mode with '0' padding, padding-stripping consumes an all-zeros field
+      // entirely — but those zeros WERE the value (ordinal 0), not a blank field.
+      // Mirrors the empty-means-"0" convention of Sign.remove for numeric fields.
+      if (enumFormat(instructions) == EnumFormat.NUMERIC && instructions.getPaddingChar() == '0') {
+        value = "0";
+      } else {
+        return null;
+      }
     }
     Class<? extends Enum> enumClass = (Class<? extends Enum>) context.getDataType();
     EnumFormat format = enumFormat(instructions);
