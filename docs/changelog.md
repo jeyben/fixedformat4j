@@ -67,6 +67,17 @@ title: Changelog
   }
   ```
 
+### Performance improvements
+
+Repeating fields (`@Field(count > 1)`) are significantly faster to load and export:
+
+- **Repeating-field metadata is cached per class** — element type resolution, format instructions, formatter lookup, and per-element contexts were previously rebuilt with reflection on every `load()`/`export()` call; they are now computed once and reused, the same design non-repeating fields have used since 1.7.0. In the bundled JMH benchmark, loading a record with a 10-element repeating field got ~1.9× faster and exporting ~1.25× faster.
+- **`ByTypeFormatter` resolves its delegate once** — `parse()` and `format()` no longer instantiate the type-specific formatter reflectively on every call.
+- **Enum fields are cheaper** — the enum constants array is cached instead of being cloned on every `NUMERIC` parse.
+- **Fewer per-call allocations** — a compiled regex in decimal parsing replaced with a simple character scan, and redundant padding loops removed from export.
+
+A new `RepeatingBenchmark` was added to the `benchmarks/` module to track the repeating-field path.
+
 ### Refactoring
 
 - **`FieldValidator` extracted** — six validation methods moved out of `FixedFormatManagerImpl` into a dedicated package-private class; the manager now has a single responsibility (load/export orchestration).
