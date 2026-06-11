@@ -43,6 +43,15 @@ import java.util.Map;
 public class ByTypeFormatter implements FixedFormatter<Object> {
   private final FormatContext<?> context;
 
+  /**
+   * Delegate resolved once from {@code context.getDataType()} and reused by {@link #parse} and
+   * {@link #format}, avoiding reflective instantiation on every call. All built-in formatters
+   * are stateless (or use thread-local caches), so a single instance is safe to share across
+   * threads. The benign race on first resolution at worst creates one extra instance; volatile
+   * guarantees safe publication.
+   */
+  private volatile FixedFormatter<Object> delegate;
+
   private static final Map<Class<? extends Serializable>, Class<? extends FixedFormatter<?>>> KNOWN_FORMATTERS = new HashMap<>();
 
   static {
@@ -78,17 +87,23 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
   }
 
   /** {@inheritDoc} */
-  @SuppressWarnings("unchecked")
   public Object parse(String value, FormatInstructions instructions) {
-    FixedFormatter<Object> formatter = (FixedFormatter<Object>) actualFormatter(context.getDataType());
-    return formatter.parse(value, instructions);
+    return delegate().parse(value, instructions);
   }
 
   /** {@inheritDoc} */
-  @SuppressWarnings("unchecked")
   public String format(Object value, FormatInstructions instructions) {
-    FixedFormatter<Object> formatter = (FixedFormatter<Object>) actualFormatter(context.getDataType());
-    return formatter.format(value, instructions);
+    return delegate().format(value, instructions);
+  }
+
+  @SuppressWarnings("unchecked")
+  private FixedFormatter<Object> delegate() {
+    FixedFormatter<Object> result = delegate;
+    if (result == null) {
+      result = (FixedFormatter<Object>) actualFormatter(context.getDataType());
+      delegate = result;
+    }
+    return result;
   }
 
   /**
