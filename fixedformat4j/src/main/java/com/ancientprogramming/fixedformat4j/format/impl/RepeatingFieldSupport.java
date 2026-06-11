@@ -9,7 +9,6 @@ import com.ancientprogramming.fixedformat4j.format.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -27,7 +26,6 @@ import java.util.TreeSet;
 import org.apache.commons.lang3.StringUtils;
 
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
-import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
 import static java.lang.String.format;
 
 /**
@@ -40,47 +38,40 @@ class RepeatingFieldSupport {
 
   private static final Logger LOG = LoggerFactory.getLogger(RepeatingFieldSupport.class);
 
-  private final FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
-
   // -------------------------------------------------------------------------
   // Read
   // -------------------------------------------------------------------------
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  Object read(Class<?> clazz, String data, Method getter, AnnotatedElement annotationSource, Field fieldAnno) {
-    int count = fieldAnno.count();
-    Class<?> elementType = resolveElementType(getter);
-    FormatInstructions formatdata = instructionsBuilder.build(annotationSource, fieldAnno, elementType, getter.getDeclaringClass());
+  @SuppressWarnings("unchecked")
+  Object read(Class<?> clazz, String data, FieldDescriptor desc) {
+    FormatInstructions formatdata = desc.formatInstructions;
+    FixedFormatter<Object> formatter = (FixedFormatter<Object>) desc.formatter;
 
-    FormatContext protoContext = new FormatContext(fieldAnno.offset(), elementType, fieldAnno.formatter());
-    FixedFormatter<Object> formatter = (FixedFormatter<Object>) getFixedFormatterInstance(protoContext.getFormatter(), protoContext);
-
-    List<Object> elements = new ArrayList<>();
-    for (int i = 0; i < count; i++) {
-      int elementOffset = fieldAnno.offset() + fieldAnno.length() * i;
-      FormatContext elementContext = new FormatContext(elementOffset, elementType, fieldAnno.formatter());
+    List<Object> elements = new ArrayList<>(desc.elementContexts.length);
+    for (FormatContext<?> elementContext : desc.elementContexts) {
       String dataToParse = fetchData(data, formatdata, elementContext);
-      if (!elementType.isPrimitive() && NullCharSupport.isNullSlice(dataToParse, formatdata)) {
+      if (!desc.elementType.isPrimitive() && NullCharSupport.isNullSlice(dataToParse, formatdata)) {
         elements.add(null);
         continue;
       }
       try {
         elements.add(formatter.parse(dataToParse, formatdata));
       } catch (RuntimeException e) {
-        throw new ParseException(data, dataToParse, clazz, getter, elementContext, formatdata, e);
+        throw new ParseException(data, dataToParse, clazz, desc.target.getter, elementContext, formatdata, e);
       }
     }
 
-    return assembleCollection(getter, elements);
+    return assembleCollection(desc.target.getter, elements);
   }
 
   // -------------------------------------------------------------------------
   // Export
   // -------------------------------------------------------------------------
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  <T> void export(T fixedFormatRecord, AnnotationTarget target, Field fieldAnno, HashMap<Integer, String> foundData) {
-    validateCount(target.getter, fieldAnno);
+  @SuppressWarnings("unchecked")
+  <T> void export(T fixedFormatRecord, FieldDescriptor desc, HashMap<Integer, String> foundData) {
+    AnnotationTarget target = desc.target;
+    Field fieldAnno = desc.fieldAnnotation;
 
     Object value;
     try {
@@ -107,17 +98,15 @@ class RepeatingFieldSupport {
     }
 
     int exportCount = Math.min(count, actualSize);
-    Class<?> elementType = resolveElementType(target.getter);
-    FormatInstructions formatdata = instructionsBuilder.build(target.annotationSource, fieldAnno, elementType, target.getter.getDeclaringClass());
-    FormatContext protoContext = new FormatContext(fieldAnno.offset(), elementType, fieldAnno.formatter());
-    FixedFormatter<Object> formatter = (FixedFormatter<Object>) getFixedFormatterInstance(protoContext.getFormatter(), protoContext);
+    FormatInstructions formatdata = desc.formatInstructions;
+    FixedFormatter<Object> formatter = (FixedFormatter<Object>) desc.formatter;
 
     Iterable<?> iterable = value.getClass().isArray() ? arrayToIterable(value, exportCount) : (Collection<?>) value;
 
     int i = 0;
     for (Object element : iterable) {
       if (i >= exportCount) break;
-      int elementOffset = fieldAnno.offset() + fieldAnno.length() * i;
+      int elementOffset = desc.elementContexts[i].getOffset();
       if (element == null && NullCharSupport.isNullCharActive(formatdata)) {
         foundData.put(elementOffset, StringUtils.repeat(String.valueOf(formatdata.getNullChar()), fieldAnno.length()));
       } else {

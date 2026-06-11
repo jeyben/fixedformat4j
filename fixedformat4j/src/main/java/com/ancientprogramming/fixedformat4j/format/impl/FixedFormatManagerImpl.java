@@ -91,7 +91,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
       Object value;
       if (desc.isRepeating) {
-        value = repeatingFieldSupport.read(fixedFormatRecordClass, data, desc.target.getter, desc.target.annotationSource, desc.fieldAnnotation);
+        value = repeatingFieldSupport.read(fixedFormatRecordClass, data, desc);
       } else {
         String dataToParse = fetchData(data, desc.formatInstructions, desc.context);
         if (desc.isNestedRecord) {
@@ -137,7 +137,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
     for (FieldDescriptor desc : descriptors) {
       if (desc.isRepeating) {
-        repeatingFieldSupport.export(fixedFormatRecord, desc.target, desc.fieldAnnotation, foundData);
+        repeatingFieldSupport.export(fixedFormatRecord, desc, foundData);
         continue;
       }
 

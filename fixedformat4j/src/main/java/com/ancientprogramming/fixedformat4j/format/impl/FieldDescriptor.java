@@ -12,8 +12,11 @@ import java.lang.reflect.Method;
  * Immutable bundle of all per-field metadata computed once per class and cached for reuse across
  * every {@code load()} and {@code export()} call.
  *
- * <p>For repeating fields ({@code count > 1}), {@link #context}, {@link #formatInstructions}, and
- * {@link #formatter} are {@code null} — the runtime delegates to {@link RepeatingFieldSupport}.
+ * <p>For repeating fields ({@code count > 1}), {@link #context} is {@code null};
+ * {@link #formatInstructions} and {@link #formatter} describe a single <em>element</em>, and
+ * {@link #elementType} / {@link #elementContexts} carry the element type and one
+ * {@link FormatContext} per element (offsets {@code offset + length * i}). The runtime delegates
+ * to {@link RepeatingFieldSupport}.
  * For fields whose type is itself a {@code @Record}, {@link #formatter} is {@code null} and the
  * runtime recurses into {@code FixedFormatManagerImpl}.
  *
@@ -32,6 +35,10 @@ class FieldDescriptor {
   final FixedFormatter<?> formatter;
   final boolean isRepeating;
   final boolean isNestedRecord;
+  /** Element type of a repeating field; {@code null} for non-repeating fields. */
+  final Class<?> elementType;
+  /** Per-element contexts of a repeating field; {@code null} for non-repeating fields. */
+  final FormatContext<?>[] elementContexts;
   /**
    * {@code true} when this descriptor should participate in {@code load()} (i.e. its parsed value
    * is written to the POJO via the setter). For plain {@code @Field} annotations this is always
@@ -51,7 +58,9 @@ class FieldDescriptor {
       FixedFormatter<?> formatter,
       boolean isRepeating,
       boolean isNestedRecord,
-      boolean isLoadField) {
+      boolean isLoadField,
+      Class<?> elementType,
+      FormatContext<?>[] elementContexts) {
     this.target = target;
     this.setter = setter;
     this.setterHandle = setterHandle;
@@ -63,5 +72,7 @@ class FieldDescriptor {
     this.isRepeating = isRepeating;
     this.isNestedRecord = isNestedRecord;
     this.isLoadField = isLoadField;
+    this.elementType = elementType;
+    this.elementContexts = elementContexts;
   }
 }
