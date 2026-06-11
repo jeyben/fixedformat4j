@@ -191,17 +191,11 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   private static void appendData(StringBuilder result, Character paddingChar, Integer offset, String data) {
     int zeroBasedOffset = offset - 1;
-    while (result.length() < zeroBasedOffset) {
+    int end = zeroBasedOffset + data.length();
+    while (result.length() < end) {
       result.append(paddingChar);
     }
-    int length = data.length();
-    if (result.length() < zeroBasedOffset + length) {
-      int needed = (zeroBasedOffset + length) - result.length();
-      for (int i = 0; i < needed; i++) {
-        result.append(paddingChar);
-      }
-    }
-    result.replace(zeroBasedOffset, zeroBasedOffset + length, data);
+    result.replace(zeroBasedOffset, end, data);
   }
 
   private <T> Record getAndAssertRecordAnnotation(Class<T> fixedFormatRecordClass) {

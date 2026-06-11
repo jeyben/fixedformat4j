@@ -33,10 +33,6 @@ public class StringFormatter extends AbstractFixedFormatter<String> {
 
   /** {@inheritDoc} */
   public String asString(String string, FormatInstructions instructions) {
-    String result = null;
-    if (string != null) {
-    result = string;
-    }
-    return result;
+    return string;
   }
 }

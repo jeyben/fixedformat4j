@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.regex.Pattern;
 
 /**
  * Base class for formatting decimal data
@@ -33,8 +32,6 @@ import java.util.regex.Pattern;
 public abstract class AbstractDecimalFormatter<T extends Number> extends AbstractNumberFormatter<T> {
 
   private static final Logger LOG = LoggerFactory.getLogger(AbstractDecimalFormatter.class);
-
-  private static final Pattern ALL_ZEROS = Pattern.compile("^0+$");
 
   /** {@inheritDoc} */
   public String asString(T obj, FormatInstructions instructions) {
@@ -86,7 +83,7 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
     boolean useDecimalDelimiter = instructions.getFixedFormatDecimalData().isUseDecimalDelimiter();
     if (useDecimalDelimiter) {
       char delimiter = instructions.getFixedFormatDecimalData().getDecimalDelimiter();
-      toConvert = toConvert.replace(String.valueOf(delimiter), "");
+      toConvert = removeChar(toConvert, delimiter);
     }
     boolean applyNegativeSign = false;
     final Character negativeSignChar = instructions.getFixedFormatNumberData().getNegativeSign();
@@ -96,7 +93,7 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
     }
 
     int decimals = instructions.getFixedFormatDecimalData().getDecimals();
-    final boolean theZeroString = ALL_ZEROS.matcher(toConvert).matches();
+    final boolean theZeroString = isAllZeros(toConvert);
     if (decimals > 0 && !theZeroString) {
       toConvert = StringUtils.leftPad(toConvert, decimals, "0");
       int pivot = toConvert.length() - decimals;
@@ -106,6 +103,18 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
       toConvert = "-".concat(toConvert);
     }
     return toConvert;
+  }
+
+  private static boolean isAllZeros(String s) {
+    if (s.isEmpty()) {
+      return false;
+    }
+    for (int i = 0; i < s.length(); i++) {
+      if (s.charAt(i) != '0') {
+        return false;
+      }
+    }
+    return true;
   }
 
   private static String removeChar(String s, char ch) {
