@@ -16,6 +16,7 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
+import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,38 +36,26 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
 
   /** {@inheritDoc} */
   public String asString(T obj, FormatInstructions instructions) {
-    BigDecimal roundedValue = null;
-    int decimals = instructions.getFixedFormatDecimalData().getDecimals();
-    if (obj != null) {
-      BigDecimal value = obj instanceof BigDecimal ? (BigDecimal) obj : BigDecimal.valueOf(obj.doubleValue());
-      RoundingMode roundingMode = instructions.getFixedFormatDecimalData().getRoundingMode();
-      roundedValue = value.setScale(decimals, roundingMode);
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("Value before rounding = '{}', value after rounding = '{}', decimals = {}, rounding mode = {}", value, roundedValue, decimals, roundingMode);
-      }
-    }
-
-    DecimalFormatCache.State state = DecimalFormatCache.get(decimals);
-
-    String rawString = roundedValue != null ? state.format.format(roundedValue) : state.zeroString;
+    FixedFormatDecimalData decimalData = instructions.getFixedFormatDecimalData();
+    int decimals = decimalData.getDecimals();
+    BigDecimal value = obj == null ? BigDecimal.ZERO
+        : obj instanceof BigDecimal ? (BigDecimal) obj : BigDecimal.valueOf(obj.doubleValue());
+    RoundingMode roundingMode = decimalData.getRoundingMode();
+    BigDecimal roundedValue = value.setScale(decimals, roundingMode);
     if (LOG.isDebugEnabled()) {
-      LOG.debug("rawString: {} - G[{}] D[{}]", rawString, state.groupingSeparator, state.decimalSeparator);
-    }
-    rawString = removeChar(rawString, state.groupingSeparator);
-    boolean useDecimalDelimiter = instructions.getFixedFormatDecimalData().isUseDecimalDelimiter();
-
-    int separatorIdx = rawString.indexOf(state.decimalSeparator);
-    String beforeDelimiter = rawString.substring(0, separatorIdx);
-    String afterDelimiter = rawString.substring(separatorIdx + 1);
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("beforeDelimiter[{}], afterDelimiter[{}]", beforeDelimiter, afterDelimiter);
+      LOG.debug("Value before rounding = '{}', value after rounding = '{}', decimals = {}, rounding mode = {}", value, roundedValue, decimals, roundingMode);
     }
 
-    afterDelimiter = StringUtils.substring(afterDelimiter, 0, decimals);
-    afterDelimiter = StringUtils.rightPad(afterDelimiter, decimals, '0');
+    // toPlainString is locale-independent: '.' separator, no grouping, no exponent.
+    // After setScale the fraction part is exactly 'decimals' digits (absent when decimals == 0).
+    String rawString = roundedValue.toPlainString();
+    int separatorIdx = rawString.indexOf('.');
+    String beforeDelimiter = separatorIdx < 0 ? rawString : rawString.substring(0, separatorIdx);
+    String afterDelimiter = separatorIdx < 0 ? "" : rawString.substring(separatorIdx + 1);
 
-    String delimiter = useDecimalDelimiter ? String.valueOf(instructions.getFixedFormatDecimalData().getDecimalDelimiter()) : "";
-    String result = beforeDelimiter + delimiter + afterDelimiter;
+    String result = decimalData.isUseDecimalDelimiter()
+        ? beforeDelimiter + decimalData.getDecimalDelimiter() + afterDelimiter
+        : beforeDelimiter + afterDelimiter;
     if (LOG.isDebugEnabled()) {
       LOG.debug("result[{}]", result);
     }

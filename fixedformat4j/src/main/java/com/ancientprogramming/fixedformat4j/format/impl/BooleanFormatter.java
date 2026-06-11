@@ -18,6 +18,7 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
+import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -32,12 +33,13 @@ public class BooleanFormatter extends AbstractFixedFormatter<Boolean> {
   public Boolean asObject(String string, FormatInstructions instructions) throws FixedFormatException {
     Boolean result = false;
     if (!StringUtils.isEmpty(string)) {
-      if (instructions.getFixedFormatBooleanData().getTrueValue().equals(string)) {
+      FixedFormatBooleanData booleanData = instructions.getFixedFormatBooleanData();
+      if (booleanData.getTrueValue().equals(string)) {
         result = true;
-      } else if (instructions.getFixedFormatBooleanData().getFalseValue().equals(string)) {
+      } else if (booleanData.getFalseValue().equals(string)) {
         result = false;
       } else {
-        throw new FixedFormatException(String.format("Could not convert string[%s] to boolean value according to booleanData[%s]", string, instructions.getFixedFormatBooleanData()));
+        throw new FixedFormatException(String.format("Could not convert string[%s] to boolean value according to booleanData[%s]", string, booleanData));
       }
     }
     return result;
@@ -45,11 +47,8 @@ public class BooleanFormatter extends AbstractFixedFormatter<Boolean> {
 
   /** {@inheritDoc} */
   public String asString(Boolean obj, FormatInstructions instructions) {
-    String result = instructions.getFixedFormatBooleanData().getFalseValue();
-    if (obj != null) {
-      result = obj ? instructions.getFixedFormatBooleanData().getTrueValue() : instructions.getFixedFormatBooleanData().getFalseValue();
-    }
-    return result;
+    FixedFormatBooleanData booleanData = instructions.getFixedFormatBooleanData();
+    return Boolean.TRUE.equals(obj) ? booleanData.getTrueValue() : booleanData.getFalseValue();
   }
 
 }
