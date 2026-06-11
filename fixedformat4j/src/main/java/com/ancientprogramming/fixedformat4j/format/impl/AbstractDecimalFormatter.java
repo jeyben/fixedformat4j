@@ -17,7 +17,6 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatDecimalData;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +83,9 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
     int decimals = instructions.getFixedFormatDecimalData().getDecimals();
     final boolean theZeroString = isAllZeros(toConvert);
     if (decimals > 0 && !theZeroString) {
-      toConvert = StringUtils.leftPad(toConvert, decimals, "0");
+      if (toConvert.length() < decimals) {
+        toConvert = "0".repeat(decimals - toConvert.length()) + toConvert;
+      }
       int pivot = toConvert.length() - decimals;
       toConvert = toConvert.substring(0, pivot) + '.' + toConvert.substring(pivot);
     }

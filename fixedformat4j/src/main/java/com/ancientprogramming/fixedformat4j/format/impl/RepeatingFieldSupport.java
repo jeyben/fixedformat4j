@@ -23,8 +23,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringUtils;
-
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.fetchData;
 import static java.lang.String.format;
 
@@ -108,7 +106,7 @@ class RepeatingFieldSupport {
       if (i >= exportCount) break;
       int elementOffset = desc.elementContexts[i].getOffset();
       if (element == null && NullCharSupport.isNullCharActive(formatdata)) {
-        foundData.put(elementOffset, StringUtils.repeat(String.valueOf(formatdata.getNullChar()), fieldAnno.length()));
+        foundData.put(elementOffset, String.valueOf(formatdata.getNullChar()).repeat(fieldAnno.length()));
       } else {
         foundData.put(elementOffset, formatter.format(element, formatdata));
       }

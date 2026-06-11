@@ -19,7 +19,6 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import com.ancientprogramming.fixedformat4j.format.data.FixedFormatBooleanData;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Formatter for {@link Boolean} data
@@ -32,7 +31,7 @@ public class BooleanFormatter extends AbstractFixedFormatter<Boolean> {
   /** {@inheritDoc} */
   public Boolean asObject(String string, FormatInstructions instructions) throws FixedFormatException {
     Boolean result = false;
-    if (!StringUtils.isEmpty(string)) {
+    if (string != null && !string.isEmpty()) {
       FixedFormatBooleanData booleanData = instructions.getFixedFormatBooleanData();
       if (booleanData.getTrueValue().equals(string)) {
         result = true;

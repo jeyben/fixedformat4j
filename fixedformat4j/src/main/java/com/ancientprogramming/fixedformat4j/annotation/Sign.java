@@ -16,7 +16,6 @@
 package com.ancientprogramming.fixedformat4j.annotation;
 
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Sign defines where to place a sign defining a positive or negative number.
@@ -40,7 +39,7 @@ public enum Sign {
     /** {@inheritDoc} */
     public String remove(String value, FormatInstructions instructions) {
       String result =  instructions.getAlignment().remove(value, instructions.getPaddingChar());
-      if (StringUtils.isEmpty(result)) {
+      if (result.isEmpty()) {
         result = "0";
       }
       return result;
@@ -74,7 +73,7 @@ public enum Sign {
         sign = "";
       }
 
-      if (StringUtils.isEmpty(result)) {
+      if (result.isEmpty()) {
         result = "0";
       }
       return sign + result;
@@ -106,23 +105,13 @@ public enum Sign {
       if (!sign.isEmpty() && removeSign(instructions, sign, result)) {
         sign = "";
       }
-      if (StringUtils.isEmpty(result)) {
+      if (result.isEmpty()) {
         result = "0";
       }
       return sign + result;
     }
   };
 
-  /**
-   *remove sign in three cases:
-   * 1. positive sign
-   * 2. the unsigned value is empty (can happen if paddingchar is 0 and the value is zero)
-   * 3. the unsigned value is 0 (can happen if paddingchar isn't 0 and the value is zero)
-   * @param instructions
-   * @param sign
-   * @param valueWithoutSign
-   * @return
-   */
   /**
    * Frees one slot in the aligned string for the sign character by removing a single character
    * from the padded side: the first character for {@link Align#RIGHT} (padding sits on the left),
@@ -136,9 +125,15 @@ public enum Sign {
     return aligned.substring(1);
   }
 
+  /**
+   * Remove sign in three cases:
+   * 1. positive sign
+   * 2. the unsigned value is empty (can happen if paddingchar is 0 and the value is zero)
+   * 3. the unsigned value is 0 (can happen if paddingchar isn't 0 and the value is zero)
+   */
   private static boolean removeSign(FormatInstructions instructions, String sign, String valueWithoutSign) {
     return instructions.getFixedFormatNumberData().getPositiveSign().equals(sign.charAt(0)) ||
-        StringUtils.isEmpty(valueWithoutSign) ||
+        valueWithoutSign.isEmpty() ||
         "0".equals(valueWithoutSign);
   }
 
