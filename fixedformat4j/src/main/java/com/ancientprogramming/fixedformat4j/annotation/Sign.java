@@ -62,7 +62,7 @@ public enum Sign {
         sign = "+";
       }
       String result = instructions.getAlignment().apply(value, instructions.getLength(), instructions.getPaddingChar());
-      return sign + result.substring(1);
+      return sign + makeRoomForSign(result, instructions);
     }
 
     /** {@inheritDoc} */
@@ -95,7 +95,7 @@ public enum Sign {
         sign = "+";
       }
       String result = instructions.getAlignment().apply(value, instructions.getLength(), instructions.getPaddingChar());
-      return result.substring(1) + sign;
+      return makeRoomForSign(result, instructions) + sign;
 
     }
     /** {@inheritDoc} */
@@ -123,6 +123,19 @@ public enum Sign {
    * @param valueWithoutSign
    * @return
    */
+  /**
+   * Frees one slot in the aligned string for the sign character by removing a single character
+   * from the padded side: the first character for {@link Align#RIGHT} (padding sits on the left),
+   * the last character for {@link Align#LEFT} (padding sits on the right). When the value fills
+   * the entire field width, a value character is sacrificed — the sign always wins the slot.
+   */
+  private static String makeRoomForSign(String aligned, FormatInstructions instructions) {
+    if (instructions.getAlignment() == Align.LEFT) {
+      return aligned.substring(0, aligned.length() - 1);
+    }
+    return aligned.substring(1);
+  }
+
   private static boolean removeSign(FormatInstructions instructions, String sign, String valueWithoutSign) {
     return instructions.getFixedFormatNumberData().getPositiveSign().equals(sign.charAt(0)) ||
         StringUtils.isEmpty(valueWithoutSign) ||
