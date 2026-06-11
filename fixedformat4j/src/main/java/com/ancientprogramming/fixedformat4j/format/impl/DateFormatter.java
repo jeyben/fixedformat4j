@@ -51,7 +51,7 @@ public class DateFormatter extends AbstractPatternFormatter<Date> {
       try {
         result = getFormatter(instructions.getFixedFormatPatternData().getPattern()).parse(string);
       } catch (ParseException e) {
-        throw new FixedFormatException(String.format("Could not parse value[%s] by pattern[%s] to %s", string, instructions.getFixedFormatPatternData().getPattern(), Date.class.getName()));
+        throw new FixedFormatException(String.format("Could not parse value[%s] by pattern[%s] to %s", string, instructions.getFixedFormatPatternData().getPattern(), Date.class.getName()), e);
       }
     }
     return result;

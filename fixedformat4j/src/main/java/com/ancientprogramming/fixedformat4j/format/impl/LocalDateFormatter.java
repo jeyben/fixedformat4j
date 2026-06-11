@@ -48,7 +48,7 @@ public class LocalDateFormatter extends AbstractPatternFormatter<LocalDate> {
     try {
       return LocalDate.parse(string, formatterForPattern(pattern));
     } catch (DateTimeParseException e) {
-      throw new FixedFormatException(String.format("Could not parse value[%s] by pattern[%s] to %s", string, pattern, LocalDate.class.getName()));
+      throw new FixedFormatException(String.format("Could not parse value[%s] by pattern[%s] to %s", string, pattern, LocalDate.class.getName()), e);
     }
   }
 

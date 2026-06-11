@@ -161,6 +161,14 @@ public class TestLocalDateTimeFormatter {
         "message should contain bad input: " + ex.getMessage());
   }
 
+  @Test
+  public void testInvalidDateTimeStringExceptionChainsDateTimeParseExceptionCause() {
+    FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
+        formatter.parse("NOT-A-DATE-------T-", instructions(19, "yyyy-MM-dd'T'HH:mm:ss")));
+    assertInstanceOf(java.time.format.DateTimeParseException.class, ex.getCause(),
+        "the original DateTimeParseException should be chained as cause for diagnostics");
+  }
+
   // --- Non-space padding char ---
 
   @Test
