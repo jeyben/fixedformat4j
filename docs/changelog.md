@@ -85,6 +85,22 @@ A new `RepeatingBenchmark` was added to the `benchmarks/` module to track the re
 - **NUMERIC enum ordinal 0 survives a round trip with `paddingChar='0'`** — ordinal 0 exports as an all-zeros field (e.g. `"000"`), which padding-stripping reduced to an empty string that loaded as `null`. In NUMERIC mode with `'0'` padding, a stripped-empty field now parses as ordinal 0. **Behaviour change:** `load()` of such a field returns the ordinal-0 constant instead of `null`; blank space-padded fields still load as `null`, and LITERAL mode is unchanged.
 - **Parse failures keep their root cause** — `DateFormatter`, `LocalDateFormatter`, and `LocalDateTimeFormatter` rethrew `FixedFormatException` without chaining the underlying `ParseException`/`DateTimeParseException`, discarding error-index diagnostics. The cause is now chained; exception type and message are unchanged.
 
+### Dependency changes
+
+- **commons-lang3 removed** — the library's last 17 `StringUtils` calls were replaced with
+  Java 11 natives (`String.repeat`, plain `substring`, explicit null/empty checks), so the
+  Apache Commons Lang dependency is gone. `fixedformat4j` now has a single compile-scope
+  dependency: `slf4j-api`. **Action required only if** your project relied on fixedformat4j
+  transitively providing commons-lang3 — declare it directly in that case.
+
+### Build
+
+- The library, samples, and benchmarks modules now compile with `--release 11` instead of
+  `source`/`target`, so builds on newer JDKs are validated against the Java 11 API signature.
+- Internal code modernized to Java 9–11 idioms: diamond on anonymous `ClassValue` subclasses,
+  `Map.ofEntries` for the built-in formatter registry, `List.copyOf` for cached field metadata,
+  and primitive parameters in the export padding path.
+
 ### Known limitations (documented, unchanged)
 
 - `DateFormatter` (legacy `java.util.Date`) uses lenient `SimpleDateFormat` parsing: an invalid date like `20269999` rolls over instead of failing. The `java.time` formatters reject such input. Prefer `LocalDate`/`LocalDateTime` for strict validation.
