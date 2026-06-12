@@ -34,6 +34,7 @@ public class FormatInstructions {
   private final Align alignment;
   private final char paddingChar;
   private final char nullChar;
+  private final String nullValue;
   private final FixedFormatPatternData fixedFormatPatternData;
   private final FixedFormatBooleanData fixedFormatBooleanData;
   private final FixedFormatNumberData fixedFormatNumberData;
@@ -90,10 +91,33 @@ public class FormatInstructions {
    * @since 1.7.1
    */
   public FormatInstructions(int length, Align alignment, char paddingChar, char nullChar, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData, FixedFormatEnumData fixedFormatEnumData) {
+    this(length, alignment, paddingChar, nullChar, "", fixedFormatPatternData, fixedFormatBooleanData, fixedFormatNumberData, fixedFormatDecimalData, fixedFormatEnumData);
+  }
+
+  /**
+   * Creates a fully-populated set of format instructions including both null sentinels:
+   * the single-character {@code nullChar} and the literal string {@code nullValue}. The
+   * string sentinel is active when non-empty; an empty string disables it and preserves
+   * existing behavior.
+   *
+   * @param length                  the fixed width of the field in characters
+   * @param alignment               the alignment strategy used to pad and strip the field
+   * @param paddingChar             the character used for padding
+   * @param nullChar                the sentinel character signalling a {@code null} field
+   * @param nullValue               the literal sentinel string signalling a {@code null} field; {@code ""} disables it
+   * @param fixedFormatPatternData  date/time pattern configuration, or {@code null} if unused
+   * @param fixedFormatBooleanData  boolean value configuration, or {@code null} if unused
+   * @param fixedFormatNumberData   number sign configuration, or {@code null} if unused
+   * @param fixedFormatDecimalData  decimal precision configuration, or {@code null} if unused
+   * @param fixedFormatEnumData     enum serialization configuration, or {@code null} if unused
+   * @since 1.9.0
+   */
+  public FormatInstructions(int length, Align alignment, char paddingChar, char nullChar, String nullValue, FixedFormatPatternData fixedFormatPatternData, FixedFormatBooleanData fixedFormatBooleanData, FixedFormatNumberData fixedFormatNumberData, FixedFormatDecimalData fixedFormatDecimalData, FixedFormatEnumData fixedFormatEnumData) {
     this.length = length;
     this.alignment = alignment;
     this.paddingChar = paddingChar;
     this.nullChar = nullChar;
+    this.nullValue = nullValue;
     this.fixedFormatPatternData = fixedFormatPatternData;
     this.fixedFormatBooleanData = fixedFormatBooleanData;
     this.fixedFormatNumberData = fixedFormatNumberData;
@@ -138,6 +162,17 @@ public class FormatInstructions {
    */
   public char getNullChar() {
     return nullChar;
+  }
+
+  /**
+   * Returns the literal sentinel string that signals a {@code null} field value. When empty
+   * the null-value detection is disabled and existing behavior is preserved.
+   *
+   * @return the null sentinel string; never {@code null}, {@code ""} when not configured
+   * @since 1.9.0
+   */
+  public String getNullValue() {
+    return nullValue;
   }
 
   /**
@@ -186,7 +221,7 @@ public class FormatInstructions {
   }
 
   public String toString() {
-    return String.format("FormatInstructions{length=%d, alignment=%s, paddingChar='%c', nullChar='%c', fixedFormatPatternData=%s, fixedFormatBooleanData=%s, fixedFormatNumberData=%s, fixedFormatDecimalData=%s, fixedFormatEnumData=%s}",
-        length, alignment, paddingChar, nullChar, fixedFormatPatternData, fixedFormatBooleanData, fixedFormatNumberData, fixedFormatDecimalData, fixedFormatEnumData);
+    return String.format("FormatInstructions{length=%d, alignment=%s, paddingChar='%c', nullChar='%c', nullValue='%s', fixedFormatPatternData=%s, fixedFormatBooleanData=%s, fixedFormatNumberData=%s, fixedFormatDecimalData=%s, fixedFormatEnumData=%s}",
+        length, alignment, paddingChar, nullChar, nullValue, fixedFormatPatternData, fixedFormatBooleanData, fixedFormatNumberData, fixedFormatDecimalData, fixedFormatEnumData);
   }
 }

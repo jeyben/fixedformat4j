@@ -8,6 +8,24 @@ title: Changelog
 
 ### New features
 
+- **`@Field.nullValue` — literal null sentinel string** ([#130](https://github.com/jeyben/fixedformat4j/issues/130)) —
+  Complement to `nullChar` for feeds where the null marker is a specific **mixed-character**
+  string rather than a uniform pad of one character. A slice equal to `nullValue` loads as
+  `null`; a `null` value exports as `nullValue` verbatim, bypassing the formatter.
+
+  ```java
+  // 4-char implied-decimal column: "0000" → 0, "9998" → null, "0501" → 50.1
+  @Field(offset = 1, length = 4, align = Align.RIGHT, paddingChar = '0', nullValue = "9998")
+  @FixedFormatDecimal(decimals = 1)
+  public BigDecimal getRate() { return rate; }
+  ```
+
+  Strictly opt-in (active only when non-empty; default `""`), so existing records are
+  unaffected. Applies per element on repeating fields (`count > 1`), exactly like `nullChar`.
+  Validation rejects a `nullValue` whose length differs from `length`, use on rest-of-line
+  (`length = -1`) or primitive-typed fields, and combining `nullChar` with `nullValue` on
+  the same field — the two attributes are mutually exclusive.
+
 - **Pluggable type registry on `FixedFormatManagerImpl`** ([#116](https://github.com/jeyben/fixedformat4j/issues/116)) —
   Adds a builder API to `FixedFormatManagerImpl` that lets callers register a custom
   type-to-formatter mapping once at startup instead of repeating `formatter=` on every `@Field`

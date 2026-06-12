@@ -92,6 +92,10 @@ class FieldValidator {
       throw new FixedFormatException(format(
           "@Field(length = -1): 'nullChar' is not applicable when length = -1 on %s", getterRef));
     }
+    if (!fieldAnnotation.nullValue().isEmpty()) {
+      throw new FixedFormatException(format(
+          "@Field(length = -1): 'nullValue' is not applicable when length = -1 on %s", getterRef));
+    }
   }
 
   static void doValidateRestOfLineIsLastField(Class<?> clazz, List<FieldDescriptor> descriptors) {
@@ -157,6 +161,39 @@ class FieldValidator {
           typeToCheck.getName(),
           target.getter.getDeclaringClass().getName(),
           target.getter.getName()));
+    }
+  }
+
+  static void doValidateNullValue(AnnotationTarget target, Field fieldAnnotation) {
+    if (fieldAnnotation.nullValue().isEmpty()) return;
+    if (fieldAnnotation.length() == Field.REST_OF_LINE) return;
+
+    String getterRef = target.getter.getDeclaringClass().getName() + "." + target.getter.getName() + "()";
+
+    if (fieldAnnotation.nullChar() != Field.UNSET_NULL_CHAR) {
+      throw new FixedFormatException(format(
+          "@Field nullValue \"%s\" and nullChar '%c' are mutually exclusive on %s",
+          fieldAnnotation.nullValue(), fieldAnnotation.nullChar(), getterRef));
+    }
+
+    if (fieldAnnotation.nullValue().length() != fieldAnnotation.length()) {
+      throw new FixedFormatException(format(
+          "@Field nullValue \"%s\" has length %d but the field length is %d on %s",
+          fieldAnnotation.nullValue(), fieldAnnotation.nullValue().length(), fieldAnnotation.length(), getterRef));
+    }
+
+    Class<?> typeToCheck;
+    if (fieldAnnotation.count() > 1) {
+      typeToCheck = new RepeatingFieldSupport().resolveElementType(target.getter);
+    } else {
+      FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
+      typeToCheck = instructionsBuilder.datatype(target.getter, fieldAnnotation);
+    }
+
+    if (typeToCheck.isPrimitive()) {
+      throw new FixedFormatException(format(
+          "@Field nullValue is not supported on primitive type %s on %s",
+          typeToCheck.getName(), getterRef));
     }
   }
 

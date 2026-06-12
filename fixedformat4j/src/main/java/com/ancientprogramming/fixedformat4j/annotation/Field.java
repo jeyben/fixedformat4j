@@ -120,9 +120,43 @@ public @interface Field {
    * {@code int[]}) cannot represent {@code null} and are unaffected by this attribute.
    *
    * @return the character that denotes a null field; defaults to {@link #UNSET_NULL_CHAR} (inactive)
+   * @see #nullValue() for mixed-character sentinels; the two attributes are mutually exclusive
    * @since 1.7.1
    */
   char nullChar() default UNSET_NULL_CHAR;
+
+  /**
+   * Opt-in literal sentinel that represents a {@code null} value in the fixed-width field.
+   * Complement to {@link #nullChar()} for cases where the null marker is a specific
+   * mixed-character string rather than a uniform pad of one character &mdash; e.g. a
+   * 4-char implied-decimal column where {@code "9998"} means {@code null} while
+   * {@code "0000"} means {@code 0}.
+   * <p>
+   * Activation rule: null-aware handling fires whenever {@code nullValue()} is non-empty.
+   * When active:
+   * <ul>
+   *   <li>On load, a slice equal to {@code nullValue} yields {@code null} (the setter is
+   *       not invoked); any other slice is parsed by the formatter as usual.</li>
+   *   <li>On export, a {@code null} getter value is emitted as {@code nullValue} verbatim,
+   *       bypassing the formatter entirely.</li>
+   * </ul>
+   * For repeating fields ({@code count > 1}), the check is applied <em>per element</em>,
+   * exactly like {@link #nullChar()}.
+   * <p>
+   * Constraints enforced at validation time (each violation throws
+   * {@link com.ancientprogramming.fixedformat4j.exception.FixedFormatException}):
+   * <ul>
+   *   <li>{@code nullValue().length()} must equal {@link #length()} when {@code length() >= 0}.</li>
+   *   <li>{@code nullValue()} is rejected on {@code length() == }{@link #REST_OF_LINE} fields.</li>
+   *   <li>{@code nullValue()} is rejected on primitive-typed fields (parity with {@code nullChar}).</li>
+   *   <li>Setting both {@code nullChar() != UNSET_NULL_CHAR} and a non-empty {@code nullValue()}
+   *       on the same field is rejected. They are mutually exclusive.</li>
+   * </ul>
+   *
+   * @return the literal string that denotes a null field; defaults to {@code ""} (inactive)
+   * @since 1.9.0
+   */
+  String nullValue() default "";
 
   /**
    * The formatter class to use for this field.

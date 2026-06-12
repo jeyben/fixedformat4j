@@ -48,7 +48,7 @@ class RepeatingFieldSupport {
     List<Object> elements = new ArrayList<>(desc.elementContexts.length);
     for (FormatContext<?> elementContext : desc.elementContexts) {
       String dataToParse = fetchData(data, formatdata, elementContext);
-      if (!desc.elementType.isPrimitive() && NullCharSupport.isNullSlice(dataToParse, formatdata)) {
+      if (!desc.elementType.isPrimitive() && NullSupport.isNullSliceOrValue(dataToParse, formatdata)) {
         elements.add(null);
         continue;
       }
@@ -105,8 +105,10 @@ class RepeatingFieldSupport {
     for (Object element : iterable) {
       if (i >= exportCount) break;
       int elementOffset = desc.elementContexts[i].getOffset();
-      if (element == null && NullCharSupport.isNullCharActive(formatdata)) {
+      if (element == null && NullSupport.isNullCharActive(formatdata)) {
         foundData.put(elementOffset, String.valueOf(formatdata.getNullChar()).repeat(fieldAnno.length()));
+      } else if (element == null && NullSupport.isNullValueActive(formatdata)) {
+        foundData.put(elementOffset, formatdata.getNullValue());
       } else {
         foundData.put(elementOffset, formatter.format(element, formatdata));
       }
