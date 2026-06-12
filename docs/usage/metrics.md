@@ -86,6 +86,11 @@ one registry.
 
 ## Performance
 
-Instrumentation cost is a Micrometer registry lookup plus a timer sample per call — nanosecond
-scale, and only on instrumented managers/readers. Uninstrumented code paths and applications
-without this module are completely unaffected.
+Meters are resolved once, not per call: the instrumented manager caches its timers per record
+class (in a GC-safe `ClassValue`, so cached timers never pin a record class's classloader), and
+the reader wrappers resolve their counters when the wrapper is created. The steady-state cost
+per `load()`/`export()` is therefore just the timer sample — two `System.nanoTime()` calls —
+plus a set lookup for the gauge; per reader line it is a single counter increment. Measured with
+the JMH benchmark in the `benchmarks` module (`-P micrometer-bench`), the instrumented manager
+adds on the order of tens of nanoseconds per operation. Uninstrumented code paths and
+applications without this module are completely unaffected.

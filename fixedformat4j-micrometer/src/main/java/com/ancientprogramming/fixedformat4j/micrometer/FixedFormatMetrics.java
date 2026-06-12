@@ -18,6 +18,7 @@ package com.ancientprogramming.fixedformat4j.micrometer;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import com.ancientprogramming.fixedformat4j.io.read.ParseErrorStrategy;
 import com.ancientprogramming.fixedformat4j.io.read.UnmatchStrategy;
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import java.util.Objects;
@@ -31,8 +32,10 @@ import java.util.function.Predicate;
  * file processing, pass the instrumented manager to
  * {@code FixedFormatReader.builder().manager(...)} so reader-driven loads are timed too.
  *
- * <p>Instrumentation cost: meters are resolved through Micrometer's registry lookup per call
- * (nanosecond-scale); uninstrumented managers and readers are completely unaffected.
+ * <p>Instrumentation cost: timers are resolved once per record class ({@code ClassValue}
+ * cache inside the instrumented manager) and reader counters once per wrapper, so the
+ * steady-state hot path adds only the timer sample (two {@code System.nanoTime()} calls) or a
+ * counter increment. Uninstrumented managers and readers are completely unaffected.
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.9.0
@@ -92,8 +95,9 @@ public final class FixedFormatMetrics {
    */
   public UnmatchStrategy countUnmatched(UnmatchStrategy delegate) {
     Objects.requireNonNull(delegate, "delegate must not be null");
+    Counter unmatched = registry.counter("fixedformat.reader.lines.unmatched");
     return (lineNumber, line) -> {
-      registry.counter("fixedformat.reader.lines.unmatched").increment();
+      unmatched.increment();
       delegate.handle(lineNumber, line);
     };
   }
@@ -115,8 +119,9 @@ public final class FixedFormatMetrics {
    */
   public ParseErrorStrategy countParseErrors(ParseErrorStrategy delegate) {
     Objects.requireNonNull(delegate, "delegate must not be null");
+    Counter errors = registry.counter("fixedformat.reader.lines.errors");
     return (wrapped, line, lineNumber) -> {
-      registry.counter("fixedformat.reader.lines.errors").increment();
+      errors.increment();
       delegate.handle(wrapped, line, lineNumber);
     };
   }
@@ -133,8 +138,9 @@ public final class FixedFormatMetrics {
    */
   public Predicate<String> countLines(Predicate<String> excludeDelegate) {
     Objects.requireNonNull(excludeDelegate, "excludeDelegate must not be null");
+    Counter processed = registry.counter("fixedformat.reader.lines.processed");
     return line -> {
-      registry.counter("fixedformat.reader.lines.processed").increment();
+      processed.increment();
       return excludeDelegate.test(line);
     };
   }

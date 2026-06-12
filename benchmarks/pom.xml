@@ -86,4 +86,46 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <!-- Opt-in benchmark of the fixedformat4j-micrometer decorator overhead (issue #140).
+         Kept out of the default build: run.sh sweeps released target versions back to 1.6.1,
+         where the micrometer artifact does not exist. Activate manually:
+           mvn -f benchmarks/pom.xml clean package -P micrometer-bench \
+               -Dbenchmark.target.version=1.9.0-SNAPSHOT
+           java -jar benchmarks/target/benchmarks.jar Metered -->
+    <profile>
+      <id>micrometer-bench</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.ancientprogramming.fixedformat4j</groupId>
+          <artifactId>fixedformat4j-micrometer</artifactId>
+          <version>${benchmark.target.version}</version>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.6.0</version>
+            <executions>
+              <execution>
+                <id>add-micrometer-bench-source</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>add-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>src/micrometer/java</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

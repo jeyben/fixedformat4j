@@ -19,10 +19,12 @@ title: Changelog
   strategy seams for `fixedformat.reader.lines.processed` / `.unmatched` / `.errors`. See
   [Metrics](usage/metrics).
 
-  The core `fixedformat4j` artifact is unchanged and gains no dependencies. Performance:
-  instrumentation cost is a Micrometer registry lookup plus a timer sample per call
-  (nanosecond scale), only on instrumented managers/readers; applications without the module
-  are completely unaffected.
+  The core `fixedformat4j` artifact is unchanged and gains no dependencies. Performance
+  ([#140](https://github.com/jeyben/fixedformat4j/issues/140)): timers are cached per record
+  class in a GC-safe `ClassValue` and reader counters are resolved once per wrapper, so the
+  steady-state cost is just the timer sample (two `System.nanoTime()` calls) per operation or
+  one counter increment per line — tens of nanoseconds, only on instrumented managers/readers;
+  applications without the module are completely unaffected.
 
 - **Schema introspection API — `FixedFormatIntrospector`** ([#117](https://github.com/jeyben/fixedformat4j/issues/117)) —
   query the field layout of a `@Record` class at runtime. `FixedFormatManagerImpl` now also
