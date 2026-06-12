@@ -17,6 +17,8 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.Record;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
+import com.ancientprogramming.fixedformat4j.format.FieldInfo;
+import com.ancientprogramming.fixedformat4j.format.FixedFormatIntrospector;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.ParseException;
@@ -39,7 +41,7 @@ import static java.lang.String.format;
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0
  */
-public class FixedFormatManagerImpl implements FixedFormatManager {
+public class FixedFormatManagerImpl implements FixedFormatManager, FixedFormatIntrospector {
 
   private static final Logger LOG = LoggerFactory.getLogger(FixedFormatManagerImpl.class);
 
@@ -271,6 +273,43 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   private void validatePatterns(Class<?> recordClass) {
     validatedClasses.get(recordClass);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public List<FieldInfo> introspect(Class<?> clazz) {
+    getAndAssertRecordAnnotation(clazz);
+    validatePatterns(clazz);
+
+    boolean isJavaRecord = JavaRecordSupport.isJavaRecord(clazz);
+    AnnotationScanner scanner = new AnnotationScanner();
+    List<FieldInfo> result = new java.util.ArrayList<>();
+    for (FieldDescriptor desc : metadataCache.get(clazz)) {
+      result.add(new FieldInfo(
+          propertyName(desc, isJavaRecord, scanner),
+          desc.fieldAnnotation.offset(),
+          desc.fieldAnnotation.length(),
+          desc.datatype,
+          desc.formatInstructions.getAlignment(),
+          desc.fieldAnnotation.paddingChar(),
+          desc.fieldAnnotation.nullChar(),
+          desc.fieldAnnotation.nullValue(),
+          desc.fieldAnnotation.formatter(),
+          desc.fieldAnnotation.count(),
+          desc.isNestedRecord));
+    }
+    result.sort(java.util.Comparator.comparingInt(FieldInfo::getOffset));
+    return List.copyOf(result);
+  }
+
+  private String propertyName(FieldDescriptor desc, boolean isJavaRecord, AnnotationScanner scanner) {
+    String getterName = desc.target.getter.getName();
+    if (isJavaRecord) {
+      return getterName;
+    }
+    String stripped = scanner.stripMethodPrefix(getterName);
+    return Character.toLowerCase(stripped.charAt(0)) + stripped.substring(1);
   }
 
   private static void appendData(StringBuilder result, char paddingChar, int offset, String data) {
