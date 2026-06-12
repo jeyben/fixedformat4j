@@ -8,6 +8,22 @@ title: Changelog
 
 ### New features
 
+- **Schema introspection API — `FixedFormatIntrospector`** ([#117](https://github.com/jeyben/fixedformat4j/issues/117)) —
+  query the field layout of a `@Record` class at runtime. `FixedFormatManagerImpl` now also
+  implements the new narrow `FixedFormatIntrospector` interface, whose `introspect(Class<?>)`
+  returns one immutable `FieldInfo` per effective `@Field` (ordered by offset): property name,
+  offset, length, data type, resolved alignment, padding char, `nullChar`/`nullValue` sentinels,
+  formatter class, repeat count, and nested-record flag. Intended for documentation generators,
+  UI form builders, format-drift detection, and layout assertions in tests — see
+  [Schema introspection](usage/introspection).
+
+  Delivered as a separate interface rather than an addition to `FixedFormatManager`, so existing
+  third-party manager implementations remain source and binary compatible.
+
+  Performance: `introspect()` reuses the same cached per-class metadata as `load()`/`export()`
+  (scan and validation run once per class); each call performs only an O(fields) mapping with no
+  I/O. It triggers the same validation as `load()`, so it doubles as a startup preflight check.
+
 - **Compile-time annotation validation — new optional `fixedformat4j-processor` artifact**
   ([#118](https://github.com/jeyben/fixedformat4j/issues/118)) —
   an annotation processor that validates `@Field` / `@Record` configuration during `javac`, so

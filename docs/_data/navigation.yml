@@ -13,6 +13,8 @@
       url: /usage/file-processing
     - title: Compile-time Validation
       url: /usage/compile-time-validation
+    - title: Schema Introspection
+      url: /usage/introspection
 - title: Examples
   url: /examples
 - title: Get It

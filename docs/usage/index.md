@@ -83,6 +83,13 @@ See the [File Processing](file-processing) page for the full guide including mul
 
 Annotations instruct the manager on how to load and export data. See the [complete annotations reference](annotations).
 
+## Schema introspection
+
+Since 1.9.0 the `FixedFormatIntrospector` interface (implemented by `FixedFormatManagerImpl`)
+exposes the field layout of a `@Record` class as immutable `FieldInfo` descriptors — for
+documentation generators, UI builders, and layout assertions. See
+[Schema introspection](introspection).
+
 ## Compile-time validation
 
 Since 1.9.0 the optional `fixedformat4j-processor` artifact turns annotation misconfigurations
