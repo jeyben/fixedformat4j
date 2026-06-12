@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
   <artifactId>fixedformat4j-benchmarks</artifactId>
-  <version>1.9.0-SNAPSHOT</version>
+  <version>2.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Fixed Format for Java - Benchmarks</name>
 
@@ -92,7 +92,7 @@
          Kept out of the default build: run.sh sweeps released target versions back to 1.6.1,
          where the micrometer artifact does not exist. Activate manually:
            mvn -f benchmarks/pom.xml clean package -P micrometer-bench \
-               -Dbenchmark.target.version=1.9.0-SNAPSHOT
+               -Dbenchmark.target.version=2.0.0-SNAPSHOT
            java -jar benchmarks/target/benchmarks.jar Metered -->
     <profile>
       <id>micrometer-bench</id>

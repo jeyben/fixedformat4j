@@ -4,7 +4,7 @@ title: Changelog
 
 # Changelog
 
-## [Unreleased] 1.9.0
+## 1.9.0 (2026-06-12)
 
 ### New features
 
