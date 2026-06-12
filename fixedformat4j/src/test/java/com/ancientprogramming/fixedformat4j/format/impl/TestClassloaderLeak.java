@@ -64,7 +64,7 @@ class TestClassloaderLeak {
         "child-loaded IsolatedRecord must be a distinct Class object from the parent-loaded one");
 
     // Warm up the two caches: ClassMetadataCache and FixedFormatManagerImpl.VALIDATED_CLASSES.
-    FixedFormatManager mgr = new FixedFormatManagerImpl();
+    FixedFormatManager mgr = FixedFormatManagerImpl.create();
     Object loaded = mgr.load(recordCls, "hello     ");
     mgr.export(loaded);
 

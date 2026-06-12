@@ -8,6 +8,25 @@ title: Changelog
 
 ### New features
 
+- **Pluggable type registry on `FixedFormatManagerImpl`** ([#116](https://github.com/jeyben/fixedformat4j/issues/116)) —
+  Adds a builder API to `FixedFormatManagerImpl` that lets callers register a custom
+  type-to-formatter mapping once at startup instead of repeating `formatter=` on every `@Field`
+  getter for unsupported types (e.g. `UUID`, `BigInteger`, `Instant`).
+
+  ```java
+  FixedFormatManager manager = FixedFormatManagerImpl.builder()
+      .registerType(UUID.class, UUIDFormatter.class)
+      .build();
+  ```
+
+  Custom registrations shadow built-in formatters; last-registration wins on duplicates and no
+  exception is thrown. This means fixedformat4j can add new built-in types in future releases
+  without breaking any consumer who already registered a formatter for that type.
+
+  The `FixedFormatManager` interface is unchanged; the builder is accessed via the concrete
+  implementation's static `builder()` method. The existing `create()` factory and the
+  `new FixedFormatManagerImpl()` constructor continue to work identically to before.
+
 - **`FixedFormatWriter` — write-side IO symmetry** ([#114](https://github.com/jeyben/fixedformat4j/issues/114)) —
   Adds `FixedFormatWriter`, a new type in `com.ancientprogramming.fixedformat4j.io.write` that
   provides the same ergonomic, fluent API for writing fixed-format files that `FixedFormatReader`

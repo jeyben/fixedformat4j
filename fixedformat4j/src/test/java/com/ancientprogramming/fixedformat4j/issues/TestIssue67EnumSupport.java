@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TestIssue67EnumSupport {
 
-  private final FixedFormatManager manager = new FixedFormatManagerImpl();
+  private final FixedFormatManager manager = FixedFormatManagerImpl.create();
 
   // -------------------------------------------------------------------------
   // Test enums

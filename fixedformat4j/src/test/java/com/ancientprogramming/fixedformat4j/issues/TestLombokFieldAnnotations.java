@@ -56,7 +56,7 @@ public class TestLombokFieldAnnotations {
 
   @BeforeEach
   void setUp() {
-    manager = new FixedFormatManagerImpl();
+    manager = FixedFormatManagerImpl.create();
   }
 
   // ── Sunshine cases ───────────────────────────────────────────────────────────

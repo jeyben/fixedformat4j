@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  */
 public class TestIssue29 {
 
-  private final FixedFormatManager manager = new FixedFormatManagerImpl();
+  private final FixedFormatManager manager = FixedFormatManagerImpl.create();
 
   // ---------------------------------------------------------------------------
   // Load: empty (all-nullChar) field -> null

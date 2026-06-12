@@ -11,7 +11,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static com.ancientprogramming.fixedformat4j.format.FixedFormatUtil.getFixedFormatterInstance;
 import static java.lang.String.format;
@@ -37,7 +39,13 @@ import static java.lang.String.format;
  */
 class ClassMetadataCache {
 
-  static final ClassMetadataCache INSTANCE = new ClassMetadataCache();
+  static final ClassMetadataCache INSTANCE = new ClassMetadataCache(Collections.emptyMap());
+
+  private final Map<Class<?>, Class<? extends com.ancientprogramming.fixedformat4j.format.FixedFormatter<?>>> customRegistry;
+
+  ClassMetadataCache(Map<Class<?>, Class<? extends com.ancientprogramming.fixedformat4j.format.FixedFormatter<?>>> customRegistry) {
+    this.customRegistry = customRegistry != null ? customRegistry : Collections.emptyMap();
+  }
 
   private final ClassValue<List<FieldDescriptor>> cache = new ClassValue<>() {
     @Override
@@ -96,8 +104,11 @@ class ClassMetadataCache {
       FormatContext protoContext = new FormatContext(fieldAnnotation.offset(), elementType, fieldAnnotation.formatter());
       // Deliberately NOT unwrapped via resolveConcreteFormatter: ByTypeFormatter resolves its
       // delegate lazily, keeping the unsupported-element-type failure at parse time
-      // (wrapped in ParseException) exactly as before metadata caching.
-      FixedFormatter<?> formatter = getFixedFormatterInstance(protoContext.getFormatter(), protoContext);
+      // (wrapped in ParseException) exactly as before metadata caching. The custom registry is
+      // passed so registered element types resolve in repeating fields too.
+      FixedFormatter<?> formatter = protoContext.getFormatter() == ByTypeFormatter.class
+          ? new ByTypeFormatter(protoContext, customRegistry)
+          : getFixedFormatterInstance(protoContext.getFormatter(), protoContext);
       FormatContext<?>[] elementContexts = new FormatContext[fieldAnnotation.count()];
       for (int i = 0; i < elementContexts.length; i++) {
         elementContexts[i] = new FormatContext(fieldAnnotation.offset() + fieldAnnotation.length() * i, elementType, fieldAnnotation.formatter());
@@ -118,7 +129,8 @@ class ClassMetadataCache {
 
   private FixedFormatter<?> resolveConcreteFormatter(FixedFormatter<?> candidate, Class<?> datatype) {
     if (candidate instanceof ByTypeFormatter) {
-      return ((ByTypeFormatter) candidate).actualFormatter(datatype);
+      ByTypeFormatter btf = new ByTypeFormatter(((ByTypeFormatter) candidate).getContext(), customRegistry);
+      return btf.actualFormatter(datatype);
     }
     return candidate;
   }

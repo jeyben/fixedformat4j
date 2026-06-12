@@ -50,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TestIssue97RestOfLine {
 
-  private final FixedFormatManager manager = new FixedFormatManagerImpl();
+  private final FixedFormatManager manager = FixedFormatManagerImpl.create();
 
   // ---------------------------------------------------------------------------
   // Load — basic rest-of-line capture

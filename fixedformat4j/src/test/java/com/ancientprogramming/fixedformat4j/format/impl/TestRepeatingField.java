@@ -57,7 +57,7 @@ public class TestRepeatingField {
 
   @BeforeEach
   public void setUp() {
-    manager = new FixedFormatManagerImpl();
+    manager = FixedFormatManagerImpl.create();
   }
 
   // =========================================================================

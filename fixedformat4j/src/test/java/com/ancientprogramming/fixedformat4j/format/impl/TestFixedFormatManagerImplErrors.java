@@ -22,7 +22,7 @@ public class TestFixedFormatManagerImplErrors {
 
   @BeforeEach
   public void setUp() {
-    manager = new FixedFormatManagerImpl();
+    manager = FixedFormatManagerImpl.create();
   }
 
   // --- load() error paths ---
