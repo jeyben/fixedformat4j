@@ -63,7 +63,16 @@ public final class FixedFormatMetrics {
    * <ul>
    *   <li>{@code fixedformat.load} timer, tag {@code record.class}</li>
    *   <li>{@code fixedformat.export} timer, tag {@code record.class}</li>
+   *   <li>{@code fixedformat.parse.errors} counter, tags {@code record.class} + {@code field}
+   *       (exception still propagates after counting)</li>
+   *   <li>{@code fixedformat.metadata.cache.classes} gauge, tag {@code manager.instance}</li>
    * </ul>
+   *
+   * <p><b>Note:</b> the returned manager implements only {@link FixedFormatManager}. If the
+   * delegate also implements
+   * {@code com.ancientprogramming.fixedformat4j.format.FixedFormatIntrospector}, keep a
+   * reference to the original {@code delegate} when introspection is needed; casting the
+   * returned wrapper will throw {@link ClassCastException}.
    *
    * @param delegate the manager to instrument; must not be {@code null}
    * @return a {@link FixedFormatManager} with identical behavior that publishes meters; never {@code null}
@@ -93,6 +102,13 @@ public final class FixedFormatMetrics {
    * Wraps a {@link ParseErrorStrategy} so every failed line increments
    * {@code fixedformat.reader.lines.errors} before the wrapped strategy runs.
    * Pass the result to {@code FixedFormatReaderBuilder.parseErrorStrategy(...)}.
+   *
+   * <p><b>Double-count note:</b> when the reader's manager is also instrumented via
+   * {@link #instrument}, a parse failure will increment <em>both</em> this counter
+   * ({@code fixedformat.reader.lines.errors}) <em>and</em>
+   * {@code fixedformat.parse.errors} (with {@code record.class} + {@code field} tags).
+   * This is intentional: the two meters serve different purposes — coarse line-level
+   * counting vs. granular field-level diagnosis.
    *
    * @param delegate the strategy to wrap; must not be {@code null}
    * @return a counting strategy with identical behavior; never {@code null}

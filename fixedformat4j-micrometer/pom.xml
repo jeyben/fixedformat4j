@@ -61,6 +61,11 @@
     </developer>
   </developers>
 
+  <!-- NOTE: this module intentionally has no <parent>; all modules in this reactor follow the
+       same convention (see fixedformat4j/pom.xml and fixedformat4j-processor/pom.xml).
+       When the project version is bumped, this file's <version> and the fixedformat4j
+       dependency version below (via ${project.version}) must be updated manually. -->
+
   <dependencies>
     <dependency>
       <groupId>com.ancientprogramming.fixedformat4j</groupId>
@@ -68,10 +73,14 @@
       <version>${project.version}</version>
     </dependency>
 
+    <!-- Declare the minimum Micrometer version whose API this module uses; consumers whose
+         project manages a higher version (e.g. via the Spring Boot BOM) will use their own
+         version — no conflict. All used APIs (Gauge.builder, Timer.start/Sample,
+         registry.counter/timer) are available since Micrometer 1.0. -->
     <dependency>
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-core</artifactId>
-      <version>1.17.0</version>
+      <version>1.12.0</version>
     </dependency>
 
     <dependency>

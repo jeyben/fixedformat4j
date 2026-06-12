@@ -69,6 +69,12 @@ public FixedFormatManager fixedFormatManager(MeterRegistry registry) {
 A spiking `fixedformat.parse.errors` rate is a leading indicator of upstream format drift —
 exactly the class of problem fixed-width integrations otherwise suffer silently.
 
+**Double-count with reader wiring:** when the reader's manager is instrumented (as in the wiring
+example above) *and* `countParseErrors` is used, a parse failure on a matched line increments
+both `fixedformat.reader.lines.errors` (coarse, line-level) **and** `fixedformat.parse.errors`
+(granular, tagged by `record.class` + `field`). This is by design — the two meters answer
+different questions — but operators should not sum them to count total failures.
+
 **Gauge semantics:** the library's internal metadata cache is `ClassValue`-based and deliberately
 not enumerable (it must never pin classloaders in hot-reload environments), so the gauge counts
 the distinct record classes observed by the instrumented manager instance — the measurable
