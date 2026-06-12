@@ -41,6 +41,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * {@code manager.instance} value; Micrometer dedupes meters by name+tags, so an untagged
  * gauge would be silently dropped for every manager but the first on a shared registry.
  *
+ * <p>Timers are resolved once per record class through {@link ClassValue} caches — never
+ * through a {@code Map<Class, Timer>}, which would strongly pin record classes and reintroduce
+ * the classloader leak described above. The registry-side meter retains only the class
+ * <em>name</em> string, which pins nothing. Since Micrometer dedupes by name+tags, two managers
+ * on one registry still share the same underlying timer per record class.
+ *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.9.0
  */
@@ -54,6 +60,20 @@ final class MeteredFixedFormatManager implements FixedFormatManager {
   private final Set<Class<?>> seenClasses =
       Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
+  private final ClassValue<Timer> loadTimers = new ClassValue<>() {
+    @Override
+    protected Timer computeValue(Class<?> clazz) {
+      return registry.timer("fixedformat.load", RECORD_CLASS_TAG, clazz.getName());
+    }
+  };
+
+  private final ClassValue<Timer> exportTimers = new ClassValue<>() {
+    @Override
+    protected Timer computeValue(Class<?> clazz) {
+      return registry.timer("fixedformat.export", RECORD_CLASS_TAG, clazz.getName());
+    }
+  };
+
   MeteredFixedFormatManager(FixedFormatManager delegate, MeterRegistry registry) {
     this.delegate = delegate;
     this.registry = registry;
@@ -65,6 +85,7 @@ final class MeteredFixedFormatManager implements FixedFormatManager {
 
   @Override
   public <T> T load(Class<T> clazz, String data) {
+    Timer timer = loadTimers.get(clazz);
     seenClasses.add(clazz);
     Timer.Sample sample = Timer.start(registry);
     try {
@@ -73,29 +94,31 @@ final class MeteredFixedFormatManager implements FixedFormatManager {
       countParseError(e);
       throw e;
     } finally {
-      sample.stop(registry.timer("fixedformat.load", RECORD_CLASS_TAG, clazz.getName()));
+      sample.stop(timer);
     }
   }
 
   @Override
   public <T> String export(T instance) {
+    Timer timer = exportTimers.get(instance.getClass());
     seenClasses.add(instance.getClass());
     Timer.Sample sample = Timer.start(registry);
     try {
       return delegate.export(instance);
     } finally {
-      sample.stop(registry.timer("fixedformat.export", RECORD_CLASS_TAG, instance.getClass().getName()));
+      sample.stop(timer);
     }
   }
 
   @Override
   public <T> String export(String template, T instance) {
+    Timer timer = exportTimers.get(instance.getClass());
     seenClasses.add(instance.getClass());
     Timer.Sample sample = Timer.start(registry);
     try {
       return delegate.export(template, instance);
     } finally {
-      sample.stop(registry.timer("fixedformat.export", RECORD_CLASS_TAG, instance.getClass().getName()));
+      sample.stop(timer);
     }
   }
 
