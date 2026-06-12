@@ -40,6 +40,7 @@
 
   <modules>
     <module>fixedformat4j</module>
+    <module>fixedformat4j-processor</module>
     <module>samples</module>
   </modules>
 
