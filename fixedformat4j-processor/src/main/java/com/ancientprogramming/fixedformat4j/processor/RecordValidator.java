@@ -23,7 +23,9 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -62,6 +64,54 @@ class RecordValidator {
     }
     checkRestOfLineIsLastField(recordType, entries);
     checkRestOfLineRecordLength(recordType, entries);
+    checkRecordLengthOverflow(recordType, entries);
+    checkOverlaps(entries);
+  }
+
+  /**
+   * No runtime counterpart (stricter than the 1.8.x runtime, which silently pads or truncates):
+   * a field may not run past a fixed {@code @Record(length)}.
+   */
+  private void checkRecordLengthOverflow(TypeElement recordType, List<FieldEntry> entries) {
+    Record record = recordType.getAnnotation(Record.class);
+    if (record == null || record.length() == -1) {
+      return;
+    }
+    for (FieldEntry entry : entries) {
+      if (entry.annotation.length() == Field.REST_OF_LINE || entry.endOffset() <= record.length()) {
+        continue;
+      }
+      String width = entry.annotation.count() > 1
+          ? format("%d x count %d", entry.annotation.length(), entry.annotation.count())
+          : String.valueOf(entry.annotation.length());
+      messager.printMessage(Diagnostic.Kind.ERROR,
+          format("@Field length %s exceeds @Record length %d on %s (field ends at position %d)",
+              width, record.length(), entry.target.label(), entry.endOffset()),
+          entry.target.element);
+    }
+  }
+
+  /**
+   * No runtime counterpart (stricter than the 1.8.x runtime, where a later field silently
+   * overwrites the overlapped characters on export): two fields may not occupy the same
+   * character positions.
+   */
+  private void checkOverlaps(List<FieldEntry> entries) {
+    List<FieldEntry> sorted = entries.stream()
+        .filter(entry -> entry.annotation.length() != Field.REST_OF_LINE)
+        .sorted(Comparator.comparingInt(entry -> entry.annotation.offset()))
+        .collect(Collectors.toList());
+    for (int i = 1; i < sorted.size(); i++) {
+      FieldEntry previous = sorted.get(i - 1);
+      FieldEntry current = sorted.get(i);
+      if (current.annotation.offset() <= previous.endOffset()) {
+        messager.printMessage(Diagnostic.Kind.ERROR,
+            format("@Field [offset=%d, length=%d] on %s overlaps @Field [offset=%d, length=%d] on %s",
+                previous.annotation.offset(), previous.annotation.length(), previous.target.label(),
+                current.annotation.offset(), current.annotation.length(), current.target.label()),
+            current.target.element);
+      }
+    }
   }
 
   /** Twin of {@code FieldValidator.doValidateRestOfLineIsLastField}. */
