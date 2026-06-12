@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
   actions: write
 
 jobs:
@@ -29,7 +30,11 @@ jobs:
       - name: Run mutation tests
         run: mvn -B -pl fixedformat4j,fixedformat4j-processor,fixedformat4j-micrometer pitest:mutationCoverage
 
-      - name: Publish PIT report to docs
+      # master is protected (required status check "build"), so the report
+      # cannot be pushed directly — it goes through a PR instead (#142).
+      - name: Open PR with updated PIT report
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           STATS=$(awk '/<tbody>/,/<\/tbody>/' fixedformat4j/target/pit-reports/index.html | grep -o '[0-9]*%')
           LINE_COV=$(echo "$STATS" | sed -n '1p')
@@ -41,10 +46,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/pit-reports/ docs/mutation-score.json
-          git diff --staged --quiet || git commit -m "chore: update PIT mutation report"
-          git push
-
-      - name: Trigger pages deployment
-        run: gh workflow run pages.yml --ref master
-        env:
-          GH_TOKEN: ${{ github.token }}
+          if git diff --staged --quiet; then
+            echo "PIT report unchanged; nothing to publish."
+            exit 0
+          fi
+          BRANCH="chore/pit-report-${{ github.run_id }}"
+          git checkout -b "$BRANCH"
+          git commit -m "chore: update PIT mutation report"
+          git push origin "$BRANCH"
+          gh pr create \
+            --base master \
+            --head "$BRANCH" \
+            --title "chore: update PIT mutation report" \
+            --body "$(printf 'Automated PIT mutation report from run %s.\n\nLine coverage: %s | Mutation coverage: %s | Test strength: %s\n\nMerging this PR updates docs/pit-reports/ and docs/mutation-score.json; the pages deployment is triggered by the merge (pages.yml watches docs/** on master).' "${{ github.run_id }}" "$LINE_COV" "$MUT_COV" "$TEST_STR")"
+          # Pushes made with GITHUB_TOKEN do not trigger other workflows, so
+          # the required "build" check must be dispatched explicitly.
+          gh workflow run nightly-build.yml --ref "$BRANCH"
