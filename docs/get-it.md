@@ -52,6 +52,29 @@ Add to your `ivy.xml` dependencies block:
             rev="1.8.0"/>
 ```
 
+## Optional: compile-time validation
+
+Since 1.9.0 a second artifact, `fixedformat4j-processor`, validates `@Field` / `@Record`
+configuration at compile time. It is an annotation processor — wire it into the compiler
+rather than the runtime classpath:
+
+```xml
+<annotationProcessorPaths>
+  <path>
+    <groupId>com.ancientprogramming.fixedformat4j</groupId>
+    <artifactId>fixedformat4j-processor</artifactId>
+    <version>1.9.0</version>
+  </path>
+</annotationProcessorPaths>
+```
+
+```groovy
+annotationProcessor 'com.ancientprogramming.fixedformat4j:fixedformat4j-processor:1.9.0'
+```
+
+See [Compile-time validation](usage/compile-time-validation) for the full setup options and
+the list of checks.
+
 ## Logging
 
 fixedformat4j uses [SLF4J](https://www.slf4j.org/) for logging. SLF4J is a logging facade — you must provide a binding on the classpath to route log output to your preferred logging framework (e.g. Logback, Log4j 2, or `slf4j-simple`).
