@@ -118,6 +118,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
         FieldValidator.doValidateFieldPattern(desc.target, desc.fieldAnnotation);
         FieldValidator.doValidateEnumFieldLength(desc.target, desc.fieldAnnotation);
         FieldValidator.doValidateFieldNullChar(desc.target, desc.fieldAnnotation);
+        FieldValidator.doValidateNullValue(desc.target, desc.fieldAnnotation);
         FieldValidator.doValidateRestOfLineField(desc.target, desc.fieldAnnotation);
       }
       FieldValidator.doValidateRestOfLineIsLastField(clazz, descriptors);
@@ -149,7 +150,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
         String dataToParse = fetchData(data, desc.formatInstructions, desc.context);
         if (desc.isNestedRecord) {
           value = load(desc.datatype, dataToParse);
-        } else if (NullCharSupport.isNullSlice(dataToParse, desc.formatInstructions)) {
+        } else if (NullSupport.isNullSliceOrValue(dataToParse, desc.formatInstructions)) {
           value = null;
         } else {
           try {
@@ -207,8 +208,10 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
         formatted = export(valueObject);
       } else if (desc.isNestedRecord) {
         formatted = String.valueOf(desc.fieldAnnotation.paddingChar()).repeat(desc.fieldAnnotation.length());
-      } else if (valueObject == null && NullCharSupport.isNullCharActive(desc.formatInstructions)) {
+      } else if (valueObject == null && NullSupport.isNullCharActive(desc.formatInstructions)) {
         formatted = String.valueOf(desc.formatInstructions.getNullChar()).repeat(desc.formatInstructions.getLength());
+      } else if (valueObject == null && NullSupport.isNullValueActive(desc.formatInstructions)) {
+        formatted = desc.formatInstructions.getNullValue();
       } else {
         formatted = ((FixedFormatter<Object>) desc.formatter).format(valueObject, desc.formatInstructions);
       }

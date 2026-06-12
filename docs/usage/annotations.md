@@ -31,7 +31,8 @@ When placed on a field, the manager derives the getter and setter by name conven
 | `formatter` | `Class<FixedFormatter>` | no | `ByTypeFormatter.class` | The formatter to use when reading and writing the field. |
 | `count` | `int` | no | `1` | Number of consecutive repetitions of this field. When greater than 1, the getter/setter must use an array or an ordered `Collection` (`List`, `Set`, `SortedSet`, etc.). Each repetition occupies `length` characters, starting at `offset + length * index`. |
 | `strictCount` | `boolean` | no | `true` | Only relevant when `count > 1`. If `true` (default), a size mismatch between the array/collection and `count` during export throws a `FixedFormatException`. If `false`, a warning is logged and export proceeds with `min(count, actualSize)` elements. |
-| `nullChar` | `char` | no | `'\0'` | Sentinel character that represents a null value. Null-aware handling is enabled whenever `nullChar` is explicitly set (i.e. differs from the default `'\0'`). On load: if every character in the field slice equals `nullChar`, the setter is not invoked and the field remains `null`. On export: if the getter returns `null`, the field is emitted as `nullChar` repeated `length` times, bypassing the formatter. Setting `nullChar == paddingChar` (since 1.7.2) enables the "blank-is-null" convention — an all-padding slice loads as `null`. For repeating fields (`count > 1`) the check is applied per element. |
+| `nullChar` | `char` | no | `'\0'` | Sentinel character that represents a null value. Null-aware handling is enabled whenever `nullChar` is explicitly set (i.e. differs from the default `'\0'`). On load: if every character in the field slice equals `nullChar`, the setter is not invoked and the field remains `null`. On export: if the getter returns `null`, the field is emitted as `nullChar` repeated `length` times, bypassing the formatter. Setting `nullChar == paddingChar` (since 1.7.2) enables the "blank-is-null" convention — an all-padding slice loads as `null`. For repeating fields (`count > 1`) the check is applied per element. Mutually exclusive with `nullValue`. |
+| `nullValue` | `String` | no | `""` | Literal sentinel string that represents a null value (since 1.9.0). Complement to `nullChar` for **mixed-character** sentinels — e.g. `"9998"` in a 4-char column. Active whenever non-empty. On load: a slice equal to `nullValue` loads as `null`; on export: a `null` value is emitted as `nullValue` verbatim, bypassing the formatter. Must have exactly `length` characters; rejected on rest-of-line (`length = -1`) and primitive-typed fields. For repeating fields (`count > 1`) the check is applied per element. Mutually exclusive with `nullChar`. |
 
 **Alignment values:**
 
@@ -92,6 +93,27 @@ public Date getInvoiceDate() { return invoiceDate; }
 @Field(offset = 9, length = 5, align = Align.RIGHT, paddingChar = '0', nullChar = '0')
 public Integer getQuantity() { return quantity; }
 ```
+
+**Literal sentinel strings with `nullValue`** (since 1.9.0): `nullChar` can only express
+uniform sentinels (every character identical). When the feed uses a **mixed-character**
+sentinel, declare it literally with `nullValue`:
+
+```java
+// 4-char implied-decimal column: "0000" → 0, "9998" → null, "0501" → 50.1
+@Field(offset = 1, length = 4, align = Align.RIGHT, paddingChar = '0', nullValue = "9998")
+@FixedFormatDecimal(decimals = 1)
+public BigDecimal getRate() { return rate; }
+```
+
+- **Activation rule** — null-aware handling fires whenever `nullValue` is non-empty.
+- **On load** — a slice equal to `nullValue` loads as `null` (the setter is not invoked); any other slice is parsed by the formatter as usual.
+- **On export** — a `null` getter value is emitted as `nullValue` verbatim, bypassing the formatter.
+- For repeating fields (`count > 1`) the check is applied **per element**, exactly like `nullChar`.
+
+Validation rejects (with `FixedFormatException`): a `nullValue` whose length differs from
+`length`, `nullValue` on a rest-of-line (`length = -1`) field, `nullValue` on a
+primitive-typed field, and setting both `nullChar` and `nullValue` on the same field —
+the two attributes are mutually exclusive.
 
 ## @Fields
 

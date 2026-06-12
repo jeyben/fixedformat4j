@@ -41,7 +41,7 @@ class FormatInstructionsBuilder {
     FixedFormatDecimalData decimalData = decimalData(annotationSource.getAnnotation(FixedFormatDecimal.class));
     FixedFormatEnumData enumData = enumData(annotationSource.getAnnotation(FixedFormatEnum.class));
     Align resolvedAlign = resolveAlign(fieldAnno.align(), declaringClass);
-    return new FormatInstructions(fieldAnno.length(), resolvedAlign, fieldAnno.paddingChar(), fieldAnno.nullChar(), patternData, booleanData, numberData, decimalData, enumData);
+    return new FormatInstructions(fieldAnno.length(), resolvedAlign, fieldAnno.paddingChar(), fieldAnno.nullChar(), fieldAnno.nullValue(), patternData, booleanData, numberData, decimalData, enumData);
   }
 
   private Align resolveAlign(Align fieldAlign, Class<?> declaringClass) {
