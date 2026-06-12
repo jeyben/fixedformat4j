@@ -27,7 +27,7 @@ jobs:
         run: mvn -B install -DskipTests
 
       - name: Run mutation tests
-        run: mvn -B -pl fixedformat4j,fixedformat4j-processor pitest:mutationCoverage
+        run: mvn -B -pl fixedformat4j,fixedformat4j-processor,fixedformat4j-micrometer pitest:mutationCoverage
 
       - name: Publish PIT report to docs
         run: |

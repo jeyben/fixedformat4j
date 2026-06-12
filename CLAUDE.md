@@ -39,10 +39,13 @@ mvn test -pl fixedformat4j -Dtest=TestBigDecimalFormatter#testSomeMethod
 
 ## Project Structure
 
-Three Maven modules:
+Four Maven modules:
 - `fixedformat4j/` — the core library (main artifact)
 - `fixedformat4j-processor/` — optional compile-time annotation processor (since 1.9.0); mirrors the statically decidable subset of the runtime validation via the mirror API. Any change to `FieldValidator`/`PatternValidator` checks must be mirrored in the processor's `FieldChecker`/`RecordValidator`, and vice versa.
+- `fixedformat4j-micrometer/` — optional Micrometer instrumentation module (since 1.9.0); decorator-based, no changes to the core artifact; never add Micrometer hooks to core.
 - `samples/` — usage examples
+
+**Version synchronisation:** none of the modules declare a `<parent>`. When bumping the project version, update the `<version>` element in **every** module pom.xml (`fixedformat4j/pom.xml`, `fixedformat4j-processor/pom.xml`, `fixedformat4j-micrometer/pom.xml`, `samples/pom.xml`) in addition to the root `pom.xml`.
 
 Core production source is under `fixedformat4j/src/main/java/com/ancientprogramming/fixedformat4j/`.
 

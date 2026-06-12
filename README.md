@@ -279,6 +279,7 @@ Full documentation is available at **https://jeyben.github.io/fixedformat4j/**:
 - [Nested Records](https://jeyben.github.io/fixedformat4j/usage/nested-records) — embedding one record inside another
 - [Compile-time Validation](https://jeyben.github.io/fixedformat4j/usage/compile-time-validation) — optional `fixedformat4j-processor` artifact that turns `@Field`/`@Record` misconfigurations into `javac` errors
 - [Schema Introspection](https://jeyben.github.io/fixedformat4j/usage/introspection) — query the field layout of a `@Record` class at runtime via `FixedFormatIntrospector`
+- [Metrics](https://jeyben.github.io/fixedformat4j/usage/metrics) — optional `fixedformat4j-micrometer` artifact with load/export timers and parse-error counters for any Micrometer registry
 - [FAQ](https://jeyben.github.io/fixedformat4j/faq)
 - [Changelog](https://jeyben.github.io/fixedformat4j/changelog)
 

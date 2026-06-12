@@ -15,6 +15,8 @@
       url: /usage/compile-time-validation
     - title: Schema Introspection
       url: /usage/introspection
+    - title: Metrics
+      url: /usage/metrics
 - title: Examples
   url: /examples
 - title: Get It

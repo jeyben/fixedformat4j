@@ -95,7 +95,7 @@ jobs:
           MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: mvn -B deploy -pl fixedformat4j,fixedformat4j-processor -DskipTests --no-transfer-progress -P release
+        run: mvn -B deploy -pl fixedformat4j,fixedformat4j-processor,fixedformat4j-micrometer -DskipTests --no-transfer-progress -P release
 
       - name: Upload release artifacts to GitHub
         if: github.event_name == 'release'
@@ -108,7 +108,10 @@ jobs:
             fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}-javadoc.jar \
             fixedformat4j-processor/target/fixedformat4j-processor-${{ env.RELEASE_VERSION }}.jar \
             fixedformat4j-processor/target/fixedformat4j-processor-${{ env.RELEASE_VERSION }}-sources.jar \
-            fixedformat4j-processor/target/fixedformat4j-processor-${{ env.RELEASE_VERSION }}-javadoc.jar
+            fixedformat4j-processor/target/fixedformat4j-processor-${{ env.RELEASE_VERSION }}-javadoc.jar \
+            fixedformat4j-micrometer/target/fixedformat4j-micrometer-${{ env.RELEASE_VERSION }}.jar \
+            fixedformat4j-micrometer/target/fixedformat4j-micrometer-${{ env.RELEASE_VERSION }}-sources.jar \
+            fixedformat4j-micrometer/target/fixedformat4j-micrometer-${{ env.RELEASE_VERSION }}-javadoc.jar
 
       - name: Bump to next snapshot version
         run: |
