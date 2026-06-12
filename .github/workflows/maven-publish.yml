@@ -28,6 +28,7 @@ env:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: write       # upload release assets, push the snapshot-bump branch
       pull-requests: write  # open the snapshot-bump PR
@@ -94,7 +95,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload --clobber ${{ env.RELEASE_TAG }} \
+          gh release upload --clobber "${{ env.RELEASE_TAG }}" \
             fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}.jar \
             fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}-sources.jar \
             fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}-javadoc.jar \
@@ -112,7 +113,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          NEXT=$(echo $RELEASE_VERSION | awk -F. '{print $1"."$2"."$3+1"-SNAPSHOT"}')
+          NEXT=$(echo "$RELEASE_VERSION" | awk -F. '{print $1"."$2"."$3+1"-SNAPSHOT"}')
           BRANCH="chore/prepare-$NEXT-${{ github.run_id }}-${{ github.run_attempt }}"
           git checkout -B "$BRANCH" origin/master
           mvn -B versions:set -DnewVersion="$NEXT" -DprocessAllModules=true -DgenerateBackupPoms=false
