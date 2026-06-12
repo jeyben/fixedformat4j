@@ -155,6 +155,35 @@ final class FieldChecker {
     }
   }
 
+  /**
+   * Twin of {@code FieldValidator.doValidateRestOfLineField}: a rest-of-line field is
+   * String-only, non-repeating and takes no alignment, padding or null sentinels.
+   */
+  void checkRestOfLineField(AnnotatedFixedFormatField target, Field fieldAnnotation) {
+    if (fieldAnnotation.length() != Field.REST_OF_LINE) {
+      return;
+    }
+    if (!"java.lang.String".equals(qualifiedNameOf(target.datatype))) {
+      error(target, format("@Field(length = -1) is only supported for String fields, but %s returns %s",
+          target.label(), target.datatype));
+    }
+    if (fieldAnnotation.count() != 1) {
+      error(target, format("@Field(length = -1) cannot be combined with count > 1 on %s", target.label()));
+    }
+    if (fieldAnnotation.align() != com.ancientprogramming.fixedformat4j.annotation.Align.INHERIT) {
+      error(target, format("@Field(length = -1): 'align' is not applicable when length = -1 on %s", target.label()));
+    }
+    if (fieldAnnotation.paddingChar() != ' ') {
+      error(target, format("@Field(length = -1): 'paddingChar' is not applicable when length = -1 on %s", target.label()));
+    }
+    if (fieldAnnotation.nullChar() != Field.UNSET_NULL_CHAR) {
+      error(target, format("@Field(length = -1): 'nullChar' is not applicable when length = -1 on %s", target.label()));
+    }
+    if (!fieldAnnotation.nullValue().isEmpty()) {
+      error(target, format("@Field(length = -1): 'nullValue' is not applicable when length = -1 on %s", target.label()));
+    }
+  }
+
   private TypeMirror typeToCheck(AnnotatedFixedFormatField target, Field fieldAnnotation) {
     if (fieldAnnotation.count() > 1) {
       return elementTypeOf(target.datatype);
