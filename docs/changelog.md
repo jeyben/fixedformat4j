@@ -8,6 +8,22 @@ title: Changelog
 
 ### New features
 
+- **Micrometer instrumentation — new optional `fixedformat4j-micrometer` artifact**
+  ([#120](https://github.com/jeyben/fixedformat4j/issues/120)) —
+  decorator-based metrics for any Micrometer registry (Spring Boot Actuator, Quarkus,
+  Micronaut, plain Java). `FixedFormatMetrics.of(registry).instrument(manager)` publishes
+  `fixedformat.load` / `fixedformat.export` timers tagged by record class, a
+  `fixedformat.parse.errors` counter tagged by record class and field, and a
+  `fixedformat.metadata.cache.classes` gauge; wrapper factories (`countLines`,
+  `countUnmatched`, `countParseErrors`) plug into the existing `FixedFormatReaderBuilder`
+  strategy seams for `fixedformat.reader.lines.processed` / `.unmatched` / `.errors`. See
+  [Metrics](usage/metrics).
+
+  The core `fixedformat4j` artifact is unchanged and gains no dependencies. Performance:
+  instrumentation cost is a Micrometer registry lookup plus a timer sample per call
+  (nanosecond scale), only on instrumented managers/readers; applications without the module
+  are completely unaffected.
+
 - **Schema introspection API — `FixedFormatIntrospector`** ([#117](https://github.com/jeyben/fixedformat4j/issues/117)) —
   query the field layout of a `@Record` class at runtime. `FixedFormatManagerImpl` now also
   implements the new narrow `FixedFormatIntrospector` interface, whose `introspect(Class<?>)`

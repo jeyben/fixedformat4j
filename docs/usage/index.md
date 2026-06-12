@@ -96,3 +96,9 @@ Since 1.9.0 the optional `fixedformat4j-processor` artifact turns annotation mis
 (invalid date patterns, fields overflowing the record length, overlapping offsets, …) into
 `javac` errors instead of runtime exceptions. See [Compile-time validation](compile-time-validation).
 
+## Metrics
+
+Since 1.9.0 the optional `fixedformat4j-micrometer` artifact publishes load/export timers,
+parse-error counters, and reader line counters to any Micrometer registry — Spring Boot
+Actuator, Quarkus, Micronaut, or plain Java. See [Metrics](metrics).
+

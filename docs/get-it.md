@@ -75,6 +75,25 @@ annotationProcessor 'com.ancientprogramming.fixedformat4j:fixedformat4j-processo
 See [Compile-time validation](usage/compile-time-validation) for the full setup options and
 the list of checks.
 
+## Optional: Micrometer metrics
+
+Since 1.9.0 the `fixedformat4j-micrometer` artifact publishes load/export timers, parse-error
+counters, and reader line counters to any Micrometer registry:
+
+```xml
+<dependency>
+  <groupId>com.ancientprogramming.fixedformat4j</groupId>
+  <artifactId>fixedformat4j-micrometer</artifactId>
+  <version>1.9.0</version>
+</dependency>
+```
+
+```groovy
+implementation 'com.ancientprogramming.fixedformat4j:fixedformat4j-micrometer:1.9.0'
+```
+
+See [Metrics](usage/metrics) for wiring and the full meter list.
+
 ## Logging
 
 fixedformat4j uses [SLF4J](https://www.slf4j.org/) for logging. SLF4J is a logging facade — you must provide a binding on the classpath to route log output to your preferred logging framework (e.g. Logback, Log4j 2, or `slf4j-simple`).
