@@ -93,18 +93,18 @@ jobs:
       - name: Upload release artifacts to GitHub
         if: github.event_name == 'release'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release upload --clobber "${{ env.RELEASE_TAG }}" \
-            fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}.jar \
-            fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}-sources.jar \
-            fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}-javadoc.jar \
-            fixedformat4j-processor/target/fixedformat4j-processor-${{ env.RELEASE_VERSION }}.jar \
-            fixedformat4j-processor/target/fixedformat4j-processor-${{ env.RELEASE_VERSION }}-sources.jar \
-            fixedformat4j-processor/target/fixedformat4j-processor-${{ env.RELEASE_VERSION }}-javadoc.jar \
-            fixedformat4j-micrometer/target/fixedformat4j-micrometer-${{ env.RELEASE_VERSION }}.jar \
-            fixedformat4j-micrometer/target/fixedformat4j-micrometer-${{ env.RELEASE_VERSION }}-sources.jar \
-            fixedformat4j-micrometer/target/fixedformat4j-micrometer-${{ env.RELEASE_VERSION }}-javadoc.jar
+            "fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}.jar" \
+            "fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}-sources.jar" \
+            "fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}-javadoc.jar" \
+            "fixedformat4j-processor/target/fixedformat4j-processor-${{ env.RELEASE_VERSION }}.jar" \
+            "fixedformat4j-processor/target/fixedformat4j-processor-${{ env.RELEASE_VERSION }}-sources.jar" \
+            "fixedformat4j-processor/target/fixedformat4j-processor-${{ env.RELEASE_VERSION }}-javadoc.jar" \
+            "fixedformat4j-micrometer/target/fixedformat4j-micrometer-${{ env.RELEASE_VERSION }}.jar" \
+            "fixedformat4j-micrometer/target/fixedformat4j-micrometer-${{ env.RELEASE_VERSION }}-sources.jar" \
+            "fixedformat4j-micrometer/target/fixedformat4j-micrometer-${{ env.RELEASE_VERSION }}-javadoc.jar"
 
       - name: Open PR bumping master to next snapshot version
         if: github.event_name == 'release'
@@ -116,7 +116,7 @@ jobs:
           NEXT=$(echo "$RELEASE_VERSION" | awk -F. '{print $1"."$2"."$3+1"-SNAPSHOT"}')
           BRANCH="chore/prepare-$NEXT-${{ github.run_id }}-${{ github.run_attempt }}"
           git checkout -B "$BRANCH" origin/master
-          mvn -B versions:set -DnewVersion="$NEXT" -DprocessAllModules=true -DgenerateBackupPoms=false
+          mvn -B versions:set --no-transfer-progress -DnewVersion="$NEXT" -DprocessAllModules=true -DgenerateBackupPoms=false
           if git diff --quiet; then
             echo "master is already at $NEXT; nothing to bump."
             exit 0
