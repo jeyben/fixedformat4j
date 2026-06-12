@@ -27,12 +27,15 @@ import javax.lang.model.element.TypeElement;
  */
 class RecordValidator {
 
-  private final ProcessingEnvironment env;
+  private final FieldChecker fieldChecker;
 
   RecordValidator(ProcessingEnvironment env) {
-    this.env = env;
+    this.fieldChecker = new FieldChecker(env.getMessager());
   }
 
   void validate(TypeElement recordType) {
+    for (AnnotatedFixedFormatField target : FieldScanner.scan(recordType)) {
+      fieldChecker.checkPattern(target);
+    }
   }
 }
