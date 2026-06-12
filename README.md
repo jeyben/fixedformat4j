@@ -277,6 +277,7 @@ Full documentation is available at **https://jeyben.github.io/fixedformat4j/**:
 - [Examples](https://jeyben.github.io/fixedformat4j/examples) — financial records, booleans, file processing, custom formatters
 - [File Processing](https://jeyben.github.io/fixedformat4j/usage/file-processing) — reading files and streams with `FixedFormatReader`
 - [Nested Records](https://jeyben.github.io/fixedformat4j/usage/nested-records) — embedding one record inside another
+- [Compile-time Validation](https://jeyben.github.io/fixedformat4j/usage/compile-time-validation) — optional `fixedformat4j-processor` artifact that turns `@Field`/`@Record` misconfigurations into `javac` errors
 - [FAQ](https://jeyben.github.io/fixedformat4j/faq)
 - [Changelog](https://jeyben.github.io/fixedformat4j/changelog)
 

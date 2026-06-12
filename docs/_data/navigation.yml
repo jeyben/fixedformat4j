@@ -11,6 +11,8 @@
       url: /usage/nested-records
     - title: File Processing
       url: /usage/file-processing
+    - title: Compile-time Validation
+      url: /usage/compile-time-validation
 - title: Examples
   url: /examples
 - title: Get It

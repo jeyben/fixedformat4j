@@ -8,6 +8,27 @@ title: Changelog
 
 ### New features
 
+- **Compile-time annotation validation — new optional `fixedformat4j-processor` artifact**
+  ([#118](https://github.com/jeyben/fixedformat4j/issues/118)) —
+  an annotation processor that validates `@Field` / `@Record` configuration during `javac`, so
+  misconfigurations surface as compile errors instead of a `FixedFormatException` on the first
+  runtime use of the class. Checked at compile time: invalid `@FixedFormatPattern` values, enum
+  values wider than `@Field(length)`, `nullChar` / `nullValue` on primitive types and their
+  mutual exclusion, all `@Field(length = -1)` rest-of-line rules, fields running past a fixed
+  `@Record(length)`, and overlapping field offsets. Enable it via Maven
+  `annotationProcessorPaths` or Gradle `annotationProcessor` — see
+  [Compile-time validation](usage/compile-time-validation).
+
+  Strictly opt-in: projects that do not add the processor compile and run exactly as on 1.8.x,
+  and the runtime validation remains in place as the safety net. Note that the two layout
+  checks (record-length overflow, overlapping offsets) are **stricter than the runtime**, which
+  tolerates both silently — enabling the processor can turn latent configuration bugs in
+  existing code into compile errors.
+
+  Performance: the processor runs inside `javac` only. It is never on the runtime classpath
+  and adds zero runtime cost — no classloading, no reflection, no memory at application
+  runtime.
+
 - **Java `record` support — constructor-based field binding** ([#119](https://github.com/jeyben/fixedformat4j/issues/119)) —
   `@Record` classes can now be Java `record` types (JDK 16+). Annotate the record components
   directly; `load()` binds all parsed values through the canonical constructor in one call, and
