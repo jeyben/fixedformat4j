@@ -75,7 +75,7 @@ Repeating fields (`@Field(count > 1)`) are significantly faster to load and expo
 - **`ByTypeFormatter` resolves its delegate once** — `parse()` and `format()` no longer instantiate the type-specific formatter reflectively on every call.
 - **Enum fields are cheaper** — the enum constants array is cached instead of being cloned on every `NUMERIC` parse.
 - **Fewer per-call allocations** — a compiled regex in decimal parsing replaced with a simple character scan, and redundant padding loops removed from export.
-- **Decimal export skips `DecimalFormat`** — decimal values are already exactly-scaled `BigDecimal`s when serialized, so the locale-sensitive `DecimalFormat` round trip (plus grouping-character stripping) was replaced with `toPlainString()`. Identical output, ~15% faster small-record export, and the thread-local `DecimalFormat` cache is gone.
+- **Decimal export skips `DecimalFormat`** — decimal values are already exactly-scaled `BigDecimal`s when serialized, so the locale-sensitive `DecimalFormat` round trip (plus grouping-character stripping) was replaced with `toPlainString()`. Identical output on Latin-digit-locale JVMs, ~15% faster small-record export, and the thread-local `DecimalFormat` cache is gone. Output is now guaranteed locale-independent: previously, a JVM defaulting to a locale with non-Latin digits (e.g. some Arabic configurations) could export localized digit characters that the ASCII-only parser was unable to round-trip. Null values now flow through `BigDecimal.ZERO` and the common path, producing the same bytes as the previous pre-computed zero string (pinned by tests, including a new locale-independence test).
 
 A new `RepeatingBenchmark` was added to the `benchmarks/` module to track the repeating-field path.
 
