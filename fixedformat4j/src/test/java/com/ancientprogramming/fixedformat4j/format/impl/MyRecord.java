@@ -16,6 +16,9 @@
 package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.annotation.*;
+// Explicit import required when test sources compile at release 16+: with only the wildcard
+// import, `Record` is ambiguous against java.lang.Record.
+import com.ancientprogramming.fixedformat4j.annotation.Record;
 
 import java.math.BigDecimal;
 import java.util.Date;

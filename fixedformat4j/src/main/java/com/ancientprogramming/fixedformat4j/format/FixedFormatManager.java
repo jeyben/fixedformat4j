@@ -29,6 +29,10 @@ public interface FixedFormatManager {
 
   /**
    * Create an instance of the fixedFormatClass and load the data string into the object according to the annotations.
+   * <p>
+   * Conventional classes are instantiated through their no-arg constructor and populated via
+   * setters. Java {@code record} classes (since 1.9.0, JDK 16+) are created in a single
+   * canonical-constructor call after all fields have been parsed.
    *
    * @param clazz the class to instantiate
    * @param data  the data to load

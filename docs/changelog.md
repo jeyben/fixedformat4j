@@ -8,6 +8,31 @@ title: Changelog
 
 ### New features
 
+- **Java `record` support — constructor-based field binding** ([#119](https://github.com/jeyben/fixedformat4j/issues/119)) —
+  `@Record` classes can now be Java `record` types (JDK 16+). Annotate the record components
+  directly; `load()` binds all parsed values through the canonical constructor in one call, and
+  `export()` reads through the component accessors. Every annotation — `@Field`, `@Fields`,
+  `@FixedFormatPattern`, `@FixedFormatDecimal`, `@FixedFormatNumber`, `@FixedFormatBoolean`,
+  `@FixedFormatEnum` — applies to record components exactly as to getter methods, including
+  nested `@Record` components, repeating fields (`count > 1`), and `nullChar` / `nullValue`.
+
+  ```java
+  @Record
+  public record CustomerRecord(
+      @Field(offset = 1,  length = 10) String customerId,
+      @Field(offset = 11, length = 20) String customerName) {}
+  ```
+
+  Strictly opt-in by class shape: conventional setter-based classes are processed exactly as
+  before, and the artifact still runs on Java 11 — record binding activates only when a record
+  class is encountered, which by definition requires a JDK 16+ runtime.
+
+  Performance: reflective access to the record API (component discovery, canonical-constructor
+  lookup) happens **once per class** inside the cached metadata build — the same one-time cost
+  the setter path already pays. The per-`load()` hot path performs a single cached
+  `MethodHandle` constructor invoke instead of one invoke per setter; there is no
+  `Method.invoke`-style reflection per record loaded.
+
 - **`@Field.nullValue` — literal null sentinel string** ([#130](https://github.com/jeyben/fixedformat4j/issues/130)) —
   Complement to `nullChar` for feeds where the null marker is a specific **mixed-character**
   string rather than a uniform pad of one character. A slice equal to `nullValue` loads as

@@ -21,7 +21,12 @@ import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
 /**
- * Marks a class as a representation of a fixed format record
+ * Marks a class as a representation of a fixed format record.
+ *
+ * <p>The annotated class is either a conventional class with a no-arg constructor and
+ * getter/setter pairs, or — since 1.9.0, on a JDK 16+ runtime — a Java {@code record} whose
+ * components carry the {@link Field} annotations; record instances are created through the
+ * canonical constructor.
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.0.0

@@ -197,6 +197,41 @@
   </build>
 
   <profiles>
+    <!-- Compiles the additional test sources in src/test/java17 (Java record fixtures need
+         JDK 16+ syntax) whenever the build runs on JDK 17 or newer. The main artifact stays
+         at release 11; on a JDK 11 build this profile is inactive and those tests are skipped. -->
+    <profile>
+      <id>jdk17-tests</id>
+      <activation>
+        <jdk>[17,)</jdk>
+      </activation>
+      <properties>
+        <maven.compiler.testRelease>17</maven.compiler.testRelease>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.6.0</version>
+            <executions>
+              <execution>
+                <id>add-jdk17-test-source</id>
+                <phase>generate-test-sources</phase>
+                <goals>
+                  <goal>add-test-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>src/test/java17</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>release</id>
       <build>

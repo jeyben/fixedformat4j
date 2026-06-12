@@ -64,7 +64,8 @@ class FormatInstructionsBuilder {
   }
 
   Class<?> datatype(Method method, Field fieldAnno) {
-    if (method.getName().startsWith("get") || method.getName().startsWith("is")) {
+    if (method.getName().startsWith("get") || method.getName().startsWith("is")
+        || JavaRecordSupport.isJavaRecord(method.getDeclaringClass())) {
       return method.getReturnType();
     }
     throw new FixedFormatException(format(

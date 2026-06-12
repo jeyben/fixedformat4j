@@ -109,6 +109,21 @@ Key points:
 
 See [Example 6](examples#example-6--field-annotations-and-lombok) for a full worked example including the equivalent plain-POJO style.
 
+## Can I use Java records with fixedformat4j?
+
+Yes, since 1.9.0 (requires a JDK 16+ runtime). Annotate the record components; `load()` binds the parsed values through the canonical constructor — no setters or no-arg constructor needed:
+
+```java
+@Record
+public record EmployeeRecord(
+    @Field(offset = 1, length = 12) String name,
+    @Field(offset = 13, length = 5, align = Align.RIGHT, paddingChar = '0') Integer employeeId,
+    @Field(offset = 18, length = 8) @FixedFormatPattern("yyyyMMdd") LocalDate hireDate,
+    @Field(offset = 26, length = 1) @FixedFormatBoolean(trueValue = "Y", falseValue = "N") Boolean active) {}
+```
+
+All annotations apply to record components exactly as to getter methods. The library artifact itself still runs on Java 11 — record binding only activates when a record class is encountered. There is no extra per-record reflection cost: component discovery happens once per class in the cached metadata build, and each `load()` performs a single cached `MethodHandle` constructor invoke instead of one invoke per setter.
+
 ## Can I apply my own custom formatter?
 
 Yes.
