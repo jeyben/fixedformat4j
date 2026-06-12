@@ -15,7 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class TestEnumLengthCheck {
 
-  private static final String IMPORTS = "import com.ancientprogramming.fixedformat4j.annotation.*;\n";
+  private static final String IMPORTS = "import com.ancientprogramming.fixedformat4j.annotation.*;\n"
+          + "import com.ancientprogramming.fixedformat4j.annotation.Record;\n";
 
   private static final String STATUS_ENUM =
       "enum Status { OK, REJECTED_BY_BANK }\n";

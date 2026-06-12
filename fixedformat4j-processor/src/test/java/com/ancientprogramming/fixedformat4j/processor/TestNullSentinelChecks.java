@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TestNullSentinelChecks {
 
   private static final String IMPORTS = "import com.ancientprogramming.fixedformat4j.annotation.*;\n"
+          + "import com.ancientprogramming.fixedformat4j.annotation.Record;\n"
       + "import java.util.List;\n";
 
   @Test

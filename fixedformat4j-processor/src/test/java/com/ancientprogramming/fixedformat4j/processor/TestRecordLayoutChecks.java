@@ -15,7 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class TestRecordLayoutChecks {
 
-  private static final String IMPORTS = "import com.ancientprogramming.fixedformat4j.annotation.*;\n";
+  private static final String IMPORTS = "import com.ancientprogramming.fixedformat4j.annotation.*;\n"
+          + "import com.ancientprogramming.fixedformat4j.annotation.Record;\n";
 
   @Test
   void fieldExceedingRecordLengthIsCompileError() {

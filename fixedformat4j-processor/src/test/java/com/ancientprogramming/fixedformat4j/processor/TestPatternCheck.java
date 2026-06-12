@@ -18,6 +18,7 @@ class TestPatternCheck {
 
   private static final String IMPORTS =
       "import com.ancientprogramming.fixedformat4j.annotation.*;\n"
+          + "import com.ancientprogramming.fixedformat4j.annotation.Record;\n"
           + "import java.util.Date;\n"
           + "import java.time.LocalDate;\n"
           + "import java.time.LocalDateTime;\n";
