@@ -25,7 +25,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -43,29 +42,35 @@ import java.util.Map;
 public class ByTypeFormatter implements FixedFormatter<Object> {
   private final FormatContext<?> context;
 
-  private static final Map<Class<? extends Serializable>, Class<? extends FixedFormatter<?>>> KNOWN_FORMATTERS = new HashMap<>();
+  /**
+   * Delegate resolved once from {@code context.getDataType()} and reused by {@link #parse} and
+   * {@link #format}, avoiding reflective instantiation on every call. All built-in formatters
+   * are stateless (or use thread-local caches), so a single instance is safe to share across
+   * threads. The benign race on first resolution at worst creates one extra instance; volatile
+   * guarantees safe publication.
+   */
+  private volatile FixedFormatter<Object> delegate;
 
-  static {
-    KNOWN_FORMATTERS.put(String.class, StringFormatter.class);
-    KNOWN_FORMATTERS.put(short.class, ShortFormatter.class);
-    KNOWN_FORMATTERS.put(Short.class, ShortFormatter.class);
-    KNOWN_FORMATTERS.put(int.class, IntegerFormatter.class);
-    KNOWN_FORMATTERS.put(Integer.class, IntegerFormatter.class);
-    KNOWN_FORMATTERS.put(long.class, LongFormatter.class);
-    KNOWN_FORMATTERS.put(Long.class, LongFormatter.class);
-    KNOWN_FORMATTERS.put(Date.class, DateFormatter.class);
-    KNOWN_FORMATTERS.put(LocalDate.class, LocalDateFormatter.class);
-    KNOWN_FORMATTERS.put(LocalDateTime.class, LocalDateTimeFormatter.class);
-    KNOWN_FORMATTERS.put(char.class, CharacterFormatter.class);
-    KNOWN_FORMATTERS.put(Character.class, CharacterFormatter.class);
-    KNOWN_FORMATTERS.put(boolean.class, BooleanFormatter.class);
-    KNOWN_FORMATTERS.put(Boolean.class, BooleanFormatter.class);
-    KNOWN_FORMATTERS.put(double.class, DoubleFormatter.class);
-    KNOWN_FORMATTERS.put(Double.class, DoubleFormatter.class);
-    KNOWN_FORMATTERS.put(float.class, FloatFormatter.class);
-    KNOWN_FORMATTERS.put(Float.class, FloatFormatter.class);
-    KNOWN_FORMATTERS.put(BigDecimal.class,  BigDecimalFormatter.class);
-  }
+  private static final Map<Class<? extends Serializable>, Class<? extends FixedFormatter<?>>> KNOWN_FORMATTERS = Map.ofEntries(
+      Map.entry(String.class, StringFormatter.class),
+      Map.entry(short.class, ShortFormatter.class),
+      Map.entry(Short.class, ShortFormatter.class),
+      Map.entry(int.class, IntegerFormatter.class),
+      Map.entry(Integer.class, IntegerFormatter.class),
+      Map.entry(long.class, LongFormatter.class),
+      Map.entry(Long.class, LongFormatter.class),
+      Map.entry(Date.class, DateFormatter.class),
+      Map.entry(LocalDate.class, LocalDateFormatter.class),
+      Map.entry(LocalDateTime.class, LocalDateTimeFormatter.class),
+      Map.entry(char.class, CharacterFormatter.class),
+      Map.entry(Character.class, CharacterFormatter.class),
+      Map.entry(boolean.class, BooleanFormatter.class),
+      Map.entry(Boolean.class, BooleanFormatter.class),
+      Map.entry(double.class, DoubleFormatter.class),
+      Map.entry(Double.class, DoubleFormatter.class),
+      Map.entry(float.class, FloatFormatter.class),
+      Map.entry(Float.class, FloatFormatter.class),
+      Map.entry(BigDecimal.class, BigDecimalFormatter.class));
 
   /**
    * Creates a {@code ByTypeFormatter} bound to the given format context.
@@ -78,17 +83,23 @@ public class ByTypeFormatter implements FixedFormatter<Object> {
   }
 
   /** {@inheritDoc} */
-  @SuppressWarnings("unchecked")
   public Object parse(String value, FormatInstructions instructions) {
-    FixedFormatter<Object> formatter = (FixedFormatter<Object>) actualFormatter(context.getDataType());
-    return formatter.parse(value, instructions);
+    return delegate().parse(value, instructions);
   }
 
   /** {@inheritDoc} */
-  @SuppressWarnings("unchecked")
   public String format(Object value, FormatInstructions instructions) {
-    FixedFormatter<Object> formatter = (FixedFormatter<Object>) actualFormatter(context.getDataType());
-    return formatter.format(value, instructions);
+    return delegate().format(value, instructions);
+  }
+
+  @SuppressWarnings("unchecked")
+  private FixedFormatter<Object> delegate() {
+    FixedFormatter<Object> result = delegate;
+    if (result == null) {
+      result = (FixedFormatter<Object>) actualFormatter(context.getDataType());
+      delegate = result;
+    }
+    return result;
   }
 
   /**

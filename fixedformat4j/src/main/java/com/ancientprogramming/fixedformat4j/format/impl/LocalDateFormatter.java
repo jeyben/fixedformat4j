@@ -17,7 +17,6 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
-import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -41,14 +40,14 @@ public class LocalDateFormatter extends AbstractPatternFormatter<LocalDate> {
 
   /** {@inheritDoc} */
   public LocalDate asObject(String string, FormatInstructions instructions) throws FixedFormatException {
-    if (StringUtils.isEmpty(string)) {
+    if (string == null || string.isEmpty()) {
       return null;
     }
     String pattern = instructions.getFixedFormatPatternData().getPattern();
     try {
       return LocalDate.parse(string, formatterForPattern(pattern));
     } catch (DateTimeParseException e) {
-      throw new FixedFormatException(String.format("Could not parse value[%s] by pattern[%s] to %s", string, pattern, LocalDate.class.getName()));
+      throw new FixedFormatException(String.format("Could not parse value[%s] by pattern[%s] to %s", string, pattern, LocalDate.class.getName()), e);
     }
   }
 

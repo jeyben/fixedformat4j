@@ -47,7 +47,7 @@ public abstract class AbstractPatternFormatter<T> extends AbstractFixedFormatter
 
   // Keyed by formatter Class; values are collected when the formatter class's classloader is GC'd.
   private static final ClassValue<ConcurrentHashMap<String, Integer>> PATTERN_LENGTH_CACHE =
-      new ClassValue<ConcurrentHashMap<String, Integer>>() {
+      new ClassValue<>() {
         @Override
         protected ConcurrentHashMap<String, Integer> computeValue(Class<?> type) {
           return new ConcurrentHashMap<>();
@@ -56,7 +56,7 @@ public abstract class AbstractPatternFormatter<T> extends AbstractFixedFormatter
 
   // DateTimeFormatter is immutable and thread-safe — shared across all threads, no ThreadLocal needed.
   private static final ClassValue<ConcurrentHashMap<String, DateTimeFormatter>> FORMATTER_CACHE =
-      new ClassValue<ConcurrentHashMap<String, DateTimeFormatter>>() {
+      new ClassValue<>() {
         @Override
         protected ConcurrentHashMap<String, DateTimeFormatter> computeValue(Class<?> type) {
           return new ConcurrentHashMap<>();

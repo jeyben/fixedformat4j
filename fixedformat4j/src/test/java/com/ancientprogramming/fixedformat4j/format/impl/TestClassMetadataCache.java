@@ -72,15 +72,31 @@ class TestClassMetadataCache {
   }
 
   @Test
-  void repeatingFieldDescriptorHasNullContextAndInstructions() {
+  void repeatingFieldDescriptorCachesElementMetadata() {
     ClassMetadataCache cache = new ClassMetadataCache();
     FieldDescriptor repeating = cache.get(RepeatingFieldRecord.class).stream()
-        .filter(d -> d.isRepeating)
+        .filter(d -> d.isRepeating && d.target.getter.getName().equals("getCodes"))
         .findFirst()
         .orElseThrow(() -> new AssertionError("no repeating descriptor found"));
     assertNull(repeating.context);
-    assertNull(repeating.formatInstructions);
-    assertNull(repeating.formatter);
+    assertNotNull(repeating.formatInstructions, "element instructions should be cached");
+    assertNotNull(repeating.formatter, "element formatter should be cached");
+    assertEquals(String.class, repeating.elementType);
+    assertEquals(3, repeating.elementContexts.length, "one context per element");
+    assertEquals(1, repeating.elementContexts[0].getOffset());
+    assertEquals(6, repeating.elementContexts[1].getOffset());
+    assertEquals(11, repeating.elementContexts[2].getOffset());
+  }
+
+  @Test
+  void nonRepeatingFieldDescriptorHasNoElementMetadata() {
+    ClassMetadataCache cache = new ClassMetadataCache();
+    FieldDescriptor plain = cache.get(MyRecord.class).stream()
+        .filter(d -> !d.isRepeating)
+        .findFirst()
+        .orElseThrow(() -> new AssertionError("no non-repeating descriptor found"));
+    assertNull(plain.elementType);
+    assertNull(plain.elementContexts);
   }
 
   @Test

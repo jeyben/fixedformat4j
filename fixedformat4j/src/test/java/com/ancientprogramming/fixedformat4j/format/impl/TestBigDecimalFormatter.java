@@ -166,6 +166,34 @@ public class TestBigDecimalFormatter {
   }
 
   @Test
+  public void testFormatIsLocaleIndependent() {
+    // The decimal export path must produce identical ASCII output regardless of the JVM
+    // default locale. Locales with ',' decimal separators (GERMANY, FRANCE) exercise the
+    // separator-splitting logic; ar-SA exercises non-Latin default digits, where the old
+    // DecimalFormat-based path could emit localized digit characters that the ASCII-only
+    // parse side could not round-trip.
+    FormatInstructions instr = new FormatInstructions(10, Align.RIGHT, '0', null, null,
+        new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN),
+        new FixedFormatDecimalData(2, false, '.', RoundingMode.HALF_UP));
+    java.util.Locale original = java.util.Locale.getDefault();
+    try {
+      java.util.Locale[] locales = {java.util.Locale.US, java.util.Locale.GERMANY,
+          java.util.Locale.FRANCE, new java.util.Locale("ar", "SA")};
+      for (java.util.Locale locale : locales) {
+        java.util.Locale.setDefault(locale);
+        assertEquals("+000123456", formatter.format(new BigDecimal("1234.56"), instr),
+            "export must not depend on default locale: " + locale);
+        assertEquals("+000000000", formatter.format(null, instr),
+            "null export must not depend on default locale: " + locale);
+        assertEquals(new BigDecimal("1234.56"), formatter.parse("+000123456", instr),
+            "parse must not depend on default locale: " + locale);
+      }
+    } finally {
+      java.util.Locale.setDefault(original);
+    }
+  }
+
+  @Test
   public void testScaleZero() {
     // no decimals: 42 formatted as integer-style
     assertEquals("+000000042", formatter.format(new BigDecimal("42"), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(0, false, '.', RoundingMode.UNNECESSARY))));

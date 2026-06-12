@@ -44,6 +44,13 @@ public class EnumFormatter extends AbstractFixedFormatter<Enum> {
   private final FormatContext<?> context;
 
   /**
+   * Lazily cached constants of the context's enum type, in ordinal order. Cached because
+   * {@link Class#getEnumConstants()} clones the array on every call. The array is never
+   * exposed or mutated; the benign race on first initialization is harmless.
+   */
+  private volatile Enum<?>[] constants;
+
+  /**
    * Creates an {@code EnumFormatter} bound to the given format context.
    * The context's data type must be an enum class.
    *
@@ -63,8 +70,18 @@ public class EnumFormatter extends AbstractFixedFormatter<Enum> {
   @SuppressWarnings({"unchecked", "rawtypes"})
   @Override
   public Enum asObject(String value, FormatInstructions instructions) {
-    if (value == null || value.isEmpty()) {
+    if (value == null) {
       return null;
+    }
+    if (value.isEmpty()) {
+      // In NUMERIC mode with '0' padding, padding-stripping consumes an all-zeros field
+      // entirely — but those zeros WERE the value (ordinal 0), not a blank field.
+      // Mirrors the empty-means-"0" convention of Sign.remove for numeric fields.
+      if (enumFormat(instructions) == EnumFormat.NUMERIC && instructions.getPaddingChar() == '0') {
+        value = "0";
+      } else {
+        return null;
+      }
     }
     Class<? extends Enum> enumClass = (Class<? extends Enum>) context.getDataType();
     EnumFormat format = enumFormat(instructions);
@@ -76,7 +93,7 @@ public class EnumFormatter extends AbstractFixedFormatter<Enum> {
         throw new FixedFormatException(
             String.format("Cannot parse ordinal for enum [%s] from value [%s]", enumClass.getName(), value), e);
       }
-      Enum<?>[] constants = enumClass.getEnumConstants();
+      Enum<?>[] constants = constantsOf(enumClass);
       if (ordinal < 0 || ordinal >= constants.length) {
         throw new FixedFormatException(
             String.format("Ordinal [%d] is out of range for enum [%s] (valid range: 0..%d)", ordinal, enumClass.getName(), constants.length - 1));
@@ -101,6 +118,16 @@ public class EnumFormatter extends AbstractFixedFormatter<Enum> {
     return enumFormat(instructions) == EnumFormat.NUMERIC
         ? String.valueOf(value.ordinal())
         : value.name();
+  }
+
+  @SuppressWarnings("rawtypes")
+  private Enum<?>[] constantsOf(Class<? extends Enum> enumClass) {
+    Enum<?>[] result = constants;
+    if (result == null) {
+      result = enumClass.getEnumConstants();
+      constants = result;
+    }
+    return result;
   }
 
   private EnumFormat enumFormat(FormatInstructions instructions) {
