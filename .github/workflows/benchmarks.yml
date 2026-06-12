@@ -13,6 +13,7 @@ env:
 
 permissions:
   contents: write
+  pull-requests: write
   actions: write
 
 jobs:
@@ -53,17 +54,29 @@ jobs:
           chmod +x benchmarks/run.sh
           ./benchmarks/run.sh $VERSIONS_INPUT
 
-      - name: Commit results
+      # master is protected (required status check "build"), so the results
+      # cannot be pushed directly — they go through a PR instead (#144).
+      - name: Open PR with benchmark results
         env:
           VERSIONS_INPUT: ${{ github.event.inputs.versions }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/assets/benchmarks/
-          git diff --staged --quiet || git commit -m "bench: results for $VERSIONS_INPUT"
-          git push
-
-      - name: Trigger pages deployment
-        run: gh workflow run pages.yml --ref master
-        env:
-          GH_TOKEN: ${{ github.token }}
+          if git diff --staged --quiet; then
+            echo "Benchmark results unchanged; nothing to publish."
+            exit 0
+          fi
+          BRANCH="chore/benchmarks-${{ github.run_id }}"
+          git checkout -b "$BRANCH"
+          git commit -m "bench: results for $VERSIONS_INPUT"
+          git push origin "$BRANCH"
+          gh pr create \
+            --base master \
+            --head "$BRANCH" \
+            --title "bench: results for $VERSIONS_INPUT" \
+            --body "$(printf 'Automated benchmark results from run %s.\n\nBenchmarked versions: %s\n\nMerging this PR updates docs/assets/benchmarks/; the pages deployment is triggered by the merge (pages.yml watches docs/** on master).' "${{ github.run_id }}" "$VERSIONS_INPUT")"
+          # Pushes made with GITHUB_TOKEN do not trigger other workflows, so
+          # the required "build" check must be dispatched explicitly.
+          gh workflow run nightly-build.yml --ref "$BRANCH"
