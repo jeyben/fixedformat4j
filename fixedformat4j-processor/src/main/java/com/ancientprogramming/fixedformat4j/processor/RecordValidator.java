@@ -36,6 +36,9 @@ class RecordValidator {
   void validate(TypeElement recordType) {
     for (AnnotatedFixedFormatField target : FieldScanner.scan(recordType)) {
       fieldChecker.checkPattern(target);
+      for (com.ancientprogramming.fixedformat4j.annotation.Field fieldAnnotation : target.fieldAnnotations) {
+        fieldChecker.checkEnumLength(target, fieldAnnotation);
+      }
     }
   }
 }

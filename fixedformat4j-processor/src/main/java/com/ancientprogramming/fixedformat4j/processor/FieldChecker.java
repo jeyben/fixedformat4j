@@ -15,9 +15,14 @@
  */
 package com.ancientprogramming.fixedformat4j.processor;
 
+import com.ancientprogramming.fixedformat4j.annotation.EnumFormat;
+import com.ancientprogramming.fixedformat4j.annotation.Field;
+import com.ancientprogramming.fixedformat4j.annotation.FixedFormatEnum;
 import com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern;
 
 import javax.annotation.processing.Messager;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -25,6 +30,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -68,6 +75,43 @@ final class FieldChecker {
       } catch (IllegalArgumentException e) {
         error(target, format("Invalid date/time pattern '%s' on %s: %s", pattern, target.label(), e.getMessage()));
       }
+    }
+  }
+
+  /**
+   * Twin of {@code FieldValidator.doValidateEnumFieldLength}: the widest serialized form of an
+   * enum field ({@code Enum#name()} for LITERAL, the digit width of the highest ordinal for
+   * NUMERIC) must fit in {@code @Field(length)}. Skipped for REST_OF_LINE fields.
+   */
+  void checkEnumLength(AnnotatedFixedFormatField target, Field fieldAnnotation) {
+    if (fieldAnnotation.length() == Field.REST_OF_LINE) {
+      return;
+    }
+    if (target.datatype.getKind() != TypeKind.DECLARED) {
+      return;
+    }
+    Element datatypeElement = ((DeclaredType) target.datatype).asElement();
+    if (datatypeElement.getKind() != ElementKind.ENUM) {
+      return;
+    }
+    List<String> constants = datatypeElement.getEnclosedElements().stream()
+        .filter(enclosed -> enclosed.getKind() == ElementKind.ENUM_CONSTANT)
+        .map(enclosed -> enclosed.getSimpleName().toString())
+        .collect(Collectors.toList());
+    if (constants.isEmpty()) {
+      return;
+    }
+    FixedFormatEnum enumAnnotation = target.supplementaryAnnotation(FixedFormatEnum.class);
+    EnumFormat enumFormat = (enumAnnotation != null) ? enumAnnotation.value() : EnumFormat.LITERAL;
+    int maxLength;
+    if (enumFormat == EnumFormat.NUMERIC) {
+      maxLength = String.valueOf(constants.size() - 1).length();
+    } else {
+      maxLength = constants.stream().mapToInt(String::length).max().orElse(0);
+    }
+    if (maxLength > fieldAnnotation.length()) {
+      error(target, format("Enum [%s] has values with max length %d, which exceeds @Field length %d on %s",
+          ((TypeElement) datatypeElement).getQualifiedName(), maxLength, fieldAnnotation.length(), target.label()));
     }
   }
 
