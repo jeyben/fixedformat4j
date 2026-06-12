@@ -29,7 +29,7 @@ import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern
  */
 public class FixedFormatPatternData {
 
-  private String pattern;
+  private final String pattern;
   public static final FixedFormatPatternData DEFAULT = new FixedFormatPatternData(DATE_PATTERN);
   public static final FixedFormatPatternData LOCALDATE_DEFAULT = new FixedFormatPatternData(LOCALDATE_PATTERN);
   public static final FixedFormatPatternData DATETIME_DEFAULT = new FixedFormatPatternData(DATETIME_PATTERN);

@@ -29,10 +29,10 @@ import static com.ancientprogramming.fixedformat4j.annotation.FixedFormatDecimal
  */
 public class FixedFormatDecimalData {
 
-  private int decimals;
-  private boolean useDecimalDelimiter;
-  private char decimalDelimiter;
-  private RoundingMode roundingMode;
+  private final int decimals;
+  private final boolean useDecimalDelimiter;
+  private final char decimalDelimiter;
+  private final RoundingMode roundingMode;
   
   public static final FixedFormatDecimalData DEFAULT = new FixedFormatDecimalData(DECIMALS, USE_DECIMAL_DELIMITER, DECIMAL_DELIMITER, RoundingMode.valueOf(ROUNDING_MODE));
 
