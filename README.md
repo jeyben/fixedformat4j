@@ -181,6 +181,27 @@ public class EmployeeRecord {
 
 Place `@Field` on the fields, let Lombok generate the getters and setters, and the result is identical.
 
+#### Using Java records instead
+
+On JDK 16+ the same mapping works as a Java `record` (since 1.9.0) — annotate the record components; no setters and no no-arg constructor are needed:
+
+```java
+@Record
+public record EmployeeRecord(
+
+    @Field(offset = 1, length = 20)
+    String name,
+
+    @Field(offset = 21, length = 6, align = Align.RIGHT, paddingChar = '0')
+    Integer employeeId,
+
+    @Field(offset = 27, length = 8)
+    @FixedFormatPattern("yyyyMMdd")
+    LocalDate hireDate) {}
+```
+
+Every annotation — `@Field`, `@Fields`, `@FixedFormatPattern`, `@FixedFormatDecimal`, `@FixedFormatNumber`, `@FixedFormatBoolean`, `@FixedFormatEnum` — applies to record components exactly as to getter methods, including nested `@Record` components and repeating fields. `load()` binds all parsed values through the canonical constructor in one call, and `export()` reads the component accessors (`record.name()`). The library itself still runs on Java 11 — record binding activates only when a record class is encountered.
+
 ### 3. Load from a string
 
 ```java
