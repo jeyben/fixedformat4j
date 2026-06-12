@@ -76,7 +76,7 @@ jobs:
 
       - name: Verify pom version matches the release
         run: |
-          POM_VERSION=$(mvn -B -q help:evaluate -Dexpression=project.version -DforceStdout)
+          POM_VERSION=$(mvn -B -q -N help:evaluate -Dexpression=project.version -DforceStdout)
           if [ "$POM_VERSION" != "$RELEASE_VERSION" ]; then
             echo "::error::pom version is $POM_VERSION but the release is $RELEASE_VERSION — merge the release-prep PR setting the poms to $RELEASE_VERSION before publishing"
             exit 1
@@ -116,6 +116,10 @@ jobs:
           BRANCH="chore/prepare-$NEXT-${{ github.run_id }}"
           git checkout -B "$BRANCH" origin/master
           mvn -B versions:set -DnewVersion=$NEXT -DprocessAllModules=true -DgenerateBackupPoms=false
+          if git diff --quiet; then
+            echo "master is already at $NEXT; nothing to bump."
+            exit 0
+          fi
           git commit -am "Prepare $NEXT development"
           git push origin "$BRANCH"
           gh pr create \
