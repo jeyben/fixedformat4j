@@ -15,8 +15,6 @@
  */
 package com.ancientprogramming.fixedformat4j.annotation;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * Capable of pad or chop data in a given direction
  *
@@ -53,9 +51,9 @@ public enum Align {
       }
       int dataLength = data.length();
       if (dataLength > length) {
-        result = StringUtils.substring(data, dataLength - length, dataLength);
+        result = data.substring(dataLength - length);
       } else {
-        result = StringUtils.leftPad(data, length, paddingChar);
+        result = pad(data, length, paddingChar) + data;
       }
       return result;
     }
@@ -84,9 +82,9 @@ public enum Align {
       }
       int dataLength = data.length();
       if (dataLength > length) {
-        result = StringUtils.substring(data, 0, length);
+        result = data.substring(0, length);
       } else {
-        result = StringUtils.rightPad(data, length, paddingChar);
+        result = data + pad(data, length, paddingChar);
       }
       return result;
     }
@@ -102,6 +100,10 @@ public enum Align {
       }
       return data.substring(0, end);
     }};
+
+  private static String pad(String data, int length, char paddingChar) {
+    return String.valueOf(paddingChar).repeat(length - data.length());
+  }
 
   /**
    * Pads the data in the length specified with the given padding char.

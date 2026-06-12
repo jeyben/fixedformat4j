@@ -151,6 +151,48 @@ public class TestEnumFormatter {
     assertEquals("   ", formatter.format(null, numericInstr(3)));
   }
 
+  // --- NUMERIC with '0' padding: an all-zeros field is ordinal 0, not blank ---
+
+  private FormatInstructions numericZeroPadInstr(int len, Align align) {
+    return new FormatInstructions(len, align, '0', null, null, null, null,
+        new FixedFormatEnumData(EnumFormat.NUMERIC));
+  }
+
+  @Test
+  void numericOrdinalZeroWithZeroPadding_rightAlign_roundTrips() {
+    FormatInstructions instr = numericZeroPadInstr(3, Align.RIGHT);
+    assertEquals("000", formatter.format(Color.RED, instr));
+    assertEquals(Color.RED, formatter.parse("000", instr));
+  }
+
+  @Test
+  void numericOrdinalZeroWithZeroPadding_leftAlign_roundTrips() {
+    FormatInstructions instr = numericZeroPadInstr(3, Align.LEFT);
+    assertEquals("000", formatter.format(Color.RED, instr));
+    assertEquals(Color.RED, formatter.parse("000", instr));
+  }
+
+  @Test
+  void numericNonZeroOrdinalWithZeroPadding_rightAlign_roundTrips() {
+    FormatInstructions instr = numericZeroPadInstr(3, Align.RIGHT);
+    assertEquals("002", formatter.format(Color.BLUE, instr));
+    assertEquals(Color.BLUE, formatter.parse("002", instr));
+  }
+
+  @Test
+  void numericBlankWithSpacePadding_stillParsesToNull() {
+    assertNull(formatter.parse("   ", numericInstr(3)),
+        "space-padded blank NUMERIC field must keep loading as null");
+  }
+
+  @Test
+  void literalAllZeroPaddingInput_stillParsesToNull() {
+    FormatInstructions instr = new FormatInstructions(3, Align.RIGHT, '0', null, null, null, null,
+        new FixedFormatEnumData(EnumFormat.LITERAL));
+    assertNull(formatter.parse("000", instr),
+        "LITERAL mode must not inherit the NUMERIC zero-padding special case");
+  }
+
   // --- Right-alignment padding ---
 
   @Test

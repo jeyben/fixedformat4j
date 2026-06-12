@@ -113,6 +113,15 @@ public class TestDateFormatter {
   }
 
   @Test
+  public void testInvalidDateStringExceptionChainsParseExceptionCause() {
+    FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
+        formatter.parse("NOTADATE", new FormatInstructions(8, Align.LEFT, ' ',
+            new FixedFormatPatternData("yyyyMMdd"), null, null, null)));
+    assertInstanceOf(java.text.ParseException.class, ex.getCause(),
+        "the original ParseException should be chained as cause for diagnostics");
+  }
+
+  @Test
   public void testNonSpacePaddingChar_leftAlign_roundTrip() {
     FormatInstructions instr = new FormatInstructions(12, Align.LEFT, '*',
         new FixedFormatPatternData("yyyyMMdd"), null, null, null);
