@@ -86,6 +86,47 @@ title: Changelog
   }
   ```
 
+### Performance improvements
+
+Repeating fields (`@Field(count > 1)`) are significantly faster to load and export:
+
+- **Repeating-field metadata is cached per class** — element type resolution, format instructions, formatter lookup, and per-element contexts were previously rebuilt with reflection on every `load()`/`export()` call; they are now computed once and reused, the same design non-repeating fields have used since 1.7.0. In the bundled JMH benchmark, loading a record with a 10-element repeating field got ~1.9× faster and exporting ~1.25× faster.
+- **`ByTypeFormatter` resolves its delegate once** — `parse()` and `format()` no longer instantiate the type-specific formatter reflectively on every call.
+- **Enum fields are cheaper** — the enum constants array is cached instead of being cloned on every `NUMERIC` parse.
+- **Fewer per-call allocations** — a compiled regex in decimal parsing replaced with a simple character scan, and redundant padding loops removed from export.
+- **Decimal export skips `DecimalFormat`** — decimal values are already exactly-scaled `BigDecimal`s when serialized, so the locale-sensitive `DecimalFormat` round trip (plus grouping-character stripping) was replaced with `toPlainString()`. Identical output on Latin-digit-locale JVMs, ~15% faster small-record export, and the thread-local `DecimalFormat` cache is gone. Output is now guaranteed locale-independent: previously, a JVM defaulting to a locale with non-Latin digits (e.g. some Arabic configurations) could export localized digit characters that the ASCII-only parser was unable to round-trip. Null values now flow through `BigDecimal.ZERO` and the common path, producing the same bytes as the previous pre-computed zero string (pinned by tests, including a new locale-independence test).
+
+A new `RepeatingBenchmark` was added to the `benchmarks/` module to track the repeating-field path.
+
+### Bug fixes
+
+- **LEFT-aligned signed numbers no longer lose their leading digit** — `Sign.PREPEND` and `Sign.APPEND` made room for the sign by always dropping the *first* character of the aligned value. Correct for RIGHT alignment (where that character is padding), but with LEFT alignment it was the value's leading digit: exporting `5` into a 5-wide PREPEND field produced `"+    "` and round-tripped as `0`. The sign slot is now freed from the padded side. **Behaviour change:** export output for `@FixedFormatNumber(sign=PREPEND|APPEND)` fields with LEFT alignment changes from corrupt to correct; RIGHT-aligned output is byte-for-byte unchanged.
+- **NUMERIC enum ordinal 0 survives a round trip with `paddingChar='0'`** — ordinal 0 exports as an all-zeros field (e.g. `"000"`), which padding-stripping reduced to an empty string that loaded as `null`. In NUMERIC mode with `'0'` padding, a stripped-empty field now parses as ordinal 0. **Behaviour change:** `load()` of such a field returns the ordinal-0 constant instead of `null`; blank space-padded fields still load as `null`, and LITERAL mode is unchanged.
+- **Parse failures keep their root cause** — `DateFormatter`, `LocalDateFormatter`, and `LocalDateTimeFormatter` rethrew `FixedFormatException` without chaining the underlying `ParseException`/`DateTimeParseException`, discarding error-index diagnostics. The cause is now chained; exception type and message are unchanged.
+
+### Dependency changes
+
+- **commons-lang3 removed** — the library's last 17 `StringUtils` calls were replaced with
+  Java 11 natives (`String.repeat`, plain `substring`, explicit null/empty checks), so the
+  Apache Commons Lang dependency is gone. `fixedformat4j` now has a single compile-scope
+  dependency: `slf4j-api`. **Action required only if** your project relied on fixedformat4j
+  transitively providing commons-lang3 — declare it directly in that case.
+
+### Build
+
+- The library, samples, and benchmarks modules now compile with `--release 11` instead of
+  `source`/`target`, so builds on newer JDKs are validated against the Java 11 API signature.
+- Internal code modernized to Java 9–11 idioms: diamond on anonymous `ClassValue` subclasses,
+  `Map.ofEntries` for the built-in formatter registry, `List.copyOf` for cached field metadata,
+  and primitive parameters in the export padding path.
+
+### Known limitations (documented, unchanged)
+
+- `DateFormatter` (legacy `java.util.Date`) uses lenient `SimpleDateFormat` parsing: an invalid date like `20269999` rolls over instead of failing. The `java.time` formatters reject such input. Prefer `LocalDate`/`LocalDateTime` for strict validation.
+- Signed fields (`PREPEND`/`APPEND`) reserve one character for the sign: a value that exactly fills the field width loses a digit.
+- A blank `Boolean` field loads as `false` (not `null`), and a `null` value exports as the configured falseValue.
+- Pattern-based formatters assume the pattern produces fixed-length output; variable-length patterns (e.g. `MMMM`) may interact badly with padding restoration.
+
 ### Refactoring
 
 - **`FieldValidator` extracted** — six validation methods moved out of `FixedFormatManagerImpl` into a dedicated package-private class; the manager now has a single responsibility (load/export orchestration).

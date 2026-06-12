@@ -56,6 +56,42 @@ public class TestSign {
     assertEquals("0", Sign.APPEND.remove("0-", new FormatInstructions(2, Align.LEFT, ' ', null, null, FixedFormatNumberData.DEFAULT, null)));
   }
 
+  // --- LEFT alignment: the sign must not consume the value's leading digit ---
+
+  private FormatInstructions leftInstr(int length) {
+    return new FormatInstructions(length, Align.LEFT, ' ', null, null, FixedFormatNumberData.DEFAULT, null);
+  }
+
+  @Test
+  public void testSignPrependLeftAlignKeepsLeadingDigit() {
+    assertEquals("+5   ", Sign.PREPEND.apply("5", leftInstr(5)));
+    assertEquals("-5   ", Sign.PREPEND.apply("-5", leftInstr(5)));
+    assertEquals("+1000 ", Sign.PREPEND.apply("1000", leftInstr(6)));
+    assertEquals("+0   ", Sign.PREPEND.apply("0", leftInstr(5)));
+  }
+
+  @Test
+  public void testSignAppendLeftAlignKeepsLeadingDigit() {
+    assertEquals("5   +", Sign.APPEND.apply("5", leftInstr(5)));
+    assertEquals("5   -", Sign.APPEND.apply("-5", leftInstr(5)));
+    assertEquals("1000 +", Sign.APPEND.apply("1000", leftInstr(6)));
+    assertEquals("0   +", Sign.APPEND.apply("0", leftInstr(5)));
+  }
+
+  @Test
+  public void testSignPrependLeftAlignRoundTrip() {
+    assertEquals("1000", Sign.PREPEND.remove(Sign.PREPEND.apply("1000", leftInstr(6)), leftInstr(6)));
+    assertEquals("-1000", Sign.PREPEND.remove(Sign.PREPEND.apply("-1000", leftInstr(6)), leftInstr(6)));
+    assertEquals("0", Sign.PREPEND.remove(Sign.PREPEND.apply("0", leftInstr(6)), leftInstr(6)));
+  }
+
+  @Test
+  public void testSignAppendLeftAlignRoundTrip() {
+    assertEquals("1000", Sign.APPEND.remove(Sign.APPEND.apply("1000", leftInstr(6)), leftInstr(6)));
+    assertEquals("-1000", Sign.APPEND.remove(Sign.APPEND.apply("-1000", leftInstr(6)), leftInstr(6)));
+    assertEquals("0", Sign.APPEND.remove(Sign.APPEND.apply("0", leftInstr(6)), leftInstr(6)));
+  }
+
   @Test
   public void testSignPrepend() {
     assertEquals("+000000000", Sign.PREPEND.apply("", new FormatInstructions(10, Align.RIGHT, '0', null, null, FixedFormatNumberData.DEFAULT, null)));

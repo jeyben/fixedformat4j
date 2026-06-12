@@ -202,6 +202,14 @@ public class TestLocalDateFormatter {
         "message should contain type name: " + ex.getMessage());
   }
 
+  @Test
+  public void testInvalidDateStringExceptionChainsDateTimeParseExceptionCause() {
+    FixedFormatException ex = assertThrows(FixedFormatException.class, () ->
+        formatter.parse("NOTADATE", instructions(8, "yyyyMMdd")));
+    assertInstanceOf(java.time.format.DateTimeParseException.class, ex.getCause(),
+        "the original DateTimeParseException should be chained as cause for diagnostics");
+  }
+
   // --- Non-space padding char ---
 
   @Test

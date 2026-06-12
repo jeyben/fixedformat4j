@@ -20,7 +20,6 @@ import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
 import com.ancientprogramming.fixedformat4j.format.FixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.ParseException;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,14 +45,12 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   public FixedFormatManagerImpl() {
     this.metadataCache = ClassMetadataCache.INSTANCE;
-    this.repeatingFieldSupport = new RepeatingFieldSupport(Collections.emptyMap());
   }
 
   private FixedFormatManagerImpl(Map<Class<?>, Class<? extends FixedFormatter<?>>> customRegistry) {
     this.metadataCache = customRegistry.isEmpty()
         ? ClassMetadataCache.INSTANCE
         : new ClassMetadataCache(customRegistry);
-    this.repeatingFieldSupport = new RepeatingFieldSupport(customRegistry);
   }
 
   /**
@@ -113,7 +110,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     }
   }
 
-  private final ClassValue<Boolean> validatedClasses = new ClassValue<Boolean>() {
+  private final ClassValue<Boolean> validatedClasses = new ClassValue<>() {
     @Override
     protected Boolean computeValue(Class<?> clazz) {
       List<FieldDescriptor> descriptors = metadataCache.get(clazz);
@@ -131,7 +128,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
   private final ClassMetadataCache metadataCache;
   private final RecordInstantiator recordInstantiator = new RecordInstantiator();
-  private final RepeatingFieldSupport repeatingFieldSupport;
+  private final RepeatingFieldSupport repeatingFieldSupport = new RepeatingFieldSupport();
 
   /**
    * {@inheritDoc}
@@ -147,7 +144,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
       Object value;
       if (desc.isRepeating) {
-        value = repeatingFieldSupport.read(fixedFormatRecordClass, data, desc.target.getter, desc.target.annotationSource, desc.fieldAnnotation);
+        value = repeatingFieldSupport.read(fixedFormatRecordClass, data, desc);
       } else {
         String dataToParse = fetchData(data, desc.formatInstructions, desc.context);
         if (desc.isNestedRecord) {
@@ -193,7 +190,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
 
     for (FieldDescriptor desc : descriptors) {
       if (desc.isRepeating) {
-        repeatingFieldSupport.export(fixedFormatRecord, desc.target, desc.fieldAnnotation, foundData);
+        repeatingFieldSupport.export(fixedFormatRecord, desc, foundData);
         continue;
       }
 
@@ -209,9 +206,9 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
       if (valueObject != null && valueObject.getClass().getAnnotation(Record.class) != null) {
         formatted = export(valueObject);
       } else if (desc.isNestedRecord) {
-        formatted = StringUtils.repeat(desc.fieldAnnotation.paddingChar(), desc.fieldAnnotation.length());
+        formatted = String.valueOf(desc.fieldAnnotation.paddingChar()).repeat(desc.fieldAnnotation.length());
       } else if (valueObject == null && NullCharSupport.isNullCharActive(desc.formatInstructions)) {
-        formatted = StringUtils.repeat(desc.formatInstructions.getNullChar(), desc.formatInstructions.getLength());
+        formatted = String.valueOf(desc.formatInstructions.getNullChar()).repeat(desc.formatInstructions.getLength());
       } else {
         formatted = ((FixedFormatter<Object>) desc.formatter).format(valueObject, desc.formatInstructions);
       }
@@ -245,19 +242,13 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     validatedClasses.get(recordClass);
   }
 
-  private static void appendData(StringBuilder result, Character paddingChar, Integer offset, String data) {
+  private static void appendData(StringBuilder result, char paddingChar, int offset, String data) {
     int zeroBasedOffset = offset - 1;
-    while (result.length() < zeroBasedOffset) {
+    int end = zeroBasedOffset + data.length();
+    while (result.length() < end) {
       result.append(paddingChar);
     }
-    int length = data.length();
-    if (result.length() < zeroBasedOffset + length) {
-      int needed = (zeroBasedOffset + length) - result.length();
-      for (int i = 0; i < needed; i++) {
-        result.append(paddingChar);
-      }
-    }
-    result.replace(zeroBasedOffset, zeroBasedOffset + length, data);
+    result.replace(zeroBasedOffset, end, data);
   }
 
   private <T> Record getAndAssertRecordAnnotation(Class<T> fixedFormatRecordClass) {

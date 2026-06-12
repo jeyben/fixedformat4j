@@ -19,7 +19,6 @@ import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Formatter for {@link Character} data
@@ -34,7 +33,7 @@ public class CharacterFormatter extends AbstractFixedFormatter<Character> {
   /** {@inheritDoc} */
   public Character asObject(String string, FormatInstructions instructions) {
     Character result = null;
-    if (!StringUtils.isEmpty(string)) {
+    if (string != null && !string.isEmpty()) {
       result = string.charAt(0);
       if (string.length() > 1) {
         LOG.warn("found more than one character[{}] after reading instructions from record. Will return first character[{}]", string, result);

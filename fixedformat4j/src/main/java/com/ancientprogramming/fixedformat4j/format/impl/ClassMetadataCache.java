@@ -47,7 +47,7 @@ class ClassMetadataCache {
     this.customRegistry = customRegistry != null ? customRegistry : Collections.emptyMap();
   }
 
-  private final ClassValue<List<FieldDescriptor>> cache = new ClassValue<List<FieldDescriptor>>() {
+  private final ClassValue<List<FieldDescriptor>> cache = new ClassValue<>() {
     @Override
     protected List<FieldDescriptor> computeValue(Class<?> clazz) {
       return build(clazz);
@@ -61,7 +61,7 @@ class ClassMetadataCache {
   private List<FieldDescriptor> build(Class<?> clazz) {
     AnnotationScanner scanner = new AnnotationScanner();
     FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
-    RepeatingFieldSupport repeatingFieldSupport = new RepeatingFieldSupport(customRegistry);
+    RepeatingFieldSupport repeatingFieldSupport = new RepeatingFieldSupport();
 
     List<FieldDescriptor> result = new ArrayList<>();
     for (AnnotationTarget target : scanner.scan(clazz)) {
@@ -76,7 +76,7 @@ class ClassMetadataCache {
         }
       }
     }
-    return Collections.unmodifiableList(result);
+    return List.copyOf(result);
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
@@ -95,17 +95,36 @@ class ClassMetadataCache {
     boolean hasCustomFormatter = fieldAnnotation.formatter() != ByTypeFormatter.class;
     boolean isNestedRecord = !isRepeating && !hasCustomFormatter && datatype.getAnnotation(Record.class) != null;
 
-    FormatContext<?> context = isRepeating ? null : instructionsBuilder.context(datatype, fieldAnnotation);
-    FormatInstructions formatInstructions = isRepeating ? null : instructionsBuilder.build(target.annotationSource, fieldAnnotation, datatype, clazz);
-    FixedFormatter<?> rawFormatter = (isRepeating || isNestedRecord) ? null
-        : getFixedFormatterInstance(context.getFormatter(), context);
-    FixedFormatter<?> formatter = resolveConcreteFormatter(rawFormatter, datatype);
-
     Method setter = resolveSetter(clazz, target.getter, datatype, scanner);
     MethodHandle setterHandle = toHandle(setter);
 
+    if (isRepeating) {
+      Class<?> elementType = repeatingFieldSupport.resolveElementType(target.getter);
+      FormatInstructions formatInstructions = instructionsBuilder.build(target.annotationSource, fieldAnnotation, elementType, clazz);
+      FormatContext protoContext = new FormatContext(fieldAnnotation.offset(), elementType, fieldAnnotation.formatter());
+      // Deliberately NOT unwrapped via resolveConcreteFormatter: ByTypeFormatter resolves its
+      // delegate lazily, keeping the unsupported-element-type failure at parse time
+      // (wrapped in ParseException) exactly as before metadata caching. The custom registry is
+      // passed so registered element types resolve in repeating fields too.
+      FixedFormatter<?> formatter = protoContext.getFormatter() == ByTypeFormatter.class
+          ? new ByTypeFormatter(protoContext, customRegistry)
+          : getFixedFormatterInstance(protoContext.getFormatter(), protoContext);
+      FormatContext<?>[] elementContexts = new FormatContext[fieldAnnotation.count()];
+      for (int i = 0; i < elementContexts.length; i++) {
+        elementContexts[i] = new FormatContext(fieldAnnotation.offset() + fieldAnnotation.length() * i, elementType, fieldAnnotation.formatter());
+      }
+      return new FieldDescriptor(target, setter, setterHandle, fieldAnnotation, datatype, null,
+          formatInstructions, formatter, true, false, isLoadField, elementType, elementContexts);
+    }
+
+    FormatContext<?> context = instructionsBuilder.context(datatype, fieldAnnotation);
+    FormatInstructions formatInstructions = instructionsBuilder.build(target.annotationSource, fieldAnnotation, datatype, clazz);
+    FixedFormatter<?> rawFormatter = isNestedRecord ? null
+        : getFixedFormatterInstance(context.getFormatter(), context);
+    FixedFormatter<?> formatter = resolveConcreteFormatter(rawFormatter, datatype);
+
     return new FieldDescriptor(target, setter, setterHandle, fieldAnnotation, datatype, context,
-        formatInstructions, formatter, isRepeating, isNestedRecord, isLoadField);
+        formatInstructions, formatter, false, isNestedRecord, isLoadField, null, null);
   }
 
   private FixedFormatter<?> resolveConcreteFormatter(FixedFormatter<?> candidate, Class<?> datatype) {

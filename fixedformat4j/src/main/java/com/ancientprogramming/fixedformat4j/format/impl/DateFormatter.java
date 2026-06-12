@@ -17,7 +17,6 @@ package com.ancientprogramming.fixedformat4j.format.impl;
 
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatException;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
-import org.apache.commons.lang3.StringUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -47,11 +46,11 @@ public class DateFormatter extends AbstractPatternFormatter<Date> {
   public Date asObject(String string, FormatInstructions instructions) throws FixedFormatException {
     Date result = null;
 
-    if (!StringUtils.isEmpty(string)) {
+    if (string != null && !string.isEmpty()) {
       try {
         result = getFormatter(instructions.getFixedFormatPatternData().getPattern()).parse(string);
       } catch (ParseException e) {
-        throw new FixedFormatException(String.format("Could not parse value[%s] by pattern[%s] to %s", string, instructions.getFixedFormatPatternData().getPattern(), Date.class.getName()));
+        throw new FixedFormatException(String.format("Could not parse value[%s] by pattern[%s] to %s", string, instructions.getFixedFormatPatternData().getPattern(), Date.class.getName()), e);
       }
     }
     return result;

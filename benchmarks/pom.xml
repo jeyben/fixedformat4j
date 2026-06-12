@@ -40,8 +40,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.15.0</version>
         <configuration>
-          <source>11</source>
-          <target>11</target>
+          <release>11</release>
           <encoding>UTF-8</encoding>
           <annotationProcessorPaths>
             <path>

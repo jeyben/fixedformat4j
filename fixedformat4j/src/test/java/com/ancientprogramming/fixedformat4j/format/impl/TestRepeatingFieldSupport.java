@@ -25,7 +25,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestRepeatingFieldSupport {
 
-  private final RepeatingFieldSupport support = new RepeatingFieldSupport(java.util.Collections.emptyMap());
+  private final RepeatingFieldSupport support = new RepeatingFieldSupport();
+
+  private FieldDescriptor descriptorFor(Class<?> clazz, String getterName) {
+    return ClassMetadataCache.INSTANCE.get(clazz).stream()
+        .filter(d -> d.target.getter.getName().equals(getterName))
+        .findFirst()
+        .orElseThrow(() -> new AssertionError("no descriptor for " + getterName + " on " + clazz));
+  }
 
   // =========================================================================
   // validateCountAnnotation
@@ -135,12 +142,10 @@ public class TestRepeatingFieldSupport {
   // =========================================================================
 
   @Test
-  void read_repeatingField_parsesAllElements() throws Exception {
-    Method getter = RepeatingFieldRecord.class.getMethod("getCodes");
-    Field fieldAnno = getter.getAnnotation(Field.class);
+  void read_repeatingField_parsesAllElements() {
     String data = "ab   cd   ef   0004200099";
 
-    Object result = support.read(RepeatingFieldRecord.class, data, getter, getter, fieldAnno);
+    Object result = support.read(RepeatingFieldRecord.class, data, descriptorFor(RepeatingFieldRecord.class, "getCodes"));
 
     assertInstanceOf(String[].class, result);
     String[] codes = (String[]) result;
@@ -155,17 +160,14 @@ public class TestRepeatingFieldSupport {
   // =========================================================================
 
   @Test
-  void export_repeatingField_writesAllElements() throws Exception {
+  void export_repeatingField_writesAllElements() {
     RepeatingFieldRecord record = new RepeatingFieldRecord();
     record.setCodes(new String[]{"ab", "cd", "ef"});
     record.setAmounts(new Integer[]{42, 99});
 
-    Method getter = RepeatingFieldRecord.class.getMethod("getCodes");
-    Field fieldAnno = getter.getAnnotation(Field.class);
-    AnnotationTarget target = AnnotationTarget.ofMethod(getter);
     HashMap<Integer, String> foundData = new HashMap<>();
 
-    support.export(record, target, fieldAnno, foundData);
+    support.export(record, descriptorFor(RepeatingFieldRecord.class, "getCodes"), foundData);
 
     assertEquals(3, foundData.size());
     assertEquals("ab   ", foundData.get(1));
@@ -174,40 +176,28 @@ public class TestRepeatingFieldSupport {
   }
 
   @Test
-  void export_nullCollection_throwsFixedFormatException() throws Exception {
+  void export_nullCollection_throwsFixedFormatException() {
     RepeatingFieldRecord record = new RepeatingFieldRecord();
     record.setCodes(null);
 
-    Method getter = RepeatingFieldRecord.class.getMethod("getCodes");
-    Field fieldAnno = getter.getAnnotation(Field.class);
-    AnnotationTarget target = AnnotationTarget.ofMethod(getter);
-
     assertThrows(FixedFormatException.class,
-        () -> support.export(record, target, fieldAnno, new HashMap<>()));
+        () -> support.export(record, descriptorFor(RepeatingFieldRecord.class, "getCodes"), new HashMap<>()));
   }
 
   @Test
-  void export_sizeMismatch_strictMode_throwsFixedFormatException() throws Exception {
+  void export_sizeMismatch_strictMode_throwsFixedFormatException() {
     RepeatingFieldRecord record = new RepeatingFieldRecord();
     record.setCodes(new String[]{"ab", "cd"});  // count=3 but only 2 elements
 
-    Method getter = RepeatingFieldRecord.class.getMethod("getCodes");
-    Field fieldAnno = getter.getAnnotation(Field.class);
-    AnnotationTarget target = AnnotationTarget.ofMethod(getter);
-
     assertThrows(FixedFormatException.class,
-        () -> support.export(record, target, fieldAnno, new HashMap<>()));
+        () -> support.export(record, descriptorFor(RepeatingFieldRecord.class, "getCodes"), new HashMap<>()));
   }
 
   @Test
-  void export_sizeMismatch_nonStrictMode_logsWarnAndExportsMin() throws Exception {
-    Method getter = LenientFixture.class.getMethod("getCodes");
-    Field fieldAnno = getter.getAnnotation(Field.class);
-
+  void export_sizeMismatch_nonStrictMode_logsWarnAndExportsMin() {
     LenientFixture record = new LenientFixture();
     record.setCodes(new String[]{"ab", "cd"});  // count=3 but only 2 elements
 
-    AnnotationTarget target = AnnotationTarget.ofMethod(getter);
     HashMap<Integer, String> foundData = new HashMap<>();
 
     Logger logger = (Logger) LoggerFactory.getLogger(RepeatingFieldSupport.class);
@@ -216,7 +206,7 @@ public class TestRepeatingFieldSupport {
     logger.addAppender(appender);
     logger.setLevel(Level.WARN);
     try {
-      support.export(record, target, fieldAnno, foundData);
+      support.export(record, descriptorFor(LenientFixture.class, "getCodes"), foundData);
     } finally {
       logger.detachAppender(appender);
     }

@@ -358,4 +358,48 @@ public class TestByTypeFormatter {
     ByTypeFormatter f = formatterWithRegistry(UUID.class, registry);
     assertTrue(f.actualFormatter(UUID.class) instanceof UUIDFormatter);
   }
+
+  // --- Instance reuse across calls and threads ---
+
+  @Test
+  public void testRepeatedCallsOnSameInstanceStayCorrect() {
+    ByTypeFormatter f = formatterFor(Integer.class);
+    for (int i = 0; i < 100; i++) {
+      assertEquals(i, f.parse(String.format("%05d", i), numInstr(5)));
+      assertEquals(String.format("%05d", i), f.format(i, numInstr(5)));
+    }
+  }
+
+  @Test
+  public void testUnknownTypeThrowsOnEveryCall() {
+    ByTypeFormatter f = formatterFor(UUID.class);
+    assertThrows(FixedFormatException.class, () -> f.parse("x", strInstr(1)));
+    assertThrows(FixedFormatException.class, () -> f.parse("x", strInstr(1)));
+    assertThrows(FixedFormatException.class, () -> f.format(null, strInstr(1)));
+  }
+
+  @Test
+  public void testConcurrentUseOfSharedInstance() throws Exception {
+    ByTypeFormatter f = formatterFor(Integer.class);
+    int threads = 8;
+    java.util.concurrent.ExecutorService pool = java.util.concurrent.Executors.newFixedThreadPool(threads);
+    try {
+      java.util.List<java.util.concurrent.Future<Boolean>> results = new java.util.ArrayList<>();
+      for (int t = 0; t < threads; t++) {
+        results.add(pool.submit(() -> {
+          for (int i = 0; i < 1000; i++) {
+            if (!Integer.valueOf(i % 100).equals(f.parse(String.format("%05d", i % 100), numInstr(5)))) {
+              return false;
+            }
+          }
+          return true;
+        }));
+      }
+      for (java.util.concurrent.Future<Boolean> r : results) {
+        assertTrue(r.get(), "concurrent parse on a shared ByTypeFormatter must stay correct");
+      }
+    } finally {
+      pool.shutdownNow();
+    }
+  }
 }
