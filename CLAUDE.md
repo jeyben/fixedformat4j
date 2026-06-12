@@ -54,6 +54,8 @@ The library maps Java POJOs annotated with `@Record` and `@Field` to/from fixed-
 - `load(Class<T>, String data)` — parses a fixed-width string into a new instance of the annotated class
 - `export(T instance)` / `export(String template, T instance)` — serializes an annotated instance to a fixed-width string
 
+`FixedFormatManagerImpl` additionally implements `FixedFormatIntrospector` (since 1.9.0): `introspect(Class<?>)` exposes the field layout as public immutable `FieldInfo` descriptors, ordered by offset. The interface is deliberately separate from `FixedFormatManager` (ISP; keeps third-party manager implementations compatible).
+
 **Annotation layer** (`annotation/` package):
 - `@Record` — marks a class as a fixed-format record; declares total length and padding char
 - `@Field` — placed on getter methods (or record components, since 1.9.0); declares `offset` (1-based), `length`, `align`, `paddingChar`, and optional `formatter`
