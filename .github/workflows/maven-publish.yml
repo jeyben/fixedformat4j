@@ -94,7 +94,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ github.event.release.tag_name }} \
+          gh release upload --clobber ${{ env.RELEASE_TAG }} \
             fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}.jar \
             fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}-sources.jar \
             fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}-javadoc.jar \
@@ -113,9 +113,9 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           NEXT=$(echo $RELEASE_VERSION | awk -F. '{print $1"."$2"."$3+1"-SNAPSHOT"}')
-          BRANCH="chore/prepare-$NEXT-${{ github.run_id }}"
+          BRANCH="chore/prepare-$NEXT-${{ github.run_id }}-${{ github.run_attempt }}"
           git checkout -B "$BRANCH" origin/master
-          mvn -B versions:set -DnewVersion=$NEXT -DprocessAllModules=true -DgenerateBackupPoms=false
+          mvn -B versions:set -DnewVersion="$NEXT" -DprocessAllModules=true -DgenerateBackupPoms=false
           if git diff --quiet; then
             echo "master is already at $NEXT; nothing to bump."
             exit 0
