@@ -1,0 +1,195 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <name>Fixed Format for Java - Micrometer instrumentation</name>
+  <groupId>com.ancientprogramming.fixedformat4j</groupId>
+
+  <version>1.9.0-SNAPSHOT</version>
+  <artifactId>fixedformat4j-micrometer</artifactId>
+  <packaging>jar</packaging>
+
+  <inceptionYear>2008</inceptionYear>
+  <organization>
+    <name>Eyben Consult</name>
+    <url>https://eybenconsult.com</url>
+  </organization>
+  <description>
+    <![CDATA[Optional Micrometer instrumentation for fixedformat4j. Provides decorator-based timers,
+    counters and gauges for FixedFormatManager and FixedFormatReader without modifying or adding
+    dependencies to the core fixedformat4j artifact. Works with any MeterRegistry — Spring Boot
+    Actuator, Quarkus, Micronaut, or plain Java.]]>
+  </description>
+  <url>https://eybenconsult.com</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/jeyben/fixedformat4j/issues</url>
+  </issueManagement>
+
+  <scm>
+    <connection>scm:git:https://github.com/jeyben/fixedformat4j.git</connection>
+    <developerConnection>scm:git:git@github.com:jeyben/fixedformat4j.git</developerConnection>
+    <url>https://github.com/jeyben/fixedformat4j/tree/master/fixedformat4j-micrometer</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <developers>
+    <developer>
+      <name>Jacob von Eyben</name>
+      <id>jeyben</id>
+      <email>jacobvoneyben@gmail.com</email>
+      <organization/>
+      <organizationUrl/>
+      <url>https://eybenconsult.com</url>
+      <timezone>2</timezone>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.ancientprogramming.fixedformat4j</groupId>
+      <artifactId>fixedformat4j</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-core</artifactId>
+      <version>1.17.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.13.4</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.5</version>
+      </plugin>
+      <plugin>
+        <groupId>org.pitest</groupId>
+        <artifactId>pitest-maven</artifactId>
+        <version>1.23.1</version>
+        <configuration>
+          <targetClasses>
+            <param>com.ancientprogramming.fixedformat4j.micrometer.*</param>
+          </targetClasses>
+          <targetTests>
+            <param>com.ancientprogramming.fixedformat4j.micrometer.*</param>
+          </targetTests>
+          <outputFormats>
+            <outputFormat>HTML</outputFormat>
+            <outputFormat>XML</outputFormat>
+          </outputFormats>
+          <mutators>
+            <mutator>ALL</mutator>
+          </mutators>
+          <timestampedReports>false</timestampedReports>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>1.2.3</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.15.0</version>
+        <configuration>
+          <release>11</release>
+          <encoding>UTF-8</encoding>
+          <debug>true</debug>
+          <proc>none</proc>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.4.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.10.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <publishingServerId>central</publishingServerId>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.12.0</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals><goal>jar</goal></goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.8</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals><goal>sign</goal></goals>
+                <configuration>
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

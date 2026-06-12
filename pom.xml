@@ -41,6 +41,7 @@
   <modules>
     <module>fixedformat4j</module>
     <module>fixedformat4j-processor</module>
+    <module>fixedformat4j-micrometer</module>
     <module>samples</module>
   </modules>
 
