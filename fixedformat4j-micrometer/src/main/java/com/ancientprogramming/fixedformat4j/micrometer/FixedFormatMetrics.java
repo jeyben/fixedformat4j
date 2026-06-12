@@ -16,9 +16,12 @@
 package com.ancientprogramming.fixedformat4j.micrometer;
 
 import com.ancientprogramming.fixedformat4j.format.FixedFormatManager;
+import com.ancientprogramming.fixedformat4j.io.read.ParseErrorStrategy;
+import com.ancientprogramming.fixedformat4j.io.read.UnmatchStrategy;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * Entry point for Micrometer instrumentation of fixedformat4j.
@@ -68,5 +71,55 @@ public final class FixedFormatMetrics {
   public FixedFormatManager instrument(FixedFormatManager delegate) {
     Objects.requireNonNull(delegate, "delegate must not be null");
     return new MeteredFixedFormatManager(delegate, registry);
+  }
+
+  /**
+   * Wraps an {@link UnmatchStrategy} so every unmatched line increments
+   * {@code fixedformat.reader.lines.unmatched} before the wrapped strategy runs.
+   * Pass the result to {@code FixedFormatReaderBuilder.unmatchStrategy(...)}.
+   *
+   * @param delegate the strategy to wrap; must not be {@code null}
+   * @return a counting strategy with identical behavior; never {@code null}
+   */
+  public UnmatchStrategy countUnmatched(UnmatchStrategy delegate) {
+    Objects.requireNonNull(delegate, "delegate must not be null");
+    return (lineNumber, line) -> {
+      registry.counter("fixedformat.reader.lines.unmatched").increment();
+      delegate.handle(lineNumber, line);
+    };
+  }
+
+  /**
+   * Wraps a {@link ParseErrorStrategy} so every failed line increments
+   * {@code fixedformat.reader.lines.errors} before the wrapped strategy runs.
+   * Pass the result to {@code FixedFormatReaderBuilder.parseErrorStrategy(...)}.
+   *
+   * @param delegate the strategy to wrap; must not be {@code null}
+   * @return a counting strategy with identical behavior; never {@code null}
+   */
+  public ParseErrorStrategy countParseErrors(ParseErrorStrategy delegate) {
+    Objects.requireNonNull(delegate, "delegate must not be null");
+    return (wrapped, line, lineNumber) -> {
+      registry.counter("fixedformat.reader.lines.errors").increment();
+      delegate.handle(wrapped, line, lineNumber);
+    };
+  }
+
+  /**
+   * Wraps an exclude-lines predicate so every line read increments
+   * {@code fixedformat.reader.lines.processed} — the predicate is the first thing the reader
+   * evaluates for each line, which makes it the per-line seam. Pass the result to
+   * {@code FixedFormatReaderBuilder.excludeLines(...)}; when no lines should be excluded, pass
+   * {@code line -> false} as the delegate.
+   *
+   * @param excludeDelegate the exclusion predicate to wrap; must not be {@code null}
+   * @return a counting predicate with identical behavior; never {@code null}
+   */
+  public Predicate<String> countLines(Predicate<String> excludeDelegate) {
+    Objects.requireNonNull(excludeDelegate, "excludeDelegate must not be null");
+    return line -> {
+      registry.counter("fixedformat.reader.lines.processed").increment();
+      return excludeDelegate.test(line);
+    };
   }
 }
