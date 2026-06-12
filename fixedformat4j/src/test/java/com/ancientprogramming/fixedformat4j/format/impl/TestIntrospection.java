@@ -91,4 +91,138 @@ class TestIntrospection {
   void nonRecordClassIsRejected() {
     assertThrows(FixedFormatException.class, () -> introspector.introspect(String.class));
   }
+
+  @com.ancientprogramming.fixedformat4j.annotation.Record(align = com.ancientprogramming.fixedformat4j.annotation.RecordAlign.RIGHT)
+  public static class RightAlignedRecord {
+
+    @Field(offset = 1, length = 8)
+    public String getInherited() {
+      return null;
+    }
+
+    public void setInherited(String value) {
+    }
+
+    @Field(offset = 9, length = 8, align = Align.LEFT)
+    public String getOverridden() {
+      return null;
+    }
+
+    public void setOverridden(String value) {
+    }
+  }
+
+  @Test
+  void effectiveAlignmentResolvesRecordDefaultAndFieldOverride() {
+    List<FieldInfo> fields = introspector.introspect(RightAlignedRecord.class);
+
+    assertEquals(Align.RIGHT, fields.get(0).getEffectiveAlignment(),
+        "field without explicit align inherits @Record(align = RIGHT)");
+    assertEquals(Align.LEFT, fields.get(1).getEffectiveAlignment(),
+        "explicit @Field(align) overrides the record default");
+  }
+
+  @com.ancientprogramming.fixedformat4j.annotation.Record
+  public static class ConfiguredRecord {
+
+    @Field(offset = 1, length = 6, paddingChar = '0', nullValue = "999999")
+    public Integer getAmount() {
+      return null;
+    }
+
+    public void setAmount(Integer value) {
+    }
+
+    @Field(offset = 7, length = 4, nullChar = ' ',
+        formatter = com.ancientprogramming.fixedformat4j.format.impl.StringFormatter.class)
+    public String getCode() {
+      return null;
+    }
+
+    public void setCode(String value) {
+    }
+
+    @Field(offset = 11, length = 3, count = 4)
+    public List<String> getTags() {
+      return null;
+    }
+
+    public void setTags(List<String> value) {
+    }
+
+    @Field(offset = 23, length = 10)
+    public BasicRecord getNested() {
+      return null;
+    }
+
+    public void setNested(BasicRecord value) {
+    }
+  }
+
+  @Test
+  void sentinelsFormatterRepeatCountAndNestedRecordAreExposed() {
+    List<FieldInfo> fields = introspector.introspect(ConfiguredRecord.class);
+
+    FieldInfo amount = fields.get(0);
+    assertEquals('0', amount.getPaddingChar());
+    assertEquals("999999", amount.getNullValue());
+
+    FieldInfo code = fields.get(1);
+    assertEquals(' ', code.getNullChar());
+    assertEquals(StringFormatter.class, code.getFormatterClass());
+
+    FieldInfo tags = fields.get(2);
+    assertEquals(4, tags.getRepeatCount());
+    assertEquals(List.class, tags.getDataType());
+
+    FieldInfo nested = fields.get(3);
+    assertEquals(true, nested.isNestedRecord());
+    assertEquals(BasicRecord.class, nested.getDataType());
+  }
+
+  @com.ancientprogramming.fixedformat4j.annotation.Record
+  public static class MultiFormatRecord {
+
+    @com.ancientprogramming.fixedformat4j.annotation.Fields({
+        @Field(offset = 1, length = 10),
+        @Field(offset = 11, length = 10, align = Align.RIGHT, paddingChar = '0')
+    })
+    public String getValue() {
+      return null;
+    }
+
+    public void setValue(String value) {
+    }
+  }
+
+  @Test
+  void fieldsAnnotationYieldsOneFieldInfoPerInnerField() {
+    List<FieldInfo> fields = introspector.introspect(MultiFormatRecord.class);
+
+    assertEquals(2, fields.size());
+    assertEquals("value", fields.get(0).getPropertyName());
+    assertEquals("value", fields.get(1).getPropertyName());
+    assertEquals(1, fields.get(0).getOffset());
+    assertEquals(11, fields.get(1).getOffset());
+    assertEquals('0', fields.get(1).getPaddingChar());
+    assertEquals(Align.RIGHT, fields.get(1).getEffectiveAlignment());
+  }
+
+  @com.ancientprogramming.fixedformat4j.annotation.Record
+  public static class BadPatternRecord {
+
+    @Field(offset = 1, length = 18)
+    @com.ancientprogramming.fixedformat4j.annotation.FixedFormatPattern("not-a-date-pattern")
+    public java.util.Date getCreatedAt() {
+      return null;
+    }
+
+    public void setCreatedAt(java.util.Date value) {
+    }
+  }
+
+  @Test
+  void invalidConfigurationFailsAtIntrospectTimeAsAPreflightCheck() {
+    assertThrows(FixedFormatException.class, () -> introspector.introspect(BadPatternRecord.class));
+  }
 }
