@@ -27,9 +27,9 @@ public class FixedFormatNumberData {
 
   public static final FixedFormatNumberData DEFAULT = new FixedFormatNumberData(Sign.NOSIGN, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN);
 
-  private Sign signing;
-  private char positiveSign;
-  private char negativeSign;
+  private final Sign signing;
+  private final char positiveSign;
+  private final char negativeSign;
 
   /**
    * Creates a number data object.
