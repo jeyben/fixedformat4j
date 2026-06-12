@@ -13,7 +13,7 @@ Use an instance of `FixedFormatManager` to load and export the data to and from 
 Fixedformat4j requires your Java object to follow these conventions:
 
 1. A class to be used with fixedformat4j must be annotated with `@Record`.
-2. A property is a pair of a getter and a setter method.
+2. A property is a pair of a getter and a setter method — or, since 1.9.0, a component of a Java `record` (JDK 16+).
 3. A `@Field` annotation on a getter (or directly on the field itself, since 1.5.0) tells the manager how to convert to and from string representation.
 
 ### Example
@@ -38,6 +38,20 @@ public class BasicUsageRecord {
 ```
 
 Since 1.5.0, `@Field` can also be placed on the field itself — see [Example 6](../examples#example-6--field-annotations-and-lombok) for the Lombok-friendly style.
+
+### Java records (since 1.9.0)
+
+On JDK 16+ the same mapping can be declared as an immutable Java `record` — annotate the record
+components; `load()` creates the instance through the canonical constructor:
+
+```java
+@Record
+public record BasicUsageRecord(
+    @Field(offset = 1, length = 35) String stringData) {}
+```
+
+All annotations (`@Fields`, `@FixedFormatPattern`, `@FixedFormatDecimal`, `@FixedFormatNumber`,
+`@FixedFormatBoolean`, `@FixedFormatEnum`) apply to record components exactly as to getters.
 
 ## FixedFormatManager
 

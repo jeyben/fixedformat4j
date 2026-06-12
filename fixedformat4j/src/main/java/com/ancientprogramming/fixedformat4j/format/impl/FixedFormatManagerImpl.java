@@ -138,28 +138,20 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
     getAndAssertRecordAnnotation(fixedFormatRecordClass);
     validatePatterns(fixedFormatRecordClass);
 
+    ConstructorBinding constructorBinding = metadataCache.constructorBinding(fixedFormatRecordClass);
+    if (constructorBinding != null) {
+      return loadThroughConstructor(fixedFormatRecordClass, data, constructorBinding);
+    }
+    return loadThroughSetters(fixedFormatRecordClass, data);
+  }
+
+  private <T> T loadThroughSetters(Class<T> fixedFormatRecordClass, String data) {
     T instance = recordInstantiator.instantiate(fixedFormatRecordClass);
 
     for (FieldDescriptor desc : metadataCache.get(fixedFormatRecordClass)) {
       if (!desc.isLoadField) continue;
 
-      Object value;
-      if (desc.isRepeating) {
-        value = repeatingFieldSupport.read(fixedFormatRecordClass, data, desc);
-      } else {
-        String dataToParse = fetchData(data, desc.formatInstructions, desc.context);
-        if (desc.isNestedRecord) {
-          value = load(desc.datatype, dataToParse);
-        } else if (NullSupport.isNullSliceOrValue(dataToParse, desc.formatInstructions)) {
-          value = null;
-        } else {
-          try {
-            value = desc.formatter.parse(dataToParse, desc.formatInstructions);
-          } catch (RuntimeException e) {
-            throw new ParseException(data, dataToParse, fixedFormatRecordClass, desc.target.getter, desc.context, desc.formatInstructions, e);
-          }
-        }
-      }
+      Object value = parseFieldValue(fixedFormatRecordClass, data, desc);
 
       if (value != null && desc.setterHandle != null) {
         try {
@@ -169,13 +161,49 @@ public class FixedFormatManagerImpl implements FixedFormatManager {
               format("could not invoke method %s.%s(%s)", fixedFormatRecordClass.getName(), desc.setter.getName(), desc.datatype), e);
         }
       }
-
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("the loaded data[{}]", value);
-      }
     }
 
     return instance;
+  }
+
+  /**
+   * Java {@code record} path: all field values are parsed first, then the instance is created
+   * in a single canonical-constructor call (records have no setters).
+   */
+  private <T> T loadThroughConstructor(Class<T> fixedFormatRecordClass, String data, ConstructorBinding binding) {
+    Object[] args = binding.newArgs();
+
+    for (FieldDescriptor desc : metadataCache.get(fixedFormatRecordClass)) {
+      if (!desc.isLoadField) continue;
+      binding.assign(desc, parseFieldValue(fixedFormatRecordClass, data, desc), args);
+    }
+
+    return fixedFormatRecordClass.cast(binding.newInstance(fixedFormatRecordClass, args));
+  }
+
+  private Object parseFieldValue(Class<?> fixedFormatRecordClass, String data, FieldDescriptor desc) {
+    Object value;
+    if (desc.isRepeating) {
+      value = repeatingFieldSupport.read(fixedFormatRecordClass, data, desc);
+    } else {
+      String dataToParse = fetchData(data, desc.formatInstructions, desc.context);
+      if (desc.isNestedRecord) {
+        value = load(desc.datatype, dataToParse);
+      } else if (NullSupport.isNullSliceOrValue(dataToParse, desc.formatInstructions)) {
+        value = null;
+      } else {
+        try {
+          value = desc.formatter.parse(dataToParse, desc.formatInstructions);
+        } catch (RuntimeException e) {
+          throw new ParseException(data, dataToParse, fixedFormatRecordClass, desc.target.getter, desc.context, desc.formatInstructions, e);
+        }
+      }
+    }
+
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("the loaded data[{}]", value);
+    }
+    return value;
   }
 
   /**

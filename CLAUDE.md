@@ -55,7 +55,7 @@ The library maps Java POJOs annotated with `@Record` and `@Field` to/from fixed-
 
 **Annotation layer** (`annotation/` package):
 - `@Record` — marks a class as a fixed-format record; declares total length and padding char
-- `@Field` — placed on getter methods; declares `offset` (1-based), `length`, `align`, `paddingChar`, and optional `formatter`
+- `@Field` — placed on getter methods (or record components, since 1.9.0); declares `offset` (1-based), `length`, `align`, `paddingChar`, and optional `formatter`
 - `@Fields` — groups multiple `@Field` annotations on one getter (for multi-format fields)
 - `@FixedFormatNumber`, `@FixedFormatDecimal`, `@FixedFormatBoolean`, `@FixedFormatPattern` — supplementary annotations on getters to control number signs, decimal handling, boolean values, and date/time patterns
 
@@ -75,6 +75,8 @@ The library maps Java POJOs annotated with `@Record` and `@Field` to/from fixed-
 
 **Recursive record support:** If a field's type is itself annotated with `@Record`, `FixedFormatManagerImpl` recursively loads/exports that nested type.
 
+**Java record support (since 1.9.0):** `@Record` classes may be Java `record` types (JDK 16+). Annotations on record components propagate to the accessors; `load()` binds all parsed values through the canonical constructor in one call (`JavaRecordSupport` + `ConstructorBinding`, cached in `ClassMetadataCache`). The artifact stays compiled at release 11 — record APIs are accessed reflectively, once per class.
+
 ## GitHub Actions
 
 All workflows must use Node.js 24 compatible actions (Node.js 20 is removed from runners September 16, 2026):
@@ -84,9 +86,9 @@ All workflows must use Node.js 24 compatible actions (Node.js 20 is removed from
 ## Key Conventions
 
 - Field offsets are **1-based**.
-- `@Field` annotations go on **getter** methods (`get*` or `is*`); the manager derives the setter name by reflection.
+- `@Field` annotations go on **getter** methods (`get*` or `is*`) for conventional POJOs, or on **record components** for Java `record` types (since 1.9.0); the manager derives the setter name by reflection for POJOs, and uses the canonical constructor for records.
 - The default formatter (`ByTypeFormatter`) is chosen automatically from the getter's return type; specify `formatter=` on `@Field` only when overriding.
-- Tests live in `fixedformat4j/src/test/java/` and use JUnit 5 (Jupiter). Issue-specific regression tests are under `issues/` sub-package.
+- Tests live in `fixedformat4j/src/test/java/` and use JUnit 5 (Jupiter). Issue-specific regression tests are under `issues/` sub-package. Tests that need JDK 16+ syntax (e.g. Java records) live in `fixedformat4j/src/test/java17/`, compiled only on JDK 17+ via the auto-activated `jdk17-tests` profile.
 
 ## Framework-breaking changes — consider twice
 

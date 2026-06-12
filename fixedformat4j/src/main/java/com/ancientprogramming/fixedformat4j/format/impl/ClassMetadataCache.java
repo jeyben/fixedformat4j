@@ -47,15 +47,38 @@ class ClassMetadataCache {
     this.customRegistry = customRegistry != null ? customRegistry : Collections.emptyMap();
   }
 
-  private final ClassValue<List<FieldDescriptor>> cache = new ClassValue<>() {
+  /** Per-class metadata: the field descriptors plus, for Java records, the constructor binding. */
+  private static final class ClassMetadata {
+    final List<FieldDescriptor> descriptors;
+    final ConstructorBinding constructorBinding;
+
+    ClassMetadata(List<FieldDescriptor> descriptors, ConstructorBinding constructorBinding) {
+      this.descriptors = descriptors;
+      this.constructorBinding = constructorBinding;
+    }
+  }
+
+  private final ClassValue<ClassMetadata> cache = new ClassValue<>() {
     @Override
-    protected List<FieldDescriptor> computeValue(Class<?> clazz) {
-      return build(clazz);
+    protected ClassMetadata computeValue(Class<?> clazz) {
+      List<FieldDescriptor> descriptors = build(clazz);
+      ConstructorBinding binding = JavaRecordSupport.isJavaRecord(clazz)
+          ? ConstructorBinding.forRecord(clazz, descriptors)
+          : null;
+      return new ClassMetadata(descriptors, binding);
     }
   };
 
   List<FieldDescriptor> get(Class<?> clazz) {
-    return cache.get(clazz);
+    return cache.get(clazz).descriptors;
+  }
+
+  /**
+   * Returns the canonical-constructor binding for Java {@code record} classes, or
+   * {@code null} for conventional setter-based classes.
+   */
+  ConstructorBinding constructorBinding(Class<?> clazz) {
+    return cache.get(clazz).constructorBinding;
   }
 
   private List<FieldDescriptor> build(Class<?> clazz) {

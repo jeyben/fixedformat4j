@@ -32,15 +32,23 @@ class AnnotationScanner {
    */
   List<AnnotationTarget> scan(Class<?> clazz) {
     LinkedHashMap<String, AnnotationTarget> targets = new LinkedHashMap<>();
+    boolean isJavaRecord = JavaRecordSupport.isJavaRecord(clazz);
 
-    // Pass 1: method annotations
+    // Pass 1: method annotations. Record accessors keep their raw name as key: they carry no
+    // get/is prefix, and stripping would mangle components like 'issuer' to 'suer'.
     for (Method method : clazz.getMethods()) {
       if (method.getAnnotation(Field.class) != null || method.getAnnotation(Fields.class) != null) {
-        targets.put(stripMethodPrefix(method.getName()), AnnotationTarget.ofMethod(method));
+        String key = isJavaRecord ? method.getName() : stripMethodPrefix(method.getName());
+        targets.put(key, AnnotationTarget.ofMethod(method));
       }
     }
 
-    // Pass 2: field annotations — walk class hierarchy
+    // Pass 2: field annotations — walk class hierarchy. Skipped for records: a component
+    // annotation propagates to both the accessor (pass 1 above) and the backing field, so
+    // scanning the fields would only produce duplicates without resolvable get/is getters.
+    if (isJavaRecord) {
+      return new ArrayList<>(targets.values());
+    }
     Class<?> current = clazz;
     while (current != null && current != Object.class) {
       for (java.lang.reflect.Field javaField : current.getDeclaredFields()) {
