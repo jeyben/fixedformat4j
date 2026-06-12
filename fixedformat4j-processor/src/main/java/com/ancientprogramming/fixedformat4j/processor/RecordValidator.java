@@ -101,15 +101,17 @@ class RecordValidator {
         .filter(entry -> entry.annotation.length() != Field.REST_OF_LINE)
         .sorted(Comparator.comparingInt(entry -> entry.annotation.offset()))
         .collect(Collectors.toList());
-    for (int i = 1; i < sorted.size(); i++) {
-      FieldEntry previous = sorted.get(i - 1);
-      FieldEntry current = sorted.get(i);
-      if (current.annotation.offset() <= previous.endOffset()) {
+    FieldEntry farthestReaching = null;
+    for (FieldEntry current : sorted) {
+      if (farthestReaching != null && current.annotation.offset() <= farthestReaching.endOffset()) {
         messager.printMessage(Diagnostic.Kind.ERROR,
             format("@Field [offset=%d, length=%d] on %s overlaps @Field [offset=%d, length=%d] on %s",
-                previous.annotation.offset(), previous.annotation.length(), previous.target.label(),
+                farthestReaching.annotation.offset(), farthestReaching.annotation.length(), farthestReaching.target.label(),
                 current.annotation.offset(), current.annotation.length(), current.target.label()),
             current.target.element);
+      }
+      if (farthestReaching == null || current.endOffset() > farthestReaching.endOffset()) {
+        farthestReaching = current;
       }
     }
   }
@@ -140,8 +142,8 @@ class RecordValidator {
     if (maxOtherOffset >= restOfLine.annotation.offset()) {
       messager.printMessage(Diagnostic.Kind.ERROR,
           format("@Field(length = -1) on %s must be the last field (highest offset) in the record,"
-                  + " but another field at offset %d comes after or at the same position",
-              restOfLine.target.label(), maxOtherOffset),
+                  + " but another field extends to position %d, at or after this field's start offset %d",
+              restOfLine.target.label(), maxOtherOffset, restOfLine.annotation.offset()),
           restOfLine.target.element);
     }
   }

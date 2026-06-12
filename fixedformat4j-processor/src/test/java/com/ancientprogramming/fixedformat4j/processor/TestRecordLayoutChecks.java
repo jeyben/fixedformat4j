@@ -99,6 +99,23 @@ class TestRecordLayoutChecks {
   }
 
   @Test
+  void wideFieldOverlappingSeveralNarrowerFieldsReportsEveryOverlapInOnePass() {
+    List<String> errors = errorMessages("WideOverlap", IMPORTS
+        + "@Record\n"
+        + "public class WideOverlap {\n"
+        + "  @Field(offset = 1, length = 20)\n"
+        + "  public String getWide() { return null; }\n"
+        + "  @Field(offset = 5, length = 3)\n"
+        + "  public String getInnerOne() { return null; }\n"
+        + "  @Field(offset = 10, length = 3)\n"
+        + "  public String getInnerTwo() { return null; }\n"
+        + "}\n");
+    assertEquals(2, errors.size(), "both overlaps with the wide field must be reported: " + errors);
+    assertTrue(errors.get(0).contains("getWide") && errors.get(0).contains("getInnerOne"), errors.get(0));
+    assertTrue(errors.get(1).contains("getWide") && errors.get(1).contains("getInnerTwo"), errors.get(1));
+  }
+
+  @Test
   void repeatingFieldOverlapIsDetectedAcrossExpandedRange() {
     List<String> errors = errorMessages("RepeatOverlap", IMPORTS
         + "import java.util.List;\n"

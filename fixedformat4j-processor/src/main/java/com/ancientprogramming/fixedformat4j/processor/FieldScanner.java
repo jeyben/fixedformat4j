@@ -85,6 +85,9 @@ final class FieldScanner {
           continue;
         }
         String key = capitalize(enclosed.getSimpleName().toString());
+        // put, not putIfAbsent: field annotations override method annotations for the same
+        // property. Within this pass it also means a superclass field annotation overwrites a
+        // subclass one — matching the runtime AnnotationScanner, which puts in the same order.
         targets.put(key, new AnnotatedFixedFormatField(enclosed, enclosed.asType(), annotations));
       }
     }

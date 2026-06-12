@@ -105,6 +105,20 @@ class TestPatternCheck {
   }
 
   @Test
+  void invalidPatternOnStaticGetterIsCompileErrorLikeAtRuntime() {
+    List<String> errors = errorMessages("StaticGetter", IMPORTS
+        + "@Record\n"
+        + "public class StaticGetter {\n"
+        + "  @Field(offset = 1, length = 18)\n"
+        + "  @FixedFormatPattern(\"not-a-date-pattern\")\n"
+        + "  public static Date getCreatedAt() { return null; }\n"
+        + "}\n");
+    assertEquals(1, errors.size(),
+        "the runtime AnnotationScanner picks up static getters (Class.getMethods includes them),"
+            + " so the processor must validate them too: " + errors);
+  }
+
+  @Test
   void invalidPatternOnAnnotatedFieldMemberIsCompileError() {
     List<String> errors = errorMessages("BadFieldMemberPattern", IMPORTS
         + "@Record\n"

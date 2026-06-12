@@ -117,6 +117,8 @@ class TestRestOfLineChecks {
         + "}\n");
     assertEquals(1, errors.size(), "expected exactly one error: " + errors);
     assertTrue(errors.get(0).contains("last"), errors.get(0));
+    assertTrue(errors.get(0).contains("extends to position 10"), errors.get(0));
+    assertTrue(errors.get(0).contains("start offset 5"), errors.get(0));
   }
 
   @Test
