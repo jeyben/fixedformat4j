@@ -64,7 +64,7 @@ public FixedFormatManager fixedFormatManager(MeterRegistry registry) {
 | `fixedformat.reader.lines.processed` | counter | — | Lines read, including excluded and unmatched ones |
 | `fixedformat.reader.lines.unmatched` | counter | — | Lines matching no registered `LinePattern` |
 | `fixedformat.reader.lines.errors` | counter | — | Lines that matched but failed to parse |
-| `fixedformat.metadata.cache.classes` | gauge | — | Distinct `@Record` classes processed through the instrumented manager |
+| `fixedformat.metadata.cache.classes` | gauge | `manager.instance` | Distinct `@Record` classes processed through the instrumented manager |
 
 A spiking `fixedformat.parse.errors` rate is a leading indicator of upstream format drift —
 exactly the class of problem fixed-width integrations otherwise suffer silently.
@@ -72,7 +72,11 @@ exactly the class of problem fixed-width integrations otherwise suffer silently.
 **Gauge semantics:** the library's internal metadata cache is `ClassValue`-based and deliberately
 not enumerable (it must never pin classloaders in hot-reload environments), so the gauge counts
 the distinct record classes observed by the instrumented manager instance — the measurable
-equivalent of "classes currently cached" for the normal one-manager setup.
+equivalent of "classes currently cached" for the normal one-manager setup. The tracking set
+holds classes **weakly** for the same classloader-safety reason: record classes that become
+unreachable (e.g. after a hot-reload) drop out of the count. Each manager publishes its own
+gauge, disambiguated by the `manager.instance` tag, so several instrumented managers can share
+one registry.
 
 ## Performance
 

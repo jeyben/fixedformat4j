@@ -21,8 +21,10 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 
+import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Decorator that times {@link #load} and {@link #export} per record class, counts
@@ -32,7 +34,12 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * <p>The gauge counts classes observed by <em>this</em> instrumented manager: the global
  * {@code ClassValue}-based metadata cache is deliberately not enumerable (classloader-leak
- * safety), so per-manager observation is the measurable equivalent.
+ * safety), so per-manager observation is the measurable equivalent. The tracking set holds
+ * the classes <em>weakly</em> for the same reason — a long-lived manager must never pin a
+ * record class's defining classloader, so classes that become unreachable (e.g. after a
+ * hot-reload) drop out of the gauge. Each manager tags its gauge with a unique
+ * {@code manager.instance} value; Micrometer dedupes meters by name+tags, so an untagged
+ * gauge would be silently dropped for every manager but the first on a shared registry.
  *
  * @author Jacob von Eyben - <a href="https://eybenconsult.com">https://eybenconsult.com</a>
  * @since 1.9.0
@@ -40,16 +47,19 @@ import java.util.concurrent.ConcurrentHashMap;
 final class MeteredFixedFormatManager implements FixedFormatManager {
 
   private static final String RECORD_CLASS_TAG = "record.class";
+  private static final AtomicInteger INSTANCE_COUNTER = new AtomicInteger();
 
   private final FixedFormatManager delegate;
   private final MeterRegistry registry;
-  private final Set<Class<?>> seenClasses = ConcurrentHashMap.newKeySet();
+  private final Set<Class<?>> seenClasses =
+      Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
   MeteredFixedFormatManager(FixedFormatManager delegate, MeterRegistry registry) {
     this.delegate = delegate;
     this.registry = registry;
     Gauge.builder("fixedformat.metadata.cache.classes", seenClasses, Set::size)
         .description("Distinct @Record classes processed through this instrumented manager")
+        .tag("manager.instance", String.valueOf(INSTANCE_COUNTER.incrementAndGet()))
         .register(registry);
   }
 
