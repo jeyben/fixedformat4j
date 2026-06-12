@@ -38,6 +38,8 @@ class RecordValidator {
       fieldChecker.checkPattern(target);
       for (com.ancientprogramming.fixedformat4j.annotation.Field fieldAnnotation : target.fieldAnnotations) {
         fieldChecker.checkEnumLength(target, fieldAnnotation);
+        fieldChecker.checkNullChar(target, fieldAnnotation);
+        fieldChecker.checkNullValue(target, fieldAnnotation);
       }
     }
   }

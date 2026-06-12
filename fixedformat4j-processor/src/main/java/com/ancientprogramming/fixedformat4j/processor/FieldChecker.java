@@ -115,6 +115,71 @@ final class FieldChecker {
     }
   }
 
+  /**
+   * Twin of {@code FieldValidator.doValidateFieldNullChar}: a nullChar sentinel cannot
+   * represent {@code null} on a primitive-typed field (or primitive element type when
+   * {@code count > 1}).
+   */
+  void checkNullChar(AnnotatedFixedFormatField target, Field fieldAnnotation) {
+    if (fieldAnnotation.nullChar() == Field.UNSET_NULL_CHAR) {
+      return;
+    }
+    TypeMirror typeToCheck = typeToCheck(target, fieldAnnotation);
+    if (typeToCheck != null && typeToCheck.getKind().isPrimitive()) {
+      error(target, format("@Field nullChar is not supported on primitive type %s on %s",
+          typeToCheck, target.label()));
+    }
+  }
+
+  /**
+   * Twin of {@code FieldValidator.doValidateNullValue}: nullValue is mutually exclusive with
+   * nullChar, must exactly fill the field, and cannot represent {@code null} on a primitive
+   * type. REST_OF_LINE fields are handled by the rest-of-line rules instead.
+   */
+  void checkNullValue(AnnotatedFixedFormatField target, Field fieldAnnotation) {
+    if (fieldAnnotation.nullValue().isEmpty() || fieldAnnotation.length() == Field.REST_OF_LINE) {
+      return;
+    }
+    if (fieldAnnotation.nullChar() != Field.UNSET_NULL_CHAR) {
+      error(target, format("@Field nullValue \"%s\" and nullChar '%c' are mutually exclusive on %s",
+          fieldAnnotation.nullValue(), fieldAnnotation.nullChar(), target.label()));
+    }
+    if (fieldAnnotation.nullValue().length() != fieldAnnotation.length()) {
+      error(target, format("@Field nullValue \"%s\" has length %d but the field length is %d on %s",
+          fieldAnnotation.nullValue(), fieldAnnotation.nullValue().length(), fieldAnnotation.length(), target.label()));
+    }
+    TypeMirror typeToCheck = typeToCheck(target, fieldAnnotation);
+    if (typeToCheck != null && typeToCheck.getKind().isPrimitive()) {
+      error(target, format("@Field nullValue is not supported on primitive type %s on %s",
+          typeToCheck, target.label()));
+    }
+  }
+
+  private TypeMirror typeToCheck(AnnotatedFixedFormatField target, Field fieldAnnotation) {
+    if (fieldAnnotation.count() > 1) {
+      return elementTypeOf(target.datatype);
+    }
+    return target.datatype;
+  }
+
+  /**
+   * Mirror of {@code RepeatingFieldSupport.resolveElementType}: array component type or first
+   * type argument of a parameterized collection. Returns {@code null} when undecidable; the
+   * runtime then reports it on first use.
+   */
+  static TypeMirror elementTypeOf(TypeMirror datatype) {
+    if (datatype.getKind() == TypeKind.ARRAY) {
+      return ((javax.lang.model.type.ArrayType) datatype).getComponentType();
+    }
+    if (datatype.getKind() == TypeKind.DECLARED) {
+      List<? extends TypeMirror> typeArguments = ((DeclaredType) datatype).getTypeArguments();
+      if (!typeArguments.isEmpty()) {
+        return typeArguments.get(0);
+      }
+    }
+    return null;
+  }
+
   static String qualifiedNameOf(TypeMirror type) {
     if (type.getKind() == TypeKind.DECLARED) {
       return ((TypeElement) ((DeclaredType) type).asElement()).getQualifiedName().toString();
