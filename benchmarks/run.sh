@@ -9,6 +9,28 @@ else
   VERSIONS=("$@")
 fi
 
+# Pre-flight: every requested release (everything except "master", which is
+# built locally) must resolve from Maven Central before we run anything. A
+# version that does not resolve used to be silently skipped, so it quietly
+# vanished from the docs — e.g. a typo'd "1.9.1", or a release dispatched on
+# its release day before it had finished syncing to Central. Collect every
+# unresolvable version and fail loudly up front rather than producing a green
+# run with missing results.
+MISSING=()
+for V in "${VERSIONS[@]}"; do
+  [[ "$V" == "master" ]] && continue
+  if ! mvn dependency:get \
+       -Dartifact="com.ancientprogramming.fixedformat4j:fixedformat4j:${V}" \
+       -q >/dev/null 2>&1; then
+    MISSING+=("$V")
+  fi
+done
+if [[ ${#MISSING[@]} -gt 0 ]]; then
+  echo "::error::Unresolvable fixedformat4j version(s): ${MISSING[*]}" >&2
+  echo "Each non-master version must exist and have finished syncing to Maven Central. Fix the version list and re-run." >&2
+  exit 1
+fi
+
 OUT_DIR="$(pwd)/docs/assets/benchmarks"
 mkdir -p "$OUT_DIR"
 
@@ -25,15 +47,6 @@ for V in "${VERSIONS[@]}"; do
   else
     TARGET_VERSION="$V"
     LABEL="$V"
-  fi
-
-  if [[ "$V" != "master" ]]; then
-    if ! mvn dependency:get \
-         -Dartifact="com.ancientprogramming.fixedformat4j:fixedformat4j:${TARGET_VERSION}" \
-         -q >/dev/null 2>&1; then
-      echo "Skipping ${LABEL}: fixedformat4j:${TARGET_VERSION} not found in Maven Central." >&2
-      continue
-    fi
   fi
 
   SHA="$(git rev-parse --short HEAD)"
