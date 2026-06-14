@@ -20,7 +20,7 @@
     integrations. By annotating your code you set up the offsets and format for your data when
     reading/writing to and from flat fixed-format files.]]>
   </description>
-  <url>https://eybenconsult.com</url>
+  <url>https://jeyben.github.io/fixedformat4j</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

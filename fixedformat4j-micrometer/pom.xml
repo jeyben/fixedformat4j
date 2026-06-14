@@ -20,7 +20,7 @@
     dependencies to the core fixedformat4j artifact. Works with any MeterRegistry — Spring Boot
     Actuator, Quarkus, Micronaut, or plain Java.]]>
   </description>
-  <url>https://eybenconsult.com</url>
+  <url>https://jeyben.github.io/fixedformat4j</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

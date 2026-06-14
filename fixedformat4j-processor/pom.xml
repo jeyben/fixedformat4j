@@ -20,7 +20,7 @@
     first runtime use of a record class. Purely additive: the fixedformat4j runtime is unchanged and
     keeps validating as a safety net for classes compiled without this processor.]]>
   </description>
-  <url>https://eybenconsult.com</url>
+  <url>https://jeyben.github.io/fixedformat4j</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
