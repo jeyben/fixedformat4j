@@ -1,3 +1,12 @@
 title: fixedformat4j
-description: A Java API for working with fixed formatted text files
+description: >-
+  Lightweight Java library for reading and writing fixed-width / fixed-length
+  flat files using annotations on POJOs — for banking, payroll, EDI, mainframe,
+  and batch integrations.
+url: https://jeyben.github.io/fixedformat4j
+lang: en-US
 theme: jekyll-theme-cayman
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap

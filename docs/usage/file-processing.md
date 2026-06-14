@@ -1,5 +1,7 @@
 ---
 title: File Processing
+description: >-
+  Read and write fixed-width flat files line by line with fixedformat4j's FixedFormatReader and FixedFormatWriter.
 ---
 
 # File Processing

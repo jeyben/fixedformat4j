@@ -1,5 +1,7 @@
 ---
 title: Get fixedformat4j
+description: >-
+  Maven and Gradle coordinates for fixedformat4j and its optional annotation-processor and Micrometer modules.
 ---
 
 # Get the latest version of fixedformat4j

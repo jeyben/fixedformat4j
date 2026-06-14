@@ -1,5 +1,7 @@
 ---
 title: Quick Start
+description: >-
+  Get started with fixedformat4j: add the dependency, annotate a POJO with @Record and @Field, and load or export fixed-width flat-file records in a few lines of Java.
 ---
 
 # Quick Start

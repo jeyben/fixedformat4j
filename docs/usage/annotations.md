@@ -1,5 +1,7 @@
 ---
 title: Annotations
+description: >-
+  Reference for fixedformat4j annotations — @Record, @Field, @Fields and the supplementary number, decimal, boolean and pattern annotations for fixed-width fields.
 ---
 
 # Annotations

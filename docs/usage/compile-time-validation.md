@@ -1,5 +1,7 @@
 ---
 title: Compile-time validation
+description: >-
+  Catch @Field and @Record misconfigurations at build time with the optional fixedformat4j annotation processor.
 ---
 
 # Compile-time validation

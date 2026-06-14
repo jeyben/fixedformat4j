@@ -1,5 +1,7 @@
 ---
 title: Examples
+description: >-
+  Worked examples of parsing and writing fixed-width flat files with fixedformat4j — annotations, alignment, dates, decimals and round-trip load/export.
 ---
 
 # Examples

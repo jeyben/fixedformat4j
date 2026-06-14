@@ -1,5 +1,7 @@
 ---
 title: FAQ
+description: >-
+  Frequently asked questions about fixedformat4j: padding, alignment, null handling, custom formatters, Java records and fixed-width file parsing in Java.
 ---
 
 # Frequently Asked Questions

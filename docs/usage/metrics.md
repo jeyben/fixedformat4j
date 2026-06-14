@@ -1,5 +1,7 @@
 ---
 title: Metrics
+description: >-
+  Instrument fixedformat4j with Micrometer timers, counters and gauges using the optional fixedformat4j-micrometer module.
 ---
 
 # Metrics with Micrometer

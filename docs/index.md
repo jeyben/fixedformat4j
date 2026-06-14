@@ -1,5 +1,7 @@
 ---
 title: fixedformat4j
+description: >-
+  fixedformat4j is a lightweight Java library for reading and writing fixed-width / fixed-length flat files using annotations on POJOs, with built-in formatters for strings, numbers, dates and BigDecimal.
 ---
 
 # Fixedformat4j
