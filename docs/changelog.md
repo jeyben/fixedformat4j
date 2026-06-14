@@ -1,5 +1,7 @@
 ---
 title: Changelog
+description: >-
+  Release history and changelog for fixedformat4j, the Java fixed-width / flat-file library.
 ---
 
 # Changelog

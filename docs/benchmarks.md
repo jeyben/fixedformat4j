@@ -1,6 +1,8 @@
 ---
 layout: default
 title: Benchmarks
+description: >-
+  JMH throughput benchmarks for fixedformat4j across releases, comparing parse and export performance for fixed-width records.
 ---
 
 # Benchmarks

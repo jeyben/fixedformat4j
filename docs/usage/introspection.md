@@ -1,5 +1,7 @@
 ---
 title: Schema introspection
+description: >-
+  Inspect the field layout of a fixedformat4j @Record at runtime via the FixedFormatIntrospector API and immutable FieldInfo descriptors.
 ---
 
 # Schema introspection

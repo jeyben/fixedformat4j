@@ -1,5 +1,7 @@
 ---
 title: Nested Records
+description: >-
+  Compose fixed-width records from nested @Record types with fixedformat4j for hierarchical flat-file layouts.
 ---
 
 # Nested Records

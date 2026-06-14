@@ -1,5 +1,7 @@
 ---
 title: Usage
+description: >-
+  Usage guide for fixedformat4j: annotations, file processing, nested records, schema introspection, metrics and compile-time validation.
 ---
 
 # Usage

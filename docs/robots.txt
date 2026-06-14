@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jeyben.github.io/fixedformat4j/sitemap.xml
