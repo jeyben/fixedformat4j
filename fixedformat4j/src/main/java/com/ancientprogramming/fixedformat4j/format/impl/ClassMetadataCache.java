@@ -25,10 +25,11 @@ import static java.lang.String.format;
  * {@link FieldDescriptor} per effective {@code @Field}. Subsequent calls return the same
  * immutable list without re-scanning.
  *
- * <p>Thread safety: {@link ClassValue} guarantees that {@link #build} runs at most once per
- * class key. Helper objects ({@link AnnotationScanner}, {@link FormatInstructionsBuilder},
- * {@link RepeatingFieldSupport}) are created as local variables inside {@code build} so that
- * concurrent builds of different classes never share mutable state.
+ * <p>Thread safety: under contention {@link ClassValue} may invoke {@link #build} more than once
+ * for the same class key, but installs and returns a single value; the redundant results are
+ * discarded. This is harmless because {@code build} is pure — its helper objects
+ * ({@link AnnotationScanner}, {@link FormatInstructionsBuilder}, {@link RepeatingFieldSupport})
+ * are created as local variables, so concurrent builds never share mutable state.
  *
  * <p>Classloader safety: values are stored inside each {@link Class} object via {@link ClassValue},
  * so they are automatically eligible for GC once the defining classloader becomes unreachable.
