@@ -4,6 +4,38 @@ title: Changelog
 
 # Changelog
 
+## 1.9.1 (2026-06-17)
+
+### Bug fixes
+
+- **Custom `formatter=` on enum fields no longer triggers the enum length check** ([#161](https://github.com/jeyben/fixedformat4j/issues/161)) —
+  The enum field-length validation measured the longest enum `name()` (LITERAL) or the ordinal
+  digit count (NUMERIC) and rejected the field when that exceeded `@Field(length)`. That premise
+  only holds for the built-in `EnumFormatter`. When a field declares its own `formatter=`, the
+  enum's name/ordinal is irrelevant — the custom formatter emits its own representation (e.g. a
+  single-character code) — yet the check still fired and blocked `load`/`export`.
+
+  The check is now skipped whenever a non-default formatter is declared. The fix applies in both
+  validation layers in lock-step:
+  - **Runtime** (`FieldValidator.doValidateEnumFieldLength`) — no longer throws
+    `FixedFormatException`.
+  - **Compile-time** (`fixedformat4j-processor`, `FieldChecker.checkEnumLength`) — no longer
+    reports a `javac` error, so the optional annotation processor agrees with the runtime.
+
+  ```java
+  // 12-constant enum, each mapped to a single-character code, in a length-1 field.
+  // Previously failed; now loads/exports correctly and compiles cleanly with the processor.
+  @Field(offset = 57, length = 1, formatter = NsccTransactionType.Formatter.class)
+  public NsccTransactionType getNsccTransactionType() { … }
+  ```
+
+  This loosens an activation gate but only ever *removes* a hard error, so it is strictly more
+  permissive: records that previously worked are unaffected, round-trip fidelity is preserved,
+  and the default-formatter enum length check is unchanged. No migration required. Forward-ported
+  from the 1.7.4 / 1.8.2 maintenance releases.
+
+---
+
 ## [Unreleased] 1.9.0
 
 ### New features
