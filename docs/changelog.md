@@ -4,6 +4,41 @@ title: Changelog
 
 # Changelog
 
+## 1.7.4 (2026-06-17)
+
+### Corrected republish of 1.7.3
+
+- **Use 1.7.4 instead of 1.7.3.** The `1.7.3` artifact on Maven Central was built from the wrong
+  sources by a release-tooling bug (the publish workflow checked out `master` instead of the
+  release tag), so it does not contain the 1.7.x line. `1.7.4` republishes the intended 1.7.x
+  build with no functional change beyond what 1.7.3 was meant to deliver — the
+  [#161](https://github.com/jeyben/fixedformat4j/issues/161) fix below. The release workflow has
+  been corrected to deploy the released tag.
+
+### Bug fixes
+
+- **Custom `formatter=` on enum fields no longer triggers the enum length check** ([#161](https://github.com/jeyben/fixedformat4j/issues/161)) —
+  The enum field-length validation measured the longest enum `name()` (LITERAL) or the ordinal
+  digit count (NUMERIC) and threw `FixedFormatException` when that exceeded `@Field(length)`.
+  That premise only holds for the built-in `EnumFormatter`. When a field declares its own
+  `formatter=`, the enum's name/ordinal is irrelevant — the custom formatter emits its own
+  representation (e.g. a single-character code) — yet the check still fired and blocked
+  `load`/`export`.
+
+  The validation is now skipped whenever a non-default formatter is declared, because the
+  framework cannot statically know the custom output length.
+
+  ```java
+  // 12-constant enum, each mapped to a single-character code, in a length-1 field.
+  // Previously threw "max length 35 … exceeds @Field length 1"; now loads/exports correctly.
+  @Field(offset = 57, length = 1, formatter = NsccTransactionType.Formatter.class)
+  public NsccTransactionType getNsccTransactionType() { … }
+  ```
+
+  This loosens an activation gate but only ever *removes* a hard error, so it is strictly more
+  permissive: records that previously worked are unaffected, round-trip fidelity is preserved,
+  and the default-formatter enum length check is unchanged. No migration required.
+
 ## 1.7.3 (2026-06-17)
 
 ### Bug fixes
