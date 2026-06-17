@@ -1,12 +1,30 @@
 name: Publish to Maven Central
 
+# Maintenance-branch release workflow (1.x bugfix lines). A release published
+# from a *_bugfix branch runs THIS copy of the workflow — GitHub uses the
+# workflow file from the released tag's tree, not master — so it must check out
+# the tag (never master) to deploy the correct code. The release flow is:
+#
+#   1. Release-prep PR (human): set poms to the release version, date the
+#      changelog. Merge via the normal PR flow.
+#   2. Publish a GitHub release with tag X_Y_Z on the merged commit. This
+#      workflow checks out the tag, verifies the pom version matches, deploys
+#      fixedformat4j to Maven Central, and uploads the artifacts to the release.
+#   3. The workflow opens a PR bumping the bugfix branch to the next -SNAPSHOT.
+#
+# This 1.x line ships a single artifact (fixedformat4j); the processor and
+# micrometer modules only exist on master (1.9.0+).
+#
+# workflow_dispatch redeploys an existing release tag (e.g. after a transient
+# deploy failure); it does not upload release assets or open the bump PR.
+
 on:
   release:
     types: [published]
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g. 1.5.0)'
+        description: 'Released version to redeploy (e.g. 1.8.3) — tag X_Y_Z must exist'
         required: true
 
 env:
@@ -15,13 +33,25 @@ env:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
-      contents: write
+      contents: write       # upload release assets, push the snapshot-bump branch
+      pull-requests: write  # open the snapshot-bump PR
+      actions: write        # dispatch nightly-build.yml on the bump branch
 
     steps:
+      - name: Validate version input
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          VERSION_INPUT: ${{ inputs.version }}
+        run: |
+          if [[ ! "$VERSION_INPUT" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid version format '$VERSION_INPUT' — expected X.Y.Z (e.g. 1.8.3)"
+            exit 1
+          fi
+
       - uses: actions/checkout@v6
         with:
-          ref: master
           fetch-depth: 0
 
       - name: Set up JDK 11
@@ -35,49 +65,29 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - name: Configure git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Configure git signing
+      - name: Resolve release version and check out tag
         env:
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          VERSION_INPUT: ${{ inputs.version }}
+          RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
-          GPG_KEY_ID=$(gpg --list-secret-keys --keyid-format LONG \
-            | grep '^sec' | head -1 | awk '{print $2}' | cut -d/ -f2)
-          echo "$MAVEN_GPG_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback \
-            --passphrase-fd 0 --sign --output /dev/null /dev/null 2>/dev/null || true
-          git config user.signingkey "$GPG_KEY_ID"
-          git config commit.gpgsign true
-          git config tag.gpgsign true
-          echo "GPG_KEY_ID=$GPG_KEY_ID" >> $GITHUB_ENV
-
-      - name: Resolve release version
-        run: |
-          if [ -n "${{ inputs.version }}" ]; then
-            VERSION="${{ inputs.version }}"
+          if [ -n "$VERSION_INPUT" ]; then
+            VERSION="$VERSION_INPUT"
+            TAG=$(echo "$VERSION" | tr '.' '_')
           else
-            # Convert tag format 1_5_0 to Maven version 1.5.0
-            VERSION=$(echo "${GITHUB_REF_NAME}" | tr '_' '.')
+            TAG="$RELEASE_TAG_NAME"
+            VERSION=$(echo "$TAG" | tr '_' '.')
           fi
+          git checkout "$TAG"
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
 
-      - name: Set release version in poms
+      - name: Verify pom version matches the release
         run: |
-          mvn -B versions:set -DnewVersion=$RELEASE_VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
-          git add -A
-          git diff --staged --quiet || git commit -m "Release $RELEASE_VERSION"
-
-      - name: Create signed release tag
-        if: github.event_name == 'release'
-        env:
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: |
-          git tag -d "${{ github.event.release.tag_name }}" 2>/dev/null || true
-          git tag -s "${{ github.event.release.tag_name }}" \
-            -m "Release $RELEASE_VERSION"
-          git push --force origin "${{ github.event.release.tag_name }}"
+          MODULE_VERSION=$(mvn -B -q -f fixedformat4j/pom.xml help:evaluate -Dexpression=project.version -DforceStdout)
+          if [ "$MODULE_VERSION" != "$RELEASE_VERSION" ]; then
+            echo "::error::fixedformat4j/pom.xml version is $MODULE_VERSION but the release is $RELEASE_VERSION — merge the release-prep PR setting the poms to $RELEASE_VERSION before publishing"
+            exit 1
+          fi
 
       - name: Deploy to Maven Central
         env:
@@ -89,17 +99,36 @@ jobs:
       - name: Upload release artifacts to GitHub
         if: github.event_name == 'release'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload ${{ github.event.release.tag_name }} \
-            fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}.jar \
-            fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}-sources.jar \
-            fixedformat4j/target/fixedformat4j-${{ env.RELEASE_VERSION }}-javadoc.jar
+          gh release upload --clobber "$RELEASE_TAG" \
+            "fixedformat4j/target/fixedformat4j-$RELEASE_VERSION.jar" \
+            "fixedformat4j/target/fixedformat4j-$RELEASE_VERSION-sources.jar" \
+            "fixedformat4j/target/fixedformat4j-$RELEASE_VERSION-javadoc.jar"
 
-      - name: Bump to next snapshot version
+      - name: Open PR bumping the bugfix branch to next snapshot version
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_BRANCH: ${{ github.event.release.target_commitish }}
         run: |
-          NEXT=$(echo $RELEASE_VERSION | awk -F. '{print $1"."$2"."$3+1"-SNAPSHOT"}')
-          mvn -B versions:set -DnewVersion=$NEXT -DprocessAllModules=true -DgenerateBackupPoms=false
-          git add -A
-          git commit -m "Prepare $NEXT development"
-          git push origin master
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          NEXT=$(echo "$RELEASE_VERSION" | awk -F. '{print $1"."$2"."$3+1"-SNAPSHOT"}')
+          BRANCH="chore/prepare-$NEXT-${{ github.run_id }}-${{ github.run_attempt }}"
+          git checkout -B "$BRANCH" "origin/$RELEASE_BRANCH"
+          mvn -B versions:set --no-transfer-progress -DnewVersion="$NEXT" -DprocessAllModules=true -DgenerateBackupPoms=false
+          if git diff --quiet; then
+            echo "$RELEASE_BRANCH is already at $NEXT; nothing to bump."
+            exit 0
+          fi
+          git commit -am "Prepare $NEXT development"
+          git push origin "$BRANCH"
+          gh pr create \
+            --base "$RELEASE_BRANCH" \
+            --head "$BRANCH" \
+            --title "Prepare $NEXT development" \
+            --body "$(printf 'Automated post-release version bump after publishing %s.\n\nSets all module poms to %s.' "$RELEASE_VERSION" "$NEXT")"
+          # Pushes made with GITHUB_TOKEN do not trigger other workflows, so
+          # the required "build" check must be dispatched explicitly.
+          gh workflow run nightly-build.yml --ref "$BRANCH"
