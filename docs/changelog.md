@@ -6,7 +6,7 @@ description: >-
 
 # Changelog
 
-## [Unreleased]
+## 1.9.1 (2026-06-17)
 
 ### Bug fixes
 
@@ -21,8 +21,7 @@ description: >-
   in lock-step: the runtime (`FieldValidator.doValidateEnumFieldLength`) no longer throws, and the
   compile-time annotation processor (`FieldChecker.checkEnumLength`) no longer reports a `javac`
   error. This loosens an activation gate but only ever *removes* a hard error — strictly more
-  permissive, round-trip-safe, no migration. Forward-ported from the 1.7.4 / 1.8.2 / 1.9.1
-  maintenance releases.
+  permissive, round-trip-safe, no migration.
 
 ## 1.9.0 (2026-06-12)
 
@@ -256,6 +255,21 @@ No behaviour change for existing annotated record classes, custom formatters, or
 
 ---
 
+## 1.8.2 (2026-06-17)
+
+### Bug fixes
+
+- **Custom `formatter=` on enum fields no longer triggers the enum length check** ([#161](https://github.com/jeyben/fixedformat4j/issues/161)) —
+  The enum field-length validation measured the longest enum `name()` (LITERAL) or the ordinal
+  digit count (NUMERIC) and rejected the field when that exceeded `@Field(length)`. When a field
+  declares its own `formatter=`, the enum's name/ordinal is irrelevant — the custom formatter
+  emits its own representation (e.g. a single-character code) — yet the check still fired and
+  blocked `load`/`export`. The runtime check is now skipped whenever a non-default formatter is
+  declared. This loosens an activation gate but only ever *removes* a hard error — strictly more
+  permissive, round-trip-safe, no migration. Forward-ported from the 1.7.4 maintenance release.
+
+---
+
 ## 1.8.1 (2026-05-05)
 
 ### Performance improvements
@@ -388,6 +402,24 @@ No behaviour change for existing annotated record classes, custom formatters, or
 
   **No API or behaviour change.** Existing annotated record classes, custom formatters, and
   serialized fixed-width data are unaffected.
+
+---
+
+## 1.7.4 (2026-06-17)
+
+### Bug fixes
+
+- **Custom `formatter=` on enum fields no longer triggers the enum length check** ([#161](https://github.com/jeyben/fixedformat4j/issues/161)) —
+  The enum field-length validation measured the longest enum `name()` (LITERAL) or the ordinal
+  digit count (NUMERIC) and rejected the field when that exceeded `@Field(length)`. When a field
+  declares its own `formatter=`, the enum's name/ordinal is irrelevant — the custom formatter
+  emits its own representation (e.g. a single-character code) — yet the check still fired and
+  blocked `load`/`export`. The runtime check is now skipped whenever a non-default formatter is
+  declared. This loosens an activation gate but only ever *removes* a hard error — strictly more
+  permissive, round-trip-safe, no migration.
+
+  1.7.4 is the corrected republish of 1.7.3, whose Maven Central artifact was built from the wrong
+  sources by a release-tooling bug; use 1.7.4.
 
 ---
 
