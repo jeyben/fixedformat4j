@@ -78,6 +78,30 @@ class TestEnumLengthCheck {
   }
 
   @Test
+  void enumFieldWithCustomFormatterIsSkippedLikeAtRuntime() {
+    // Status.REJECTED_BY_BANK is 16 chars, far wider than length = 1; the default-formatter
+    // path would error, but a custom formatter emits its own representation so the check is
+    // skipped — mirroring FieldValidator.doValidateEnumFieldLength (issue #161).
+    List<String> errors = errorMessages("CustomFormatterEnum",
+        "import com.ancientprogramming.fixedformat4j.annotation.*;\n"
+        + "import com.ancientprogramming.fixedformat4j.annotation.Record;\n"
+        + "import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;\n"
+        + "import com.ancientprogramming.fixedformat4j.format.FormatInstructions;\n"
+        + STATUS_ENUM
+        + "class StatusFormatter extends AbstractFixedFormatter<Status> {\n"
+        + "  public Status asObject(String value, FormatInstructions instructions) { return null; }\n"
+        + "  public String asString(Status value, FormatInstructions instructions) { return \"\"; }\n"
+        + "}\n"
+        + "@Record\n"
+        + "public class CustomFormatterEnum {\n"
+        + "  @Field(offset = 1, length = 1, formatter = StatusFormatter.class)\n"
+        + "  public Status getStatus() { return null; }\n"
+        + "}\n");
+    assertTrue(errors.stream().noneMatch(message -> message.contains("max length")),
+        "enum length check must not fire when a custom formatter is declared: " + errors);
+  }
+
+  @Test
   void restOfLineEnumFieldIsSkippedLikeAtRuntime() {
     List<String> errors = errorMessages("RestOfLineEnumSkipped", IMPORTS
         + STATUS_ENUM
