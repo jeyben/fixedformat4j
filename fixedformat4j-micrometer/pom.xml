@@ -5,7 +5,7 @@
   <name>Fixed Format for Java - Micrometer instrumentation</name>
   <groupId>com.ancientprogramming.fixedformat4j</groupId>
 
-  <version>1.9.1</version>
+  <version>1.9.2-SNAPSHOT</version>
   <artifactId>fixedformat4j-micrometer</artifactId>
   <packaging>jar</packaging>
 
