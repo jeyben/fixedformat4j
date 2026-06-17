@@ -36,6 +36,9 @@ class FieldValidator {
   @SuppressWarnings({"unchecked", "rawtypes"})
   static void doValidateEnumFieldLength(AnnotationTarget target, Field fieldAnnotation) {
     if (fieldAnnotation.length() == Field.REST_OF_LINE) return;
+    if (fieldAnnotation.formatter() != ByTypeFormatter.class) {
+      return;
+    }
     FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
     Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
     if (!datatype.isEnum()) {
