@@ -25,6 +25,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
@@ -81,10 +82,14 @@ final class FieldChecker {
   /**
    * Twin of {@code FieldValidator.doValidateEnumFieldLength}: the widest serialized form of an
    * enum field ({@code Enum#name()} for LITERAL, the digit width of the highest ordinal for
-   * NUMERIC) must fit in {@code @Field(length)}. Skipped for REST_OF_LINE fields.
+   * NUMERIC) must fit in {@code @Field(length)}. Skipped for REST_OF_LINE fields and for fields
+   * with a custom {@code formatter=}, whose output length the framework cannot determine.
    */
   void checkEnumLength(AnnotatedFixedFormatField target, Field fieldAnnotation) {
     if (fieldAnnotation.length() == Field.REST_OF_LINE) {
+      return;
+    }
+    if (hasCustomFormatter(fieldAnnotation)) {
       return;
     }
     if (target.datatype.getKind() != TypeKind.DECLARED) {
@@ -112,6 +117,23 @@ final class FieldChecker {
     if (maxLength > fieldAnnotation.length()) {
       error(target, format("Enum [%s] has values with max length %d, which exceeds @Field length %d on %s",
           ((TypeElement) datatypeElement).getQualifiedName(), maxLength, fieldAnnotation.length(), target.label()));
+    }
+  }
+
+  private static final String DEFAULT_FORMATTER =
+      "com.ancientprogramming.fixedformat4j.format.impl.ByTypeFormatter";
+
+  /**
+   * Mirror-API twin of the runtime's {@code fieldAnnotation.formatter() != ByTypeFormatter.class}
+   * check: reading the {@code Class}-valued {@code @Field#formatter()} from an annotation processor
+   * throws {@link MirroredTypeException}, whose {@code TypeMirror} names the declared formatter.
+   */
+  private static boolean hasCustomFormatter(Field fieldAnnotation) {
+    try {
+      fieldAnnotation.formatter();
+      return false;
+    } catch (MirroredTypeException e) {
+      return !e.getTypeMirror().toString().equals(DEFAULT_FORMATTER);
     }
   }
 
