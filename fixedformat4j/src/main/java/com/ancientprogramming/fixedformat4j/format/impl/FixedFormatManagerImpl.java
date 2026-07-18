@@ -25,7 +25,9 @@ import com.ancientprogramming.fixedformat4j.format.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayDeque;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -134,17 +136,38 @@ public class FixedFormatManagerImpl implements FixedFormatManager, FixedFormatIn
   private final RepeatingFieldSupport repeatingFieldSupport = new RepeatingFieldSupport();
 
   /**
+   * Tracks the chain of {@code @Record} classes currently being loaded on this thread, so a
+   * self-referential or cyclic nested-record graph fails fast with a {@link FixedFormatException}
+   * instead of recursing until a {@link StackOverflowError}.
+   */
+  private final ThreadLocal<Deque<Class<?>>> loadStack = ThreadLocal.withInitial(ArrayDeque::new);
+
+  /** Same purpose as {@link #loadStack}, but for the export direction. */
+  private final ThreadLocal<Deque<Class<?>>> exportStack = ThreadLocal.withInitial(ArrayDeque::new);
+
+  /**
    * {@inheritDoc}
    */
   public <T> T load(Class<T> fixedFormatRecordClass, String data) {
     getAndAssertRecordAnnotation(fixedFormatRecordClass);
     validatePatterns(fixedFormatRecordClass);
 
-    ConstructorBinding constructorBinding = metadataCache.constructorBinding(fixedFormatRecordClass);
-    if (constructorBinding != null) {
-      return loadThroughConstructor(fixedFormatRecordClass, data, constructorBinding);
+    Deque<Class<?>> stack = loadStack.get();
+    if (stack.contains(fixedFormatRecordClass)) {
+      throw new FixedFormatException(format(
+          "cyclic or self-referential @Record definition detected: %s is nested, directly or transitively, inside itself",
+          fixedFormatRecordClass.getName()));
     }
-    return loadThroughSetters(fixedFormatRecordClass, data);
+    stack.push(fixedFormatRecordClass);
+    try {
+      ConstructorBinding constructorBinding = metadataCache.constructorBinding(fixedFormatRecordClass);
+      if (constructorBinding != null) {
+        return loadThroughConstructor(fixedFormatRecordClass, data, constructorBinding);
+      }
+      return loadThroughSetters(fixedFormatRecordClass, data);
+    } finally {
+      stack.pop();
+    }
   }
 
   private <T> T loadThroughSetters(Class<T> fixedFormatRecordClass, String data) {
@@ -190,7 +213,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager, FixedFormatIn
     } else {
       String dataToParse = fetchData(data, desc.formatInstructions, desc.context);
       if (desc.isNestedRecord) {
-        value = load(desc.datatype, dataToParse);
+        value = dataToParse == null ? null : load(desc.datatype, dataToParse);
       } else if (NullSupport.isNullSliceOrValue(dataToParse, desc.formatInstructions)) {
         value = null;
       } else {
@@ -212,6 +235,22 @@ public class FixedFormatManagerImpl implements FixedFormatManager, FixedFormatIn
    * {@inheritDoc}
    */
   public <T> String export(String template, T fixedFormatRecord) {
+    Class<?> recordClass = fixedFormatRecord.getClass();
+    Deque<Class<?>> stack = exportStack.get();
+    if (stack.contains(recordClass)) {
+      throw new FixedFormatException(format(
+          "cyclic or self-referential @Record definition detected: %s is nested, directly or transitively, inside itself",
+          recordClass.getName()));
+    }
+    stack.push(recordClass);
+    try {
+      return doExport(template, fixedFormatRecord);
+    } finally {
+      stack.pop();
+    }
+  }
+
+  private <T> String doExport(String template, T fixedFormatRecord) {
     StringBuilder result = new StringBuilder(template);
     Record record = getAndAssertRecordAnnotation(fixedFormatRecord.getClass());
     validatePatterns(fixedFormatRecord.getClass());
@@ -236,8 +275,12 @@ public class FixedFormatManagerImpl implements FixedFormatManager, FixedFormatIn
       String formatted;
       if (valueObject != null && valueObject.getClass().getAnnotation(Record.class) != null) {
         formatted = export(valueObject);
-      } else if (desc.isNestedRecord) {
+      } else if (desc.isNestedRecord && valueObject == null) {
         formatted = String.valueOf(desc.fieldAnnotation.paddingChar()).repeat(desc.fieldAnnotation.length());
+      } else if (desc.isNestedRecord) {
+        throw new FixedFormatException(format(
+            "could not export nested record field %s.%s(): value's runtime class %s is not annotated with @Record",
+            fixedFormatRecord.getClass().getName(), desc.target.getter.getName(), valueObject.getClass().getName()));
       } else if (valueObject == null && NullSupport.isNullCharActive(desc.formatInstructions)) {
         formatted = String.valueOf(desc.formatInstructions.getNullChar()).repeat(desc.formatInstructions.getLength());
       } else if (valueObject == null && NullSupport.isNullValueActive(desc.formatInstructions)) {
