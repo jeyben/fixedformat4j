@@ -199,4 +199,35 @@ public class TestBigDecimalFormatter {
     assertEquals("+000000042", formatter.format(new BigDecimal("42"), new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(0, false, '.', RoundingMode.UNNECESSARY))));
     assertEquals(new BigDecimal("42"), formatter.parse("+000000042", new FormatInstructions(10, Align.RIGHT, '0', null, null, new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN), new FixedFormatDecimalData(0, false, '.', RoundingMode.UNNECESSARY))));
   }
+
+  @Test
+  public void testScaleZeroWithDecimalDelimiterEnabledDoesNotAppendStrayDelimiter() {
+    // Issue 182 (bug #1): decimals = 0 means the plain string has no fraction part at all
+    // (roundedValue.toPlainString() contains no '.'), so useDecimalDelimiter must not append a
+    // trailing, meaningless delimiter with nothing after it.
+    FormatInstructions instructions = new FormatInstructions(5, Align.RIGHT, '0', null, null,
+        new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN),
+        new FixedFormatDecimalData(0, true, '.', RoundingMode.UNNECESSARY));
+
+    String formatted = formatter.format(new BigDecimal("42"), instructions);
+
+    assertFalse(formatted.contains("."), "no fraction to delimit, so no '.' should appear: " + formatted);
+    assertEquals("+0042", formatted);
+  }
+
+  @Test
+  public void testScaleZeroWithDecimalDelimiterRoundTripsThroughFieldWidth() {
+    // Before the fix, a 5-char field ("+2345" width) formatting BigDecimal(12345) with
+    // decimals = 0 and useDecimalDelimiter = true produced "+12345." (7 chars), which the
+    // RIGHT alignment then truncated from the front to "345.", silently dropping "+12" and
+    // corrupting the value on reload.
+    FormatInstructions instructions = new FormatInstructions(6, Align.RIGHT, '0', null, null,
+        new FixedFormatNumberData(Sign.PREPEND, DEFAULT_POSITIVE_SIGN, DEFAULT_NEGATIVE_SIGN),
+        new FixedFormatDecimalData(0, true, '.', RoundingMode.UNNECESSARY));
+
+    String formatted = formatter.format(new BigDecimal("12345"), instructions);
+
+    assertEquals("+12345", formatted);
+    assertEquals(new BigDecimal("12345"), formatter.parse(formatted, instructions));
+  }
 }
