@@ -6,6 +6,19 @@ description: >-
 
 # Changelog
 
+## Unreleased
+
+### Bug fixes
+
+All six fixed as part of the bug hunt in [#182](https://github.com/jeyben/fixedformat4j/issues/182).
+
+- **Nested `@Record` field loaded from truncated input threw `NullPointerException`** — `load()` now degrades a nested-record field to `null` when the input is too short to reach it, the same way every other field type already did.
+- **Self-referential/cyclic `@Record` graphs caused `StackOverflowError`** — `load()`/`export()` now detect a class already in progress on the current call chain and fail fast with a `FixedFormatException` instead of recursing indefinitely.
+- **`FixedFormatWriter`/`FixedFormatReader` leaked an already-open, caller-supplied stream when a later parameter (`records`, `charset`, `registry`, `clazz`) turned out to be `null`** — the stream is now closed before the `NullPointerException` propagates, matching the documented "closed when this method returns" contract.
+- **Exporting a nested `@Record` field silently wrote blank padding instead of throwing when the runtime value's class didn't itself carry `@Record`** (e.g. a subclass, since `@Record` is not `@Inherited`) — this now throws a `FixedFormatException` instead of discarding the real data.
+- **Enum-length and date/time-pattern validation was silently skipped for repeating fields (`@Field(count > 1)`)** — both checks now resolve the collection/array element type instead of the raw `List`/array type, matching how `nullChar`/`nullValue` validation already handled repeating fields; mirrored in the `fixedformat4j-processor` compile-time checks. This is stricter than before: a repeating enum/date field that previously loaded silently-wrong data now fails validation eagerly.
+- **`BigDecimal`/`Double`/`Float` fields with `decimals = 0` and `useDecimalDelimiter = true` exported a stray trailing decimal delimiter with nothing after it** (e.g. `"12345."` instead of `"12345"`), which could overflow the field width and get silently truncated on export. The delimiter is now only inserted when there is an actual fraction to delimit.
+
 ## 1.9.1 (2026-06-17)
 
 ### Bug fixes
