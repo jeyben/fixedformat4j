@@ -57,13 +57,17 @@ final class FieldChecker {
    * explicit {@code @FixedFormatPattern} on a date/time-typed field must be constructible.
    * Absent annotations fall back to library defaults, which are valid by construction.
    */
-  void checkPattern(AnnotatedFixedFormatField target) {
+  void checkPattern(AnnotatedFixedFormatField target, Field fieldAnnotation) {
     FixedFormatPattern patternAnnotation = target.supplementaryAnnotation(FixedFormatPattern.class);
     if (patternAnnotation == null) {
       return;
     }
+    TypeMirror typeToCheck = typeToCheck(target, fieldAnnotation);
+    if (typeToCheck == null) {
+      return;
+    }
     String pattern = patternAnnotation.value();
-    String datatype = qualifiedNameOf(target.datatype);
+    String datatype = qualifiedNameOf(typeToCheck);
     if ("java.util.Date".equals(datatype)) {
       try {
         new SimpleDateFormat(pattern);
@@ -92,10 +96,11 @@ final class FieldChecker {
     if (hasCustomFormatter(fieldAnnotation)) {
       return;
     }
-    if (target.datatype.getKind() != TypeKind.DECLARED) {
+    TypeMirror typeToCheck = typeToCheck(target, fieldAnnotation);
+    if (typeToCheck == null || typeToCheck.getKind() != TypeKind.DECLARED) {
       return;
     }
-    Element datatypeElement = ((DeclaredType) target.datatype).asElement();
+    Element datatypeElement = ((DeclaredType) typeToCheck).asElement();
     if (datatypeElement.getKind() != ElementKind.ENUM) {
       return;
     }

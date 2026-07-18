@@ -53,7 +53,10 @@ class RecordValidator {
     List<AnnotatedFixedFormatField> targets = FieldScanner.scan(recordType);
     List<FieldEntry> entries = new ArrayList<>();
     for (AnnotatedFixedFormatField target : targets) {
-      fieldChecker.checkPattern(target);
+      // @FixedFormatPattern lives on the getter, so it applies uniformly to every @Field entry
+      // in a @Fields group; checking it once against a representative entry (for count()
+      // resolution) avoids reporting the same invalid pattern once per entry.
+      fieldChecker.checkPattern(target, target.fieldAnnotations.get(0));
       for (Field fieldAnnotation : target.fieldAnnotations) {
         fieldChecker.checkEnumLength(target, fieldAnnotation);
         fieldChecker.checkNullChar(target, fieldAnnotation);

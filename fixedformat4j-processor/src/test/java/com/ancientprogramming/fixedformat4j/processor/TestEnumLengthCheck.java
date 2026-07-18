@@ -102,6 +102,23 @@ class TestEnumLengthCheck {
   }
 
   @Test
+  void literalEnumWiderThanFieldLengthIsCompileErrorForRepeatingField() {
+    // Issue 182 (bug #3): the check used to resolve the raw List return type instead of the
+    // element type for count > 1 fields, so isEnum() was false and the check silently no-opped.
+    List<String> errors = errorMessages("RepeatingLiteralTooNarrow", IMPORTS
+        + "import java.util.List;\n"
+        + STATUS_ENUM
+        + "@Record\n"
+        + "public class RepeatingLiteralTooNarrow {\n"
+        + "  @Field(offset = 1, length = 5, count = 2)\n"
+        + "  public List<Status> getStatuses() { return null; }\n"
+        + "}\n");
+    assertEquals(1, errors.size(), "expected exactly one error: " + errors);
+    assertTrue(errors.get(0).contains("16"), errors.get(0));
+    assertTrue(errors.get(0).contains("getStatuses"), errors.get(0));
+  }
+
+  @Test
   void restOfLineEnumFieldIsSkippedLikeAtRuntime() {
     List<String> errors = errorMessages("RestOfLineEnumSkipped", IMPORTS
         + STATUS_ENUM

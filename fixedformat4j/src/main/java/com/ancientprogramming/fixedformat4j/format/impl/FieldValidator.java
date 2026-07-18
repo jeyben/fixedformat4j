@@ -39,8 +39,13 @@ class FieldValidator {
     if (fieldAnnotation.formatter() != ByTypeFormatter.class) {
       return;
     }
-    FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
-    Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
+    Class<?> datatype;
+    if (fieldAnnotation.count() > 1) {
+      datatype = new RepeatingFieldSupport().resolveElementType(target.getter);
+    } else {
+      FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
+      datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
+    }
     if (!datatype.isEnum()) {
       return;
     }
@@ -201,8 +206,13 @@ class FieldValidator {
   }
 
   static void doValidateFieldPattern(AnnotationTarget target, Field fieldAnnotation) {
-    FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
-    Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
+    Class<?> datatype;
+    if (fieldAnnotation.count() > 1) {
+      datatype = new RepeatingFieldSupport().resolveElementType(target.getter);
+    } else {
+      FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
+      datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
+    }
     FixedFormatPattern patternAnnotation = target.annotationSource.getAnnotation(FixedFormatPattern.class);
     String pattern;
     if (patternAnnotation != null) {
