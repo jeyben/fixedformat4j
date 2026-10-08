@@ -18,6 +18,7 @@ package com.ancientprogramming.fixedformat4j.io.read;
 import com.ancientprogramming.fixedformat4j.exception.FixedFormatIOException;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -234,7 +235,7 @@ public final class FixedFormatReader {
    */
   public void process(Reader reader, HandlerRegistry registry) {
     Objects.requireNonNull(reader, "reader must not be null");
-    Objects.requireNonNull(registry, "registry must not be null");
+    requireNonNullOrClose(registry, "registry must not be null", reader);
     readWithMappingCallback(reader, registry::dispatch);
   }
 
@@ -260,7 +261,8 @@ public final class FixedFormatReader {
    * @throws FixedFormatIOException if an IO error occurs while reading
    */
   public void process(InputStream inputStream, Charset charset, HandlerRegistry registry) {
-    Objects.requireNonNull(registry, "registry must not be null");
+    Objects.requireNonNull(inputStream, "inputStream must not be null");
+    requireNonNullOrClose(registry, "registry must not be null", inputStream);
     withReader(inputStream, charset, r -> { process(r, registry); return null; });
   }
 
@@ -347,7 +349,7 @@ public final class FixedFormatReader {
    */
   public Stream<Object> openStream(InputStream inputStream, Charset charset) {
     Objects.requireNonNull(inputStream, "inputStream must not be null");
-    Objects.requireNonNull(charset, "charset must not be null");
+    requireNonNullOrClose(charset, "charset must not be null", inputStream);
     return openStream(new InputStreamReader(inputStream, charset));
   }
 
@@ -402,7 +404,8 @@ public final class FixedFormatReader {
    */
   @SuppressWarnings("unchecked")
   public <T> Stream<T> openStream(Reader reader, Class<T> clazz) {
-    Objects.requireNonNull(clazz, "clazz must not be null");
+    Objects.requireNonNull(reader, "reader must not be null");
+    requireNonNullOrClose(clazz, "clazz must not be null", reader);
     return openStream(reader).filter(clazz::isInstance).map(r -> (T) r);
   }
 
@@ -418,7 +421,8 @@ public final class FixedFormatReader {
    */
   @SuppressWarnings("unchecked")
   public <T> Stream<T> openStream(InputStream inputStream, Class<T> clazz) {
-    Objects.requireNonNull(clazz, "clazz must not be null");
+    Objects.requireNonNull(inputStream, "inputStream must not be null");
+    requireNonNullOrClose(clazz, "clazz must not be null", inputStream);
     return openStream(inputStream).filter(clazz::isInstance).map(r -> (T) r);
   }
 
@@ -456,7 +460,7 @@ public final class FixedFormatReader {
 
   private static <R> R withReader(InputStream inputStream, Charset charset, Function<Reader, R> body) {
     Objects.requireNonNull(inputStream, "inputStream must not be null");
-    Objects.requireNonNull(charset, "charset must not be null");
+    requireNonNullOrClose(charset, "charset must not be null", inputStream);
     try (InputStreamReader r = new InputStreamReader(inputStream, charset)) {
       return body.apply(r);
     } catch (IOException e) {
@@ -471,6 +475,28 @@ public final class FixedFormatReader {
       return body.apply(r);
     } catch (IOException e) {
       throw new FixedFormatIOException(format("Cannot open path: %s", path), e);
+    }
+  }
+
+  /**
+   * Returns {@code value} if non-null; otherwise closes {@code resource} (an already-open,
+   * caller-supplied stream this method has taken ownership of) and throws
+   * {@link NullPointerException}. Used so that validating a later parameter never leaks an
+   * earlier, already-open resource.
+   */
+  private static <T> T requireNonNullOrClose(T value, String message, Closeable resource) {
+    if (value == null) {
+      closeQuietly(resource);
+      throw new NullPointerException(message);
+    }
+    return value;
+  }
+
+  private static void closeQuietly(Closeable closeable) {
+    try {
+      closeable.close();
+    } catch (IOException suppressed) {
+      // best-effort close after a validation failure; the validation exception is what matters
     }
   }
 }
