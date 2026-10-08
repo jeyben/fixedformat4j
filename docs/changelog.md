@@ -14,6 +14,7 @@ Found in the bug hunt in [#182](https://github.com/jeyben/fixedformat4j/issues/1
 
 - **Loading a line too short to reach a nested `@Record` field no longer throws `NullPointerException`** — the nested field is now `null`, like every other field type in that situation.
 - **`decimals = 0` with `useDecimalDelimiter = true` no longer exports a trailing delimiter** — `12345` in a 5-wide field exported as `"2345."` (leading digit lost) and now exports as `"12345"`; data written with the old trailing delimiter still loads. *Export output changes for this annotation combination.*
+- **Repeating fields (`@Field(count > 1)`) now get the enum-length and date/time-pattern validation that single fields get**, at runtime and in `fixedformat4j-processor` — an enum constant wider than the slot (e.g. `ONE` in `length = 2`) was silently truncated to a different constant (`ON`) on export. *Stricter: such records now fail fast instead of loading.*
 
 ## 1.9.1 (2026-06-17)
 
