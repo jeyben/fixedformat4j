@@ -13,6 +13,7 @@ description: >-
 Found in the bug hunt in [#182](https://github.com/jeyben/fixedformat4j/issues/182).
 
 - **Loading a line too short to reach a nested `@Record` field no longer throws `NullPointerException`** — the nested field is now `null`, like every other field type in that situation.
+- **`decimals = 0` with `useDecimalDelimiter = true` no longer exports a trailing delimiter** — `12345` in a 5-wide field exported as `"2345."` (leading digit lost) and now exports as `"12345"`; data written with the old trailing delimiter still loads. *Export output changes for this annotation combination.*
 
 ## 1.9.1 (2026-06-17)
 
