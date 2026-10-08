@@ -190,7 +190,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager, FixedFormatIn
     } else {
       String dataToParse = fetchData(data, desc.formatInstructions, desc.context);
       if (desc.isNestedRecord) {
-        value = load(desc.datatype, dataToParse);
+        value = dataToParse == null ? null : load(desc.datatype, dataToParse);
       } else if (NullSupport.isNullSliceOrValue(dataToParse, desc.formatInstructions)) {
         value = null;
       } else {

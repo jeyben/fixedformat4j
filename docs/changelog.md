@@ -6,6 +6,14 @@ description: >-
 
 # Changelog
 
+## Unreleased
+
+### Bug fixes
+
+Found in the bug hunt in [#182](https://github.com/jeyben/fixedformat4j/issues/182).
+
+- **Loading a line too short to reach a nested `@Record` field no longer throws `NullPointerException`** — the nested field is now `null`, like every other field type in that situation.
+
 ## 1.9.1 (2026-06-17)
 
 ### Bug fixes
