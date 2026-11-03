@@ -52,7 +52,7 @@ public abstract class AbstractDecimalFormatter<T extends Number> extends Abstrac
     String beforeDelimiter = separatorIdx < 0 ? rawString : rawString.substring(0, separatorIdx);
     String afterDelimiter = separatorIdx < 0 ? "" : rawString.substring(separatorIdx + 1);
 
-    String result = decimalData.isUseDecimalDelimiter()
+    String result = decimalData.isUseDecimalDelimiter() && separatorIdx >= 0
         ? beforeDelimiter + decimalData.getDecimalDelimiter() + afterDelimiter
         : beforeDelimiter + afterDelimiter;
     if (LOG.isDebugEnabled()) {

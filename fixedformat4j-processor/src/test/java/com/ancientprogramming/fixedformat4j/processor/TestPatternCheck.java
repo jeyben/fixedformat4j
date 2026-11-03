@@ -119,6 +119,22 @@ class TestPatternCheck {
   }
 
   @Test
+  void invalidPatternOnRepeatingLocalDateFieldIsCompileError() {
+    // Issue 182 (bug #3): the check used to resolve the raw List return type instead of the
+    // element type for count > 1 fields, so it never matched LocalDate and silently no-opped.
+    List<String> errors = errorMessages("BadRepeatingLocalDatePattern", IMPORTS
+        + "import java.util.List;\n"
+        + "@Record\n"
+        + "public class BadRepeatingLocalDatePattern {\n"
+        + "  @Field(offset = 1, length = 8, count = 2)\n"
+        + "  @FixedFormatPattern(\"bbbb\")\n"
+        + "  public List<LocalDate> getDays() { return null; }\n"
+        + "}\n");
+    assertEquals(1, errors.size(), "expected exactly one error: " + errors);
+    assertTrue(errors.get(0).contains("bbbb"), errors.get(0));
+  }
+
+  @Test
   void invalidPatternOnAnnotatedFieldMemberIsCompileError() {
     List<String> errors = errorMessages("BadFieldMemberPattern", IMPORTS
         + "@Record\n"
