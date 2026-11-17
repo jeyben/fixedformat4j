@@ -190,7 +190,7 @@ public class FixedFormatManagerImpl implements FixedFormatManager, FixedFormatIn
     } else {
       String dataToParse = fetchData(data, desc.formatInstructions, desc.context);
       if (desc.isNestedRecord) {
-        value = load(desc.datatype, dataToParse);
+        value = dataToParse == null ? null : load(desc.datatype, dataToParse);
       } else if (NullSupport.isNullSliceOrValue(dataToParse, desc.formatInstructions)) {
         value = null;
       } else {
@@ -236,8 +236,11 @@ public class FixedFormatManagerImpl implements FixedFormatManager, FixedFormatIn
       String formatted;
       if (valueObject != null && valueObject.getClass().getAnnotation(Record.class) != null) {
         formatted = export(valueObject);
-      } else if (desc.isNestedRecord) {
+      } else if (desc.isNestedRecord && valueObject == null) {
         formatted = String.valueOf(desc.fieldAnnotation.paddingChar()).repeat(desc.fieldAnnotation.length());
+      } else if (desc.isNestedRecord) {
+        throw new FixedFormatException(format("could not export nested record %s.%s(): runtime class %s is not annotated with @Record",
+            fixedFormatRecord.getClass().getName(), desc.target.getter.getName(), valueObject.getClass().getName()));
       } else if (valueObject == null && NullSupport.isNullCharActive(desc.formatInstructions)) {
         formatted = String.valueOf(desc.formatInstructions.getNullChar()).repeat(desc.formatInstructions.getLength());
       } else if (valueObject == null && NullSupport.isNullValueActive(desc.formatInstructions)) {

@@ -90,7 +90,7 @@ public final class FixedFormatWriter {
    */
   public void write(Writer writer, Iterable<?> records) {
     Objects.requireNonNull(writer, "writer must not be null");
-    Objects.requireNonNull(records, "records must not be null");
+    requireNonNullOrClose(records, "records must not be null", writer);
     writeAndClose(toBuffered(writer), records.iterator());
   }
 
@@ -123,7 +123,9 @@ public final class FixedFormatWriter {
    *         in {@code records} is not annotated with {@code @Record}
    */
   public void write(OutputStream out, Charset charset, Iterable<?> records) {
-    Objects.requireNonNull(records, "records must not be null");
+    Objects.requireNonNull(out, "out must not be null");
+    requireNonNullOrClose(charset, "charset must not be null", out);
+    requireNonNullOrClose(records, "records must not be null", out);
     write(openWriter(out, charset), records);
   }
 
@@ -181,7 +183,7 @@ public final class FixedFormatWriter {
    */
   public void write(Writer writer, Stream<?> records) {
     Objects.requireNonNull(writer, "writer must not be null");
-    Objects.requireNonNull(records, "records must not be null");
+    requireNonNullOrClose(records, "records must not be null", writer);
     writeAndClose(toBuffered(writer), records.iterator());
   }
 
@@ -222,7 +224,9 @@ public final class FixedFormatWriter {
    *         in {@code records} is not annotated with {@code @Record}
    */
   public void write(OutputStream out, Charset charset, Stream<?> records) {
-    Objects.requireNonNull(records, "records must not be null");
+    Objects.requireNonNull(out, "out must not be null");
+    requireNonNullOrClose(charset, "charset must not be null", out);
+    requireNonNullOrClose(records, "records must not be null", out);
     write(openWriter(out, charset), records);
   }
 
@@ -308,6 +312,28 @@ public final class FixedFormatWriter {
       return Files.newBufferedWriter(path, charset);
     } catch (IOException e) {
       throw new FixedFormatIOException(format("Cannot open path: %s", path), e);
+    }
+  }
+
+  /**
+   * Returns {@code value} if non-null; otherwise closes {@code resource} (an already-open,
+   * caller-supplied stream this method has taken ownership of) and throws
+   * {@link NullPointerException}. Used so that validating a later parameter never leaks an
+   * earlier, already-open resource.
+   */
+  private static <T> T requireNonNullOrClose(T value, String message, Closeable resource) {
+    if (value == null) {
+      closeQuietly(resource);
+      throw new NullPointerException(message);
+    }
+    return value;
+  }
+
+  private static void closeQuietly(Closeable closeable) {
+    try {
+      closeable.close();
+    } catch (IOException suppressed) {
+      // best-effort close after a validation failure; the validation exception is what matters
     }
   }
 }
