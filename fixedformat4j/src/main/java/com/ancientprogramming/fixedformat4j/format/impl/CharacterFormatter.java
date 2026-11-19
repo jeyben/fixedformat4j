@@ -19,7 +19,7 @@ import com.ancientprogramming.fixedformat4j.format.AbstractFixedFormatter;
 import com.ancientprogramming.fixedformat4j.format.FormatInstructions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Formatter for {@link Character} data
