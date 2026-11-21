@@ -39,8 +39,7 @@ class FieldValidator {
     if (fieldAnnotation.formatter() != ByTypeFormatter.class) {
       return;
     }
-    FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
-    Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
+    Class<?> datatype = valueType(target, fieldAnnotation);
     if (!datatype.isEnum()) {
       return;
     }
@@ -150,13 +149,7 @@ class FieldValidator {
   static void doValidateFieldNullChar(AnnotationTarget target, Field fieldAnnotation) {
     if (fieldAnnotation.nullChar() == Field.UNSET_NULL_CHAR) return;
 
-    Class<?> typeToCheck;
-    if (fieldAnnotation.count() > 1) {
-      typeToCheck = new RepeatingFieldSupport().resolveElementType(target.getter);
-    } else {
-      FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
-      typeToCheck = instructionsBuilder.datatype(target.getter, fieldAnnotation);
-    }
+    Class<?> typeToCheck = valueType(target, fieldAnnotation);
 
     if (typeToCheck.isPrimitive()) {
       throw new FixedFormatException(format(
@@ -185,13 +178,7 @@ class FieldValidator {
           fieldAnnotation.nullValue(), fieldAnnotation.nullValue().length(), fieldAnnotation.length(), getterRef));
     }
 
-    Class<?> typeToCheck;
-    if (fieldAnnotation.count() > 1) {
-      typeToCheck = new RepeatingFieldSupport().resolveElementType(target.getter);
-    } else {
-      FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
-      typeToCheck = instructionsBuilder.datatype(target.getter, fieldAnnotation);
-    }
+    Class<?> typeToCheck = valueType(target, fieldAnnotation);
 
     if (typeToCheck.isPrimitive()) {
       throw new FixedFormatException(format(
@@ -201,8 +188,7 @@ class FieldValidator {
   }
 
   static void doValidateFieldPattern(AnnotationTarget target, Field fieldAnnotation) {
-    FormatInstructionsBuilder instructionsBuilder = new FormatInstructionsBuilder();
-    Class<?> datatype = instructionsBuilder.datatype(target.getter, fieldAnnotation);
+    Class<?> datatype = valueType(target, fieldAnnotation);
     FixedFormatPattern patternAnnotation = target.annotationSource.getAnnotation(FixedFormatPattern.class);
     String pattern;
     if (patternAnnotation != null) {
@@ -215,5 +201,16 @@ class FieldValidator {
       pattern = FixedFormatPatternData.DEFAULT.getPattern();
     }
     PatternValidator.validate(datatype, pattern);
+  }
+
+  /**
+   * The type a single slot of the field holds: the element type for a repeating field
+   * ({@code count > 1}), otherwise the getter's type.
+   */
+  private static Class<?> valueType(AnnotationTarget target, Field fieldAnnotation) {
+    if (fieldAnnotation.count() > 1) {
+      return new RepeatingFieldSupport().resolveElementType(target.getter);
+    }
+    return new FormatInstructionsBuilder().datatype(target.getter, fieldAnnotation);
   }
 }
